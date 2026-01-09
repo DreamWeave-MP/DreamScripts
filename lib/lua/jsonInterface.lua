@@ -159,7 +159,10 @@ else
             error('Invalid parameter passed to jsonInterface.isDir: ' .. tostring(path))
         end
 
-        if jsonInterface.fileExists(path) then return false end
+        if jsonInterface.fileExists(path) then
+            print(path .. ' is not a directory, because it is a file!')
+            return false
+        end
 
         return os.execute(('test -d %s'):format(path)) == F_OK
     end
