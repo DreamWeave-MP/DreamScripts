@@ -9,6 +9,7 @@ typedef struct vector3 {
 local Vec3MT = {}
 
 Vec3MT.__add = function(a, b)
+  assert(a.is(b), tostring(b) .. ' is not a vector type! Could not add it to ' .. tostring(a))
   ---@type Vector3
   local result = ffi.new('vector3')
   result.x, result.y, result.z = a.x + b.x, a.y + b.y, a.z + b.z
@@ -17,6 +18,7 @@ Vec3MT.__add = function(a, b)
 end
 
 Vec3MT.__sub = function(a, b)
+  assert(a.is(b), tostring(b) .. ' is not a vector type! Could not subtract it from ' .. tostring(a))
   ---@type Vector3
   local result = ffi.new('vector3')
   result.x, result.y, result.z = a.x - b.x, a.y - b.y, a.z - b.z
@@ -94,6 +96,11 @@ end
 Vec3Methods.add_mut = function(a, b)
   assert(a.is(b), tostring(b) .. ' is not a vector type! Could not add it to ' .. tostring(a))
   a.x, a.y, a.z = a.x + b.x, a.y + b.y, a.z + b.z
+end
+
+Vec3Methods.sub_mut = function(a, b)
+  assert(a.is(b), tostring(b) .. ' is not a vector type! Could not add it to ' .. tostring(a))
+  a.x, a.y, a.z = a.x - b.x, a.y - b.y, a.z - b.z
 end
 
 Vec3MT.__index = Vec3Methods
