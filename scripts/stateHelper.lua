@@ -1,7 +1,6 @@
 StateHelper = class("StateHelper")
 
 function StateHelper:LoadJournal(pid, stateObject)
-
     if stateObject.data.journal == nil then
         stateObject.data.journal = {}
     end
@@ -9,9 +8,7 @@ function StateHelper:LoadJournal(pid, stateObject)
     tes3mp.ClearJournalChanges(pid)
 
     for index, journalItem in pairs(stateObject.data.journal) do
-
         if journalItem.type == enumerations.journal.ENTRY then
-
             if journalItem.actorRefId == nil then
                 journalItem.actorRefId = "player"
             end
@@ -31,7 +28,6 @@ function StateHelper:LoadJournal(pid, stateObject)
 end
 
 function StateHelper:LoadFactionRanks(pid, stateObject)
-
     if stateObject.data.factionRanks == nil then
         stateObject.data.factionRanks = {}
     end
@@ -40,7 +36,6 @@ function StateHelper:LoadFactionRanks(pid, stateObject)
     tes3mp.SetFactionChangesAction(pid, enumerations.faction.RANK)
 
     for factionId, rank in pairs(stateObject.data.factionRanks) do
-
         tes3mp.SetFactionId(factionId)
         tes3mp.SetFactionRank(rank)
         tes3mp.AddFaction(pid)
@@ -50,7 +45,6 @@ function StateHelper:LoadFactionRanks(pid, stateObject)
 end
 
 function StateHelper:LoadFactionExpulsion(pid, stateObject)
-
     if stateObject.data.factionExpulsion == nil then
         stateObject.data.factionExpulsion = {}
     end
@@ -59,7 +53,6 @@ function StateHelper:LoadFactionExpulsion(pid, stateObject)
     tes3mp.SetFactionChangesAction(pid, enumerations.faction.EXPULSION)
 
     for factionId, state in pairs(stateObject.data.factionExpulsion) do
-
         tes3mp.SetFactionId(factionId)
         tes3mp.SetFactionExpulsionState(state)
         tes3mp.AddFaction(pid)
@@ -69,7 +62,6 @@ function StateHelper:LoadFactionExpulsion(pid, stateObject)
 end
 
 function StateHelper:LoadFactionReputation(pid, stateObject)
-
     if stateObject.data.factionReputation == nil then
         stateObject.data.factionReputation = {}
     end
@@ -78,7 +70,6 @@ function StateHelper:LoadFactionReputation(pid, stateObject)
     tes3mp.SetFactionChangesAction(pid, enumerations.faction.REPUTATION)
 
     for factionId, reputation in pairs(stateObject.data.factionReputation) do
-
         tes3mp.SetFactionId(factionId)
         tes3mp.SetFactionReputation(reputation)
         tes3mp.AddFaction(pid)
@@ -88,7 +79,6 @@ function StateHelper:LoadFactionReputation(pid, stateObject)
 end
 
 function StateHelper:LoadTopics(pid, stateObject)
-
     if stateObject.data.topics == nil then
         stateObject.data.topics = {}
     end
@@ -96,7 +86,6 @@ function StateHelper:LoadTopics(pid, stateObject)
     tes3mp.ClearTopicChanges(pid)
 
     for index, topicId in pairs(stateObject.data.topics) do
-
         tes3mp.AddTopic(pid, topicId)
     end
 
@@ -104,7 +93,6 @@ function StateHelper:LoadTopics(pid, stateObject)
 end
 
 function StateHelper:LoadBounty(pid, stateObject)
-
     if stateObject.data.fame == nil then
         stateObject.data.fame = { bounty = 0, reputation = 0 }
     elseif stateObject.data.fame.bounty == nil then
@@ -122,7 +110,6 @@ function StateHelper:LoadBounty(pid, stateObject)
 end
 
 function StateHelper:LoadReputation(pid, stateObject)
-
     if stateObject.data.fame == nil then
         stateObject.data.fame = { bounty = 0, reputation = 0 }
     elseif stateObject.data.fame.reputation == nil then
@@ -134,7 +121,6 @@ function StateHelper:LoadReputation(pid, stateObject)
 end
 
 function StateHelper:LoadClientScriptVariables(pid, stateObject)
-
     if stateObject.data.clientVariables == nil then
         stateObject.data.clientVariables = {}
     end
@@ -148,9 +134,7 @@ function StateHelper:LoadClientScriptVariables(pid, stateObject)
     tes3mp.ClearClientGlobals()
 
     for variableId, variableTable in pairs(stateObject.data.clientVariables.globals) do
-
         if type(variableTable) == "table" then
-
             if variableTable.variableType == enumerations.variableType.SHORT then
                 tes3mp.AddClientGlobalInteger(variableId, variableTable.intValue, enumerations.variableType.SHORT)
             elseif variableTable.variableType == enumerations.variableType.LONG then
@@ -169,7 +153,6 @@ function StateHelper:LoadClientScriptVariables(pid, stateObject)
 end
 
 function StateHelper:LoadDestinationOverrides(pid, stateObject)
-
     if stateObject.data.destinationOverrides == nil then
         stateObject.data.destinationOverrides = {}
     end
@@ -179,7 +162,6 @@ function StateHelper:LoadDestinationOverrides(pid, stateObject)
     tes3mp.ClearDestinationOverrides()
 
     for oldCellDescription, newCellDescription in pairs(stateObject.data.destinationOverrides) do
-
         tes3mp.AddDestinationOverride(oldCellDescription, newCellDescription)
         destinationCount = destinationCount + 1
     end
@@ -190,7 +172,6 @@ function StateHelper:LoadDestinationOverrides(pid, stateObject)
 end
 
 function StateHelper:LoadMap(pid, stateObject)
-
     if stateObject.data.mapExplored == nil then
         stateObject.data.mapExplored = {}
     end
@@ -199,11 +180,9 @@ function StateHelper:LoadMap(pid, stateObject)
     tes3mp.ClearMapChanges()
 
     for index, cellDescription in pairs(stateObject.data.mapExplored) do
-
         local filePath = config.dataPath .. "/map/" .. cellDescription .. ".png"
 
         if tes3mp.DoesFilePathExist(filePath) then
-
             local cellX, cellY
             _, _, cellX, cellY = string.find(cellDescription, patterns.exteriorCell)
             cellX = tonumber(cellX)
@@ -222,7 +201,6 @@ function StateHelper:LoadMap(pid, stateObject)
 end
 
 function StateHelper:SaveJournal(stateObject, playerPacket)
-
     if stateObject.data.journal == nil then
         stateObject.data.journal = {}
     end
@@ -232,7 +210,6 @@ function StateHelper:SaveJournal(stateObject, playerPacket)
     end
 
     for _, journalItem in ipairs(playerPacket.journal) do
-
         table.insert(stateObject.data.journal, journalItem)
 
         if journalItem.quest == "a1_1_findspymaster" and journalItem.index >= 14 then
@@ -244,13 +221,11 @@ function StateHelper:SaveJournal(stateObject, playerPacket)
 end
 
 function StateHelper:SaveFactionRanks(pid, stateObject)
-
     if stateObject.data.factionRanks == nil then
         stateObject.data.factionRanks = {}
     end
 
     for i = 0, tes3mp.GetFactionChangesSize(pid) - 1 do
-
         local factionId = tes3mp.GetFactionId(pid, i)
         stateObject.data.factionRanks[factionId] = tes3mp.GetFactionRank(pid, i)
     end
@@ -259,13 +234,11 @@ function StateHelper:SaveFactionRanks(pid, stateObject)
 end
 
 function StateHelper:SaveFactionExpulsion(pid, stateObject)
-
     if stateObject.data.factionExpulsion == nil then
         stateObject.data.factionExpulsion = {}
     end
 
     for i = 0, tes3mp.GetFactionChangesSize(pid) - 1 do
-
         local factionId = tes3mp.GetFactionId(pid, i)
         stateObject.data.factionExpulsion[factionId] = tes3mp.GetFactionExpulsionState(pid, i)
     end
@@ -274,13 +247,11 @@ function StateHelper:SaveFactionExpulsion(pid, stateObject)
 end
 
 function StateHelper:SaveFactionReputation(pid, stateObject)
-
     if stateObject.data.factionReputation == nil then
         stateObject.data.factionReputation = {}
     end
 
     for i = 0, tes3mp.GetFactionChangesSize(pid) - 1 do
-
         local factionId = tes3mp.GetFactionId(pid, i)
         stateObject.data.factionReputation[factionId] = tes3mp.GetFactionReputation(pid, i)
     end
@@ -289,13 +260,11 @@ function StateHelper:SaveFactionReputation(pid, stateObject)
 end
 
 function StateHelper:SaveTopics(pid, stateObject)
-
     if stateObject.data.topics == nil then
         stateObject.data.topics = {}
     end
 
     for i = 0, tes3mp.GetTopicChangesSize(pid) - 1 do
-
         local topicId = tes3mp.GetTopicId(pid, i)
 
         if not tableHelper.containsValue(stateObject.data.topics, topicId) then
@@ -307,7 +276,6 @@ function StateHelper:SaveTopics(pid, stateObject)
 end
 
 function StateHelper:SaveBounty(pid, stateObject)
-
     if stateObject.data.fame == nil then
         stateObject.data.fame = {}
     end
@@ -318,7 +286,6 @@ function StateHelper:SaveBounty(pid, stateObject)
 end
 
 function StateHelper:SaveReputation(pid, stateObject)
-
     if stateObject.data.fame == nil then
         stateObject.data.fame = {}
     end
@@ -329,7 +296,6 @@ function StateHelper:SaveReputation(pid, stateObject)
 end
 
 function StateHelper:SaveClientScriptGlobal(stateObject, variables)
-
     if stateObject.data.clientVariables == nil then
         stateObject.data.clientVariables = {}
     end
@@ -338,7 +304,7 @@ function StateHelper:SaveClientScriptGlobal(stateObject, variables)
         stateObject.data.clientVariables.globals = {}
     end
 
-    for id, variable in pairs (variables) do
+    for id, variable in pairs(variables) do
         stateObject.data.clientVariables.globals[id] = variable
     end
 
@@ -346,7 +312,6 @@ function StateHelper:SaveClientScriptGlobal(stateObject, variables)
 end
 
 function StateHelper:SaveMapExploration(pid, stateObject)
-
     local cell = tes3mp.GetCell(pid)
 
     if tes3mp.IsInExterior(pid) == true then
