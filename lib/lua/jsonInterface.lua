@@ -200,7 +200,7 @@ function jsonInterface.writeToFile(fileName, content)
 
     local filePath = string.format("%s/%s", config.dataPath, fileName)
 
-    local dir = filePath:match("(.*[/\\])")
+    local dir = fileName:match("(.*[/\\])")
     if dir and not jsonInterface.isDir(dir) then
         print(('Checking if %s needs to be created . . .'):format(dir))
         -- if jsonInterface.fileExists(dir) then
@@ -209,7 +209,7 @@ function jsonInterface.writeToFile(fileName, content)
         -- print(tostring(jsonInterface.mkdir(dir)))
 
         print(os.execute('pwd'))
-        local currentPath = '' -- Is this portable?
+        local currentPath = LocalDataPath .. '/' -- Is this portable?
         print('original current path: ' .. currentPath)
         for segment in dir:gmatch("[^/\\]+") do
             print('WTF IS THE SEGMENT?????? ' .. segment)
