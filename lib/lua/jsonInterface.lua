@@ -192,7 +192,7 @@ function jsonInterface.writeToFile(fileName, content)
 
     local dir = filePath:match("(.*[/\\])")
     if dir and not jsonInterface.isDir(dir) then
-        print('Checking if %s needs to be created . . .')
+        print(('Checking if %s needs to be created . . .'):format(dir))
         if jsonInterface.fileExists(dir) then
             error('Cannot create the directory ' .. dir .. ' since it\'s already a file!')
         end
