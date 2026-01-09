@@ -170,7 +170,7 @@ else
         end
 
         local result = os.execute(('test -d %s'):format(path)) == F_OK
-        print('isDir result for ' .. path .. ' is: ' .. tostring(result))
+        print('isDir result for ' .. path .. ' is: ' .. tostring(result) .. ' result type: ' .. type(result))
         return result
     end
 
