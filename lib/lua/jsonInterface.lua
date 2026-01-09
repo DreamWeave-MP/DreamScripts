@@ -182,7 +182,9 @@ else
             return true
         end
 
-        return ffi.C.mkdir(path, DEFAULT_PERMS) == F_OK
+        local result = ffi.C.mkdir(path, DEFAULT_PERMS)
+        print('mkdir result was: ' .. tostring(result))
+        return result == 0
     end
 end
 
