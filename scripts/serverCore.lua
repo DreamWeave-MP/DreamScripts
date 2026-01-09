@@ -5,7 +5,7 @@ class = require("classy")
 jsonInterface = require("jsonInterface")
 
 ---@type DUtilModule
-local dUtil = require 'dUtil'
+local dUtil = require 'dUtil.init'
 
 -- Lua's default io library for input/output can't open Unicode filenames on Windows,
 -- which is why on Windows it's replaced by TES3MP's io2 (https://github.com/TES3MP/Lua-io2)
