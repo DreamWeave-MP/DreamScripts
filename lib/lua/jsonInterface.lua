@@ -205,6 +205,7 @@ function jsonInterface.writeToFile(fileName, content)
             if segment == '.' or segment == '..' then goto CONTINUE end
 
             currentPath = string.format("%s%s/", currentPath, segment)
+            print('checking current path ' .. currentPath)
 
             if jsonInterface.fileExists(currentPath) then
                 tes3mp.LogMessage(enumerations.log.ERROR,
