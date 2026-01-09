@@ -44,7 +44,6 @@ updateTimerId = nil
 banList = {}
 
 if (config.databaseType ~= nil and config.databaseType ~= "json") and doesModuleExist("luasql." .. config.databaseType) then
-
     Database = require("database")
     Database:LoadDriver(config.databaseType)
 
@@ -109,7 +108,6 @@ function LoadBanList()
             local targetPlayer = logicHandler.GetPlayerByName(targetName)
 
             if targetPlayer ~= nil then
-
                 for index, ipAddress in pairs(targetPlayer.data.ipAddresses) do
                     tes3mp.BanAddress(ipAddress)
                 end
@@ -128,20 +126,15 @@ do
     local previousHourFloor = nil
 
     function UpdateTime()
-
         if config.passTimeWhenEmpty or tableHelper.getCount(Players) > 0 then
-
             hourCounter = hourCounter + (0.0083 * WorldInstance.frametimeMultiplier)
 
             local hourFloor = math.floor(hourCounter)
 
             if previousHourFloor == nil then
                 previousHourFloor = hourFloor
-
             elseif hourFloor > previousHourFloor then
-
                 if hourFloor >= 24 then
-
                     hourCounter = hourCounter - hourFloor
                     hourFloor = 0
 
@@ -167,7 +160,6 @@ do
 end
 
 function OnServerInit()
-
     tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnServerInit\"")
 
     local expectedVersionPrefix = "0.8.1"
@@ -179,7 +171,7 @@ function OnServerInit()
             expectedVersionPrefix)
         tes3mp.StopServer(1)
     end
-    
+
     local eventStatus = customEventHooks.triggerValidators("OnServerInit", {})
 
     if eventStatus.validDefaultHandler then
@@ -212,7 +204,6 @@ function OnServerPostInit()
     tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnServerPostInit\"")
     local eventStatus = customEventHooks.triggerValidators("OnServerPostInit", {})
     if eventStatus.validDefaultHandler then
-
         clientVariableScopes = require("clientVariableScopes")
         speechCollections = require("speechCollections")
 
@@ -283,12 +274,12 @@ end
 function OnServerExit(errorState)
     tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnServerExit\"")
     tes3mp.LogMessage(enumerations.log.ERROR, "Error state: " .. tostring(errorState))
-    customEventHooks.triggerHandlers("OnServerExit", customEventHooks.makeEventStatus(true, true) , {errorState})
+    customEventHooks.triggerHandlers("OnServerExit", customEventHooks.makeEventStatus(true, true), { errorState })
 end
 
 function OnServerScriptCrash(errorMessage)
     tes3mp.LogMessage(enumerations.log.ERROR, "Server crash from script error!")
-    customEventHooks.triggerHandlers("OnServerExit", customEventHooks.makeEventStatus(true, true), {errorMessage})
+    customEventHooks.triggerHandlers("OnServerExit", customEventHooks.makeEventStatus(true, true), { errorMessage })
 end
 
 function LoadDataFileList(filename)
@@ -306,7 +297,6 @@ function LoadDataFileList(filename)
 
         for listIndex, pluginEntry in ipairs(jsonDataFileList) do
             for entryIndex, checksumStringArray in pairs(pluginEntry) do
-
                 dataFileList[listIndex] = {}
                 dataFileList[listIndex].name = entryIndex
 
@@ -314,7 +304,6 @@ function LoadDataFileList(filename)
                 local debugMessage = ("- %d: \"%s\": ["):format(listIndex, entryIndex)
 
                 for _, checksumString in ipairs(checksumStringArray) do
-
                     debugMessage = debugMessage .. ("%X, "):format(tonumber(checksumString, 16))
                     table.insert(checksums, tonumber(checksumString, 16))
                 end
@@ -331,7 +320,6 @@ function LoadDataFileList(filename)
 end
 
 function OnRequestDataFileList()
-
     local dataFileList = LoadDataFileList("requiredDataFiles.json")
 
     for _, entry in ipairs(dataFileList) do
@@ -355,7 +343,6 @@ function OnRequestPluginList()
 end
 
 function OnPlayerConnect(pid)
-
     tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnPlayerConnect\" for pid " .. pid)
 
     local playerName = tes3mp.GetName(pid)
@@ -379,14 +366,13 @@ function OnPlayerConnect(pid)
 end
 
 function OnPlayerDisconnect(pid)
-
     tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnPlayerDisconnect\" for " .. logicHandler.GetChatName(pid))
 
     eventHandler.OnPlayerDisconnect(pid)
 end
 
 function OnPlayerResurrect(pid)
-    customEventHooks.triggerHandlers("OnPlayerResurrect", customEventHooks.makeEventStatus(true, true), {pid})
+    customEventHooks.triggerHandlers("OnPlayerResurrect", customEventHooks.makeEventStatus(true, true), { pid })
 end
 
 function OnPlayerSendMessage(pid, message)
