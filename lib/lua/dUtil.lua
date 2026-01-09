@@ -4,9 +4,12 @@ local ffi = require 'ffi'
 ---@field x number
 ---@field y number
 ---@field z number
+---@field normalize fun(): Vector3 returns the magnitude of the vector from 0.0-1.0
+---@field is fun(v: any): boolean returns whether or not the input is also a vector3
+---@field add_mut fun(v: Vector3) adds one vector onto this one mutably
 
 ---@class Vector3Module
----@field new ffi.ctype*(x: number?, y: number?, z: number?): Vector3
+---@field new fun(x: number?, y: number?, z: number?): Vector3
 
 ---@class DUtilModule
 ---@field vector3 Vector3Module
@@ -77,11 +80,13 @@ end
 
 Vec3MT.__index = Vec3Methods
 
----@type ffi.ctype*(x?: number, y?: number, z?: number)
+---@type ffi.ctype*(x?: number, y?: number, z?: number): Vector3
 local vector3 = ffi.metatype("vector3", Vec3MT)
 
 Module.vector3 = {
-  new = vector3,
+  new = function(...)
+    return vector3(...)
+  end,
 }
 
 return Module

@@ -4,6 +4,7 @@ tableHelper = require("tableHelper")
 class = require("classy")
 jsonInterface = require("jsonInterface")
 
+---@type DUtilModule
 local dUtil = require 'dUtil'
 
 -- Lua's default io library for input/output can't open Unicode filenames on Windows,
