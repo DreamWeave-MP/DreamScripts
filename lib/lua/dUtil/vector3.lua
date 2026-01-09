@@ -25,17 +25,18 @@ Vec3MT.__sub = function(a, b)
 end
 
 Vec3MT.__mul = function(a, scalar)
-  if type(scalar) == 'number' then
+  local isNumber, isVector = type(scalar) == 'number', a.is(scalar)
+
+  if isNumber or isVector then
     ---@type Vector3
     local result = ffi.new('vector3')
 
-    result.x, result.y, result.z = a.x * scalar, a.y * scalar, a.z * scalar
-    return result
-  elseif a.is(scalar) then
-    ---@type Vector3
-    local result = ffi.new('vector3')
+    if isNumber then
+      result.x, result.y, result.z = a.x * scalar, a.y * scalar, a.z * scalar
+    elseif isVector then
+      result.x, result.y, result.z = a.x * scalar.x, a.y * scalar.y, a.z * scalar.z
+    end
 
-    result.x, result.y, result.z = a.x * scalar.x, a.y * scalar.y, a.z * scalar.z
     return result
   end
 
@@ -43,17 +44,18 @@ Vec3MT.__mul = function(a, scalar)
 end
 
 Vec3MT.__div = function(a, scalar)
-  if type(scalar) == 'number' then
+  local isNumber, isVector = type(scalar) == 'number', a.is(scalar)
+
+  if isNumber or isVector then
     ---@type Vector3
     local result = ffi.new('vector3')
 
-    result.x, result.y, result.z = a.x / scalar, a.y / scalar, a.z / scalar
-    return result
-  elseif a.is(scalar) then
-    ---@type Vector3
-    local result = ffi.new('vector3')
+    if isNumber then
+      result.x, result.y, result.z = a.x / scalar, a.y / scalar, a.z / scalar
+    elseif isVector then
+      result.x, result.y, result.z = a.x / scalar.x, a.y / scalar.y, a.z / scalar.z
+    end
 
-    result.x, result.y, result.z = a.x / scalar.x, a.y / scalar.y, a.z / scalar.z
     return result
   end
 
