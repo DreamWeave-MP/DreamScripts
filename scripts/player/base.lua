@@ -178,7 +178,6 @@ function BasePlayer:Register(clientPasswordHash)
 end
 
 function BasePlayer:FinishLogin()
-
     if self.hasAccount then
         self:SaveIpAddress()
 
@@ -284,11 +283,11 @@ function BasePlayer:FinishLogin()
             self:LoadReputation()
         end
 
-		if config.shareKills == true then
-			WorldInstance:LoadKills(self.pid)
-		else
-			self:LoadKills(self.pid, false)
-		end	
+        if config.shareKills == true then
+            WorldInstance:LoadKills(self.pid)
+        else
+            self:LoadKills(self.pid, false)
+        end
 
         self:LoadSpecialStates()
 
@@ -298,7 +297,7 @@ function BasePlayer:FinishLogin()
             self:LoadMap()
         end
 
-        self:LoadClientScriptVariables()        
+        self:LoadClientScriptVariables()
         WorldInstance:LoadClientScriptVariables(self.pid)
 
         self:LoadDestinationOverrides()
@@ -319,9 +318,11 @@ function BasePlayer:FinishLogin()
         end
 
         self:RunPlayerSpecificStartupScripts()
-        
-        customEventHooks.triggerHandlers("OnPlayerFinishLogin", customEventHooks.makeEventStatus(true, true), {self.pid})
-        customEventHooks.triggerHandlers("OnPlayerAuthentified", customEventHooks.makeEventStatus(true, true), {self.pid})
+
+        customEventHooks.triggerHandlers("OnPlayerFinishLogin", customEventHooks.makeEventStatus(true, true),
+            { self.pid })
+        customEventHooks.triggerHandlers("OnPlayerAuthentified", customEventHooks.makeEventStatus(true, true), { self
+            .pid })
     end
 end
 
@@ -380,11 +381,11 @@ function BasePlayer:EndCharGen()
         WorldInstance:LoadTopics(self.pid)
     end
 
-	if config.shareKills == true then
-		WorldInstance:LoadKills(self.pid)
-	else
-		self:LoadKills(self.pid, false)
-	end	
+    if config.shareKills == true then
+        WorldInstance:LoadKills(self.pid)
+    else
+        self:LoadKills(self.pid, false)
+    end
 
     if spawnUsed ~= nil and spawnUsed.cellDescription ~= nil then
         tes3mp.SetCell(self.pid, spawnUsed.cellDescription)
@@ -433,13 +434,11 @@ function BasePlayer:IsModerator()
 end
 
 function BasePlayer:AddLinkToRecord(storeType, recordId)
-
     if self.data.recordLinks == nil then self.data.recordLinks = {} end
 
     local recordStore = RecordStores[storeType]
 
     if recordStore ~= nil then
-
         local recordLinks = self.data.recordLinks
 
         if recordLinks[storeType] == nil then recordLinks[storeType] = {} end
@@ -454,15 +453,12 @@ function BasePlayer:AddLinkToRecord(storeType, recordId)
 end
 
 function BasePlayer:RemoveLinkToRecord(storeType, recordId)
-
     local recordStore = RecordStores[storeType]
 
     if recordStore ~= nil then
-
         local recordLinks = self.data.recordLinks
 
         if recordLinks ~= nil and recordLinks[storeType] ~= nil then
-
             local linkIndex = tableHelper.getIndexByValue(recordLinks[storeType], recordId)
 
             if linkIndex ~= nil then
@@ -533,7 +529,6 @@ function BasePlayer:SaveIpAddress()
 end
 
 function BasePlayer:ProcessDeath()
-
     -- Clear this player's active spell effects
     self.data.spellsActive = {}
 
@@ -567,7 +562,6 @@ function BasePlayer:ProcessDeath()
 end
 
 function BasePlayer:Resurrect()
-
     local currentResurrectType = enumerations.resurrect.REGULAR
 
     if config.respawnAtImperialShrine == true then
@@ -580,10 +574,8 @@ function BasePlayer:Resurrect()
         else
             currentResurrectType = enumerations.resurrect.IMPERIAL_SHRINE
         end
-
     elseif config.respawnAtTribunalTemple == true then
         currentResurrectType = enumerations.resurrect.TRIBUNAL_TEMPLE
-
     elseif config.defaultRespawn ~= nil and config.defaultRespawn.cellDescription ~= nil then
         currentResurrectType = enumerations.resurrect.REGULAR
 
@@ -639,7 +631,7 @@ function BasePlayer:Resurrect()
             end
 
             jailTime = jailTime + config.deathPenaltyJailDays
-            resurrectionText = resurrectionText .. "your time spent incapacitated"    
+            resurrectionText = resurrectionText .. "your time spent incapacitated"
         end
 
         resurrectionText = resurrectionText .. ".\n"
@@ -656,7 +648,6 @@ function BasePlayer:Resurrect()
 end
 
 function BasePlayer:DeleteSummons()
-
     if self.summons ~= nil then
         for summonUniqueIndex, summonRefId in pairs(self.summons) do
             tes3mp.LogAppend(enumerations.log.INFO, "- removing player's summon " .. summonUniqueIndex ..
@@ -750,7 +741,6 @@ function BasePlayer:LoadClass()
 end
 
 function BasePlayer:SaveClass(playerPacket)
-
     self.data.character.class = playerPacket.character.class
 
     if playerPacket.character.defaultClassState == 0 then
@@ -761,7 +751,6 @@ function BasePlayer:SaveClass(playerPacket)
 end
 
 function BasePlayer:LoadStatsDynamic()
-
     local healthBase
 
     if tes3mp.IsWerewolf(self.pid) then
@@ -781,13 +770,11 @@ function BasePlayer:LoadStatsDynamic()
 end
 
 function BasePlayer:SaveStatsDynamic(playerPacket)
-
     local healthBase = playerPacket.stats.healthBase
 
     -- Sometimes, the player's base health gets set to 1 serverside;
     -- use this temporary fix until we figure out why
     if healthBase > 1 then
-
         if tes3mp.IsWerewolf(self.pid) then
             self.data.shapeshift.werewolfHealthBase = healthBase
         else
@@ -803,7 +790,6 @@ function BasePlayer:SaveStatsDynamic(playerPacket)
 end
 
 function BasePlayer:LoadAttributes()
-
     for attributeName, value in pairs(self.data.attributes) do
         local attributeId = tes3mp.GetAttributeId(attributeName)
 
@@ -812,7 +798,7 @@ function BasePlayer:LoadAttributes()
             tes3mp.SetAttributeDamage(self.pid, attributeId, value.damage)
             tes3mp.SetSkillIncrease(self.pid, attributeId, value.skillIncrease)
 
-        -- Maintain backwards compatibility with the old way of storing skills
+            -- Maintain backwards compatibility with the old way of storing skills
         elseif type(value) == "number" then
             tes3mp.SetAttributeBase(self.pid, attributeId, value)
         end
@@ -822,9 +808,7 @@ function BasePlayer:LoadAttributes()
 end
 
 function BasePlayer:SaveAttributes(playerPacket)
-
     for attributeName in pairs(self.data.attributes) do
-
         local attributeId = tes3mp.GetAttributeId(attributeName)
         local attribute = playerPacket.attributes[attributeName]
         local maxAttributeValue = config.maxAttributeValue
@@ -857,9 +841,7 @@ function BasePlayer:SaveAttributes(playerPacket)
 end
 
 function BasePlayer:LoadSkills()
-
     for skillName, value in pairs(self.data.skills) do
-
         local skillId = tes3mp.GetSkillId(skillName)
 
         if type(value) == "table" then
@@ -867,7 +849,7 @@ function BasePlayer:LoadSkills()
             tes3mp.SetSkillDamage(self.pid, skillId, value.damage)
             tes3mp.SetSkillProgress(self.pid, skillId, value.progress)
 
-        -- Maintain backwards compatibility with the old way of storing skills
+            -- Maintain backwards compatibility with the old way of storing skills
         elseif type(value) == "number" then
             tes3mp.SetSkillBase(self.pid, skillId, value)
         end
@@ -877,9 +859,7 @@ function BasePlayer:LoadSkills()
 end
 
 function BasePlayer:SaveSkills(playerPacket)
-
     for skillName in pairs(self.data.skills) do
-
         local skillId = tes3mp.GetSkillId(skillName)
         local skill = playerPacket.skills[skillName]
         local maxSkillValue = config.maxSkillValue
@@ -912,7 +892,6 @@ function BasePlayer:SaveSkills(playerPacket)
 end
 
 function BasePlayer:LoadLevel()
-
     if self.data.stats.level == nil then self.data.stats.level = 1 end
     if self.data.stats.levelProgress == nil then self.data.stats.levelProgress = 0 end
 
@@ -927,7 +906,6 @@ function BasePlayer:SaveLevel(playerPacket)
 end
 
 function BasePlayer:LoadShapeshift()
-
     if self.data.shapeshift == nil then self.data.shapeshift = {} end
     if self.data.shapeshift.scale == nil then self.data.shapeshift.scale = 1 end
     if self.data.shapeshift.isWerewolf == nil then self.data.shapeshift.isWerewolf = false end
@@ -942,7 +920,6 @@ function BasePlayer:LoadShapeshift()
 end
 
 function BasePlayer:SaveShapeshift(playerPacket)
-
     if self.data.shapeshift == nil then self.data.shapeshift = {} end
 
     local newScale = playerPacket.shapeshift.scale
@@ -957,12 +934,10 @@ function BasePlayer:SaveShapeshift(playerPacket)
 end
 
 function BasePlayer:LoadCell()
-
     if self.data.location ~= nil then
         local newCell = self.data.location.cell
 
         if newCell ~= nil then
-
             tes3mp.SetCell(self.pid, newCell)
 
             local pos = { self.data.location.posX, self.data.location.posY, self.data.location.posZ }
@@ -989,7 +964,6 @@ function BasePlayer:LoadCell()
 end
 
 function BasePlayer:SaveCell(playerPacket)
-
     if self.data.location == nil then self.data.location = {} end
 
     -- Keep this around to update old player files
@@ -1006,9 +980,7 @@ function BasePlayer:SaveCell(playerPacket)
 end
 
 function BasePlayer:LoadEquipment()
-
     for index = 0, tes3mp.GetEquipmentSize() - 1 do
-
         local currentItem = self.data.equipment[index]
 
         if currentItem ~= nil then
@@ -1031,7 +1003,6 @@ function BasePlayer:LoadEquipment()
 end
 
 function BasePlayer:SaveEquipment(playerPacket)
-
     local reloadAtEnd = false
 
     for slot, equipmentItem in pairs(playerPacket.equipment) do
@@ -1081,11 +1052,8 @@ end
 -- records no longer exist
 -- Note: The check for existing records can only handle generated records for now
 function BasePlayer:CleanInventory()
-
     for index, currentItem in pairs(self.data.inventory) do
-
         if logicHandler.IsGeneratedRecord(currentItem.refId) then
-
             local recordStore = logicHandler.GetRecordStoreByRecordId(currentItem.refId)
 
             if recordStore == nil or recordStore.data.generatedRecords[currentItem.refId] == nil then
@@ -1105,12 +1073,10 @@ end
 -- Note: This just sends a packet, so the same item changes should be applied to
 --       self.data.inventory separately
 function BasePlayer:LoadItemChanges(itemArray, inventoryAction)
-
     tes3mp.ClearInventoryChanges(self.pid)
     tes3mp.SetInventoryChangesAction(self.pid, inventoryAction)
 
     for index, currentItem in pairs(itemArray) do
-
         if currentItem.count > 0 then
             packetBuilder.AddPlayerInventoryItemChange(self.pid, currentItem)
         end
@@ -1120,18 +1086,18 @@ function BasePlayer:LoadItemChanges(itemArray, inventoryAction)
 end
 
 function BasePlayer:LoadInventory()
-
     if self.data.inventory == nil then self.data.inventory = {} end
 
     tes3mp.ClearInventoryChanges(self.pid)
     tes3mp.SetInventoryChangesAction(self.pid, enumerations.inventory.SET)
 
     for index, currentItem in pairs(self.data.inventory) do
-
         if currentItem.count ~= nil and currentItem.count > 0 then
             packetBuilder.AddPlayerInventoryItemChange(self.pid, currentItem)
         else
-            tes3mp.LogMessage(enumerations.log.INFO, "Caught nil or empty item in inventory for player " .. self.name .. " with item " .. tostring(currentItem) .. ", purging from data store.")
+            tes3mp.LogMessage(enumerations.log.INFO,
+                "Caught nil or empty item in inventory for player " ..
+                self.name .. " with item " .. tostring(currentItem) .. ", purging from data store.")
             self.data.inventory[index] = nil
         end
     end
@@ -1140,7 +1106,6 @@ function BasePlayer:LoadInventory()
 end
 
 function BasePlayer:SaveInventory(playerPacket)
-
     local action = playerPacket.action
 
     tes3mp.LogMessage(enumerations.log.INFO, "Saving " .. tableHelper.getCount(playerPacket.inventory) ..
@@ -1150,33 +1115,27 @@ function BasePlayer:SaveInventory(playerPacket)
 
     for itemIndex, item in pairs(playerPacket.inventory) do
         if item.refId ~= "" then
-
             tes3mp.LogAppend(enumerations.log.INFO, "- id: " .. item.refId .. ", count: " .. item.count ..
                 ", charge: " .. item.charge .. ", enchantmentCharge: " .. item.enchantmentCharge ..
                 ", soul: " .. item.soul)
 
             if action == enumerations.inventory.SET or action == enumerations.inventory.ADD then
-
                 inventoryHelper.addItem(self.data.inventory, item.refId, item.count, item.charge,
                     item.enchantmentCharge, item.soul)
 
                 if logicHandler.IsGeneratedRecord(item.refId) then
-
                     local recordStore = logicHandler.GetRecordStoreByRecordId(item.refId)
 
                     if recordStore ~= nil then
                         self:AddLinkToRecord(recordStore.storeType, item.refId)
                     end
                 end
-
             elseif action == enumerations.inventory.REMOVE then
-
                 inventoryHelper.removeClosestItem(self.data.inventory, item.refId, item.count,
                     item.charge, item.enchantmentCharge, item.soul)
 
                 if not inventoryHelper.containsItem(self.data.inventory, item.refId) and
                     logicHandler.IsGeneratedRecord(item.refId) then
-
                     local recordStore = logicHandler.GetRecordStoreByRecordId(item.refId)
 
                     if recordStore ~= nil then
@@ -1194,14 +1153,11 @@ end
 -- no longer exist
 -- Note: The check for existing records can only handle generated records for now
 function BasePlayer:CleanSpellbook()
-
     local recordStore = RecordStores["spell"]
 
     for index, spellId in pairs(self.data.spellbook) do
-
         -- Make sure we skip over old spell tables from previous versions of TES3MP
         if type(spellId) ~= "table" and logicHandler.IsGeneratedRecord(spellId) then
-
             if recordStore.data.generatedRecords[spellId] == nil then
                 self.data.spellbook[index] = nil
             end
@@ -1214,14 +1170,12 @@ function BasePlayer:CleanSpellbook()
 end
 
 function BasePlayer:LoadSpellbook()
-
     if self.data.spellbook == nil then self.data.spellbook = {} end
 
     tes3mp.ClearSpellbookChanges(self.pid)
     tes3mp.SetSpellbookChangesAction(self.pid, enumerations.spellbook.SET)
 
     for index, spellId in pairs(self.data.spellbook) do
-
         -- Is this an old spell table from a previous version of TES3MP?
         -- If so, update it to the new format
         if type(spellId) == "table" then
@@ -1236,7 +1190,6 @@ function BasePlayer:LoadSpellbook()
 end
 
 function BasePlayer:SaveSpellbook(playerPacket)
-
     local action = playerPacket.action
 
     if action == enumerations.spellbook.SET then
@@ -1276,13 +1229,11 @@ function BasePlayer:SaveSpellbook(playerPacket)
 end
 
 function BasePlayer:UpdateActiveSpellTimes()
-
     for spellId, spellInstances in pairs(self.data.spellsActive) do
         for spellInstanceIndex, spellInstanceValues in pairs(spellInstances) do
             local hadRemainingEffect = false
 
             for effectIndex, effectTable in pairs(spellInstanceValues.effects) do
-
                 local timeSinceCast = os.time() - spellInstanceValues.startTime
 
                 if timeSinceCast <= 0 then
@@ -1298,7 +1249,7 @@ function BasePlayer:UpdateActiveSpellTimes()
 
             if hadRemainingEffect == false then
                 self.data.spellsActive[spellId][spellInstanceIndex] = nil
-            end        
+            end
         end
 
         if tableHelper.getCount(self.data.spellsActive[spellId]) == 0 then
@@ -1310,7 +1261,6 @@ function BasePlayer:UpdateActiveSpellTimes()
 end
 
 function BasePlayer:LoadSpellsActive()
-
     if self.data.spellsActive == nil then self.data.spellsActive = {} end
 
     if tableHelper.getCount(self.data.spellsActive) > 0 then
@@ -1322,7 +1272,6 @@ function BasePlayer:LoadSpellsActive()
 end
 
 function BasePlayer:SaveSpellsActive(playerPacket)
-
     local action = playerPacket.action
 
     if action == enumerations.spellbook.SET or self.data.spellsActive == nil then
@@ -1330,14 +1279,12 @@ function BasePlayer:SaveSpellsActive(playerPacket)
     end
 
     for spellId, spellInstances in pairs(playerPacket.spellsActive) do
-
         if action == enumerations.spellbook.SET or action == enumerations.spellbook.ADD then
             if self.data.spellsActive[spellId] == nil then
                 self.data.spellsActive[spellId] = {}
             end
 
             for _, spellInstanceValues in pairs(spellInstances) do
-
                 tes3mp.LogMessage(enumerations.log.INFO, "Adding instance of active spell " .. spellId .. " to " ..
                     logicHandler.GetChatName(self.pid))
 
@@ -1346,7 +1293,7 @@ function BasePlayer:SaveSpellsActive(playerPacket)
                 -- Get an unused spellInstanceIndex if this is a spell with stacking effects
                 if spellInstanceValues.stackingState then
                     spellInstanceIndex = tableHelper.getUnusedNumericalIndex(self.data.spellsActive[spellId])
-                -- Otherwise, replace what's under index 1
+                    -- Otherwise, replace what's under index 1
                 else
                     spellInstanceIndex = 1
                 end
@@ -1382,7 +1329,6 @@ function BasePlayer:SaveSpellsActive(playerPacket)
 end
 
 function BasePlayer:LoadCooldowns()
-
     if self.data.cooldowns == nil then self.data.cooldowns = {} end
 
     if tableHelper.getCount(self.data.cooldowns) > 0 then
@@ -1397,20 +1343,17 @@ function BasePlayer:LoadCooldowns()
 end
 
 function BasePlayer:SaveCooldowns(playerPacket)
-
     for _, cooldown in pairs(playerPacket.cooldowns) do
         table.insert(self.data.cooldowns, cooldown)
     end
 end
 
 function BasePlayer:LoadQuickKeys()
-
     if self.data.quickKeys == nil then self.data.quickKeys = {} end
 
     tes3mp.ClearQuickKeyChanges(self.pid)
 
     for slot, currentQuickKey in pairs(self.data.quickKeys) do
-
         if currentQuickKey ~= nil then
             tes3mp.AddQuickKey(self.pid, slot, currentQuickKey.keyType, currentQuickKey.itemId)
         end
@@ -1420,7 +1363,6 @@ function BasePlayer:LoadQuickKeys()
 end
 
 function BasePlayer:SaveQuickKeys(playerPacket)
-
     for slot, quickKey in pairs(playerPacket.quickKeys) do
         self.data.quickKeys[slot] = {
             keyType = quickKey.keyType,
@@ -1494,13 +1436,12 @@ function BasePlayer:SaveClientScriptGlobal(variables)
 end
 
 function BasePlayer:LoadKills(pid, forEveryone)
-    
     if self.data.kills == nil then
         self.data.kills = {}
-    end    
-    
+    end
+
     tes3mp.ClearKillChanges()
-    
+
     for refId, killCount in pairs(self.data.kills) do
         tes3mp.AddKill(refId, killCount)
     end
@@ -1517,7 +1458,6 @@ function BasePlayer:LoadMap()
 end
 
 function BasePlayer:LoadAllies()
-    
     if self.data.alliedPlayers == nil then self.data.alliedPlayers = {} end
 
     tes3mp.ClearAlliedPlayersForPlayer(self.pid)
@@ -1533,13 +1473,11 @@ function BasePlayer:LoadAllies()
 end
 
 function BasePlayer:LoadBooks()
-
     if self.data.books == nil then self.data.books = {} end
 
     tes3mp.ClearBookChanges(self.pid)
 
     for index, bookId in pairs(self.data.books) do
-
         tes3mp.AddBook(self.pid, bookId)
     end
 
@@ -1547,7 +1485,6 @@ function BasePlayer:LoadBooks()
 end
 
 function BasePlayer:AddBooks()
-
     for index = 0, tes3mp.GetBookChangesSize(self.pid) - 1 do
         local bookId = tes3mp.GetBookId(self.pid, index)
 
@@ -1561,7 +1498,6 @@ function BasePlayer:AddBooks()
 end
 
 function BasePlayer:LoadMarkLocation()
-
     if self.data.miscellaneous == nil then self.data.miscellaneous = {} end
 
     if self.data.miscellaneous.markLocation ~= nil then
@@ -1574,7 +1510,6 @@ function BasePlayer:LoadMarkLocation()
 end
 
 function BasePlayer:SaveMarkLocation()
-
     if self.data.miscellaneous == nil then self.data.miscellaneous = {} end
 
     self.data.miscellaneous.markLocation = {
@@ -1588,7 +1523,6 @@ function BasePlayer:SaveMarkLocation()
 end
 
 function BasePlayer:LoadSelectedSpell()
-
     if self.data.miscellaneous == nil then
         self.data.miscellaneous = {}
     end
@@ -1600,7 +1534,6 @@ function BasePlayer:LoadSelectedSpell()
 end
 
 function BasePlayer:SaveSelectedSpell()
-
     if self.data.miscellaneous == nil then self.data.miscellaneous = {} end
 
     self.data.miscellaneous.selectedSpell = tes3mp.GetSelectedSpellId(self.pid)
@@ -1732,11 +1665,9 @@ function BasePlayer:SetScale(scale)
 end
 
 function BasePlayer:SetConfiscationState(state)
-
     self.data.customVariables.isConfiscationTarget = state
 
     if self:IsLoggedIn() then
-
         if state == true then
             logicHandler.RunConsoleCommandOnPlayer(self.pid, "tm")
             logicHandler.RunConsoleCommandOnPlayer(self.pid, "disableplayercontrols")
@@ -1751,7 +1682,6 @@ function BasePlayer:SetConfiscationState(state)
 end
 
 function BasePlayer:LoadSettings()
-
     -- Change admin variable from old player files to the current staffRank
     if self.data.settings.staffRank == nil and self.data.settings.admin ~= nil then
         self.data.settings.staffRank = self.data.settings.admin
@@ -1782,14 +1712,12 @@ function BasePlayer:LoadSettings()
 end
 
 function BasePlayer:LoadSpecialStates()
-
     if self.data.customVariables.isConfiscationTarget ~= nil then
         self:SetConfiscationState(self.data.customVariables.isConfiscationTarget)
     end
 end
 
 function BasePlayer:AddCellLoaded(cellDescription)
-
     -- Only add new loaded cell if we don't already have it
     if not tableHelper.containsValue(self.cellsLoaded, cellDescription) then
         table.insert(self.cellsLoaded, cellDescription)
@@ -1797,7 +1725,6 @@ function BasePlayer:AddCellLoaded(cellDescription)
 end
 
 function BasePlayer:RemoveCellLoaded(cellDescription)
-
     tableHelper.removeValue(self.cellsLoaded, cellDescription)
 end
 
