@@ -184,9 +184,9 @@ else
 
         local result = ffi.C.mkdir(path, DEFAULT_PERMS)
         print('mkdir result was: ' .. result)
-        if result ~= 0 then
-            error('mkdir failed with error code: ' .. os.execute('echo $?'))
-        end
+        -- if result ~= 0 then
+        --     error('mkdir failed with error code: ' .. os.execute('echo $?'))
+        -- end
         return result == 0
     end
 end
