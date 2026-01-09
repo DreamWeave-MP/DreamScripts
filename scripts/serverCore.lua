@@ -1,3 +1,10 @@
+require 'doc.tes3mp.d'
+
+---@class TES3MPENV
+---@field tes3mp TES3MPModule
+---@field enumerations Enumerations
+_ENV = _ENV
+
 require("utils")
 require("enumerations")
 tableHelper = require("tableHelper")
