@@ -108,7 +108,7 @@ function jsonInterface.fileExists(fileName)
     if OperatingSystem == 'Windows' then
         return ffi.C.GetFileAttributesA(fileName) == WIN_FILE_NORMAL
     else
-        return os.execute(('test -f %s'):format(fileName)) or false
+        return os.execute(('test -f %s'):format(fileName)) == true
     end
 end
 
@@ -127,7 +127,7 @@ function jsonInterface.isDir(path)
     if OperatingSystem == 'Windows' then
         return ffi.C.GetFileAttributesA(path) == WIN_FILE_DIRECTORY
     else
-        return os.execute(('test -d %s'):format(path)) or false
+        return os.execute(('test -d %s'):format(path)) == true
     end
 end
 
