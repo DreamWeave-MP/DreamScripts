@@ -33,7 +33,7 @@ Vec3MT.__mul = function(a, scalar)
 
     if isNumber then
       result.x, result.y, result.z = a.x * scalar, a.y * scalar, a.z * scalar
-    elseif isVector then
+    else
       result.x, result.y, result.z = a.x * scalar.x, a.y * scalar.y, a.z * scalar.z
     end
 
@@ -52,7 +52,7 @@ Vec3MT.__div = function(a, scalar)
 
     if isNumber then
       result.x, result.y, result.z = a.x / scalar, a.y / scalar, a.z / scalar
-    elseif isVector then
+    else
       result.x, result.y, result.z = a.x / scalar.x, a.y / scalar.y, a.z / scalar.z
     end
 
