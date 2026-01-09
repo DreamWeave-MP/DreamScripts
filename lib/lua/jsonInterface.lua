@@ -77,7 +77,12 @@ function jsonInterface.load(fileName)
     end
 end
 
-if tes3mp.GetOperatingSystemType() == "Windows" then
+local OperatingSystem = tes3mp.GetOperatingSystemType()
+local UNIX_DEFAULT_PERMS = 448 -- 0755
+local WIN_FILE_DIRECTORY = 0x00000010
+local WIN_FILE_NORMAL = 0x00000080
+
+if OperatingSystem == "Windows" then
     --- This isn't the most robust thing in the world, but we mostly don't care
     --- about hidden files or anything with weird attributes, so scream test!
     ffi.cdef [[
@@ -85,109 +90,67 @@ if tes3mp.GetOperatingSystemType() == "Windows" then
     DWORD GetFileAttributesA(const char* lpFileName);
     BOOL CreateDirectoryA(const char* lpPathName, void* lpSecurityAttributes);
 ]]
-
-    local FILE_DIRECTORY = 0x00000010
-    local FILE_NORMAL = 0x00000080
-
-    --- Windows-specific test to determine if a specific file exists
-    --- Intentionally omits entries with special or weird perms, including directories
-    ---@param fileName string
-    ---@return boolean result Whether or not the provided path is a FILE that exists, without special perms
-    function jsonInterface.fileExists(fileName)
-        if type(fileName) ~= 'string' or fileName == '' then
-            error('Invalid parameter passed to jsonInterface.fileExists: ' .. tostring(fileName))
-        end
-
-        return ffi.C.GetFileAttributesA(fileName) == FILE_NORMAL
-    end
-
-    --- Checks if a given entry is a directory.
-    --- Distinct from the linux version, because `fileExists` explicitly checks if an entry IS a file,
-    --- So directories will be omitted.
-    ---@param path string
-    ---@return boolean result Whether or not the provided path is a directory that exists
-    function jsonInterface.isDir(path)
-        if type(path) ~= 'string' or path == '' then
-            error('Invalid parameter passed to jsonInterface.isDir: ' .. tostring(path))
-        end
-
-        if jsonInterface.fileExists(path) then return false end
-
-        return ffi.C.GetFileAttributesA(path) == FILE_DIRECTORY
-    end
-
-    --- Given a path to a directory, attempt to create it.
-    --- If the path already exists, return whether or not it's a directory.
-    --- If the path does not exist, attempt to create it, and return whether or not the attempt succeeded
-    ---@param path string
-    ---@return boolean result Whether or not the directory exists after the function has ran
-    function jsonInterface.mkdir(path)
-        if type(path) ~= 'string' or path == '' then
-            error('Invalid parameter passed to jsonInterface.mkdir: ' .. tostring(path))
-        end
-
-        if jsonInterface.fileExists(path) then
-            return false
-        elseif jsonInterface.isDir(path) then
-            return true
-        end
-
-        return ffi.C.CreateDirectoryA(path, nil) ~= 0
-    end
 else
     ffi.cdef [[
     int mkdir(const char *pathname, unsigned int mode);
 ]]
+end
 
-    local F_OK = 0x00000000
-    local DEFAULT_PERMS = 448 -- 0755
+--- Windows-specific test to determine if a specific file exists
+--- Intentionally omits entries with special or weird perms, including directories
+---@param fileName string
+---@return boolean result Whether or not the provided path is a FILE that exists, without special perms
+function jsonInterface.fileExists(fileName)
+    if type(fileName) ~= 'string' or fileName == '' then
+        error('Invalid parameter passed to jsonInterface.fileExists: ' .. tostring(fileName))
+    end
 
-    --- Simple linux API test to determine if a path is a file that exists
-    ---@param fileName string
-    ---@return boolean result Whether or not the provided path is a FILE entry that exists, directories included
-    function jsonInterface.fileExists(fileName)
-        -- fileName = LocalDataPath .. '/' .. fileName
-
-        if type(fileName) ~= 'string' or fileName == '' then
-            error('Invalid parameter passed to jsonInterface.fileExists: ' .. tostring(fileName))
-        end
-
+    if OperatingSystem == 'Windows' then
+        return ffi.C.GetFileAttributesA(fileName) == WIN_FILE_NORMAL
+    else
         return os.execute(('test -f %s'):format(fileName)) or false
     end
+end
 
-    --- Linux shell test to check if an entry is an existing directory
-    --- Fails if the requested entry exists and is a file
-    ---@param path string
-    ---@return boolean result Whether or not the provided path is a FILE entry that exists, directories included
-    function jsonInterface.isDir(path)
-        -- path = LocalDataPath .. '/' .. path
-
-        if type(path) ~= 'string' or path == '' then
-            error('Invalid parameter passed to jsonInterface.isDir: ' .. tostring(path))
-        end
-
-        if jsonInterface.fileExists(path) then
-            return false
-        end
-
-        return os.execute(('test -d %s'):format(path)) or false
+--- Checks if a given entry is a directory.
+--- Distinct from the linux version, because `fileExists` explicitly checks if an entry IS a file,
+--- So directories will be omitted.
+---@param path string
+---@return boolean result Whether or not the provided path is a directory that exists
+function jsonInterface.isDir(path)
+    if type(path) ~= 'string' or path == '' then
+        error('Invalid parameter passed to jsonInterface.isDir: ' .. tostring(path))
     end
 
-    --- Given a path to a directory, attempt to create it.
-    --- If the path already exists, return whether or not it's a directory.
-    --- If the path does not exist, attempt to create it, and return whether or not the attempt succeeded
-    function jsonInterface.mkdir(path)
-        if type(path) ~= 'string' or path == '' then
-            error('Invalid parameter passed to jsonInterface.mkdir: ' .. tostring(path))
-        end
+    if jsonInterface.fileExists(path) then return false end
 
-        if jsonInterface.fileExists(path) then
-            return false
-        elseif jsonInterface.isDir(path) then
-            return true
-        end
+    if OperatingSystem == 'Windows' then
+        return ffi.C.GetFileAttributesA(path) == WIN_FILE_DIRECTORY
+    else
+        return os.execute(('test -d %s'):format(path)) or false
+    end
+end
 
-        return ffi.C.mkdir(path, DEFAULT_PERMS) == 0
+--- Given a path to a directory, attempt to create it.
+--- If the path already exists, return whether or not it's a directory.
+--- If the path does not exist, attempt to create it, and return whether or not the attempt succeeded
+---@param path string
+---@return boolean result Whether or not the directory exists after the function has ran
+function jsonInterface.mkdir(path)
+    if type(path) ~= 'string' or path == '' then
+        error('Invalid parameter passed to jsonInterface.mkdir: ' .. tostring(path))
+    end
+
+    if jsonInterface.fileExists(path) then
+        return false
+    elseif jsonInterface.isDir(path) then
+        return true
+    end
+
+    if OperatingSystem == 'Windows' then
+        return ffi.C.CreateDirectoryA(path, nil) ~= 0
+    else
+        return ffi.C.mkdir(path, UNIX_DEFAULT_PERMS) == 0
     end
 end
 
