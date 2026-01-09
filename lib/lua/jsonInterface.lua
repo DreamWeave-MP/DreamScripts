@@ -210,6 +210,7 @@ function jsonInterface.writeToFile(fileName, content)
                     'Cannot create directory ' .. currentPath .. ' as it is already a file that exists!')
                 return false
             elseif not jsonInterface.isDir(currentPath) then
+                print('This directory doesn\'t exist, really? ' .. currentPath)
                 local result = jsonInterface.mkdir(currentPath)
                 if not result then
                     tes3mp.LogMessage(enumerations.log.ERROR,
