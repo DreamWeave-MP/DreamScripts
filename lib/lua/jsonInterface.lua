@@ -2,6 +2,7 @@ local dkjson = require("dkjson")
 local cjson
 local cjsonExists = doesModuleExist("cjson")
 local ffi = require 'ffi'
+local LocalDataPath = tes3mp.GetDataPath()
 
 if cjsonExists then
     cjson = require("cjson")
@@ -208,7 +209,7 @@ function jsonInterface.writeToFile(fileName, content)
         -- print(tostring(jsonInterface.mkdir(dir)))
 
         print(os.execute('pwd'))
-        local currentPath = ""
+        local currentPath = config.dataPath .. '/' -- Is this portable?
         for segment in dir:gmatch("[^/\\]+") do
             print('WTF IS THE SEGMENT?????? ' .. segment)
             if segment == '.' or segment == '..' then goto CONTINUE end
