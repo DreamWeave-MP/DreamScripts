@@ -49,7 +49,9 @@ Vec3MT.__len = function(v)
   return math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z)
 end
 
-Vec3MT.normalize = function(v)
+Vec3Methods = {}
+
+Vec3Methods.normalize = function(v)
   local len = #v
 
   ---@type Vector3
@@ -64,9 +66,11 @@ Vec3MT.normalize = function(v)
   return result
 end
 
-Vec3MT.is = function(v)
+Vec3Methods.is = function(v)
   return ffi.istype('vector3', v)
 end
+
+Vec3MT.__index = Vec3Methods
 
 ---@type ffi.ctype*(x?: number, y?: number, z?: number)
 local vector3 = ffi.metatype("vector3", Vec3MT)
