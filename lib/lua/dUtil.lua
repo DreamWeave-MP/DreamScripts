@@ -32,6 +32,14 @@ Vec3MT.__add = function(a, b)
   return result
 end
 
+Vec3MT.__sub = function(a, b)
+  ---@type Vector3
+  local result = ffi.new('vector3')
+  result.x, result.y, result.z = a.x - b.x, a.y - b.y, a.z - b.z
+
+  return result
+end
+
 Vec3MT.__mul = function(a, scalar)
   if type(scalar) == 'number' then
     ---@type Vector3
