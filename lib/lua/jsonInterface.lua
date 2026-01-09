@@ -202,7 +202,7 @@ function jsonInterface.writeToFile(fileName, content)
         local currentPath = ""
         for segment in dir:gmatch("[^/\\]+") do
             print('WTF IS THE SEGMENT?????? ' .. segment)
-            if segment == './' or segment == '../' then goto CONTINUE end
+            if segment == '.' or segment == '..' then goto CONTINUE end
 
             currentPath = string.format("%s%s/", currentPath, segment)
 
