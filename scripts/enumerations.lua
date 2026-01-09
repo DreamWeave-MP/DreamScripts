@@ -1,8 +1,10 @@
 ---@class Enumerations
 enumerations = {}
 
+---@enum AIState
 enumerations.ai = { CANCEL = 0, ACTIVATE = 1, COMBAT = 2, ESCORT = 3, FOLLOW = 4, TRAVEL = 5, WANDER = 6 }
 
+---@enum AIPrintableAction
 enumerations.aiPrintableAction = {
     CANCEL = "cancelling current AI",
     ACTIVATE = "activating",
@@ -13,10 +15,13 @@ enumerations.aiPrintableAction = {
     WANDER = "wandering"
 }
 
+---@enum ContainerAction
 enumerations.container = { SET = 0, ADD = 1, REMOVE = 2, REQUEST = 3 }
 
+---@enum ContainerSubAction
 enumerations.containerSub = { NONE = 0, DRAG = 1, DROP = 2, TAKE_ALL = 3, REPLY_TO_REQUEST = 4, RESTOCK_RESULT = 5 }
 
+---@enum DialogueChoice
 enumerations.dialogueChoice = {
     TOPIC = 0,
     PERSUASION = 1,
@@ -30,10 +35,13 @@ enumerations.dialogueChoice = {
     REPAIR = 9
 }
 
+---@enum DoorState
 enumerations.doorstate = { OPEN = 1, CLOSED = 2 }
 
+---@enum ActorStance
 enumerations.drawstate = { NONE = 0, WEAPON = 1, SPELL = 2 }
 
+---@enum MagicEffectId
 enumerations.effects = {
     WATER_BREATHING = 0,
     SWIFT_SWIM = 1,
@@ -180,6 +188,7 @@ enumerations.effects = {
     S_EFFECT_SUMMON_CREATURE05 = 142
 }
 
+---@enum EquipmentSlot
 enumerations.equipment = {
     HELMET = 0,
     CUIRASS = 1,
@@ -202,20 +211,25 @@ enumerations.equipment = {
     AMMUNITION = 18
 }
 
+---@enum FactionAction
 enumerations.faction = { RANK = 0, EXPULSION = 1, REPUTATION = 2 }
 
+---@enum InventoryActionType
 enumerations.inventory = { SET = 0, ADD = 1, REMOVE = 2 }
 
+---@enum JournalType
 enumerations.journal = { ENTRY = 0, INDEX = 1 }
 
 ---@enum LogLevel
-local LogLevel = { VERBOSE = 0, INFO = 1, WARN = 2, ERROR = 3, FATAL = 4 }
-enumerations.log = LogLevel
+enumerations.log = { VERBOSE = 0, INFO = 1, WARN = 2, ERROR = 3, FATAL = 4 }
 
+---@enum MiscEnum
 enumerations.miscellaneous = { MARK_LOCATION = 0, SELECTED_SPELL = 1 }
 
+---@enum WorldObjectCategory
 enumerations.objectCategories = { PLAYER = 0, ACTOR = 1, PLACED_OBJECT = 2 }
 
+---@enum PacketOriginType
 enumerations.packetOrigin = {
     CLIENT_GAMEPLAY = 0,
     CLIENT_CONSOLE = 1,
@@ -225,6 +239,7 @@ enumerations.packetOrigin = {
     SERVER_SCRIPT = 5
 }
 
+---@enum RecordType
 enumerations.recordType = {
     ACTIVATOR = 0,
     APPARATUS = 1,
@@ -253,12 +268,16 @@ enumerations.recordType = {
     WEAPON = 24
 }
 
+---@enum ResurrectType
 enumerations.resurrect = { REGULAR = 0, IMPERIAL_SHRINE = 1, TRIBUNAL_TEMPLE = 2 }
 
+---@enum SpellbookAction
 enumerations.spellbook = { SET = 0, ADD = 1, REMOVE = 2 }
 
+---@enum MWScriptVarType
 enumerations.variableType = { SHORT = 0, LONG = 1, FLOAT = 2, INT = 3, STRING = 4 }
 
+---@enum WeatherType
 enumerations.weather = {
     CLEAR = 0,
     CLOUDY = 1,

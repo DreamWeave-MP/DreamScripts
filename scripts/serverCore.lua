@@ -1,8 +1,5 @@
 require 'doc.tes3mpDocs'
 
----@class TES3MPModule
-tes3mp = tes3mp
-
 require("utils")
 require("enumerations")
 tableHelper = require("tableHelper")
