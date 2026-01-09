@@ -205,7 +205,8 @@ function jsonInterface.writeToFile(fileName, content)
             elseif not jsonInterface.isDir(currentPath) then
                 local result = jsonInterface.mkdir(currentPath)
                 if not result then
-                    tes3mp.LogMessage(enumerations.log.ERROR, "Failed to create directory: " .. currentPath)
+                    tes3mp.LogMessage(enumerations.log.ERROR,
+                        "Failed to create directory: " .. currentPath .. ' result: ' .. result)
                     return false
                 end
             end
