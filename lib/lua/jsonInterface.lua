@@ -198,7 +198,7 @@ function jsonInterface.writeToFile(fileName, content)
         -- end
         -- print(tostring(jsonInterface.mkdir(dir)))
 
-        print(os.execute('pwd'))
+        -- print(os.execute('pwd'))
         local currentPath = ""
         for segment in dir:gmatch("[^/\\]+") do
             currentPath = string.format("%s%s/", currentPath, segment)
@@ -210,7 +210,7 @@ function jsonInterface.writeToFile(fileName, content)
                     'Cannot create directory ' .. currentPath .. ' as it is already a file that exists!')
                 return false
             elseif not jsonInterface.isDir(currentPath) then
-                print('This directory doesn\'t exist, really? ' .. currentPath)
+                -- print('This directory doesn\'t exist, really? ' .. currentPath)
                 local result = jsonInterface.mkdir(currentPath)
                 if not result then
                     tes3mp.LogMessage(enumerations.log.ERROR,
