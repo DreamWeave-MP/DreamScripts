@@ -210,6 +210,7 @@ function jsonInterface.writeToFile(fileName, content)
 
         print(os.execute('pwd'))
         local currentPath = config.dataPath .. '/' -- Is this portable?
+        print('original current path: ' .. currentPath)
         for segment in dir:gmatch("[^/\\]+") do
             print('WTF IS THE SEGMENT?????? ' .. segment)
             if segment == '.' or segment == '..' then goto CONTINUE end
