@@ -64,6 +64,10 @@ Vec3MT.normalize = function(v)
   return result
 end
 
+Vec3MT.is = function(v)
+  return ffi.istype('vector3', v)
+end
+
 ---@type ffi.ctype*(x?: number, y?: number, z?: number)
 local vector3 = ffi.metatype("vector3", Vec3MT)
 
