@@ -17,7 +17,6 @@ end
 
 -- Iterate through a table's indexes and put them into an array table
 function tableHelper.getArrayFromIndexes(inputTable)
-
     local newTable = {}
 
     for key, _ in pairs(inputTable) do
@@ -29,7 +28,6 @@ end
 
 -- Return an array with the values that two input tables have in common
 function tableHelper.getValueOverlap(firstTable, secondTable)
-
     local newTable = {}
 
     for _, value in pairs(firstTable) do
@@ -43,7 +41,6 @@ end
 
 -- Iterate through values matching a pattern in a string and turn them into table values
 function tableHelper.getTableFromSplit(inputString, pattern)
-
     local newTable = {}
 
     for value in string.gmatch(inputString, pattern) do
@@ -61,7 +58,6 @@ end
 -- Concatenate the indexes in a table, useful for printing out all the valid
 -- indexes
 function tableHelper.concatenateTableIndexes(inputTable, delimiter)
-
     local resultString = ""
     local tableCount = tableHelper.getCount(inputTable)
     local indexesSoFar = 1
@@ -71,7 +67,6 @@ function tableHelper.concatenateTableIndexes(inputTable, delimiter)
     end
 
     for index, value in pairs(inputTable) do
-
         resultString = resultString .. index
 
         if indexesSoFar < tableCount then
@@ -87,7 +82,6 @@ end
 -- Concatenate the values in an array, useful for printing out the array's
 -- contents, with an optional delimiter between values
 function tableHelper.concatenateArrayValues(inputTable, startIndex, delimiter)
-
     local resultString = ""
 
     if startIndex == nil then
@@ -110,14 +104,12 @@ function tableHelper.concatenateArrayValues(inputTable, startIndex, delimiter)
 end
 
 function tableHelper.concatenateFromIndex(inputTable, startIndex, delimiter)
-
     return tableHelper.concatenateArrayValues(inputTable, startIndex, delimiter)
 end
 
 -- Check whether a table contains a key/value pair, optionally checking inside
 -- nested tables
 function tableHelper.containsKeyValue(inputTable, keyToFind, valueToFind, checkNestedTables)
-
     if inputTable[keyToFind] ~= nil then
         if inputTable[keyToFind] == valueToFind then
             return true
@@ -138,7 +130,6 @@ end
 -- Check whether a table contains a set of key/value pairs, optionally checking inside
 -- tables nested in the original one
 function tableHelper.containsKeyValuePairs(inputTable, keyValuePairsTable, checkNestedTables)
-
     local foundMatches = true
 
     for keyToFind, valueToFind in pairs(keyValuePairsTable) do
@@ -179,8 +170,7 @@ end
 -- Check whether a table contains a certain case insensitive string, optionally
 -- checking inside nested tables
 function tableHelper.containsCaseInsensitiveString(inputTable, stringToFind, checkNestedTables)
-
-    if type(stringToFind) ~= "string"  then return false end
+    if type(stringToFind) ~= "string" then return false end
 
     for key, value in pairs(inputTable) do
         if checkNestedTables and type(value) == "table" then
@@ -208,7 +198,7 @@ end
 
 function tableHelper.getUnusedNumericalIndex(inputTable)
     local i = 1
-    
+
     while inputTable[i] ~= nil do
         i = i + 1
     end
@@ -251,14 +241,13 @@ end
 --
 -- Based on http://stackoverflow.com/a/28302975
 function tableHelper.cleanNils(inputTable)
-
     local newTable = {}
-    
+
     for key, value in pairs(inputTable) do
         if type(value) == "table" then
             tableHelper.cleanNils(value)
         end
-        
+
         if type(key) == "number" then
             newTable[#newTable + 1] = value
             inputTable[key] = nil
@@ -271,7 +260,6 @@ end
 -- Set values to nil here instead of using table.remove(), so this method can be used on
 -- a table while iterating through it
 function tableHelper.removeValue(inputTable, valueToFind)
-
     tableHelper.replaceValue(inputTable, valueToFind, nil)
 end
 
@@ -291,7 +279,6 @@ end
 --       from the 1st table, unless both tables are arrays and combineArrays is true,
 --       in which case the non-duplicate values in the 2nd table will be added to the 1st
 function tableHelper.merge(mainTable, addedTable, combineArrays)
-
     if tableHelper.isArray(mainTable) and tableHelper.isArray(addedTable) and combineArrays then
         tableHelper.insertValues(mainTable, addedTable, true)
     else
@@ -313,7 +300,6 @@ end
 
 -- Insert all the values from the 2nd table into the 1st table
 function tableHelper.insertValues(mainTable, addedTable, skipDuplicates)
-
     for _, value in pairs(addedTable) do
         if not skipDuplicates or not tableHelper.containsValue(mainTable, value) then
             table.insert(mainTable, value)
@@ -328,7 +314,6 @@ end
 -- can be set to true to increment all of the keys by 1 in tables that
 -- start from 0
 function tableHelper.fixNumericalKeys(inputTable, fixZeroStart)
-
     local newTable = {}
     local incrementKeys = false
 
@@ -337,13 +322,11 @@ function tableHelper.fixNumericalKeys(inputTable, fixZeroStart)
     end
 
     for key, value in pairs(inputTable) do
-
         if type(value) == "table" then
             tableHelper.fixNumericalKeys(value)
         end
 
         if type(key) ~= "number" and type(tonumber(key)) == "number" then
-
             local newKey = tonumber(key)
 
             if incrementKeys then
@@ -361,7 +344,6 @@ end
 -- Check whether the table contains only numerical keys, though they
 -- don't have to be consecutive
 function tableHelper.usesNumericalKeys(inputTable)
-
     if tableHelper.getCount(inputTable) == 0 then
         return false
     end
@@ -377,7 +359,6 @@ end
 
 -- Check whether the table contains only numerical values
 function tableHelper.usesNumericalValues(inputTable)
-
     if tableHelper.getCount(inputTable) == 0 then
         return false
     end
@@ -404,7 +385,6 @@ end
 -- i.e. without any gaps between keys
 -- Based on http://stackoverflow.com/a/6080274
 function tableHelper.isArray(inputTable)
-
     local index = 0
 
     for _ in pairs(inputTable) do
@@ -418,7 +398,6 @@ end
 -- Check whether the table has the same keys and values as another table, optionally
 -- ignoring certain keys
 function tableHelper.isEqualTo(firstTable, secondTable, ignoredKeys)
-
     local hasIgnoredKeys = ignoredKeys ~= nil and not tableHelper.isEmpty(ignoredKeys)
 
     -- Is this the exact same table?
@@ -431,9 +410,7 @@ function tableHelper.isEqualTo(firstTable, secondTable, ignoredKeys)
     end
 
     for key, value in pairs(firstTable) do
-
         if not hasIgnoredKeys or not tableHelper.containsValue(ignoredKeys, key) then
-
             if secondTable[key] == nil then
                 return false
             elseif type(value) == "table" and type(secondTable[key]) == "table" then
@@ -458,7 +435,6 @@ end
 --
 -- Based on http://lua-users.org/wiki/CopyTable
 function tableHelper.shallowCopy(inputValue)
-
     local inputType = type(inputValue)
 
     local newValue
@@ -480,7 +456,6 @@ end
 --
 -- Based on http://lua-users.org/wiki/CopyTable
 function tableHelper.deepCopy(inputValue)
-
     local inputType = type(inputValue)
 
     local newValue
@@ -500,7 +475,6 @@ end
 
 -- Get a compact string with a table's contents
 function tableHelper.getSimplePrintableTable(inputTable)
-
     local text = ""
     local shouldPrintComma = false
 
@@ -525,7 +499,6 @@ end
 --
 -- Based on http://stackoverflow.com/a/13398936
 function tableHelper.getPrintableTable(inputTable, maxDepth, indentStr, indentLevel)
-
     if type(inputTable) ~= "table" then
         return type(inputTable)
     end
@@ -542,7 +515,6 @@ function tableHelper.getPrintableTable(inputTable, maxDepth, indentStr, indentLe
     end
 
     for index, value in pairs(inputTable) do
-
         if type(value) == "table" and maxDepth > 0 then
             value = "\n" .. tableHelper.getPrintableTable(value, maxDepth - 1, indentStr, indentLevel + 1)
         else
