@@ -152,11 +152,13 @@ else
             error('Invalid parameter passed to jsonInterface.fileExists: ' .. tostring(fileName))
         end
 
-        return os.execute(('test -f %s'):format(fileName)) == F_OK
+        return os.execute(('test -f %s'):format(fileName)) or false
     end
 
     --- Linux shell test to check if an entry is an existing directory
     --- Fails if the requested entry exists and is a file
+    ---@param path string
+    ---@return boolean result Whether or not the provided path is a FILE entry that exists, directories included
     function jsonInterface.isDir(path)
         -- path = LocalDataPath .. '/' .. path
 
@@ -165,14 +167,10 @@ else
         end
 
         if jsonInterface.fileExists(path) then
-            print(path .. ' is not a directory, because it is a file!')
             return false
         end
 
-        return os.execute(('test -d %s'):format(path))
-        -- local result = os.execute(('test -d %s'):format(path))
-        -- print('isDir result for ' .. path .. ' is: ' .. tostring(result) .. ' result type: ' .. type(result))
-        -- return result == F_OK
+        return os.execute(('test -d %s'):format(path)) or false
     end
 
     --- Given a path to a directory, attempt to create it.
@@ -184,18 +182,12 @@ else
         end
 
         if jsonInterface.fileExists(path) then
-            print('jsonInterface.mkdir failed because jsonInterface.fileExists passed!')
             return false
         elseif jsonInterface.isDir(path) then
             return true
         end
 
-        local result = ffi.C.mkdir(path, DEFAULT_PERMS)
-        print('mkdir result was: ' .. result)
-        -- if result ~= 0 then
-        --     error('mkdir failed with error code: ' .. os.execute('echo $?'))
-        -- end
-        return result == 0
+        return ffi.C.mkdir(path, DEFAULT_PERMS) == 0
     end
 end
 
@@ -209,28 +201,18 @@ function jsonInterface.writeToFile(fileName, content)
 
     local dir = fileName:match("(.*[/\\])")
     if dir and not jsonInterface.isDir(dir) then
-        print(('Checking if %s needs to be created . . .'):format(dir))
-        -- if jsonInterface.fileExists(dir) then
-        --     error('Cannot create the directory ' .. dir .. ' since it\'s already a file!')
-        -- end
-        -- print(tostring(jsonInterface.mkdir(dir)))
-
-        print(os.execute('pwd'))
         local currentPath = LocalDataPath .. '/' -- Is this portable?
-        print('original current path: ' .. currentPath)
+
         for segment in dir:gmatch("[^/\\]+") do
-            print('WTF IS THE SEGMENT?????? ' .. segment)
             if segment == '.' or segment == '..' then goto CONTINUE end
 
             currentPath = string.format("%s%s/", currentPath, segment)
-            print('checking current path ' .. currentPath)
 
             if jsonInterface.fileExists(currentPath) then
                 tes3mp.LogMessage(enumerations.log.ERROR,
                     'Cannot create directory ' .. currentPath .. ' as it is already a file that exists!')
                 return false
             elseif not jsonInterface.isDir(currentPath) then
-                -- print('This directory doesn\'t exist, really? ' .. currentPath)
                 local result = jsonInterface.mkdir(currentPath)
                 if not result then
                     tes3mp.LogMessage(enumerations.log.ERROR,
