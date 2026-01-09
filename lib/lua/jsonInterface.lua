@@ -196,7 +196,7 @@ function jsonInterface.writeToFile(fileName, content)
         if jsonInterface.fileExists(dir) then
             error('Cannot create the directory ' .. dir .. ' since it\'s already a file!')
         end
-        jsonInterface.mkdir(dir)
+        print(tostring(jsonInterface.mkdir(dir)))
         -- local currentPath = ""
         -- for segment in dir:gmatch("[^/\\]+") do
         --     currentPath = string.format("%s%s/", currentPath, segment)
