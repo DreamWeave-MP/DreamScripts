@@ -47,6 +47,12 @@ Vec3MT.__mul = function(a, scalar)
 
     result.x, result.y, result.z = a.x * scalar, a.y * scalar, a.z * scalar
     return result
+  elseif a.is(scalar) then
+    ---@type Vector3
+    local result = ffi.new('vector3')
+
+    result.x, result.y, result.z = a.x * scalar.x, a.y * scalar.y, a.z * scalar.z
+    return result
   end
 
   error("vector3 can only be multiplied by scalar")
@@ -58,6 +64,12 @@ Vec3MT.__div = function(a, scalar)
     local result = ffi.new('vector3')
 
     result.x, result.y, result.z = a.x / scalar, a.y / scalar, a.z / scalar
+    return result
+  elseif a.is(scalar) then
+    ---@type Vector3
+    local result = ffi.new('vector3')
+
+    result.x, result.y, result.z = a.x / scalar.x, a.y / scalar.y, a.z / scalar.z
     return result
   end
 
