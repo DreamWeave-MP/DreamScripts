@@ -99,7 +99,7 @@ Vec3Methods.add_mut = function(a, b)
 end
 
 Vec3Methods.sub_mut = function(a, b)
-  assert(a.is(b), tostring(b) .. ' is not a vector type! Could not add it to ' .. tostring(a))
+  assert(a.is(b), tostring(b) .. ' is not a vector type! Could not subtrack it from ' .. tostring(a))
   a.x, a.y, a.z = a.x - b.x, a.y - b.y, a.z - b.z
 end
 
