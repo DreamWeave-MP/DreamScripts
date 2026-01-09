@@ -173,6 +173,7 @@ else
         end
 
         if jsonInterface.fileExists(path) then
+            print('jsonInterface.mkdir failed because jsonInterface.fileExists passed!')
             return false
         elseif jsonInterface.isDir(path) then
             return true
