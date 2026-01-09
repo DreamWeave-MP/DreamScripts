@@ -1,3 +1,4 @@
+local patterns = require 'patterns'
 local tableHelper = {}
 
 -- Swap keys with their values in a table, allowing for the easy creation of tables similar to enums

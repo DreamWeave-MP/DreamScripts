@@ -1,4 +1,4 @@
-require("patterns")
+local patterns = require 'patterns'
 tableHelper = require("tableHelper")
 
 local fileHelper = {}

@@ -1,4 +1,4 @@
-require("patterns")
+local patterns = require 'patterns'
 
 contentFixer = require("contentFixer")
 tableHelper = require("tableHelper")

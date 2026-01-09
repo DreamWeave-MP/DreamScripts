@@ -1,3 +1,5 @@
+local patterns = require 'patterns'
+
 StateHelper = class("StateHelper")
 
 function StateHelper:LoadJournal(pid, stateObject)

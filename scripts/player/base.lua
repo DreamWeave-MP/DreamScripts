@@ -1,5 +1,5 @@
 require("config")
-require("patterns")
+local patterns = require 'patterns'
 stateHelper = require("stateHelper")
 tableHelper = require("tableHelper")
 local BasePlayer = class("BasePlayer")

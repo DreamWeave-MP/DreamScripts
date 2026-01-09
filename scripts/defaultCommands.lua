@@ -1,3 +1,5 @@
+local patterns = require 'patterns'
+
 -- Helper functions
 local getRanks = function(pid)
     local serverOwner = false

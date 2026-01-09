@@ -1,10 +1,19 @@
-patterns = {}
-patterns.invalidFileCharacters = '[<>:"/\\|*?\r\n]' -- characters not allowed in filenames
-patterns.commaSplit = "%s*([^,]+)" -- strings separated by commas, with spaces immediately after the commas ignored
-patterns.periodSplit = "%s*([^%.]+)" -- as in commaSplit, but with periods
-patterns.quoteSplit = '".-"' -- strings separated by quotation marks
-patterns.exteriorCell = "(%-?%d+), ?(%-?%d+)$" -- X coordinate, Y coordinate
-patterns.item = "(.+), (%d+), (%-?%d+)$" -- refId, count, charge
-patterns.coordinates = "(%-?%d+%.?%d*), (%-?%d+%.?%d*), (%-?%d+%.?%d*)$" -- X coordinate, Y coordinate, Z coordinate
+---@class MatchPatterns
+local Patterns = {
+  --- characters not allowed in filenames
+  invalidFileCharacters = '[<>:"/\\|*?\r\n]',
+  --- strings separated by commas, with spaces immediately after the commas ignored
+  commaSplit = "%s*([^,]+)",
+  --- as in commaSplit, but with periods
+  periodSplit = "%s*([^%.]+)",
+  --- Strings separated by quotation marks
+  quoteSplit = '".-"',
+  --- X coordinate, Y coordinate
+  exteriorCell = "(%-?%d+), ?(%-?%d+)$",
+  --- RefId, count, charge
+  item = "(.+), (%d+), (%-?%d+)$",
+  --- X coordinate, Y coordinate, Z coordinate
+  coordinates = "(%-?%d+%.?%d*), (%-?%d+%.?%d*), (%-?%d+%.?%d*)$",
+}
 
-return patterns
+return Patterns
