@@ -1,4 +1,4 @@
-require 'doc.tes3mp.d'
+require 'doc.tes3mpDocs'
 
 ---@class TES3MPENV
 ---@field tes3mp TES3MPModule
