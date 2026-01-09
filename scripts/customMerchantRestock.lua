@@ -262,7 +262,7 @@ local function loadMerchants()
 end
 
 -- Given a number (preferably greater than 0) and a formed LEVI, returns a random item from the available options for the given number.
-function recursiveGetLeveledItem(comparatorLevel, leveledList)
+function RecursiveGetLeveledItem(comparatorLevel, leveledList)
   if not dataLoaded() then
     return tes3mp.LogAppend(enumerations.log.ERROR,
       'No merchant database loaded! Cannot fetch leveled item!')
@@ -302,8 +302,8 @@ function recursiveGetLeveledItem(comparatorLevel, leveledList)
     if #instance ~= 0 then
       randomChance = math.random(#instance)
       if merchantData[instance[randomChance]] then
-        -- recurse into the child leveled list; I leave this code up to you
-        return recursiveGetLeveledItem(comparatorLevel, merchantData[instance[randomChance]])
+        -- recurse into the child leveled list
+        return RecursiveGetLeveledItem(comparatorLevel, merchantData[instance[randomChance]])
       else
         -- return the item RefId
         return instance[randomChance]
