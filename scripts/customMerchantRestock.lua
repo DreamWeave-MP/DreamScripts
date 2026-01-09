@@ -25,7 +25,7 @@
 --]]
 
 
-customMerchantRestock = {}
+local customMerchantRestock = {}
 -- Item restocking for containers that are not the npc's inventory is not implemented
 -- items will only show up in the barter window for sale if its an item type the merchant deals in?
 -- they will also equip gear you put in their inventory if its better than what they are currently wearing?
@@ -33,20 +33,27 @@ customMerchantRestock = {}
 -- Fuck that fella we got rust around these parts
 
 local merchantRestockLog = true
-merchantData = nil
+local merchantData = nil
 
 local initialMerchantGoldTracking = {} -- Used below for tracking merchant uniqueIndexes and their goldPools.
 
 local function dataLoaded()
   if not merchantData then
-    tes3mp.LogAppend(enumerations.log.WARN, "Your merchant database has not been generated. Please use merchantIndexGrabber to generate the necessary database.")
+    tes3mp.LogAppend(enumerations.log.WARN,
+      "Your merchant database has not been generated. Please use merchantIndexGrabber to generate the necessary database.")
     return false
   else
+    tes3mp.LogAppend(enumerations.log.INFO, 'Successfully loaded merchant database.')
     return true
   end
 end
 
 local function fixGoldPool(pid, cellDescription, object)
+  if not dataLoaded() then
+    return tes3mp.LogAppend(enumerations.log.ERROR,
+      'No merchant database loaded! Cannot reset merchant data!')
+  end
+  assert(merchantData)
   local refId = object.refId
   local uniqueIndex = object.uniqueIndex
   local expectedGoldPool
@@ -57,48 +64,61 @@ local function fixGoldPool(pid, cellDescription, object)
     expectedGoldPool = initialMerchantGoldTracking[uniqueIndex]
   end
 
-	if not expectedGoldPool then
-    if merchantRestockLog then tes3mp.LogAppend(enumerations.log.WARN, "Nil expectedGoldPool, unable to reset " .. refId .. "'s goldPool") end
-    return end
-
-		local cell = LoadedCells[cellDescription]
-		local objectData = cell.data.objectData
-
-		if not objectData[uniqueIndex] or not objectData[uniqueIndex].refId then
-      if merchantRestockLog then tes3mp.LogAppend(enumerations.log.WARN, "Object does not exist in this cell") end
-      return end
-
-    local currentGoldPool = objectData[uniqueIndex].goldPool
-
-    if not currentGoldPool or currentGoldPool >= expectedGoldPool then
-      if merchantRestockLog then tes3mp.LogAppend(enumerations.log.WARN, "Object doesn't need a gold reset.") end return end
-
-    tes3mp.ClearObjectList()
-    tes3mp.SetObjectListPid(pid)
-    tes3mp.SetObjectListCell(cellDescription)
-
-    local lastGoldRestockHour = objectData[uniqueIndex].lastGoldRestockHour
-    local lastGoldRestockDay = objectData[uniqueIndex].lastGoldRestockDay
-
-    if not lastGoldRestockHour or not lastGoldRestockDay then
-      objectData[uniqueIndex].lastGoldRestockHour = 0
-      objectData[uniqueIndex].lastGoldRestockDay = 0
+  if not expectedGoldPool then
+    if merchantRestockLog then
+      tes3mp.LogAppend(enumerations.log.WARN,
+        "Nil expectedGoldPool, unable to reset " .. refId .. "'s goldPool")
     end
+    return
+  end
 
-    objectData[uniqueIndex].goldPool = expectedGoldPool
+  local cell = LoadedCells[cellDescription]
+  local objectData = cell.data.objectData
 
-    packetBuilder.AddObjectMiscellaneous(uniqueIndex, objectData[uniqueIndex])
+  if not objectData[uniqueIndex] or not objectData[uniqueIndex].refId then
+    if merchantRestockLog then tes3mp.LogAppend(enumerations.log.WARN, "Object does not exist in this cell") end
+    return
+  end
 
-    tes3mp.SendObjectMiscellaneous()
+  local currentGoldPool = objectData[uniqueIndex].goldPool
 
+  if not currentGoldPool or currentGoldPool >= expectedGoldPool then
+    if merchantRestockLog then tes3mp.LogAppend(enumerations.log.WARN, "Object doesn't need a gold reset.") end
+    return
+  end
+
+  tes3mp.ClearObjectList()
+  tes3mp.SetObjectListPid(pid)
+  tes3mp.SetObjectListCell(cellDescription)
+
+  local lastGoldRestockHour = objectData[uniqueIndex].lastGoldRestockHour
+  local lastGoldRestockDay = objectData[uniqueIndex].lastGoldRestockDay
+
+  if not lastGoldRestockHour or not lastGoldRestockDay then
+    objectData[uniqueIndex].lastGoldRestockHour = 0
+    objectData[uniqueIndex].lastGoldRestockDay = 0
+  end
+
+  objectData[uniqueIndex].goldPool = expectedGoldPool
+
+  packetBuilder.AddObjectMiscellaneous(uniqueIndex, objectData[uniqueIndex])
+
+  tes3mp.SendObjectMiscellaneous()
 end
 
 local function restockItems(pid, cellDescription, merchant, receivedObject)
-
+  if not dataLoaded() then
+    return tes3mp.LogAppend(enumerations.log.ERROR,
+      'No merchant database loaded! Cannot reset merchant data!')
+  end
+  assert(merchantData)
   if not receivedObject.uniqueIndex
-    or not merchant then
+      or not merchant then
     if merchantRestockLog then
-    tes3mp.LogAppend(enumerations.log.WARN, "Received nil object indices, something went very sideways") end return end
+      tes3mp.LogAppend(enumerations.log.WARN, "Received nil object indices, something went very sideways")
+    end
+    return
+  end
 
   local cell = LoadedCells[cellDescription]
   local objectData = cell.data.objectData
@@ -128,15 +148,18 @@ local function restockItems(pid, cellDescription, merchant, receivedObject)
         if not reloadInventory then reloadInventory = true end
       end
     else
-        if merchantRestockLog then tes3mp.LogAppend(enumerations.log.WARN, "Received a list item, do moar work to handle " .. name) end
-        for _ = 1, count do
-          local item = recursiveGetLeveledItem(playerLevel, merchantData[name])
-          if item then
-            tes3mp.LogAppend(enumerations.log.WARN, "Adding " .. item .. " to inventory from list " .. name)
-            inventoryHelper.addItem(currentInventory, item, 1, -1, -1, "")
-            if not reloadInventory then reloadInventory = true end
-          end
+      if merchantRestockLog then
+        tes3mp.LogAppend(enumerations.log.WARN,
+          "Received a list item, do moar work to handle " .. name)
+      end
+      for _ = 1, count do
+        local item = recursiveGetLeveledItem(playerLevel, merchantData[name])
+        if item then
+          tes3mp.LogAppend(enumerations.log.WARN, "Adding " .. item .. " to inventory from list " .. name)
+          inventoryHelper.addItem(currentInventory, item, 1, -1, -1, "")
+          if not reloadInventory then reloadInventory = true end
         end
+      end
     end
   end
 
@@ -145,7 +168,7 @@ local function restockItems(pid, cellDescription, merchant, receivedObject)
     for i = 0, #Players do
       if Players[i] ~= nil and Players[i]:IsLoggedIn() then
         if Players[i].data.location.cell == cellDescription then
-          cell:LoadContainers(i, cell.data.objectData, {receivedObject.uniqueIndex})
+          cell:LoadContainers(i, cell.data.objectData, { receivedObject.uniqueIndex })
         end
       end
     end
@@ -153,10 +176,15 @@ local function restockItems(pid, cellDescription, merchant, receivedObject)
 end
 
 local function resetMerchantData(eventStatus, pid, cellDescription, objects)
+  if not dataLoaded() then
+    return tes3mp.LogAppend(enumerations.log.ERROR,
+      'No merchant database loaded! Cannot reset merchant data!')
+  end
+  assert(merchantData)
+
   if not Players[pid] or not Players[pid]:IsLoggedIn() or not dataLoaded() then return end
 
   for uniqueIndex, object in pairs(objects) do
-
     if object.dialogueChoiceType ~= enumerations.dialogueChoice.BARTER then return end
 
     local target = object.refId
@@ -165,13 +193,19 @@ local function resetMerchantData(eventStatus, pid, cellDescription, objects)
     -- Every merchant resets gold by default, but we can't do it conditionally or configurably for those that don't restock.
     if not merchant then
       if merchantRestockLog
-      then tes3mp.LogAppend(enumerations.log.WARN, "Tried to reset " .. target .. ", who is not present in the dataset. " ..
-                            "If this merchant should reset, please regenerate your merchantIndexGrabber database or report the issue in the tes3mp Discord!") end
+      then
+        tes3mp.LogAppend(enumerations.log.WARN, "Tried to reset " .. target .. ", who is not present in the dataset. " ..
+          "If this merchant should reset, please regenerate your merchantIndexGrabber database or report the issue in the tes3mp Discord!")
+      end
       fixGoldPool(pid, cellDescription, object)
-      return end
+      return
+    end
 
     if merchant.restocks_items then
-      if merchantRestockLog then tes3mp.LogAppend(enumerations.log.WARN, target .. " restocks items, invoking restockItems") end
+      if merchantRestockLog then
+        tes3mp.LogAppend(enumerations.log.WARN,
+          target .. " restocks items, invoking restockItems")
+      end
       restockItems(pid, cellDescription, merchant, object)
     end
 
@@ -179,11 +213,14 @@ local function resetMerchantData(eventStatus, pid, cellDescription, objects)
     -- Each container can be disabled individually by setting its `restocks_items` value to false.
     if merchant.restocks_containers then
       local cellData = LoadedCells[cellDescription].data.objectData
-      for index, object in pairs(cellData) do
-        target = merchantData[object.refId]
+      for index, cellObject in pairs(cellData) do
+        target = merchantData[cellObject.refId]
         if target and target.restocks_items then
-          if merchantRestockLog then tes3mp.LogAppend(enumerations.log.WARN, "Trying to reload container data for " .. index) end
-          restockItems(pid, cellDescription, merchant, {uniqueIndex = index, refId = object.refId})
+          if merchantRestockLog then
+            tes3mp.LogAppend(enumerations.log.WARN,
+              "Trying to reload container data for " .. index)
+          end
+          restockItems(pid, cellDescription, merchant, { uniqueIndex = index, refId = cellObject.refId })
         end
       end
     end
@@ -196,18 +233,27 @@ end
 
 local function getInitialGold(eventStatus, pid, cellDescription, objects)
   if not Players[pid] or not Players[pid]:IsLoggedIn() or not dataLoaded() then return end
+  if not dataLoaded() then
+    return tes3mp.LogAppend(enumerations.log.ERROR,
+      'No merchant database loaded! Cannot fetch initial gold!')
+  end
+  assert(merchantData)
 
   for uniqueIndex, object in pairs(objects) do
     if not object.goldPool or object.goldPool < 0 then
-      if merchantRestockLog then tes3mp.LogAppend(enumerations.log.WARN, "This object's goldpool is nil or invalid") end return end
+      if merchantRestockLog then tes3mp.LogAppend(enumerations.log.WARN, "This object's goldpool is nil or invalid") end
+      return
+    end
 
     local merchant = merchantData[object.refId]
 
     if not merchant and not initialMerchantGoldTracking[uniqueIndex] then
       initialMerchantGoldTracking[uniqueIndex] = object.goldPool
-      if merchantRestockLog then tes3mp.LogAppend(enumerations.log.WARN, "Captured initial gold count for " .. object.refId .. " as " .. object.goldPool) end
+      if merchantRestockLog then
+        tes3mp.LogAppend(enumerations.log.WARN,
+          "Captured initial gold count for " .. object.refId .. " as " .. object.goldPool)
+      end
     end
-
   end
 end
 
@@ -217,53 +263,59 @@ end
 
 -- Given a number (preferably greater than 0) and a formed LEVI, returns a random item from the available options for the given number.
 function recursiveGetLeveledItem(comparatorLevel, leveledList)
-    local randomChance = math.random(100)
-    if randomChance > leveledList.chance_none then
-      local instance = {}
-      if leveledList.list_flags == 1 then
+  if not dataLoaded() then
+    return tes3mp.LogAppend(enumerations.log.ERROR,
+      'No merchant database loaded! Cannot fetch leveled item!')
+  end
+  assert(merchantData)
+
+  local randomChance = math.random(100)
+  if randomChance > leveledList.chance_none then
+    local instance = {}
+    if leveledList.list_flags == 1 then
+      for _, entry in pairs(leveledList.items) do
+        local option = entry[1]
+        local requiredLevel = entry[2]
+        if requiredLevel <= comparatorLevel then
+          instance[#instance + 1] = option
+        end
+      end
+    else
+      local highestAvailableLevel = -1
+      for _, entry in pairs(leveledList.items) do
+        local requiredLevel = entry[2]
+        if requiredLevel > highestAvailableLevel and requiredLevel <= comparatorLevel then
+          highestAvailableLevel = requiredLevel
+        end
+      end
+      if highestAvailableLevel ~= -1 then
         for _, entry in pairs(leveledList.items) do
           local option = entry[1]
           local requiredLevel = entry[2]
-          if requiredLevel <= comparatorLevel then
-            instance[#instance+1] = option
-          end
-        end
-      else
-        local highestAvailableLevel = -1
-        for _, entry in pairs(leveledList.items) do
-          local requiredLevel = entry[2]
-          if requiredLevel > highestAvailableLevel and requiredLevel <= comparatorLevel then
-            highestAvailableLevel = requiredLevel
-          end
-        end
-        if highestAvailableLevel ~= -1 then
-          for _, entry in pairs(leveledList.items) do
-            local option = entry[1]
-            local requiredLevel = entry[2]
-            if requiredLevel == highestAvailableLevel then
-              instance[#instance+1] = option
-            end
+          if requiredLevel == highestAvailableLevel then
+            instance[#instance + 1] = option
           end
         end
       end
-
-        if #instance ~= 0 then
-            randomChance = math.random(#instance)
-            if merchantData[ instance[randomChance] ] then
-                -- recurse into the child leveled list; I leave this code up to you
-                return recursiveGetLeveledItem(comparatorLevel, merchantData[ instance[randomChance] ])
-            else
-                                -- return the item RefId
-                return instance[randomChance]
-            end
-        else
-            -- no applicable options
-            return
-        end
-    else
-        -- chanceNone
-        return
     end
+
+    if #instance ~= 0 then
+      randomChance = math.random(#instance)
+      if merchantData[instance[randomChance]] then
+        -- recurse into the child leveled list; I leave this code up to you
+        return recursiveGetLeveledItem(comparatorLevel, merchantData[instance[randomChance]])
+      else
+        -- return the item RefId
+        return instance[randomChance]
+      end
+    else
+      -- no applicable options
+      return
+    end
+  else
+    -- chanceNone
+    return
+  end
 end
 
 customEventHooks.registerHandler("OnObjectDialogueChoice", resetMerchantData)
