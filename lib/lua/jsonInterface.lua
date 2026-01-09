@@ -192,32 +192,34 @@ function jsonInterface.writeToFile(fileName, content)
 
     local dir = filePath:match("(.*[/\\])")
     if dir and not jsonInterface.isDir(dir) then
-        print(('Checking if %s needs to be created . . .'):format(dir))
-        if jsonInterface.fileExists(dir) then
-            error('Cannot create the directory ' .. dir .. ' since it\'s already a file!')
-        end
-        print(tostring(jsonInterface.mkdir(dir)))
-        -- local currentPath = ""
-        -- for segment in dir:gmatch("[^/\\]+") do
-        --     currentPath = string.format("%s%s/", currentPath, segment)
-        --
-        --     if currentPath == './' or currentPath == '../' then goto CONTINUE end
-        --
-        --     if jsonInterface.fileExists(currentPath) then
-        --         tes3mp.LogMessage(enumerations.log.ERROR,
-        --             'Cannot create directory ' .. currentPath .. ' as it is already a file that exists!')
-        --         return false
-        --     elseif not jsonInterface.isDir(currentPath) then
-        --         local result = jsonInterface.mkdir(currentPath)
-        --         if not result then
-        --             tes3mp.LogMessage(enumerations.log.ERROR,
-        --                 "Failed to create directory: " .. currentPath .. ' result: ' .. tostring(result))
-        --             return false
-        --         end
-        --     end
-        --
-        --     ::CONTINUE::
+        -- print(('Checking if %s needs to be created . . .'):format(dir))
+        -- if jsonInterface.fileExists(dir) then
+        --     error('Cannot create the directory ' .. dir .. ' since it\'s already a file!')
         -- end
+        -- print(tostring(jsonInterface.mkdir(dir)))
+
+        print(os.execute('pwd'))
+        local currentPath = ""
+        for segment in dir:gmatch("[^/\\]+") do
+            currentPath = string.format("%s%s/", currentPath, segment)
+
+            if currentPath == './' or currentPath == '../' then goto CONTINUE end
+
+            if jsonInterface.fileExists(currentPath) then
+                tes3mp.LogMessage(enumerations.log.ERROR,
+                    'Cannot create directory ' .. currentPath .. ' as it is already a file that exists!')
+                return false
+            elseif not jsonInterface.isDir(currentPath) then
+                local result = jsonInterface.mkdir(currentPath)
+                if not result then
+                    tes3mp.LogMessage(enumerations.log.ERROR,
+                        "Failed to create directory: " .. currentPath .. ' result: ' .. tostring(result))
+                    return false
+                end
+            end
+
+            ::CONTINUE::
+        end
     end
 
     local file = assert(jsonInterface.ioLibrary.open(filePath, 'w+b'))
