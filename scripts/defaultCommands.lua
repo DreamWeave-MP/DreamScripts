@@ -14,7 +14,7 @@ local getRanks = function(pid)
     elseif Players[pid]:IsModerator() then
         moderator = true
     end
-    
+
     return moderator, admin, serverOwner
 end
 
@@ -47,10 +47,9 @@ defaultCommands.inviteAlly = function(pid, cmd)
     if pid == tonumber(cmd[2]) then
         tes3mp.SendMessage(pid, "You can't invite yourself to be your own ally.\n")
     elseif logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-
         local targetPid = tonumber(cmd[2])
         local senderMessage
-        
+
         if Players[pid].allyInvitesSent == nil then Players[pid].allyInvitesSent = {} end
         if Players[targetPid].allyInvitesReceived == nil then Players[targetPid].allyInvitesReceived = {} end
 
@@ -78,7 +77,6 @@ defaultCommands.joinTeam = function(pid, cmd)
     if pid == tonumber(cmd[2]) then
         tes3mp.SendMessage(pid, "You can't join yourself as your own ally.\n")
     elseif logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-
         local targetPid = tonumber(cmd[2])
         local senderMessage
 
@@ -100,7 +98,8 @@ defaultCommands.joinTeam = function(pid, cmd)
             Players[targetPid]:Save()
             Players[targetPid]:LoadAllies()
         else
-            senderMessage = "You have not yet been invited to become an ally of " .. logicHandler.GetChatName(targetPid) .. "\n"
+            senderMessage = "You have not yet been invited to become an ally of " ..
+                logicHandler.GetChatName(targetPid) .. "\n"
         end
 
         tes3mp.SendMessage(pid, senderMessage, false)
@@ -113,7 +112,6 @@ defaultCommands.leaveTeam = function(pid, cmd)
     if pid == tonumber(cmd[2]) then
         tes3mp.SendMessage(pid, "You can't leave an alliance with yourself.\n")
     elseif logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-
         local targetPid = tonumber(cmd[2])
         local senderMessage
 
@@ -152,7 +150,6 @@ defaultCommands.localMessage = function(pid, cmd)
 
     if logicHandler.IsCellLoaded(cellDescription) == true then
         for index, visitorPid in pairs(LoadedCells[cellDescription].visitors) do
-
             local message = logicHandler.GetChatName(pid) .. " to local area: "
             message = message .. tableHelper.concatenateFromIndex(cmd, 2) .. "\n"
             tes3mp.SendMessage(visitorPid, message, false)
@@ -165,7 +162,7 @@ customCommandHooks.registerCommand("l", defaultCommands.localMessage)
 
 defaultCommands.greentext = function(pid, cmd)
     local message = logicHandler.GetChatName(pid) .. ": " .. color.GreenText ..
-            ">" .. tableHelper.concatenateFromIndex(cmd, 2) .. "\n"
+        ">" .. tableHelper.concatenateFromIndex(cmd, 2) .. "\n"
     tes3mp.SendMessage(pid, message, true)
 end
 
@@ -173,7 +170,6 @@ customCommandHooks.registerCommand("greentext", defaultCommands.greentext)
 customCommandHooks.registerCommand("gt", defaultCommands.greentext)
 
 defaultCommands.ban = function(pid, cmd)
-
     local moderator, admin, serverOwner = getRanks(pid)
 
     if not moderator then
@@ -196,7 +192,6 @@ defaultCommands.ban = function(pid, cmd)
     elseif (cmd[2] == "name" or cmd[2] == "player") and cmd[3] ~= nil then
         local targetName = tableHelper.concatenateFromIndex(cmd, 3)
         logicHandler.BanPlayer(pid, targetName)
-
     elseif type(tonumber(cmd[2])) == "number" and logicHandler.CheckPlayerValidity(pid, cmd[2]) then
         local targetPid = tonumber(cmd[2])
         local targetName = Players[targetPid].name
@@ -377,7 +372,8 @@ defaultCommands.overrideDestination = function(pid, cmd)
     local cellDescriptions = tableHelper.getTableFromSplit(inputConcatenation, patterns.quoteSplit)
 
     if tableHelper.getCount(cellDescriptions) ~= 2 then
-        tes3mp.SendMessage(pid, "Invalid inputs! Please specify two different cells with their names between quotation marks.\n")
+        tes3mp.SendMessage(pid,
+            "Invalid inputs! Please specify two different cells with their names between quotation marks.\n")
         return
     end
 
@@ -428,7 +424,8 @@ defaultCommands.runStartup = function(pid, cmd)
         logicHandler.RunConsoleCommandOnPlayer(pid, "startscript " .. scriptName, false)
     end
 
-    tes3mp.SendMessage(pid, color.Red .. "Warning: " .. color.White .. "Make sure to run this command again later if you " ..
+    tes3mp.SendMessage(pid,
+        color.Red .. "Warning: " .. color.White .. "Make sure to run this command again later if you " ..
         "reset the cells on this server.\n")
 
     WorldInstance.coreVariables.hasRunStartupScripts = true
@@ -478,7 +475,7 @@ defaultCommands.setPlayerModel = function(pid, cmd)
         Players[targetPid].data.character.modelOverride = modelName
         Players[targetPid]:LoadCharacter()
         Players[targetPid]:Message("Your model has been changed.\n")
-    end    
+    end
 end
 
 customCommandHooks.registerCommand("setmodel", defaultCommands.setPlayerModel)
