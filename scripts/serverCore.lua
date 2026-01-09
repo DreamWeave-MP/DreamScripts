@@ -1,9 +1,7 @@
 require 'doc.tes3mpDocs'
 
----@class TES3MPENV
----@field tes3mp TES3MPModule
----@field enumerations Enumerations
-_ENV = _ENV
+---@class TES3MPModule
+tes3mp = tes3mp
 
 require("utils")
 require("enumerations")
