@@ -9,7 +9,8 @@ if cjsonExists then
     cjson.encode_empty_table_as_object(false)
     cjson.decode_null_as_lightuserdata(false)
 else
-    tes3mp.LogMessage(enumerations.log.ERROR, "Could not find Lua CJSON! The decoding and encoding of JSON files will always use dkjson and be slower as a result.")
+    tes3mp.LogMessage(enumerations.log.ERROR,
+        "Could not find Lua CJSON! The decoding and encoding of JSON files will always use dkjson and be slower as a result.")
 end
 
 local jsonInterface = {}
@@ -22,7 +23,6 @@ end
 
 -- Remove all text from before the actual JSON content starts
 function jsonInterface.removeHeader(content)
-
     local closestBracketIndex
 
     local bracketIndex1 = content:find("\n%[")
@@ -38,7 +38,6 @@ function jsonInterface.removeHeader(content)
 end
 
 function jsonInterface.load(fileName)
-
     if jsonInterface.ioLibrary == nil then
         tes3mp.LogMessage(enumerations.log.ERROR, jsonInterface.libraryMissingMessage)
         return nil
@@ -99,7 +98,6 @@ end
 -- Save data to JSON in a slower but human-readable way, with identation and a specific order
 -- to the keys, provided via dkjson
 function jsonInterface.save(fileName, data, keyOrderArray)
-
     local content = dkjson.encode(data, { indent = true, keyorder = keyOrderArray })
 
     return jsonInterface.writeToFile(fileName, content)
@@ -108,7 +106,6 @@ end
 -- Save data to JSON in a fast but minimized way, provided via Lua CJSON, ideal for large files
 -- that need to be saved over and over
 function jsonInterface.quicksave(fileName, data)
-
     if cjsonExists then
         local content = cjson.encode(data)
         return jsonInterface.writeToFile(fileName, content)
