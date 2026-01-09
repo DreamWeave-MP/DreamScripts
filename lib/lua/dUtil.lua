@@ -52,6 +52,18 @@ Vec3MT.__mul = function(a, scalar)
   error("vector3 can only be multiplied by scalar")
 end
 
+Vec3MT.__div = function(a, scalar)
+  if type(scalar) == 'number' then
+    ---@type Vector3
+    local result = ffi.new('vector3')
+
+    result.x, result.y, result.z = a.x / scalar, a.y / scalar, a.z / scalar
+    return result
+  end
+
+  error("vector3 can only be divided by scalar")
+end
+
 Vec3MT.__tostring = function(v)
   return ("vector3(%.2f, %.2f, %.2f)"):format(v.x, v.y, v.z)
 end
