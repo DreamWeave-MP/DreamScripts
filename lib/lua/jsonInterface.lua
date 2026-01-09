@@ -169,7 +169,9 @@ else
             return false
         end
 
-        return os.execute(('test -d %s'):format(path)) == F_OK
+        local result = os.execute(('test -d %s'):format(path)) == F_OK
+        print('isDir result for ' .. path .. ' is: ' .. tostring(result))
+        return result
     end
 
     --- Given a path to a directory, attempt to create it.
