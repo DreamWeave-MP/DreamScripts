@@ -209,7 +209,7 @@ function jsonInterface.writeToFile(fileName, content)
         -- print(tostring(jsonInterface.mkdir(dir)))
 
         print(os.execute('pwd'))
-        local currentPath = config.dataPath .. '/' -- Is this portable?
+        local currentPath = '' -- Is this portable?
         print('original current path: ' .. currentPath)
         for segment in dir:gmatch("[^/\\]+") do
             print('WTF IS THE SEGMENT?????? ' .. segment)
