@@ -1,20 +1,18 @@
 local inventoryHelper = {}
 
 function inventoryHelper.containsItem(inventory, refId, charge, enchantmentCharge, soul)
-
     if charge ~= nil then charge = math.floor(charge) end
     if enchantmentCharge ~= nil then enchantmentCharge = math.floor(enchantmentCharge) end
 
     for itemIndex, item in pairs(inventory) do
         if item.refId == refId then
-
             local isValid = true
 
             if soul ~= nil and item.soul ~= soul then
                 isValid = false
             elseif charge ~= nil and item.charge ~= nil and math.floor(item.charge) ~= charge then
                 isValid = false
-            elseif enchantmentCharge ~= nil and item.enchantmentCharge ~= nil and 
+            elseif enchantmentCharge ~= nil and item.enchantmentCharge ~= nil and
                 math.floor(item.enchantmentCharge) ~= enchantmentCharge then
                 isValid = false
             end
@@ -29,13 +27,11 @@ function inventoryHelper.containsItem(inventory, refId, charge, enchantmentCharg
 end
 
 function inventoryHelper.getItemIndex(inventory, refId, charge, enchantmentCharge, soul)
-
     if charge ~= nil then charge = math.floor(charge) end
     if enchantmentCharge ~= nil then enchantmentCharge = math.floor(enchantmentCharge) end
 
     for itemIndex, item in pairs(inventory) do
         if item.refId == refId then
-
             local isValid = true
 
             if soul ~= nil and item.soul ~= soul then
@@ -57,7 +53,6 @@ function inventoryHelper.getItemIndex(inventory, refId, charge, enchantmentCharg
 end
 
 function inventoryHelper.getItemIndexes(inventory, refId)
-
     local indexes = {}
 
     for itemIndex, item in pairs(inventory) do
@@ -70,7 +65,6 @@ function inventoryHelper.getItemIndexes(inventory, refId)
 end
 
 function inventoryHelper.addItem(inventory, refId, count, charge, enchantmentCharge, soul)
-
     if inventoryHelper.containsItem(inventory, refId, charge, enchantmentCharge, soul) then
         local index = inventoryHelper.getItemIndex(inventory, refId, charge, enchantmentCharge, soul)
 
@@ -90,7 +84,6 @@ end
 -- Return true if an item (comparedItem) is closer to a desired item (idealItem) than
 -- another item is (otherItem)
 function inventoryHelper.compareClosenessToItem(idealItem, comparedItem, otherItem)
-
     if comparedItem == otherItem then
         return false
     end
@@ -133,7 +126,6 @@ function inventoryHelper.compareClosenessToItem(idealItem, comparedItem, otherIt
     local comparedEnchantmentChargeDiff, otherEnchantmentChargeDiff = 0, 0
 
     if idealItem.charge ~= nil and comparedItem.charge ~= otherItem.charge then
-
         if comparedItem.charge == nil then
             comparedItem.charge = -1
         end
@@ -159,7 +151,6 @@ function inventoryHelper.compareClosenessToItem(idealItem, comparedItem, otherIt
     end
 
     if idealItem.enchantmentCharge ~= nil and comparedItem.enchantmentCharge ~= otherItem.enchantmentCharge then
-
         if comparedItem.enchantmentCharge == nil then
             comparedItem.enchantmentCharge = -1
         end
@@ -168,7 +159,8 @@ function inventoryHelper.compareClosenessToItem(idealItem, comparedItem, otherIt
             otherItem.enchantmentCharge = -1
         end
 
-        local maxValue = math.max(idealItem.enchantmentCharge, comparedItem.enchantmentCharge, otherItem.enchantmentCharge)
+        local maxValue = math.max(idealItem.enchantmentCharge, comparedItem.enchantmentCharge,
+            otherItem.enchantmentCharge)
 
         if maxValue < 200 then maxValue = maxValue + 200 end
 
@@ -192,15 +184,17 @@ function inventoryHelper.compareClosenessToItem(idealItem, comparedItem, otherIt
 end
 
 function inventoryHelper.removeClosestItem(inventory, refId, count, charge, enchantmentCharge, soul)
-
     if inventoryHelper.containsItem(inventory, refId) then
         local itemIndexesToCompare = inventoryHelper.getItemIndexes(inventory, refId)
         local itemIndexesByCloseness = {}
-        local idealItem = { refId = refId, charge = charge, enchantmentCharge = enchantmentCharge,
-            soul = soul }
+        local idealItem = {
+            refId = refId,
+            charge = charge,
+            enchantmentCharge = enchantmentCharge,
+            soul = soul
+        }
 
         for _, comparedItemIndex in ipairs(itemIndexesToCompare) do
-
             local comparedItem = inventory[comparedItemIndex]
             local isLeastClose = true
 
@@ -222,7 +216,6 @@ function inventoryHelper.removeClosestItem(inventory, refId, count, charge, ench
         local remainingCount = count
 
         for closenessRanking, currentItemIndex in ipairs(itemIndexesByCloseness) do
-
             if remainingCount > 0 then
                 local currentItem = inventory[currentItemIndex]
 
@@ -244,7 +237,6 @@ function inventoryHelper.removeClosestItem(inventory, refId, count, charge, ench
 end
 
 function inventoryHelper.removeExactItem(inventory, refId, count, charge, enchantmentCharge, soul)
-
     if inventoryHelper.containsItem(inventory, refId, charge, enchantmentCharge, soul) then
         local index = inventoryHelper.getItemIndex(inventory, refId, charge, enchantmentCharge, soul)
 
@@ -258,7 +250,7 @@ end
 
 -- Deprecated
 function inventoryHelper.removeItem(inventory, refId, count, charge, enchantmentCharge, soul)
-    return inventoryHelper.removeClosestItem(inventory, refId, count, charge, enchantmentCharge, soul)
+    error('inventoryHelper.removeItem is now deprecated! Use inventoryHelper.removeClosestItem instead.')
 end
 
 return inventoryHelper
