@@ -194,9 +194,9 @@ function jsonInterface.writeToFile(fileName, content)
     if dir then
         local currentPath = ""
         for segment in dir:gmatch("[^/\\]+") do
-            if segment == './' or segment == '../' then goto CONTINUE end
-
             currentPath = string.format("%s%s/", currentPath, segment)
+
+            if currentPath == './' or currentPath == '../' then goto CONTINUE end
 
             if jsonInterface.fileExists(currentPath) then
                 tes3mp.LogMessage(enumerations.log.ERROR,
