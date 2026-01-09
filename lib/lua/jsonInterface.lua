@@ -146,6 +146,8 @@ else
     ---@param fileName string
     ---@return boolean result Whether or not the provided path is a FILE entry that exists, directories included
     function jsonInterface.fileExists(fileName)
+        fileName = LocalDataPath .. '/' .. fileName
+
         if type(fileName) ~= 'string' or fileName == '' then
             error('Invalid parameter passed to jsonInterface.fileExists: ' .. tostring(fileName))
         end
@@ -156,6 +158,8 @@ else
     --- Linux shell test to check if an entry is an existing directory
     --- Fails if the requested entry exists and is a file
     function jsonInterface.isDir(path)
+        path = LocalDataPath .. '/' .. path
+
         if type(path) ~= 'string' or path == '' then
             error('Invalid parameter passed to jsonInterface.isDir: ' .. tostring(path))
         end
