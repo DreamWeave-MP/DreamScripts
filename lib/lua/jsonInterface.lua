@@ -201,9 +201,9 @@ function jsonInterface.writeToFile(fileName, content)
         -- print(os.execute('pwd'))
         local currentPath = ""
         for segment in dir:gmatch("[^/\\]+") do
-            currentPath = string.format("%s%s/", currentPath, segment)
+            if segment == './' or segment == '../' then goto CONTINUE end
 
-            if currentPath == './' or currentPath == '../' then goto CONTINUE end
+            currentPath = string.format("%s%s/", currentPath, segment)
 
             if jsonInterface.fileExists(currentPath) then
                 tes3mp.LogMessage(enumerations.log.ERROR,
