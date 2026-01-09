@@ -70,6 +70,11 @@ Vec3Methods.is = function(v)
   return ffi.istype('vector3', v)
 end
 
+Vec3Methods.add_mut = function(a, b)
+  assert(a.is(b), tostring(b) .. ' is not a vector type! Could not add it to ' .. tostring(a))
+  a.x, a.y, a.z = a.x + b.x, a.y + b.y, a.z + b.z
+end
+
 Vec3MT.__index = Vec3Methods
 
 ---@type ffi.ctype*(x?: number, y?: number, z?: number)
