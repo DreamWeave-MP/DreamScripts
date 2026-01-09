@@ -8,7 +8,6 @@ menuHelper.destinations = {}
 menuHelper.variables = {}
 
 function menuHelper.conditions.requireItem(inputRefIds, inputCount)
-
     if type(inputRefIds) ~= "table" then
         inputRefIds = { inputRefIds }
     end
@@ -78,7 +77,6 @@ function menuHelper.effects.giveItem(inputRefId, inputCount)
 end
 
 function menuHelper.effects.removeItem(inputRefIds, inputCount)
-
     if type(inputRefIds) ~= "table" then
         inputRefIds = { inputRefIds }
     end
@@ -210,22 +208,19 @@ function menuHelper.variables.concatenation(inputDelimiter, ...)
         variableType = "argumentArray",
         operation = "concatenation",
         delimiter = inputDelimiter,
-        containedVariables = {...}
+        containedVariables = { ... }
     }
 
     return variable
 end
 
 function menuHelper.CheckCondition(pid, condition)
-
     local targetPlayer = Players[pid]
 
     if condition.conditionType == "item" then
-
         local remainingCount = condition.count
 
         for _, currentRefId in ipairs(condition.refIds) do
-
             if inventoryHelper.containsItem(targetPlayer.data.inventory, currentRefId) then
                 local itemIndex = inventoryHelper.getItemIndex(targetPlayer.data.inventory, currentRefId)
                 local item = targetPlayer.data.inventory[itemIndex]
@@ -238,28 +233,24 @@ function menuHelper.CheckCondition(pid, condition)
             end
         end
     elseif condition.conditionType == "attribute" then
-
         if targetPlayer.data.attributes[condition.attributeName].base >= condition.attributeValue then
             return true
         end
     elseif condition.conditionType == "skill" then
-
         if targetPlayer.data.skills[condition.skillName].base >= condition.skillValue then
             return true
         end
     elseif condition.conditionType == "staffRank" then
-
         if targetPlayer.data.settings.staffRank >= condition.rankValue then
             return true
         end
     elseif condition.conditionType == "playerFunction" then
-
         local functionName = condition.functionName
         local arguments = condition.arguments
 
         if arguments == nil then
             arguments = {}
-        -- Fill in any variables placed inside the arguments
+            -- Fill in any variables placed inside the arguments
         else
             arguments = menuHelper.ProcessVariables(pid, arguments)
         end
@@ -273,12 +264,10 @@ function menuHelper.CheckCondition(pid, condition)
 end
 
 function menuHelper.CheckConditionTable(pid, conditions)
-
     local conditionCount = table.maxn(conditions)
     local conditionsMet = 0
 
     for _, condition in ipairs(conditions) do
-
         if menuHelper.CheckCondition(pid, condition) then
             conditionsMet = conditionsMet + 1
         end
@@ -292,15 +281,12 @@ function menuHelper.CheckConditionTable(pid, conditions)
 end
 
 function menuHelper.ProcessVariables(pid, inputTable)
-
     local resultTable = {}
 
     for tableIndex, tableElement in ipairs(inputTable) do
-
         local resultValue = "nil"
 
         if type(tableElement) == "table" and tableElement.variableType ~= nil then
-
             local variableType = tableElement.variableType
             local subType = tableElement.subType
             local source = tableElement.source
@@ -314,7 +300,6 @@ function menuHelper.ProcessVariables(pid, inputTable)
                     resultValue = logicHandler.GetChatName(pid)
                 end
             elseif variableType == "playerVariable" or variableType == "globalVariable" then
-
                 local variableName = tableElement.variableName
 
                 if variableType == "playerVariable" and source == "current" then
@@ -362,33 +347,25 @@ function menuHelper.ProcessVariables(pid, inputTable)
 end
 
 function menuHelper.ProcessEffects(pid, effects)
-
     if effects == nil then return end
 
     local targetPlayer = Players[pid]
     local shouldReloadInventory = false
 
     for _, effect in ipairs(effects) do
-
         local effectType = effect.effectType
 
         if effectType == "item" then
-
             shouldReloadInventory = true
 
             if effect.action == "give" then
-
                 inventoryHelper.addItem(targetPlayer.data.inventory, effect.refId, effect.count, -1, -1)
-
             elseif effect.action == "remove" then
-
                 local remainingCount = effect.count
 
                 for _, currentRefId in ipairs(effect.refIds) do
-
                     if remainingCount > 0 and inventoryHelper.containsItem(targetPlayer.data.inventory,
-                        currentRefId) then
-
+                            currentRefId) then
                         -- If the item is equipped by the target, unequip it first
                         if inventoryHelper.containsItem(targetPlayer.data.equipment, currentRefId) then
                             local equipmentItemIndex = inventoryHelper.getItemIndex(targetPlayer.data.equipment,
@@ -413,18 +390,16 @@ function menuHelper.ProcessEffects(pid, effects)
                 end
             end
         elseif effectType == "playerVariable" then
-
             if effect.action == "data" then
                 targetPlayer.data[effect.variable] = effect.value
             end
         elseif effectType == "playerFunction" or effectType == "globalFunction" then
-
             local functionName = effect.functionName
             local arguments = effect.arguments
 
             if arguments == nil then
                 arguments = {}
-            -- Fill in any variables placed inside the arguments
+                -- Fill in any variables placed inside the arguments
             else
                 arguments = menuHelper.ProcessVariables(pid, arguments)
             end
@@ -432,7 +407,6 @@ function menuHelper.ProcessEffects(pid, effects)
             if effectType == "playerFunction" then
                 targetPlayer[functionName](targetPlayer, unpack(arguments))
             elseif effectType == "globalFunction" then
-
                 local objectName = effect.objectName
 
                 if objectName ~= nil then
@@ -461,15 +435,11 @@ function menuHelper.ProcessEffects(pid, effects)
 end
 
 function menuHelper.GetButtonDestination(pid, buttonPressed)
-
     if buttonPressed ~= nil then
-
         local defaultDestination = {}
 
         if buttonPressed.destinations ~= nil then
-
             for _, destination in ipairs(buttonPressed.destinations) do
-
                 if destination.customVariable ~= nil then
                     local customVariable = destination.customVariable
                     destination.targetMenu = Players[pid][customVariable]
@@ -494,12 +464,10 @@ function menuHelper.GetButtonDestination(pid, buttonPressed)
 end
 
 function menuHelper.GetDisplayedButtons(pid, menuIndex)
-
     if menuIndex == nil or Menus[menuIndex] == nil then return end
     local displayedButtons = {}
 
     for buttonIndex, button in ipairs(Menus[menuIndex].buttons) do
-
         -- Only display this button if there are no conditions for displaying it, or if
         -- the conditions for displaying it are met
         local conditionsMet = true
@@ -517,7 +485,6 @@ function menuHelper.GetDisplayedButtons(pid, menuIndex)
 end
 
 function menuHelper.DisplayMenu(pid, menuIndex)
-
     if menuIndex == nil or Menus[menuIndex] == nil then return end
 
     local text = Menus[menuIndex].text
@@ -535,7 +502,6 @@ function menuHelper.DisplayMenu(pid, menuIndex)
     local buttonList = ""
 
     for buttonIndex, button in ipairs(displayedButtons) do
-
         local caption = button.caption
 
         -- Handle button captions the same way as menu text
