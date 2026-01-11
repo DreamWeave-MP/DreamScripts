@@ -20,4 +20,5 @@
 ---@class DUtilModule
 ---@field io DUtilIO
 ---@field misc DUtilMisc
+---@field scriptLoader DScriptLoader
 ---@field vector3 Vector3Module
