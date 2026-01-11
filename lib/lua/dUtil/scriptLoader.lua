@@ -72,7 +72,11 @@ DScriptLoader.Interfaces = setmetatable({},
 ---@return DreamWeaveScriptEnv
 function DScriptLoader.getScriptEnv()
   return {
+    math = math,
+    require = require,
     print = print,
+    string = string,
+    table = table,
     tableHelper = tableHelper,
     I = DScriptLoader.Interfaces,
   }
