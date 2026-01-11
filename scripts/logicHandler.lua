@@ -44,13 +44,14 @@ end
 --- Determines if the target PID is valid and refers to a player which is currently logged into the server
 ---@param pid PlayerId
 ---@param targetPid PlayerId
+---@return boolean isValid, PlayerId? targetPid whether or not the PID is valid, plus validated PlayerID converted from string to int if so
 logicHandler.CheckPlayerValidity = function(pid, targetPid)
     local valid, sendMessage = false, pid ~= nil
 
     local checkPid = tonumber(targetPid)
     if not checkPid then
         if sendMessage then
-            tes3mp.SendMessage(pid, "Please specify the player ID.\n", false)
+            tes3mp.SendMessage(pid, "Please specify a valid numeric player ID greater than or equal to 0.\n", false)
         end
 
         return false
@@ -64,11 +65,19 @@ logicHandler.CheckPlayerValidity = function(pid, targetPid)
         end
     end
 
+    if pid and targetPlayer == Players[pid] then
+        if sendMessage then
+            tes3mp.SendMessage(pid, 'Please specify a player other than yourself.\n', false)
+        end
+
+        return false
+    end
+
     if not valid and sendMessage then
         tes3mp.SendMessage(pid, "That player is not logged in!\n", false)
     end
 
-    return valid
+    return valid, checkPid
 end
 
 -- Get the "Name (pid)" representation of a player used in chat
