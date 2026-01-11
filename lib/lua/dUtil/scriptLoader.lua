@@ -132,7 +132,7 @@ function DScriptLoader.loadScriptCommands(scriptPath, scriptRegistration)
   Deps.customCommandHooks:clearCommandsFromScript(scriptPath)
 
   for commandName, commandRegistration in pairs(scriptRegistration.chatCommands or {}) do
-    if type(commandName ~= string) or commandName == '' or type(commandRegistration.callback) ~= 'function' then
+    if type(commandName) ~= 'string' or commandName == '' or type(commandRegistration.callback) ~= 'function' then
       tes3mp.LogAppend(
         enumerations.log.ERROR,
         ('Invalid inputs from script %s for chat command! Command Name: %s, command callback: %s')
