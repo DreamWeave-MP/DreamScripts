@@ -23,4 +23,24 @@ function MiscUtil.getRanks(pid)
   return moderator, admin, serverOwner
 end
 
+--- Given any value, returns whether it's a proper IP address string representation.
+--- Decimal only!
+---@param ip any
+---@return boolean isValidIP
+function MiscUtil.isValidIP(ip)
+  if type(ip) ~= "string" then return false end
+
+  local chunks = { ip:match("^(%d+)%.(%d+)%.(%d+)%.(%d+)$") }
+  if #chunks ~= 4 then return false end
+
+  for _, chunk in ipairs(chunks) do
+    local num = tonumber(chunk)
+    if not num or num < 0 or num > 255 then
+      return false
+    end
+  end
+
+  return true
+end
+
 return MiscUtil
