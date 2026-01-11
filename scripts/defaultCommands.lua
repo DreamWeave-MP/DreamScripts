@@ -221,31 +221,33 @@ end
 
 ---@type CommandHandler
 local function leaveTeam(pid, cmd)
-    if pid == tonumber(cmd[2]) then
-        tes3mp.SendMessage(pid, "You can't leave an alliance with yourself.\n")
-    elseif logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-        local targetPid = tonumber(cmd[2])
-        local senderMessage
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+    if not isValid then return end
 
-        if tableHelper.containsValue(Players[pid].data.alliedPlayers, Players[targetPid].accountName) then
-            senderMessage = "You have stopped having " .. logicHandler.GetChatName(targetPid) .. " as your ally \n"
-            local receiverMessage = logicHandler.GetChatName(pid) .. " has stopped having you as an ally.\n"
-            tes3mp.SendMessage(targetPid, receiverMessage, false)
+    local senderMessage = ('You are not an ally of %s\n'):format(logicHandler.GetChatName(targetPid))
 
-            tableHelper.removeValue(Players[pid].data.alliedPlayers, Players[targetPid].accountName)
-            tableHelper.cleanNils(Players[pid].data.alliedPlayers)
-            tableHelper.removeValue(Players[targetPid].data.alliedPlayers, Players[pid].accountName)
-            tableHelper.cleanNils(Players[targetPid].data.alliedPlayers)
-            Players[pid]:Save()
-            Players[pid]:LoadAllies()
-            Players[targetPid]:Save()
-            Players[targetPid]:LoadAllies()
-        else
-            senderMessage = "You are not an ally of " .. logicHandler.GetChatName(targetPid) .. "\n"
-        end
+    local callingPlayer, targetPlayer = Players[pid], Players[targetPid]
+    local callingAllies, targetAllies = callingPlayer.data.alliedPlayers, targetPlayer.data.alliedPlayers
 
-        tes3mp.SendMessage(pid, senderMessage, false)
+    if tableHelper.containsValue(callingAllies, targetPlayer.accountName) then
+        senderMessage = ('You have stopped having %s as an ally.\n'):format(logicHandler.GetChatName(pid))
+        tes3mp.SendMessage(
+            targetPid,
+            ('%s has stopped having you as an ally.\n'):format(logicHandler.GetChatName(pid)),
+            false
+        )
+
+        tableHelper.removeValue(callingAllies, Players[targetPid].accountName)
+        tableHelper.cleanNils(callingAllies)
+        tableHelper.removeValue(targetAllies, Players[pid].accountName)
+        tableHelper.cleanNils(targetAllies)
+        callingPlayer:Save()
+        callingPlayer:LoadAllies()
+        targetPlayer:Save()
+        targetPlayer:LoadAllies()
     end
+
+    tes3mp.SendMessage(pid, senderMessage, false)
 end
 
 ---@type CommandHandler
@@ -452,29 +454,35 @@ local function unban(pid, cmd)
     end
 end
 
--- Short commands
-customCommandHooks.registerCommand("gt", greenText)
-customCommandHooks.registerCommand("ips", ipaddresses)
-customCommandHooks.registerCommand("l", localMessage)
-customCommandHooks.registerCommand("msg", msg)
+---@type TES3MPScriptRegistration
+return {
+    chatCommands = {
+        -- Short commands
+        gt = { callback = greenText },
+        ips = { callback = ipaddresses, },
+        l = { callback = localMessage, },
+        lm = { callback = localMessage, },
+        msg = { callback = msg, },
 
--- Long Commands
-customCommandHooks.registerCommand("ban", ban)
-customCommandHooks.registerCommand("banlist", banlist)
-customCommandHooks.registerCommand("cells", cells)
-customCommandHooks.registerCommand("greentext", greenText)
-customCommandHooks.registerCommand("invite", inviteAlly)
-customCommandHooks.registerCommand("ipaddresses", ipaddresses)
-customCommandHooks.registerCommand("join", joinTeam)
-customCommandHooks.registerCommand("leave", leaveTeam)
-customCommandHooks.registerCommand("list", players)
-customCommandHooks.registerCommand("local", localMessage)
-customCommandHooks.registerCommand("me", me)
-customCommandHooks.registerCommand("message", msg)
-customCommandHooks.registerCommand("overridedestination", overrideDestination)
-customCommandHooks.registerCommand("players", players)
-customCommandHooks.registerCommand("regions", regions)
-customCommandHooks.registerCommand("resetcell", resetCell)
-customCommandHooks.registerCommand("runstartup", runStartup)
-customCommandHooks.registerCommand("setmodel", setPlayerModel)
-customCommandHooks.registerCommand("unban", unban)
+        -- Long commands
+        ban = { callback = ban, },
+        banlist = { callback = banlist, },
+        cells = { callback = cells, },
+        greentext = { callback = greenText, },
+        invite = { callback = inviteAlly, },
+        ipaddresses = { callback = ipaddresses, },
+        localMessage = { callback = localMessage, },
+        join = { callback = joinTeam, },
+        leave = { callback = leaveTeam, },
+        list = { callback = players, },
+        me = { callback = me, },
+        message = { callback = msg, },
+        overridedestination = { callback = overrideDestination, },
+        players = { callback = players, },
+        regions = { callback = regions, },
+        resetcell = { callback = resetCell, },
+        runstartup = { callback = runStartup, },
+        setmodel = { callback = setPlayerModel, },
+        unban = { callback = unban, },
+    },
+}
