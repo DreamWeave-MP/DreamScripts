@@ -10,6 +10,9 @@
 
 local ScriptPathFormatter = 'server/scripts/custom/%s'
 
+--- OpenMW-Style Script loader module for TES3MP.
+--- This is a stateful module which should only ever be `require`'d once by serverCore.lua
+--- YOU HAVE BEEN WARNED!!!!!!!
 ---@class DScriptLoader
 local DScriptLoader = {}
 
