@@ -1,5 +1,10 @@
 ---@meta
 
+---@class DreamWeaveScriptEnv
+---@field print fun(...) Standard lua print
+---@field tableHelper table<string, function> tes3mp's built in tableHelper module
+---@field I table<string, table<any, any>> Global script interfaces to be accessed by other mods
+
 ---@class DUtilModule
 ---@field io DUtilIO
 ---@field misc DUtilMisc
