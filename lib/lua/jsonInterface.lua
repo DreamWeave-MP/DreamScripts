@@ -1,8 +1,10 @@
 local dkjson = require("dkjson")
 local cjson
 local cjsonExists = doesModuleExist("cjson")
-local ffi = require 'ffi'
 local LocalDataPath = tes3mp.GetDataPath()
+
+---@type DUtilModule
+local dUtil = require 'dUtil.init'
 
 if cjsonExists then
     cjson = require("cjson")
@@ -77,83 +79,6 @@ function jsonInterface.load(fileName)
     end
 end
 
-local OperatingSystem = tes3mp.GetOperatingSystemType()
-local UNIX_DEFAULT_PERMS = 448 -- 0755
-local WIN_FILE_DIRECTORY = 0x00000010
-local WIN_FILE_NORMAL = 0x00000080
-
-if OperatingSystem == "Windows" then
-    --- This isn't the most robust thing in the world, but we mostly don't care
-    --- about hidden files or anything with weird attributes, so scream test!
-    ffi.cdef [[
-    typedef unsigned long DWORD;
-    DWORD GetFileAttributesA(const char* lpFileName);
-    BOOL CreateDirectoryA(const char* lpPathName, void* lpSecurityAttributes);
-]]
-else
-    ffi.cdef [[
-    int mkdir(const char *pathname, unsigned int mode);
-]]
-end
-
---- Windows-specific test to determine if a specific file exists
---- Intentionally omits entries with special or weird perms, including directories
----@param fileName string
----@return boolean result Whether or not the provided path is a FILE that exists, without special perms
-function jsonInterface.fileExists(fileName)
-    if type(fileName) ~= 'string' or fileName == '' then
-        error('Invalid parameter passed to jsonInterface.fileExists: ' .. tostring(fileName))
-    end
-
-    if OperatingSystem == 'Windows' then
-        return ffi.C.GetFileAttributesA(fileName) == WIN_FILE_NORMAL
-    else
-        return os.execute(('test -f %s'):format(fileName)) == true
-    end
-end
-
---- Checks if a given entry is a directory.
---- Distinct from the linux version, because `fileExists` explicitly checks if an entry IS a file,
---- So directories will be omitted.
----@param path string
----@return boolean result Whether or not the provided path is a directory that exists
-function jsonInterface.isDir(path)
-    if type(path) ~= 'string' or path == '' then
-        error('Invalid parameter passed to jsonInterface.isDir: ' .. tostring(path))
-    end
-
-    if jsonInterface.fileExists(path) then return false end
-
-    if OperatingSystem == 'Windows' then
-        return ffi.C.GetFileAttributesA(path) == WIN_FILE_DIRECTORY
-    else
-        return os.execute(('test -d %s'):format(path)) == true
-    end
-end
-
---- Given a path to a directory, attempt to create it.
---- If the path already exists, return whether or not it's a directory.
---- If the path does not exist, attempt to create it, and return whether or not the attempt succeeded
----@param path string
----@return boolean result Whether or not the directory exists after the function has ran
-function jsonInterface.mkdir(path)
-    if type(path) ~= 'string' or path == '' then
-        error('Invalid parameter passed to jsonInterface.mkdir: ' .. tostring(path))
-    end
-
-    if jsonInterface.fileExists(path) then
-        return false
-    elseif jsonInterface.isDir(path) then
-        return true
-    end
-
-    if OperatingSystem == 'Windows' then
-        return ffi.C.CreateDirectoryA(path, nil) ~= 0
-    else
-        return ffi.C.mkdir(path, UNIX_DEFAULT_PERMS) == 0
-    end
-end
-
 function jsonInterface.writeToFile(fileName, content)
     if jsonInterface.ioLibrary == nil then
         tes3mp.LogMessage(enumerations.log.ERROR, jsonInterface.libraryMissingMessage)
@@ -163,7 +88,7 @@ function jsonInterface.writeToFile(fileName, content)
     local filePath = string.format("%s/%s", config.dataPath, fileName)
 
     local dir = fileName:match("(.*[/\\])")
-    if dir and not jsonInterface.isDir(dir) then
+    if dir and not dUtil.io.isDir(dir) then
         local currentPath = LocalDataPath .. '/' -- Is this portable?
 
         for segment in dir:gmatch("[^/\\]+") do
@@ -171,12 +96,12 @@ function jsonInterface.writeToFile(fileName, content)
 
             currentPath = string.format("%s%s/", currentPath, segment)
 
-            if jsonInterface.fileExists(currentPath) then
+            if dUtil.io.fileExists(currentPath) then
                 tes3mp.LogMessage(enumerations.log.ERROR,
                     'Cannot create directory ' .. currentPath .. ' as it is already a file that exists!')
                 return false
-            elseif not jsonInterface.isDir(currentPath) then
-                local result = jsonInterface.mkdir(currentPath)
+            elseif not dUtil.io.isDir(currentPath) then
+                local result = dUtil.io.mkdir(currentPath)
                 if not result then
                     tes3mp.LogMessage(enumerations.log.ERROR,
                         "Failed to create directory: " .. currentPath .. ' result: ' .. tostring(result))

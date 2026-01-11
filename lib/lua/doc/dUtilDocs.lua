@@ -18,5 +18,6 @@
 ---@field new fun(x: number?, y: number?, z: number?): Vector3
 
 ---@class DUtilModule
----@field vector3 Vector3Module
+---@field io DUtilIO
 ---@field misc DUtilMisc
+---@field vector3 Vector3Module
