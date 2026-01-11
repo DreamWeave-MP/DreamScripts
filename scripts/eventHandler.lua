@@ -1,3 +1,4 @@
+local color = require 'color'
 local eventHandler = {}
 
 commandHandler = require("commandHandler")

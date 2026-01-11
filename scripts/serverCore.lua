@@ -17,7 +17,7 @@ else
     jsonInterface.setLibrary(io)
 end
 
-require("color")
+require 'color'
 require("config")
 require("time")
 

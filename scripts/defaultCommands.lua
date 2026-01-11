@@ -1,3 +1,4 @@
+local color = require 'color'
 local patterns = require 'patterns'
 
 -- Helper functions

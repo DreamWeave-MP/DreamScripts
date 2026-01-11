@@ -1,3 +1,5 @@
+local color = require 'color'
+
 Menus["advanced example origin"] = {
     text = {
         color.Orange .. "Welcome, " .. color.Yellow,

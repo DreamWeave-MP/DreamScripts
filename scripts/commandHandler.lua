@@ -1,3 +1,5 @@
+local color = require 'color'
+
 local commandHandler = {}
 
 function commandHandler.ProcessCommand(pid, cmd)

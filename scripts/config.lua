@@ -1,3 +1,5 @@
+local color = require 'color'
+
 config = {}
 
 -- The path used by the server for its data folder

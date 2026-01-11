@@ -1,3 +1,5 @@
+local color = require 'color'
+
 Menus["help player"] = {
     text = color.Orange .. "Player command list:\n" ..
         color.Yellow .. "/invite <pid>\n" ..
