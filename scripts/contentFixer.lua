@@ -1,5 +1,4 @@
-tableHelper = require("tableHelper")
-require("utils")
+local tableHelper = require 'tableHelper'
 
 local contentFixer = {}
 
@@ -7,19 +6,16 @@ local deadlyItems = { "keening", "sunder" }
 local fixesByCell = {}
 
 -- Delete the chargen boat and associated guards and objects
-fixesByCell["-1, -9"] = { disable =  { 268178, 297457, 297459, 297460, 299125 }}
-fixesByCell["-2, -9"] = { disable = { 172848, 172850, 172852, 289104, 297461, 397559 }}
-fixesByCell["-2, -10"] = { disable = { 297463, 297464, 297465, 297466 }}
+fixesByCell["-1, -9"] = { disable = { 268178, 297457, 297459, 297460, 299125 } }
+fixesByCell["-2, -9"] = { disable = { 172848, 172850, 172852, 289104, 297461, 397559 } }
+fixesByCell["-2, -10"] = { disable = { 297463, 297464, 297465, 297466 } }
 
 -- Delete the census papers and unlock the doors
-fixesByCell["Seyda Neen, Census and Excise Office"] = { disable = { 172859 }, unlock = { 119513, 172860 }}
+fixesByCell["Seyda Neen, Census and Excise Office"] = { disable = { 172859 }, unlock = { 119513, 172860 } }
 
 function contentFixer.FixCell(pid, cellDescription)
-
     if fixesByCell[cellDescription] ~= nil then
-
         for action, refNumArray in pairs(fixesByCell[cellDescription]) do
-
             tes3mp.ClearObjectList()
             tes3mp.SetObjectListPid(pid)
             tes3mp.SetObjectListCell(cellDescription)
@@ -44,21 +40,24 @@ function contentFixer.FixCell(pid, cellDescription)
     end
 end
 
--- Unequip items that damage the player when worn
---
--- Note: Items with constant damage effects like Whitewalker and the Mantle of Woe
---       are already unequipped by default in the TES3MP client, so this only needs
---       to account for scripted items that are missed there
---
+--- Unequip items that damage the player when worn
+---
+--- Note: Items with constant damage effects like Whitewalker and the Mantle of Woe
+---       are already unequipped by default in the TES3MP client, so this only needs
+---       to account for scripted items that are missed there
+---
+---@param pid PlayerId
 function contentFixer.UnequipDeadlyItems(pid)
-
     local itemsFound = 0
 
-    for arrayIndex, itemRefId in pairs(deadlyItems) do
+    for _, itemRefId in pairs(deadlyItems) do
         if tableHelper.containsKeyValue(Players[pid].data.equipment, "refId", itemRefId, true) then
             local itemSlot = tableHelper.getIndexByNestedKeyValue(Players[pid].data.equipment, "refId", itemRefId, true)
-            Players[pid].data.equipment[itemSlot] = nil
-            itemsFound = itemsFound + 1
+
+            if itemSlot then
+                Players[pid].data.equipment[itemSlot] = nil
+                itemsFound = itemsFound + 1
+            end
         end
     end
 
@@ -69,12 +68,10 @@ function contentFixer.UnequipDeadlyItems(pid)
 end
 
 function contentFixer.AdjustSharedCorprusState(pid)
-
     local corprusId = "corprus"
 
     if WorldInstance.data.customVariables.corprusCured == true then
         if tableHelper.containsValue(Players[pid].data.spellbook, corprusId) == true then
-        
             tableHelper.removeValue(Players[pid].data.spellbook, corprusId)
             tableHelper.cleanNils(Players[pid].data.spellbook)
 
@@ -85,7 +82,7 @@ function contentFixer.AdjustSharedCorprusState(pid)
 
             tes3mp.ClearSpellbookChanges(pid)
             tes3mp.SetSpellbookChangesAction(pid, enumerations.spellbook.ADD)
-            for _, spellId in ipairs({"common disease immunity", "blight disease immunity","corprus immunity"}) do
+            for _, spellId in ipairs({ "common disease immunity", "blight disease immunity", "corprus immunity" }) do
                 table.insert(Players[pid].data.spellbook, spellId)
                 tes3mp.AddSpell(pid, spellId)
             end
@@ -94,7 +91,6 @@ function contentFixer.AdjustSharedCorprusState(pid)
         end
     elseif WorldInstance.data.customVariables.corprusGained == true then
         if tableHelper.containsValue(Players[pid].data.spellbook, corprusId) == false then
-
             table.insert(Players[pid].data.spellbook, corprusId)
 
             tes3mp.ClearSpellbookChanges(pid)
@@ -107,11 +103,9 @@ function contentFixer.AdjustSharedCorprusState(pid)
 end
 
 function contentFixer.AdjustWorldCorprusVariables(journal)
-
     local madeAdjustment = false
 
     for _, journalItem in ipairs(journal) do
-
         if journalItem.quest == "a2_3_corpruscure" and journalItem.index >= 50 then
             WorldInstance.data.customVariables.corprusCured = true
             madeAdjustment = true
