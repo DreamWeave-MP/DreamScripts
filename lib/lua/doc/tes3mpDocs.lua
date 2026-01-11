@@ -10,6 +10,13 @@
 ---| 'OS X'
 ---| 'Unknown OS' -- This one probably shouldn't happen!
 
+
+---@class TES3MPCommand
+---@field definedBy string path of the script which defined this command. The name of the script which defines a command it kept so that old references to it may be removed.
+---@field callback function handler function for whenever this command is invoked
+---@field nameRequirement string[]? optional list of exclusive names which may run a given command
+---@field rankRequirement integer? optional rank requirement to run a command
+
 ---@class TES3MPModule
 ---@field BanAddress fun(ipAddress: string) Given an IP Address string, bans it. Doesn't perform any validation, so caller functions need to do so themselves.
 ---@field GetOperatingSystemType fun(): OSType
