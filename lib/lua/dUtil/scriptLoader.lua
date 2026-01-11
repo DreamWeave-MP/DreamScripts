@@ -76,10 +76,18 @@ local ScriptEnv = {
 }
 
 --- Given a loaded script and its path, insert relevant interfaces
+--- Tries to flush old interfaces, but if the interface name has changed this isn't possible,
+--- leaving old references dangling.
 ---@param scriptPath string sanitized relative script path for error output
 ---@param scriptResult table resulting table after invoking a script using dofile
 function DScriptLoader.loadScriptInterface(scriptPath, scriptResult)
-  if not scriptResult.interface then return end
+  if not scriptResult.interface then
+    if scriptResult.interfaceName and Interfaces[scriptResult.interfaceName] then
+      Interfaces[scriptResult.interfaceName] = nil
+    end
+
+    return
+  end
 
   if type(scriptResult.interface) ~= 'table' then
     tes3mp.LogAppend(
