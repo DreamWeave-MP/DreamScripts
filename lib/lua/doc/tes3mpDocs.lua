@@ -2,6 +2,7 @@
 
 ---@alias CommandTokens string[] pre-tokenized command string provided to all commandHandlers. The first value is always the name of the command entered, including the leading slash.
 ---@alias CommandHandler fun(pid: PlayerId, cmd: CommandTokens) Special function type for handling chat commands
+---@alias Inventory Item[]
 ---@alias PlayerId integer zero-based integer indicating a unique player ID.
 
 ---@alias OSType
@@ -10,6 +11,12 @@
 ---| 'OS X'
 ---| 'Unknown OS' -- This one probably shouldn't happen!
 
+---@class Item
+---@field enchantmentCharge integer -1 if not enchanted.
+---@field soul string soul inhabiting an enchanted item. Must be present, but may be empty.
+---@field refId string recordId of an inventory item
+---@field count integer Number of items in a particular item stack. Must be at least 1.
+---@field charge integer -1 if not enchanted.
 
 ---@class TES3MPCommand
 ---@field definedBy string path of the script which defined this command. The name of the script which defines a command it kept so that old references to it may be removed.
