@@ -8,6 +8,8 @@
 -- }
 -- All fields are, in and of themselves, optional, however, an interfaceName is required when attempting to define an interface for a script
 
+local tableHelper = require 'tableHelper'
+
 local ScriptPathFormatter = 'server/scripts/custom/%s'
 local Deps
 
@@ -79,6 +81,7 @@ function DScriptLoader.getScriptEnv()
     string = string,
     table = table,
     tableHelper = tableHelper,
+    tes3mp = tes3mp,
     I = DScriptLoader.Interfaces,
   }
 end
