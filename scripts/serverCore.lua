@@ -12,8 +12,6 @@ jsonInterface = require("jsonInterface")
 ---@type DUtilModule
 local dUtil = require 'dUtil.init'
 
-dUtil.scriptLoader.loadAllScripts()
-
 -- Lua's default io library for input/output can't open Unicode filenames on Windows,
 -- which is why on Windows it's replaced by TES3MP's io2 (https://github.com/TES3MP/Lua-io2)
 if tes3mp.GetOperatingSystemType() == "Windows" then
@@ -25,6 +23,8 @@ end
 require 'color'
 require("config")
 require("time")
+
+dUtil.scriptLoader.loadAllScripts()
 
 customEventHooks = require("customEventHooks")
 customCommandHooks = require("customCommandHooks")
