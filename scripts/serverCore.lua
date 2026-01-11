@@ -33,7 +33,6 @@ animHelper = require("animHelper")
 speechHelper = require("speechHelper")
 menuHelper = require("menuHelper")
 require("defaultCommands")
-local customMerchantRestock = require 'customMerchantRestock'
 require("customScripts")
 
 Database = nil
