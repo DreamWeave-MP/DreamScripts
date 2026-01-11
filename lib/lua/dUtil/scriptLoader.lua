@@ -9,6 +9,7 @@
 -- All fields are, in and of themselves, optional, however, an interfaceName is required when attempting to define an interface for a script
 
 local ScriptPathFormatter = 'server/scripts/custom/%s'
+local Deps
 
 --- OpenMW-Style Script loader module for TES3MP.
 --- This is a stateful module which should only ever be `require`'d once by serverCore.lua
@@ -128,8 +129,7 @@ end
 ---@param scriptPath string sanitized relative script path for error output
 ---@param scriptRegistration TES3MPScriptRegistration resulting table after invoking a script using dofile
 function DScriptLoader.loadScriptCommands(scriptPath, scriptRegistration)
-  ---@type CustomCommandHooks
-  local customCommandHooks = customCommandHooks:clearCommandsFromScript(scriptPath)
+  Deps.customCommandHooks:clearCommandsFromScript(scriptPath)
 
   for commandName, commandRegistration in pairs(scriptRegistration.chatCommands or {}) do
     if type(commandName ~= string) or commandName == '' or type(commandRegistration.callback) ~= 'function' then
@@ -140,7 +140,7 @@ function DScriptLoader.loadScriptCommands(scriptPath, scriptRegistration)
       )
     end
 
-    customCommandHooks:registerCommand(commandName, {
+    Deps.customCommandHooks:registerCommand(commandName, {
       definedBy = scriptPath,
       callback = commandRegistration.callback,
       nameRequirement = commandRegistration.nameRequirement,
@@ -204,4 +204,14 @@ function DScriptLoader.loadAllScripts()
   end
 end
 
-return DScriptLoader
+---@class DScriptLoaderDeps
+---@field customCommandHooks CustomCommandHooks
+
+---@param deps DScriptLoaderDeps
+return function(deps)
+  assert(deps.customCommandHooks)
+
+  Deps = deps
+
+  return DScriptLoader
+end
