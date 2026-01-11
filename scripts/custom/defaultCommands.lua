@@ -402,18 +402,14 @@ local function setPlayerModel(pid, cmd)
 
     if not isAdmin then
         return tes3mp.SendMessage(pid, "You need to be an admin to run this command\n")
-    elseif not logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-        return
     elseif not cmd[3] then
         return tes3mp.SendMessage(pid, 'Invalid inputs! Use /setmodel <pid> "Model name"\n')
     end
 
-    local targetPid = tonumber(cmd[2])
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+    if not isValid then return end
 
     local targetPlayer = Players[targetPid]
-    if not targetPid or not targetPlayer or not targetPlayer:IsLoggedIn() then
-        return tes3mp.SendMessage(pid, ('Invalid input! %s is not a valid player id!'):format(targetPid))
-    end
 
     local inputConcatenation = tableHelper.concatenateFromIndex(cmd, 3)
     local modelName = string.gsub(inputConcatenation, '"', '')
