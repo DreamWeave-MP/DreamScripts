@@ -19,3 +19,4 @@
 
 ---@class DUtilModule
 ---@field vector3 Vector3Module
+---@field misc DUtilMisc
