@@ -54,6 +54,7 @@ local Interfaces = {}
 DScriptLoader.Interfaces = setmetatable({},
   {
     __index = function(key)
+      print('searching for', Interfaces[key])
       return Interfaces[key]
     end,
     __newindex = function()
