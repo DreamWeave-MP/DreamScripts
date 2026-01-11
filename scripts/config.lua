@@ -6,7 +6,7 @@ config = {}
 config.dataPath = tes3mp.GetDataPath()
 
 -- Array of script paths used to load handlers, validators, and interfaces from
-config.customScripts = { 'customMerchantRestock', }
+config.customScripts = { 'defaultCommands', 'customMerchantRestock', }
 
 -- The game mode displayed for this server in the server browser
 config.gameMode = "Default"
