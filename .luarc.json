@@ -1,6 +1,10 @@
 {
     "runtime": {
         "version": "LuaJIT",
+        "path": [
+            "./scripts/?.lua",
+            "./lib/lua/?.lua"
+        ]
     },
     "workspace.library": ["./lib/lua/doc/*.lua"]
 }
