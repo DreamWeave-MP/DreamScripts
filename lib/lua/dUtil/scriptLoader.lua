@@ -151,7 +151,7 @@ function DScriptLoader.loadScript(scriptName, callerPid)
   end
 
   tableHelper.print(result)
-  DScriptLoader.loadScriptInterface(scriptPath, result)
+  -- DScriptLoader.loadScriptInterface(scriptPath, result)
 end
 
 --- Load all scripts defined by config.customScripts
