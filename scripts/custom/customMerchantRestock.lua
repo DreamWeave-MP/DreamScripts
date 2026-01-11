@@ -322,6 +322,7 @@ end
 --
 -- customCommandHooks.registerCommand("reloadmerchants", loadMerchants)
 
+---@type TES3MPScriptRegistration
 return {
   interfaceName = 'customMerchantRestock',
   interface = {
@@ -337,6 +338,9 @@ return {
   },
   eventValidators = {},
   chatCommands = {
-    reloadMerchants = loadMerchants,
+    reloadMerchants = {
+      callback = loadMerchants,
+      rankRequirement = 2,
+    },
   }
 }
