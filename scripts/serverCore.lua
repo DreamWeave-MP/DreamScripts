@@ -1,5 +1,8 @@
 require 'doc.tes3mpDocs'
 
+--- Global string overrides load before any possibly-dependent modules
+require 'dUtil.stringMeta'
+
 require("utils")
 require("enumerations")
 tableHelper = require("tableHelper")
