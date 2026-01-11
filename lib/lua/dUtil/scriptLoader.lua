@@ -63,7 +63,7 @@ DScriptLoader.Interfaces = setmetatable({},
     __tostring = function()
       return ([[Global Interfaces {
   %s
-}]]):format(tableHelper.concatenateTableIndexes(DScriptLoader.Interfaces))
+}]]):format(tableHelper.concatenateTableIndexes(Interfaces))
     end,
   }
 )
