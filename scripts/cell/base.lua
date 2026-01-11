@@ -1,7 +1,7 @@
 local patterns = require 'patterns'
 
-contentFixer = require("contentFixer")
-tableHelper = require("tableHelper")
+local contentFixer = require 'contentFixer'
+local tableHelper = require 'tableHelper'
 local inventoryHelper = require 'inventoryHelper'
 packetBuilder = require("packetBuilder")
 
