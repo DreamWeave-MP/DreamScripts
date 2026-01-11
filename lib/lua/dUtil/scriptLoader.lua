@@ -47,28 +47,29 @@ function DScriptLoader.makeReadOnly(inTable)
   })
 end
 
-DScriptLoader.Interfaces = {}
+local Interfaces = {}
+DScriptLoader.Interfaces = setmetatable({},
+  {
+    __index = function(key)
+      return Interfaces[key]
+    end,
+    __newindex = function()
+      debug.traceback(('The global interfaces table is not writable!'), 3)
+      tes3mp.StopServer(15)
+    end,
+    __tostring = function()
+      return ([[Global Interfaces {
+  %s
+}]]):format(tableHelper.concatenateTableIndexes(DScriptLoader.Interfaces))
+    end,
+  }
+)
 
 ---@class DreamWeaveScriptEnv
 local ScriptEnv = {
   print = print,
   tableHelper = tableHelper,
-  I = setmetatable({},
-    {
-      __index = function(key)
-        return DScriptLoader.Interfaces[key]
-      end,
-      __newindex = function()
-        debug.traceback(('The global interfaces table is not writable!'), 3)
-        tes3mp.StopServer(15)
-      end,
-      __tostring = function()
-        return ([[Global Interfaces {
-  %s
-}]]):format(tableHelper.concatenateTableIndexes(DScriptLoader.Interfaces))
-      end,
-    }
-  ),
+  I = DScriptLoader.Interfaces,
 }
 
 --- Given a loaded script and its path, insert relevant interfaces
