@@ -23,18 +23,18 @@ config.difficulty = 0
 -- Note 2: Some settings, such as "difficulty" and "actors processing range", cannot be
 --         changed from here
 config.gameSettings = {
-    { name = "best attack", value = false },
-    { name = "prevent merchant equipping", value = false },
-    { name = "enchanted weapons are magical", value = true },
-    { name = "rebalance soul gem values", value = false },
-    { name = "barter disposition change is permanent", value = false },
-    { name = "strength influences hand to hand", value = 0 },
-    { name = "use magic item animations", value = false },
-    { name = "normalise race speed", value = false },
-    { name = "uncapped damage fatigue", value = false },
-    { name = "NPCs avoid collisions", value = false },
-    { name = "swim upward correction", value = false },
-    { name = "trainers training skills based on base skill", value = true },
+    { name = "best attack",                                   value = false },
+    { name = "prevent merchant equipping",                    value = false },
+    { name = "enchanted weapons are magical",                 value = true },
+    { name = "rebalance soul gem values",                     value = false },
+    { name = "barter disposition change is permanent",        value = false },
+    { name = "strength influences hand to hand",              value = 0 },
+    { name = "use magic item animations",                     value = false },
+    { name = "normalise race speed",                          value = false },
+    { name = "uncapped damage fatigue",                       value = false },
+    { name = "NPCs avoid collisions",                         value = false },
+    { name = "swim upward correction",                        value = false },
+    { name = "trainers training skills based on base skill",  value = true },
     { name = "always allow stealing from knocked out actors", value = false }
 }
 
@@ -45,28 +45,39 @@ config.vrSettings = {
 }
 
 -- The world time used for a newly created world
-config.defaultTimeTable = { year = 427, month = 7, day = 16, hour = 9,
-    daysPassed = 1, dayTimeScale = 30, nightTimeScale = 40 }
+config.defaultTimeTable = {
+    year = 427,
+    month = 7,
+    day = 16,
+    hour = 9,
+    daysPassed = 1,
+    dayTimeScale = 30,
+    nightTimeScale = 40
+}
 
 -- The chat window instructions that show up when players join the server
-config.chatWindowInstructions = color.White .. "Use " .. color.Yellow .. "Y" .. color.White .. " by default to chat or change it" ..
+config.chatWindowInstructions = color.White ..
+    "Use " .. color.Yellow .. "Y" .. color.White .. " by default to chat or change it" ..
     " from your client config.\nType in " .. color.Yellow .. "/help" .. color.White .. " to see the commands" ..
-    " available to you.\nType in " .. color.Yellow .. "/invite <pid>" .. color.White .. " to invite a player to become " ..
+    " available to you.\nType in " ..
+    color.Yellow .. "/invite <pid>" .. color.White .. " to invite a player to become " ..
     "your ally so their followers don't react to your friendly fire.\nUse " .. color.Yellow .. "F2" .. color.White ..
-    " by default to hide the chat window or use the " .. color.Yellow .. "Chat Window Mode" .. color.White .. " button from " ..
+    " by default to hide the chat window or use the " ..
+    color.Yellow .. "Chat Window Mode" .. color.White .. " button from " ..
     "your left controller menu if you're in VR.\n"
 
 -- The startup scripts instructions that show up when the startup scripts have not been run yet
-config.startupScriptsInstructions = color.Red .. "Warning: " .. color.White .. " For some actors and objects to have their correct" ..
+config.startupScriptsInstructions = color.Red ..
+    "Warning: " .. color.White .. " For some actors and objects to have their correct" ..
     " initial states, an admin needs to run the " .. color.Yellow .. "/runstartup" .. color.White .. " command.\n"
 
 -- Which ingame startup scripts should be run via the /runstartup command
 -- Note: These affect the world and must not be run for every player who joins.
-config.worldStartupScripts = {"Startup", "BMStartUpScript"}
+config.worldStartupScripts = { "Startup", "BMStartUpScript" }
 
 -- Which ingame startup scripts should be run on every player who joins
 -- Note: These pertain to game mechanics that wouldn't work otherwise, such as vampirism checks
-config.playerStartupScripts = {"VampireCheck", "WereCheckScript"}
+config.playerStartupScripts = { "VampireCheck", "WereCheckScript" }
 
 -- Whether the world time should continue passing when there are no players on the server
 config.passTimeWhenEmpty = false
@@ -152,28 +163,28 @@ config.useInstancedSpawn = true
 -- Warning: Only interior cells can be instanced
 config.instancedSpawn = {
     cellDescription = "Seyda Neen, Census and Excise Office",
-    position = {1130.3388671875, -387.14947509766, 193},
-    rotation = {0.09375, 1.5078122615814},
+    position = { 1130.3388671875, -387.14947509766, 193 },
+    rotation = { 0.09375, 1.5078122615814 },
     text = "Multiplayer skips several minutes of the game's introduction and places you at the first quest giver." ..
         "\n\nYou will be able to meet other players only after you leave this room.",
-    items = {{refId = "chargen statssheet", count = 1, charge = -1, enchantmentCharge = -1, soul = ""}}    
+    items = { { refId = "chargen statssheet", count = 1, charge = -1, enchantmentCharge = -1, soul = "" } }
 }
 
 -- Where players will be spawned if an instanced spawn is not desired
 config.noninstancedSpawn = {
     cellDescription = "-3, -2",
-    position = {-23894.0, -15079.0, 505},
-    rotation = {0, 1.2},
+    position = { -23894.0, -15079.0, 505 },
+    rotation = { 0, 1.2 },
     text = "Multiplayer skips over the original character generation." ..
         "\n\nAs a result, you start out with Caius Cosades' package.",
-    items = {{refId = "bk_a1_1_caiuspackage", count = 1, charge = -1, enchantmentCharge = -1, soul = ""}}
+    items = { { refId = "bk_a1_1_caiuspackage", count = 1, charge = -1, enchantmentCharge = -1, soul = "" } }
 }
 
 -- The location that players respawn at, unless overridden below by other respawn options
 config.defaultRespawn = {
     cellDescription = "Balmora, Temple",
-    position = {4700.5673828125, 3874.7416992188, 14758.990234375},
-    rotation = {0.25314688682556, 1.570611000061}
+    position = { 4700.5673828125, 3874.7416992188, 14758.990234375 },
+    rotation = { 0.25314688682556, 1.570611000061 }
 }
 
 -- Whether the default respawn location should be ignored in favor of respawning the
@@ -326,8 +337,8 @@ config.generatedRecordIdPrefix = "$custom"
 config.recordStoreLoadOrder = {
     { "cell" },
     { "gamesetting", "script", "spell", "potion", "enchantment", "bodypart", "armor", "clothing",
-      "book", "weapon", "ingredient", "apparatus", "lockpick", "probe", "repair", "light",
-      "miscellaneous", "creature", "npc", "container", "door", "activator", "static", "sound" }
+        "book", "weapon", "ingredient", "apparatus", "lockpick", "probe", "repair", "light",
+        "miscellaneous", "creature", "npc", "container", "door", "activator", "static", "sound" }
 }
 
 -- The types of records that can be enchanted and therefore have links to enchantment records
