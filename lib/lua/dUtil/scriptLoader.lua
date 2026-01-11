@@ -44,7 +44,7 @@ function DScriptLoader.makeReadOnly(inTable)
 
   return setmetatable(inTable, {
     __newindex = function()
-      debug.traceback(('Write attempt to read-only table %s'):format(inTable), 3)
+      print(debug.traceback(('Write attempt to read-only table %s'):format(inTable), 3))
       tes3mp.StopServer(15)
     end,
   })
@@ -57,7 +57,7 @@ DScriptLoader.Interfaces = setmetatable({},
       return Interfaces[key]
     end,
     __newindex = function()
-      debug.traceback(('The global interfaces table is not writable!'), 3)
+      print(debug.traceback(('The global interfaces table is not writable!'), 3))
       tes3mp.StopServer(15)
     end,
     __tostring = function()
