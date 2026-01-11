@@ -316,11 +316,11 @@ function RecursiveGetLeveledItem(comparatorLevel, leveledList)
   end
 end
 
-customEventHooks.registerHandler("OnObjectDialogueChoice", resetMerchantData)
-customEventHooks.registerValidator("OnObjectMiscellaneous", getInitialGold)
-customEventHooks.registerHandler("OnServerPostInit", loadMerchants)
-
-customCommandHooks.registerCommand("reloadmerchants", loadMerchants)
+-- customEventHooks.registerHandler("OnObjectDialogueChoice", resetMerchantData)
+-- customEventHooks.registerValidator("OnObjectMiscellaneous", getInitialGold)
+-- customEventHooks.registerHandler("OnServerPostInit", loadMerchants)
+--
+-- customCommandHooks.registerCommand("reloadmerchants", loadMerchants)
 
 return {
   interfaceName = 'customMerchantRestock',
