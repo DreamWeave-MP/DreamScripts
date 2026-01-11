@@ -1,4 +1,3 @@
 data/*
 lib/*
-scripts/custom/*
 !/lib/lua
