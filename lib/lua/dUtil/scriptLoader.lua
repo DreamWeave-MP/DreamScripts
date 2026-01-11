@@ -106,7 +106,7 @@ function DScriptLoader.loadScriptInterface(scriptPath, scriptResult)
     tes3mp.StopServer(11)
   end
 
-  DScriptLoader.Interfaces[scriptResult.interfaceName] = DScriptLoader.makeReadOnly(scriptResult.interface)
+  Interfaces[scriptResult.interfaceName] = DScriptLoader.makeReadOnly(scriptResult.interface)
 end
 
 --- Given a script name, attempt to load it into the tes3mp environment like an OpenMW Lua script.
@@ -151,7 +151,7 @@ function DScriptLoader.loadScript(scriptName, callerPid)
   end
 
   tableHelper.print(result)
-  -- DScriptLoader.loadScriptInterface(scriptPath, result)
+  DScriptLoader.loadScriptInterface(scriptPath, result)
 end
 
 --- Load all scripts defined by config.customScripts
