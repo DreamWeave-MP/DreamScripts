@@ -71,19 +71,33 @@ DScriptLoader.Interfaces = setmetatable({},
   }
 )
 
+--- Small shim for overriding require statements in curated script environment
+---@param scriptName string
+---@return any
+function DScriptLoader.requireShim(scriptName)
+  if scriptName == 'interfaces' then
+    return DScriptLoader.Interfaces
+  else
+    return require(scriptName)
+  end
+end
+
 --- Returns a fresh copy of the script environment for each loaded script, so it may not be mutated
 ---@return DreamWeaveScriptEnv
 function DScriptLoader.getScriptEnv()
-  return {
+  --- Curated environment passed to DreamWeave scripts
+  --- Each instance is mutable, although it is unique, so that scripts are completely sandboxed in every instance
+  ---@class DreamWeaveScriptEnv
+  local ScriptEnv = {
     math = math,
-    require = require,
+    require = DScriptLoader.requireShim,
     print = print,
     string = string,
     table = table,
-    tableHelper = tableHelper,
     tes3mp = tes3mp,
-    I = DScriptLoader.Interfaces,
   }
+
+  return ScriptEnv
 end
 
 --- Given a loaded script and its path, insert relevant interfaces
