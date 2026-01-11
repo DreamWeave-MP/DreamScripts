@@ -24,8 +24,6 @@
     07/17/2023          - S3 fork, rewritten to use external databases for optimization and additional mod support. :flex:
 --]]
 
-
-local customMerchantRestock = {}
 -- Item restocking for containers that are not the npc's inventory is not implemented
 -- items will only show up in the barter window for sale if its an item type the merchant deals in?
 -- they will also equip gear you put in their inventory if its better than what they are currently wearing?
@@ -324,4 +322,21 @@ customEventHooks.registerHandler("OnServerPostInit", loadMerchants)
 
 customCommandHooks.registerCommand("reloadmerchants", loadMerchants)
 
-return customMerchantRestock
+return {
+  interfaceName = 'customMerchantRestock',
+  interface = {
+    getLeveledItem = RecursiveGetLeveledItem,
+    merchantData = function()
+      if not merchantData then loadMerchants() end
+      return merchantData
+    end,
+  },
+  eventHandlers = {
+    onObjectDialogueChoice = resetMerchantData,
+    onServerPostInit = loadMerchants,
+  },
+  eventValidators = {},
+  chatCommands = {
+    reloadMerchants = loadMerchants,
+  }
+}
