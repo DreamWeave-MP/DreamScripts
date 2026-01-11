@@ -68,6 +68,7 @@ DScriptLoader.Interfaces = setmetatable({},
   }
 )
 
+--- Returns a fresh copy of the script environment for each loaded script, so it may not be mutated
 ---@return DreamWeaveScriptEnv
 function DScriptLoader.getScriptEnv()
   return {
