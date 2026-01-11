@@ -6,7 +6,7 @@
 ---@field vector3 Vector3Module
 
 ---@class TES3MPCommandRegistration
----@field callback function
+---@field callback CommandHandler
 ---@field nameRequirement string[]?
 ---@field rankRequirement integer?
 
