@@ -13,9 +13,9 @@
 ---@class TES3MPScriptRegistration
 ---@field interface table<any, any>? Exposed functions and variables for other scripts to access
 ---@field interfaceName string? Name of the interface for another script to look for. Mandatory if an interface is defined.
----@field eventHandlers table<string, function> series of eventHandlers for this script to run
----@field eventValidators table<string, function> series of eventValidators for this script to run
----@field chatCommands table<string, TES3MPCommandRegistration> chat commands registered by this script
+---@field eventHandlers table<string, function>? series of eventHandlers for this script to run
+---@field eventValidators table<string, function>? series of eventValidators for this script to run
+---@field chatCommands table<string, TES3MPCommandRegistration>? chat commands registered by this script
 
 ---@class Vector3: userdata
 ---@field x number
