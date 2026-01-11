@@ -29,17 +29,27 @@ defaultCommands = {}
 
 -- Commands
 defaultCommands.msg = function(pid, cmd)
-    if pid == tonumber(cmd[2]) then
-        tes3mp.SendMessage(pid, "You can't message yourself.\n")
-    elseif cmd[3] == nil then
-        tes3mp.SendMessage(pid, "You cannot send a blank message.\n")
-    elseif logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-        local targetPid = tonumber(cmd[2])
-        message = logicHandler.GetChatName(pid) .. " to " .. logicHandler.GetChatName(targetPid) .. ": "
-        message = message .. tableHelper.concatenateFromIndex(cmd, 3) .. "\n"
-        tes3mp.SendMessage(pid, message, false)
-        tes3mp.SendMessage(targetPid, message, false)
+    if #cmd < 3 then
+        return tes3mp.SendMessage(pid, 'Usage: /message [targetPid] MESSAGE\n')
     end
+
+    local targetPid = tonumber(cmd[2])
+    if not targetPid then
+        return tes3mp.SendMessage(pid, 'Usage: /message [targetPid] MESSAGE\n')
+    end
+
+    if pid == targetPid then
+        return tes3mp.SendMessage(pid, "You can't message yourself.\n")
+    end
+
+    if not logicHandler.CheckPlayerValidity(pid, targetPid) then
+        return
+    end
+
+    local message = logicHandler.GetChatName(pid) ..
+        " to " .. logicHandler.GetChatName(targetPid) .. ": " .. tableHelper.concatenateFromIndex(cmd, 3) .. "\n"
+    tes3mp.SendMessage(pid, message, false)
+    tes3mp.SendMessage(targetPid, message, false)
 end
 
 customCommandHooks.registerCommand("msg", defaultCommands.msg)
