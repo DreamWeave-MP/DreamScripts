@@ -1,127 +1,226 @@
 local color = require 'color'
 local patterns = require 'patterns'
 
--- Helper functions
-local getRanks = function(pid)
-    local serverOwner = false
-    local admin = false
-    local moderator = false
+---@type DUtilModule
+local dUtil = require 'dUtil.init'
 
-    if Players[pid]:IsServerOwner() then
-        serverOwner = true
-        admin = true
-        moderator = true
-    elseif Players[pid]:IsAdmin() then
-        admin = true
-        moderator = true
-    elseif Players[pid]:IsModerator() then
-        moderator = true
-    end
+local function invalidCommand(pid)
+    assert(logicHandler.CheckPlayerValidity(nil, pid),
+        'Invalid/not logged in playerId provided to invalidCommand! This should never happen!')
 
-    return moderator, admin, serverOwner
+    tes3mp.SendMessage(
+        pid,
+        ('%sNot a valid command. Type /help for more info.%s\n'):format(color.Error, color.Default),
+        false
+    )
 end
 
-local invalidCommand = function(pid)
-    local message = "Not a valid command. Type /help for more info.\n"
-    tes3mp.SendMessage(pid, color.Error .. message .. color.Default, false)
+---@type CommandHandler
+local function ban(pid, cmd)
+    if not dUtil.misc.getRanks(pid) then
+        return invalidCommand(pid)
+    end
+
+    if cmd[2] == "ip" and cmd[3] then
+        local ipAddress = cmd[3]
+
+        if not tableHelper.containsValue(banList.ipAddresses, ipAddress) then
+            table.insert(banList.ipAddresses, ipAddress)
+            SaveBanList()
+
+            tes3mp.SendMessage(pid, ('%s is now banned.\n'):format(ipAddress), false)
+
+            if dUtil.misc.isValidIP(ipAddress) then
+                tes3mp.BanAddress(ipAddress)
+            else
+                tes3mp.SendMessage(pid, ('%s is not a valid IP Address! Cannot ban it!'):format(ipAddress))
+            end
+        else
+            tes3mp.SendMessage(pid, ('%s was already banned.\n'):format(ipAddress), false)
+        end
+    elseif (cmd[2] == "name" or cmd[2] == "player") and cmd[3] then
+        local targetName = tableHelper.concatenateFromIndex(cmd, 3)
+        logicHandler.BanPlayer(pid, targetName)
+    else
+        local isValidPlayer, targetPid = logicHandler.CheckPlayerValidity(nil, cmd[2])
+        if isValidPlayer then
+            logicHandler.BanPlayer(pid, Players[targetPid].name)
+        else
+            tes3mp.SendMessage(pid, ('Invalid input for ban: %s\n'):format(cmd[2]), false)
+        end
+    end
 end
 
-defaultCommands = {}
-
--- Commands
-defaultCommands.msg = function(pid, cmd)
-    if #cmd < 3 then
-        return tes3mp.SendMessage(pid, 'Usage: /message [targetPid] MESSAGE\n')
+---@type CommandHandler
+local function banlist(pid, cmd)
+    if not dUtil.misc.getRanks(pid) then
+        return invalidCommand(pid)
     end
 
-    local targetPid = tonumber(cmd[2])
-    if not targetPid then
-        return tes3mp.SendMessage(pid, 'Usage: /message [targetPid] MESSAGE\n')
+    cmd[2] = cmd[2] or ''
+    local filter, message = cmd[2]:lower()
+
+    if filter == 'names' or filter == 'name' or filter == 'players' then
+        if not next(banList.playerNames) then
+            message = 'No player names have been banned.\n'
+        else
+            message = 'The following player names are banned:\n'
+
+            for index, targetName in pairs(banList.playerNames) do
+                message = message .. targetName
+
+                if index < #banList.playerNames then
+                    message = message .. ', '
+                end
+            end
+
+            message = message .. '\n'
+        end
+    elseif filter == 'ips' or filter == 'ip' then
+        if not next(banList.ipAddresses) then
+            message = 'No IP addresses have been banned.\n'
+        else
+            message = 'The following IP addresses unattached to players are banned:\n'
+
+            for index, ipAddress in pairs(banList.ipAddresses) do
+                message = message .. ipAddress
+
+                if index < #banList.ipAddresses then
+                    message = message .. ', '
+                end
+            end
+
+            message = message .. '\n'
+        end
     end
 
-    if pid == targetPid then
-        return tes3mp.SendMessage(pid, "You can't message yourself.\n")
+    if not message then
+        message = 'Please specify whether you want the banlist for IPs or for names.\n'
     end
 
-    if not logicHandler.CheckPlayerValidity(pid, targetPid) then
-        return
-    end
-
-    local message = logicHandler.GetChatName(pid) ..
-        " to " .. logicHandler.GetChatName(targetPid) .. ": " .. tableHelper.concatenateFromIndex(cmd, 3) .. "\n"
     tes3mp.SendMessage(pid, message, false)
-    tes3mp.SendMessage(targetPid, message, false)
 end
 
-customCommandHooks.registerCommand("msg", defaultCommands.msg)
-customCommandHooks.registerCommand("message", defaultCommands.msg)
-
-defaultCommands.inviteAlly = function(pid, cmd)
-    if pid == tonumber(cmd[2]) then
-        tes3mp.SendMessage(pid, "You can't invite yourself to be your own ally.\n")
-    elseif logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-        local targetPid = tonumber(cmd[2])
-        local senderMessage
-
-        if Players[pid].allyInvitesSent == nil then Players[pid].allyInvitesSent = {} end
-        if Players[targetPid].allyInvitesReceived == nil then Players[targetPid].allyInvitesReceived = {} end
-
-        if tableHelper.containsValue(Players[pid].data.alliedPlayers, Players[targetPid].accountName) then
-            senderMessage = "You already have " .. logicHandler.GetChatName(targetPid) .. " as your ally\n"
-        elseif tableHelper.containsValue(Players[pid].allyInvitesSent, Players[targetPid].accountName) then
-            senderMessage = "You have already invited " .. logicHandler.GetChatName(targetPid) .. " to be your ally.\n"
-        else
-            table.insert(Players[pid].allyInvitesSent, Players[targetPid].accountName)
-            table.insert(Players[targetPid].allyInvitesReceived, Players[pid].accountName)
-
-            senderMessage = "You have invited " .. logicHandler.GetChatName(targetPid) .. " to be your ally.\n"
-            local receiverMessage = logicHandler.GetChatName(pid) .. " has invited you to become their ally. Write " ..
-                color.Yellow .. "/join " .. pid .. color.White .. " to accept.\n"
-            tes3mp.SendMessage(targetPid, receiverMessage, false)
-        end
-
-        tes3mp.SendMessage(pid, senderMessage, false)
+---@type CommandHandler
+local function cells(pid, _)
+    if dUtil.misc.getRanks(pid) then
+        return invalidCommand(pid)
     end
+
+    guiHelper.ShowCellList(pid)
 end
 
-customCommandHooks.registerCommand("invite", defaultCommands.inviteAlly)
+---@type CommandHandler
+local function greenText(pid, cmd)
+    local message = logicHandler.GetChatName(pid) .. ": " .. color.GreenText ..
+        ">" .. tableHelper.concatenateFromIndex(cmd, 2) .. "\n"
+    tes3mp.SendMessage(pid, message, true)
+end
 
-defaultCommands.joinTeam = function(pid, cmd)
-    if pid == tonumber(cmd[2]) then
-        tes3mp.SendMessage(pid, "You can't join yourself as your own ally.\n")
-    elseif logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-        local targetPid = tonumber(cmd[2])
-        local senderMessage
+---@type CommandHandler
+local function inviteAlly(pid, cmd)
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+    if not isValid then return end
 
-        if Players[pid].allyInvitesReceived == nil then Players[pid].allyInvitesReceived = {} end
+    local callingPlayer, targetPlayer, senderMessage = Players[pid], Players[targetPid], nil
+    local targetName = logicHandler.getChatName(targetPid)
 
-        if tableHelper.containsValue(Players[pid].data.alliedPlayers, Players[targetPid].accountName) then
-            senderMessage = "You already have " .. logicHandler.GetChatName(targetPid) .. " as an ally\n"
-        elseif tableHelper.containsValue(Players[pid].allyInvitesReceived, Players[targetPid].accountName) then
-            senderMessage = "You now have " .. logicHandler.GetChatName(targetPid) .. " as an ally. Write " ..
-                color.Yellow .. "/leave " .. targetPid .. color.White .. " if you later decide to leave " ..
-                "the partnership.\n"
-            local receiverMessage = logicHandler.GetChatName(pid) .. " has agreed to become your ally.\n"
-            tes3mp.SendMessage(targetPid, receiverMessage, false)
+    if not callingPlayer.allyInvitesSent then callingPlayer.allyInvitesSent = {} end
+    if not targetPlayer.allyInvitesReceived then targetPlayer.allyInvitesReceived = {} end
 
-            table.insert(Players[pid].data.alliedPlayers, Players[targetPid].accountName)
-            table.insert(Players[targetPid].data.alliedPlayers, Players[pid].accountName)
-            Players[pid]:Save()
-            Players[pid]:LoadAllies()
-            Players[targetPid]:Save()
-            Players[targetPid]:LoadAllies()
-        else
-            senderMessage = "You have not yet been invited to become an ally of " ..
-                logicHandler.GetChatName(targetPid) .. "\n"
-        end
+    if tableHelper.containsValue(callingPlayer.data.alliedPlayers, targetPlayer.accountName) then
+        senderMessage = ('%s is already your ally.\n'):format(targetName)
+    elseif tableHelper.containsValue(callingPlayer.allyInvitesSent, targetPlayer.accountName) then
+        senderMessage = ('You have already invited %s to be your ally.\n'):format(targetName)
+    else
+        senderMessage = ('You have invited %s to be your ally.\n'):format(targetName)
 
-        tes3mp.SendMessage(pid, senderMessage, false)
+        table.insert(callingPlayer.allyInvitesSent, targetPlayer.accountName)
+        table.insert(targetPlayer.allyInvitesReceived, callingPlayer.accountName)
+
+        tes3mp.SendMessage(
+            targetPid,
+            ('%s has invited you to become their ally. Write %s/join%s %s to accept.\n'):format(
+                logicHandler.GetChatName(pid), color.Yellow, pid, color.White),
+            false
+        )
     end
+
+    tes3mp.SendMessage(pid, senderMessage, false)
 end
 
-customCommandHooks.registerCommand("join", defaultCommands.joinTeam)
+---@type CommandHandler
+local function ipaddresses(pid, cmd)
+    if not dUtil.misc.getRanks(pid) or not cmd[2] then
+        return invalidCommand(pid)
+    end
 
-defaultCommands.leaveTeam = function(pid, cmd)
+    local targetName = tableHelper.concatenateFromIndex(cmd, 2)
+    local targetPlayer = logicHandler.GetPlayerByName(targetName)
+
+    if not targetPlayer then
+        return tes3mp.SendMessage(pid, ('Player %s does not exist!'):format(targetName), false)
+    end
+
+    if not targetPlayer.data.ipAddresses then
+        return tes3mp.SendMessage(
+            pid,
+            ('Player %s does not have any recorded IP addresses. That\'s bad!\n'):format(targetPlayer.accountName),
+            false
+        )
+    end
+
+    local message = ('Player %s has used the following IP addresses:\n'):format(targetPlayer.accountName)
+
+    for index, ipAddress in pairs(targetPlayer.data.ipAddresses) do
+        message = message .. ipAddress
+
+        if index < #targetPlayer.data.ipAddresses then
+            message = message .. ', '
+        end
+    end
+
+    message = message .. '\n'
+    tes3mp.SendMessage(pid, message, false)
+end
+
+---@type CommandHandler
+local function joinTeam(pid, cmd)
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+    if not isValid then return end
+
+    local callingPlayer, targetPlayer, senderMessage = Players[pid], Players[targetPid], nil
+    local targetName = logicHandler.getChatName(targetPid)
+
+    if not callingPlayer.allyInvitesReceived then callingPlayer.allyInvitesReceived = {} end
+
+    if tableHelper.containsValue(callingPlayer.data.alliedPlayers, targetPlayer.accountName) then
+        senderMessage = ('%s is already your ally!\n'):format(targetName)
+    elseif tableHelper.containsValue(callingPlayer.allyInvitesReceived, targetPlayer.accountName) then
+        senderMessage = ('%s is now your ally. Write %s/leave %s%s if you later decide to leave the partnership.\n')
+            :format(targetName, color.Yellow, targetPid, color.White)
+
+        tes3mp.SendMessage(
+            targetPid,
+            ('%s has agreed to become your ally.\n'):format(logicHandler.GetChatName(pid)),
+            false
+        )
+
+        table.insert(callingPlayer.data.alliedPlayers, targetPlayer.accountName)
+        table.insert(targetPlayer.data.alliedPlayers, callingPlayer.accountName)
+        callingPlayer:Save()
+        callingPlayer:LoadAllies()
+        targetPlayer:Save()
+        targetPlayer:LoadAllies()
+    else
+        senderMessage = ('%s hasn\'t yet invited you to join their party. Sorry!\n'):format(targetName)
+    end
+
+    tes3mp.SendMessage(pid, senderMessage, false)
+end
+
+---@type CommandHandler
+local function leaveTeam(pid, cmd)
     if pid == tonumber(cmd[2]) then
         tes3mp.SendMessage(pid, "You can't leave an alliance with yourself.\n")
     elseif logicHandler.CheckPlayerValidity(pid, cmd[2]) then
@@ -149,249 +248,71 @@ defaultCommands.leaveTeam = function(pid, cmd)
     end
 end
 
-customCommandHooks.registerCommand("leave", defaultCommands.leaveTeam)
+---@type CommandHandler
+local function localMessage(pid, cmd)
+    local player = Players[pid]
+    local cellDescription = player.data.location.cell
 
-defaultCommands.me = function(pid, cmd)
-    local message = logicHandler.GetChatName(pid) .. " " .. tableHelper.concatenateFromIndex(cmd, 2) .. "\n"
-    tes3mp.SendMessage(pid, message, true)
-end
+    if not logicHandler.IsCellLoaded(cellDescription) then return end
+    local message = ('%s to local area: %s\n'):format(
+        logicHandler.GetChatName(pid),
+        tableHelper.concatenateFromIndex(cmd, 2)
+    )
 
-customCommandHooks.registerCommand("me", defaultCommands.me)
-
-defaultCommands.localMessage = function(pid, cmd)
-    local cellDescription = Players[pid].data.location.cell
-
-    if logicHandler.IsCellLoaded(cellDescription) == true then
-        for index, visitorPid in pairs(LoadedCells[cellDescription].visitors) do
-            local message = logicHandler.GetChatName(pid) .. " to local area: "
-            message = message .. tableHelper.concatenateFromIndex(cmd, 2) .. "\n"
-            tes3mp.SendMessage(visitorPid, message, false)
-        end
+    for _, visitorPid in pairs(LoadedCells[cellDescription].visitors) do
+        tes3mp.SendMessage(visitorPid, message, false)
     end
 end
 
-customCommandHooks.registerCommand("local", defaultCommands.localMessage)
-customCommandHooks.registerCommand("l", defaultCommands.localMessage)
-
-defaultCommands.greentext = function(pid, cmd)
-    local message = logicHandler.GetChatName(pid) .. ": " .. color.GreenText ..
-        ">" .. tableHelper.concatenateFromIndex(cmd, 2) .. "\n"
-    tes3mp.SendMessage(pid, message, true)
+---@type CommandHandler
+local function me(pid, cmd)
+    tes3mp.SendMessage(
+        pid,
+        ('%s %s\n'):format(
+            logicHandler.GetChatName(pid), tableHelper.concatenateFromIndex(cmd, 2)
+        ),
+        true)
 end
 
-customCommandHooks.registerCommand("greentext", defaultCommands.greentext)
-customCommandHooks.registerCommand("gt", defaultCommands.greentext)
-
-defaultCommands.ban = function(pid, cmd)
-    local moderator, admin, serverOwner = getRanks(pid)
-
-    if not moderator then
-        invalidCommand(pid)
-        return
+---@type CommandHandler
+local function msg(pid, cmd)
+    if #cmd < 3 then
+        return tes3mp.SendMessage(pid, 'Usage: /message [targetPid] MESSAGE\n')
     end
 
-    if cmd[2] == "ip" and cmd[3] ~= nil then
-        local ipAddress = cmd[3]
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+    if not isValid then return end
 
-        if not tableHelper.containsValue(banList.ipAddresses, ipAddress) then
-            table.insert(banList.ipAddresses, ipAddress)
-            SaveBanList()
-
-            tes3mp.SendMessage(pid, ipAddress .. " is now banned.\n", false)
-            tes3mp.BanAddress(ipAddress)
-        else
-            tes3mp.SendMessage(pid, ipAddress .. " was already banned.\n", false)
-        end
-    elseif (cmd[2] == "name" or cmd[2] == "player") and cmd[3] ~= nil then
-        local targetName = tableHelper.concatenateFromIndex(cmd, 3)
-        logicHandler.BanPlayer(pid, targetName)
-    elseif type(tonumber(cmd[2])) == "number" and logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-        local targetPid = tonumber(cmd[2])
-        local targetName = Players[targetPid].name
-        logicHandler.BanPlayer(pid, targetName)
-    else
-        tes3mp.SendMessage(pid, "Invalid input for ban.\n", false)
-    end
-end
-
-customCommandHooks.registerCommand("ban", defaultCommands.ban)
-
-defaultCommands.unban = function(pid, cmd)
-    local moderator, admin, serverOwner = getRanks(pid)
-
-    if moderator == false or cmd[3] == nil then
-        invalidCommand(pid)
-        return
-    end
-
-    if cmd[2] == "ip" then
-        local ipAddress = cmd[3]
-
-        if tableHelper.containsValue(banList.ipAddresses, ipAddress) == true then
-            tableHelper.removeValue(banList.ipAddresses, ipAddress)
-            SaveBanList()
-
-            tes3mp.SendMessage(pid, ipAddress .. " is now unbanned.\n", false)
-            tes3mp.UnbanAddress(ipAddress)
-        else
-            tes3mp.SendMessage(pid, ipAddress .. " is not banned.\n", false)
-        end
-    elseif cmd[2] == "name" or cmd[2] == "player" then
-        local targetName = tableHelper.concatenateFromIndex(cmd, 3)
-        logicHandler.UnbanPlayer(pid, targetName)
-    else
-        tes3mp.SendMessage(pid, "Invalid input for unban.\n", false)
-    end
-end
-
-customCommandHooks.registerCommand("unban", defaultCommands.unban)
-
-defaultCommands.banlist = function(pid, cmd)
-    local moderator, admin, serverOwner = getRanks(pid)
-
-    if not moderator then
-        invalidCommand(pid)
-        return
-    end
-
-    local message
-
-    if cmd[2] == "names" or cmd[2] == "name" or cmd[2] == "players" then
-        if #banList.playerNames == 0 then
-            message = "No player names have been banned.\n"
-        else
-            message = "The following player names are banned:\n"
-
-            for index, targetName in pairs(banList.playerNames) do
-                message = message .. targetName
-
-                if index < #banList.playerNames then
-                    message = message .. ", "
-                end
-            end
-
-            message = message .. "\n"
-        end
-    elseif cmd[2] ~= nil and (string.lower(cmd[2]) == "ips" or string.lower(cmd[2]) == "ip") then
-        if #banList.ipAddresses == 0 then
-            message = "No IP addresses have been banned.\n"
-        else
-            message = "The following IP addresses unattached to players are banned:\n"
-
-            for index, ipAddress in pairs(banList.ipAddresses) do
-                message = message .. ipAddress
-
-                if index < #banList.ipAddresses then
-                    message = message .. ", "
-                end
-            end
-
-            message = message .. "\n"
-        end
-    end
-
-    if message == nil then
-        message = "Please specify whether you want the banlist for IPs or for names.\n"
-    end
+    local message = ('%s to %s: %s\n'):format(
+        logicHandler.GetChatName(pid),
+        logicHandler.GetChatName(targetPid),
+        tableHelper.concatenateFromIndex(cmd, 3)
+    )
 
     tes3mp.SendMessage(pid, message, false)
+    tes3mp.SendMessage(targetPid, message, false)
 end
 
-customCommandHooks.registerCommand("banlist", defaultCommands.banlist)
-
-defaultCommands.ipaddresses = function(pid, cmd)
-    local moderator, admin, serverOwner = getRanks(pid)
-
-    if moderator == false or cmd[2] == nil then
-        invalidCommand(pid)
-        return
-    end
-
-    local targetName = tableHelper.concatenateFromIndex(cmd, 2)
-    local targetPlayer = logicHandler.GetPlayerByName(targetName)
-
-    if targetPlayer == nil then
-        tes3mp.SendMessage(pid, "Player " .. targetName .. " does not exist.\n", false)
-    elseif targetPlayer.data.ipAddresses ~= nil then
-        local message = "Player " .. targetPlayer.accountName .. " has used the following IP addresses:\n"
-
-        for index, ipAddress in pairs(targetPlayer.data.ipAddresses) do
-            message = message .. ipAddress
-
-            if index < #targetPlayer.data.ipAddresses then
-                message = message .. ", "
-            end
-        end
-
-        message = message .. "\n"
-        tes3mp.SendMessage(pid, message, false)
-    end
-end
-
-customCommandHooks.registerCommand("ipaddresses", defaultCommands.ipaddresses)
-customCommandHooks.registerCommand("ips", defaultCommands.ipaddresses)
-
-defaultCommands.players = function(pid, cmd)
-    guiHelper.ShowPlayerList(pid)
-end
-
-customCommandHooks.registerCommand("players", defaultCommands.players)
-customCommandHooks.registerCommand("list", defaultCommands.players)
-
-defaultCommands.cells = function(pid, cmd)
-    local moderator, admin, serverOwner = getRanks(pid)
-
-    if moderator == false then
-        invalidCommand(pid)
-        return
-    end
-
-    guiHelper.ShowCellList(pid)
-end
-
-customCommandHooks.registerCommand("cells", defaultCommands.cells)
-
-defaultCommands.regions = function(pid, cmd)
-    local moderator, admin, serverOwner = getRanks(pid)
-
-    if moderator == false then
-        invalidCommand(pid)
-        return
-    end
-
-    guiHelper.ShowRegionList(pid)
-end
-
-customCommandHooks.registerCommand("regions", defaultCommands.regions)
-
-defaultCommands.overrideDestination = function(pid, cmd)
-    local isModerator, isAdmin, isServerOwner = getRanks(pid)
-
-    if isModerator == false then
-        invalidCommand(pid)
-        return
-    end
-
-    if cmd[2] == nil or cmd[3] == nil then
-        tes3mp.SendMessage(pid, 'Invalid inputs! Use /overridedestination all/<pid> "Old Cell Name" "New Cell Name"\n')
-        return
-    end
-
-    if cmd[2] ~= "all" and not logicHandler.CheckPlayerValidity(pid, cmd[2]) then
+---@type CommandHandler
+local function overrideDestination(pid, cmd)
+    if not dUtil.misc.getRanks(pid) then
+        return invalidCommand(pid)
+    elseif #cmd < 3 then
+        return tes3mp.SendMessage(pid,
+            'Invalid inputs! Use /overridedestination all/<pid> "Old Cell Name" "New Cell Name"\n')
+    elseif cmd[2] ~= "all" and not logicHandler.CheckPlayerValidity(pid, cmd[2]) then
         return
     end
 
     local inputConcatenation = tableHelper.concatenateFromIndex(cmd, 3)
     local cellDescriptions = tableHelper.getTableFromSplit(inputConcatenation, patterns.quoteSplit)
 
-    if tableHelper.getCount(cellDescriptions) ~= 2 then
-        tes3mp.SendMessage(pid,
+    if #cellDescriptions ~= 2 then
+        return tes3mp.SendMessage(pid,
             "Invalid inputs! Please specify two different cells with their names between quotation marks.\n")
-        return
     end
 
-    local stateObject
-    local targetPid
+    local stateObject, targetPid
 
     if cmd[2] == "all" then
         stateObject = WorldInstance
@@ -422,17 +343,46 @@ defaultCommands.overrideDestination = function(pid, cmd)
         cellDescriptions[2] .. " instead.\n")
 end
 
-customCommandHooks.registerCommand("overridedestination", defaultCommands.overrideDestination)
+---@type CommandHandler
+local function players(pid, _)
+    guiHelper.ShowPlayerList(pid)
+end
 
-defaultCommands.runStartup = function(pid, cmd)
-    local isModerator, isAdmin, isServerOwner = getRanks(pid)
+---@type CommandHandler
+local function regions(pid, _)
+    local moderator = dUtil.misc.getRanks(pid)
+
+    if not moderator then
+        return invalidCommand(pid)
+    end
+
+    guiHelper.ShowRegionList(pid)
+end
+
+---@type CommandHandler
+local function resetCell(pid, cmd)
+    if not dUtil.misc.getRanks(pid) then
+        return tes3mp.SendMessage(pid, "You need to be a moderator to run this command\n")
+    elseif not cmd[2] then
+        return tes3mp.SendMessage(pid, 'Invalid inputs! Use /resetcell "Cell Name"\n')
+    end
+
+    local inputConcatenation = tableHelper.concatenateFromIndex(cmd, 2)
+    local cellDescription = string.gsub(inputConcatenation, '"', '')
+
+    logicHandler.ResetCell(pid, cellDescription)
+end
+
+---@type CommandHandler
+local function runStartup(pid, _)
+    local _, isAdmin = dUtil.misc.getRanks(pid)
 
     if isAdmin == false then
         tes3mp.SendMessage(pid, "You need to be an admin to run this command\n")
         return
     end
 
-    for _, scriptName in pairs(config.worldStartupScripts) do
+    for _, scriptName in ipairs(config.worldStartupScripts) do
         tes3mp.SendMessage(pid, "Running " .. color.Yellow .. scriptName .. color.White .. " script.\n")
         logicHandler.RunConsoleCommandOnPlayer(pid, "startscript " .. scriptName, false)
     end
@@ -444,51 +394,87 @@ defaultCommands.runStartup = function(pid, cmd)
     WorldInstance.coreVariables.hasRunStartupScripts = true
 end
 
-customCommandHooks.registerCommand("runstartup", defaultCommands.runStartup)
+---@type CommandHandler
+local function setPlayerModel(pid, cmd)
+    local _, isAdmin = dUtil.misc.getRanks(pid)
 
-defaultCommands.resetCell = function(pid, cmd)
-    local isModerator, isAdmin, isServerOwner = getRanks(pid)
-
-    if isModerator == false then
-        tes3mp.SendMessage(pid, "You need to be a moderator to run this command\n")
+    if not isAdmin then
+        return tes3mp.SendMessage(pid, "You need to be an admin to run this command\n")
+    elseif not logicHandler.CheckPlayerValidity(pid, cmd[2]) then
         return
+    elseif not cmd[3] then
+        return tes3mp.SendMessage(pid, 'Invalid inputs! Use /setmodel <pid> "Model name"\n')
     end
 
-    if cmd[2] == nil then
-        tes3mp.SendMessage(pid, 'Invalid inputs! Use /resetcell "Cell Name"\n')
-        return
+    local targetPid = tonumber(cmd[2])
+
+    local targetPlayer = Players[targetPid]
+    if not targetPid or not targetPlayer or not targetPlayer:IsLoggedIn() then
+        return tes3mp.SendMessage(pid, ('Invalid input! %s is not a valid player id!'):format(targetPid))
     end
 
-    local inputConcatenation = tableHelper.concatenateFromIndex(cmd, 2)
-    local cellDescription = string.gsub(inputConcatenation, '"', '')
+    local inputConcatenation = tableHelper.concatenateFromIndex(cmd, 3)
+    local modelName = string.gsub(inputConcatenation, '"', '')
 
-    logicHandler.ResetCell(pid, cellDescription)
+    targetPlayer.data.character.modelOverride = modelName
+    targetPlayer:LoadCharacter()
+    targetPlayer:Message("Your model has been changed.\n")
 end
 
-customCommandHooks.registerCommand("resetcell", defaultCommands.resetCell)
-
-defaultCommands.setPlayerModel = function(pid, cmd)
-    local isModerator, isAdmin, isServerOwner = getRanks(pid)
-
-    if isAdmin == false then
-        tes3mp.SendMessage(pid, "You need to be an admin to run this command\n")
-        return
+---@type CommandHandler
+local function unban(pid, cmd)
+    if not dUtil.misc.getRanks(pid) or #cmd < 3 then
+        return invalidCommand(pid)
     end
 
-    if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-        if cmd[3] == nil then
-            tes3mp.SendMessage(pid, 'Invalid inputs! Use /setmodel <pid> "Model name"\n')
-            return
+    if cmd[2] == "ip" then
+        local ipAddress = cmd[3]
+
+        if tableHelper.containsValue(banList.ipAddresses, ipAddress) then
+            tableHelper.removeValue(banList.ipAddresses, ipAddress)
+            SaveBanList()
+
+            tes3mp.SendMessage(pid, ('%s is now unbanned.\n'):format(ipAddress), false)
+
+            if dUtil.misc.isValidIP(ipAddress) then
+                tes3mp.UnbanAddress(ipAddress)
+            else
+                tes3mp.SendMessage(pid, ('%s is not a valid IP Address! Cannot unban it!'):format(ipAddress))
+            end
+        else
+            tes3mp.SendMessage(pid, ('%s is not banned.\n'):format(ipAddress), false)
         end
-
-        local targetPid = tonumber(cmd[2])
-        local inputConcatenation = tableHelper.concatenateFromIndex(cmd, 3)
-        local modelName = string.gsub(inputConcatenation, '"', '')
-
-        Players[targetPid].data.character.modelOverride = modelName
-        Players[targetPid]:LoadCharacter()
-        Players[targetPid]:Message("Your model has been changed.\n")
+    elseif cmd[2] == "name" or cmd[2] == "player" then
+        local targetName = tableHelper.concatenateFromIndex(cmd, 3)
+        logicHandler.UnbanPlayer(pid, targetName)
+    else
+        tes3mp.SendMessage(pid, 'Invalid input for unban.\n', false)
     end
 end
 
-customCommandHooks.registerCommand("setmodel", defaultCommands.setPlayerModel)
+-- Short commands
+customCommandHooks.registerCommand("gt", greenText)
+customCommandHooks.registerCommand("ips", ipaddresses)
+customCommandHooks.registerCommand("l", localMessage)
+customCommandHooks.registerCommand("msg", msg)
+
+-- Long Commands
+customCommandHooks.registerCommand("ban", ban)
+customCommandHooks.registerCommand("banlist", banlist)
+customCommandHooks.registerCommand("cells", cells)
+customCommandHooks.registerCommand("greentext", greenText)
+customCommandHooks.registerCommand("invite", inviteAlly)
+customCommandHooks.registerCommand("ipaddresses", ipaddresses)
+customCommandHooks.registerCommand("join", joinTeam)
+customCommandHooks.registerCommand("leave", leaveTeam)
+customCommandHooks.registerCommand("list", players)
+customCommandHooks.registerCommand("local", localMessage)
+customCommandHooks.registerCommand("me", me)
+customCommandHooks.registerCommand("message", msg)
+customCommandHooks.registerCommand("overridedestination", overrideDestination)
+customCommandHooks.registerCommand("players", players)
+customCommandHooks.registerCommand("regions", regions)
+customCommandHooks.registerCommand("resetcell", resetCell)
+customCommandHooks.registerCommand("runstartup", runStartup)
+customCommandHooks.registerCommand("setmodel", setPlayerModel)
+customCommandHooks.registerCommand("unban", unban)
