@@ -34,7 +34,7 @@ logicHandler.InitializeWorld = function()
 
         customEventHooks.triggerHandlers("OnWorldReload", customEventHooks.makeEventStatus(true, true), {})
 
-    -- Otherwise, create a data file for it
+        -- Otherwise, create a data file for it
     else
         WorldInstance:CreateEntry()
     end
@@ -90,7 +90,6 @@ end
 
 -- Get a array of chat names corresponding to an array of player IDs
 logicHandler.GetChatNames = function(pidArray)
-
     local chatNames = {}
 
     for _, pid in pairs(pidArray) do
@@ -103,12 +102,10 @@ end
 -- Iterate through a table of pids and find the player with the
 -- lowest ping in it
 logicHandler.GetLowestPingPid = function(pidArray)
-
     local lowestPing
     local lowestPingPid
 
     for _, pid in pairs(pidArray) do
-
         local currentPing = tes3mp.GetAvgPing(pid)
 
         if lowestPing == nil or currentPing < lowestPing then
@@ -121,12 +118,9 @@ logicHandler.GetLowestPingPid = function(pidArray)
 end
 
 logicHandler.IsNameAllowed = function(inputName)
-
     if type(config.disallowedNameStrings) == "table" then
         for _, disallowedNameString in pairs(config.disallowedNameStrings) do
-
             if string.find(string.lower(inputName), string.lower(disallowedNameString)) ~= nil then
-
                 return false
             end
         end
@@ -137,7 +131,6 @@ end
 
 -- Check if there is already a player with this name on the server
 logicHandler.IsPlayerNameLoggedIn = function(newName)
-
     -- Make sure we also check the account name this new player would end up having
     local newAccountName = fileHelper.fixFilename(newName)
 
@@ -155,11 +148,9 @@ logicHandler.IsPlayerNameLoggedIn = function(newName)
 end
 
 logicHandler.IsPlayerAllowedConsole = function(pid)
-
     local player = Players[pid]
 
     if player ~= nil and player:IsLoggedIn() then
-
         if player:IsAdmin() or player.data.settings.consoleAllowed == true then
             return true
         elseif player.data.settings.consoleAllowed == "default" and config.allowConsole then
@@ -174,7 +165,6 @@ end
 logicHandler.GetPlayerByName = function(targetName)
     -- Check if the player is online
     for iteratorPid, player in pairs(Players) do
-
         if string.lower(targetName) == string.lower(player.accountName) then
             return player
         end
@@ -192,7 +182,6 @@ logicHandler.GetPlayerByName = function(targetName)
 end
 
 logicHandler.BanPlayer = function(pid, targetName)
-
     -- Ban players based on their account names, i.e. based on the filenames used for their JSON files that
     -- have had invalid characters replaced
     local accountName = fileHelper.fixFilename(targetName)
@@ -267,13 +256,12 @@ logicHandler.TeleportToPlayer = function(pid, originPid, targetPid)
 
     local originMessage = "You have been teleported to " .. targetPlayerName ..
         "'s location. (" .. targetCell .. ")\n"
-    local targetMessage = "Teleporting ".. originPlayerName .." to your location.\n"
+    local targetMessage = "Teleporting " .. originPlayerName .. " to your location.\n"
     tes3mp.SendMessage(originPid, originMessage, false)
     tes3mp.SendMessage(targetPid, targetMessage, false)
 end
 
 logicHandler.GetConnectedPlayerCount = function()
-
     local playerCount = 0
 
     for pid, player in pairs(Players) do
@@ -286,12 +274,10 @@ logicHandler.GetConnectedPlayerCount = function()
 end
 
 logicHandler.GetLoadedCellCount = function()
-
     return tableHelper.getCount(LoadedCells)
 end
 
 logicHandler.GetLoadedRegionCount = function()
-
     local regionCount = 0
 
     for key, value in pairs(WorldInstance.storedRegions) do
@@ -337,14 +323,14 @@ logicHandler.AuthCheck = function(pid)
         Players[pid] = nil
         return false
     else
-        tes3mp.LogMessage(enumerations.log.INFO, "Player with pid " .. pid .. " does not exist but auth check was called with" ..
+        tes3mp.LogMessage(enumerations.log.INFO,
+            "Player with pid " .. pid .. " does not exist but auth check was called with" ..
             " pid.")
         return false
     end
 end
 
 logicHandler.DoesPacketOriginRequireLoadedCell = function(packetOrigin)
-
     if packetOrigin == enumerations.packetOrigin.CLIENT_GAMEPLAY then
         return true
     end
@@ -353,7 +339,6 @@ logicHandler.DoesPacketOriginRequireLoadedCell = function(packetOrigin)
 end
 
 logicHandler.IsPacketFromConsole = function(packetOrigin)
-
     if packetOrigin == enumerations.packetOrigin.CLIENT_CONSOLE then
         return true
     end
@@ -362,7 +347,6 @@ logicHandler.IsPacketFromConsole = function(packetOrigin)
 end
 
 logicHandler.IsPacketFromClientScript = function(packetOrigin)
-
     if packetOrigin == enumerations.packetOrigin.CLIENT_SCRIPT_LOCAL or
         packetOrigin == enumerations.packetOrigin.CLIENT_SCRIPT_GLOBAL then
         return true
@@ -372,13 +356,13 @@ logicHandler.IsPacketFromClientScript = function(packetOrigin)
 end
 
 logicHandler.SendClientScriptDisables = function(pid, forEveryone)
-
     tes3mp.ClearRecords()
     tes3mp.SetRecordType(enumerations.recordType["SCRIPT"])
     local recordCount = 0
 
     for _, scriptId in pairs(config.disabledClientScriptIds) do
-        packetBuilder.AddScriptRecord(scriptId, { scriptText = "begin " .. scriptId .. "\n" .. "end " .. scriptId .. "\n" })
+        packetBuilder.AddScriptRecord(scriptId,
+            { scriptText = "begin " .. scriptId .. "\n" .. "end " .. scriptId .. "\n" })
         recordCount = recordCount + 1
     end
 
@@ -388,7 +372,6 @@ logicHandler.SendClientScriptDisables = function(pid, forEveryone)
 end
 
 logicHandler.SendClientScriptSettings = function(pid, forEveryone)
-
     tes3mp.ClearSynchronizedClientScriptIds()
 
     for _, scriptId in pairs(config.synchronizedClientScriptIds) do
@@ -397,9 +380,8 @@ logicHandler.SendClientScriptSettings = function(pid, forEveryone)
 
     tes3mp.ClearSynchronizedClientGlobalIds()
 
-    for _, variableCategory in pairs({"personal", "quest", "kills", "factionRanks",
-        "factionExpulsion", "worldwide"}) do
-
+    for _, variableCategory in pairs({ "personal", "quest", "kills", "factionRanks",
+        "factionExpulsion", "worldwide" }) do
         for _, globalId in pairs(clientVariableScopes.globals[variableCategory]) do
             -- Global IDs are stored as lowercase on the client, so make sure we're
             -- making them lowercase here as well
@@ -411,7 +393,6 @@ logicHandler.SendClientScriptSettings = function(pid, forEveryone)
 end
 
 logicHandler.SendConfigCollisionOverrides = function(pid, forEveryone)
-
     tes3mp.ClearEnforcedCollisionRefIds()
 
     for _, refId in pairs(config.enforcedCollisionRefIds) do
@@ -425,7 +406,6 @@ end
 -- where the objectsToCreate parameter is an array of tables with refId
 -- and location keys and packetType is either "spawn" or "place"
 logicHandler.CreateObjects = function(cellDescription, objectsToCreate, packetType)
-
     local uniqueIndexes = {}
     local generatedRecordIdsPerType = {}
     local unloadCellAtEnd = false
@@ -446,7 +426,6 @@ logicHandler.CreateObjects = function(cellDescription, objectsToCreate, packetTy
     end
 
     for _, object in pairs(objectsToCreate) do
-
         local refId = object.refId
         local count = object.count
         local charge = object.charge
@@ -455,17 +434,15 @@ logicHandler.CreateObjects = function(cellDescription, objectsToCreate, packetTy
         local location = object.location
 
         local mpNum = WorldInstance:GetCurrentMpNum() + 1
-        local uniqueIndex =  0 .. "-" .. mpNum
+        local uniqueIndex = 0 .. "-" .. mpNum
         local isValid = true
 
         -- Is this object based on a a generated record? If so, it needs special
         -- handling here and further below
         if logicHandler.IsGeneratedRecord(refId) then
-
             local recordType = logicHandler.GetRecordTypeByRecordId(refId)
 
             if RecordStores[recordType] ~= nil then
-
                 -- Add a link to this generated record in the cell it is being placed in
                 cell:AddLinkToRecord(recordType, refId, uniqueIndex)
 
@@ -484,7 +461,6 @@ logicHandler.CreateObjects = function(cellDescription, objectsToCreate, packetTy
         end
 
         if isValid then
-
             table.insert(uniqueIndexes, uniqueIndex)
             WorldInstance:SetCurrentMpNum(mpNum)
             tes3mp.SetCurrentMpNum(mpNum)
@@ -503,7 +479,6 @@ logicHandler.CreateObjects = function(cellDescription, objectsToCreate, packetTy
             -- list for the first one we find and just send the corresponding packet
             -- to everyone
             if shouldSendPacket then
-
                 local pid = tableHelper.getAnyValue(Players).pid
                 tes3mp.SetObjectListPid(pid)
                 tes3mp.SetObjectListCell(cellDescription)
@@ -526,17 +501,14 @@ logicHandler.CreateObjects = function(cellDescription, objectsToCreate, packetTy
     end
 
     if shouldSendPacket then
-
         -- Ensure the visitors to this cell have the records they need for the
         -- objects we've created
         for priorityLevel, recordStoreTypes in ipairs(config.recordStoreLoadOrder) do
             for _, recordType in ipairs(recordStoreTypes) do
                 if generatedRecordIdsPerType[recordType] ~= nil then
-
                     local recordStore = RecordStores[recordType]
 
                     if recordStore ~= nil then
-
                         local idArray = generatedRecordIdsPerType[recordType]
 
                         for _, visitorPid in pairs(cell.visitors) do
@@ -564,7 +536,6 @@ logicHandler.CreateObjects = function(cellDescription, objectsToCreate, packetTy
 end
 
 logicHandler.CreateObjectAtLocation = function(cellDescription, location, objectData, packetType)
-
     local objects = {}
     table.insert(objects, {
         location = location,
@@ -574,7 +545,7 @@ logicHandler.CreateObjectAtLocation = function(cellDescription, location, object
         enchantmentCharge = objectData.enchantmentCharge,
         soul = objectData.soul,
         packetType = packetType
-        }
+    }
     )
 
     local objectUniqueIndex = logicHandler.CreateObjects(cellDescription, objects, packetType)[1]
@@ -582,11 +553,14 @@ logicHandler.CreateObjectAtLocation = function(cellDescription, location, object
 end
 
 logicHandler.CreateObjectAtPlayer = function(pid, objectData, packetType)
-
     local cell = tes3mp.GetCell(pid)
     local location = {
-        posX = tes3mp.GetPosX(pid), posY = tes3mp.GetPosY(pid), posZ = tes3mp.GetPosZ(pid),
-        rotX = tes3mp.GetRotX(pid), rotY = 0, rotZ = tes3mp.GetRotZ(pid)
+        posX = tes3mp.GetPosX(pid),
+        posY = tes3mp.GetPosY(pid),
+        posZ = tes3mp.GetPosZ(pid),
+        rotX = tes3mp.GetRotX(pid),
+        rotY = 0,
+        rotZ = tes3mp.GetRotZ(pid)
     }
 
     local objectUniqueIndex = logicHandler.CreateObjectAtLocation(cell, location, objectData, packetType)
@@ -594,7 +568,6 @@ logicHandler.CreateObjectAtPlayer = function(pid, objectData, packetType)
 end
 
 logicHandler.DeleteObject = function(pid, cellDescription, uniqueIndex, forEveryone)
-
     tes3mp.ClearObjectList()
     tes3mp.SetObjectListPid(pid)
     tes3mp.SetObjectListCell(cellDescription)
@@ -617,7 +590,7 @@ logicHandler.DeleteObject = function(pid, cellDescription, uniqueIndex, forEvery
 
         if unloadCellAtEnd then
             logicHandler.UnloadCell(cellDescription)
-        end        
+        end
     end
 end
 
@@ -630,7 +603,6 @@ logicHandler.DeleteObjectForEveryone = function(objectCellDescription, objectUni
 end
 
 logicHandler.ActivateObjectForPlayer = function(pid, objectCellDescription, objectUniqueIndex)
-
     tes3mp.ClearObjectList()
     tes3mp.SetObjectListPid(pid)
     tes3mp.SetObjectListCell(objectCellDescription)
@@ -645,7 +617,6 @@ logicHandler.ActivateObjectForPlayer = function(pid, objectCellDescription, obje
 end
 
 logicHandler.RunConsoleCommandOnPlayer = function(pid, consoleCommand, forEveryone)
-
     tes3mp.ClearObjectList()
     tes3mp.SetObjectListPid(pid)
     tes3mp.SetObjectListCell(Players[pid].data.location.cell)
@@ -669,8 +640,8 @@ logicHandler.RunConsoleCommandOnPlayer = function(pid, consoleCommand, forEveryo
 end
 
 logicHandler.RunConsoleCommandOnObjects = function(pid, consoleCommand, cellDescription, objectUniqueIndexes, forEveryone)
-
-    tes3mp.LogMessage(enumerations.log.INFO, "Running " .. consoleCommand .. " in cell " .. cellDescription .. " on object(s) " ..
+    tes3mp.LogMessage(enumerations.log.INFO,
+        "Running " .. consoleCommand .. " in cell " .. cellDescription .. " on object(s) " ..
         tableHelper.concatenateArrayValues(objectUniqueIndexes, 1, ", "))
 
     tes3mp.ClearObjectList()
@@ -700,11 +671,10 @@ logicHandler.RunConsoleCommandOnObjects = function(pid, consoleCommand, cellDesc
 end
 
 logicHandler.RunConsoleCommandOnObject = function(pid, consoleCommand, cellDescription, objectUniqueIndex, forEveryone)
-    logicHandler.RunConsoleCommandOnObjects(pid, consoleCommand, cellDescription, {objectUniqueIndex}, forEveryone)
+    logicHandler.RunConsoleCommandOnObjects(pid, consoleCommand, cellDescription, { objectUniqueIndex }, forEveryone)
 end
 
 logicHandler.IsGeneratedRecord = function(recordId)
-
     if string.find(string.lower(recordId), string.lower(config.generatedRecordIdPrefix)) ~= nil then
         return true
     end
@@ -713,7 +683,6 @@ logicHandler.IsGeneratedRecord = function(recordId)
 end
 
 logicHandler.GetRecordTypeByRecordId = function(recordId)
-
     local isGenerated = logicHandler.IsGeneratedRecord(recordId)
 
     if isGenerated then
@@ -726,7 +695,6 @@ logicHandler.GetRecordTypeByRecordId = function(recordId)
 
     for priorityLevel, recordStoreTypes in ipairs(config.recordStoreLoadOrder) do
         for _, storeType in ipairs(recordStoreTypes) do
-
             if isGenerated and RecordStores[storeType].data.generatedRecords[recordId] ~= nil then
                 return storeType
             elseif RecordStores[storeType].data.permanentRecords[recordId] ~= nil then
@@ -739,20 +707,17 @@ logicHandler.GetRecordTypeByRecordId = function(recordId)
 end
 
 logicHandler.GetRecordStoreByRecordId = function(recordId)
-
     local recordType = logicHandler.GetRecordTypeByRecordId(recordId)
     return RecordStores[recordType]
 end
 
 logicHandler.ExchangeGeneratedRecords = function(pid, otherPidsArray)
-
     for priorityLevel, recordStoreTypes in ipairs(config.recordStoreLoadOrder) do
         for _, storeType in ipairs(recordStoreTypes) do
             local recordStore = RecordStores[storeType]
 
             for _, otherPid in pairs(otherPidsArray) do
                 if pid ~= otherPid then
-
                     -- Load the generated records linked to other players
                     if Players[otherPid].data.recordLinks[storeType] ~= nil then
                         recordStore:LoadGeneratedRecords(pid, recordStore.data.generatedRecords,
@@ -771,9 +736,7 @@ logicHandler.ExchangeGeneratedRecords = function(pid, otherPidsArray)
 end
 
 logicHandler.GetCellContainingActor = function(actorUniqueIndex)
-
     for cellDescription, cell in pairs(LoadedCells) do
-
         if tableHelper.containsValue(cell.data.packets.actorList, actorUniqueIndex) then
             return cell
         end
@@ -783,10 +746,8 @@ logicHandler.GetCellContainingActor = function(actorUniqueIndex)
 end
 
 logicHandler.SetAIForActor = function(cell, actorUniqueIndex, action, targetPid, targetUniqueIndex,
-    posX, posY, posZ, distance, duration, shouldRepeat)
-
+                                      posX, posY, posZ, distance, duration, shouldRepeat)
     if cell ~= nil and actorUniqueIndex ~= nil then
-
         local aiData = dataTableBuilder.BuildAIData(targetPid, targetUniqueIndex, action,
             posX, posY, posZ, distance, duration, shouldRepeat)
 
@@ -794,7 +755,6 @@ logicHandler.SetAIForActor = function(cell, actorUniqueIndex, action, targetPid,
         -- the associated action isn't ACTIVATE, because we don't want the activation
         -- to happen every time someone loads the cell
         if action ~= enumerations.ai.ACTIVATE then
-
             cell.data.objectData[actorUniqueIndex].ai = aiData
             tableHelper.insertValueIfMissing(cell.data.packets.ai, actorUniqueIndex)
             cell:QuicksaveToDrive()
@@ -812,14 +772,12 @@ logicHandler.SetAIForActor = function(cell, actorUniqueIndex, action, targetPid,
         -- this AI package, so we send the packet to all of the cell's visitors
         -- i.e. sendToOtherVisitors is true and skipAttachedPlayer is false
         tes3mp.SendActorAI(true, false)
-
     else
         tes3mp.LogAppend(enumerations.log.ERROR, "Invalid input for logicHandler.SetAIForActor()!")
     end
 end
 
 logicHandler.IsCellLoaded = function(cellDescription)
-
     return LoadedCells[cellDescription] ~= nil
 end
 
@@ -828,16 +786,14 @@ logicHandler.SetCellAuthority = function(pid, cellDescription)
 end
 
 logicHandler.LoadRecordStore = function(storeType)
-
     if RecordStores[storeType] == nil then
-
         RecordStores[storeType] = RecordStore(storeType)
 
         -- If this record store has a data entry, load it
         if RecordStores[storeType]:HasEntry() then
             RecordStores[storeType]:LoadFromDrive()
             RecordStores[storeType]:EnsureDataStructure()
-        -- Otherwise, create a data file for it
+            -- Otherwise, create a data file for it
         else
             RecordStores[storeType]:CreateEntry()
         end
@@ -845,21 +801,19 @@ logicHandler.LoadRecordStore = function(storeType)
 end
 
 logicHandler.LoadCell = function(cellDescription)
-
     -- If this cell isn't loaded at all, load it
     if LoadedCells[cellDescription] == nil then
-
         LoadedCells[cellDescription] = Cell(cellDescription)
 
         -- If this cell has a data entry, load it
         if LoadedCells[cellDescription]:HasEntry() then
             LoadedCells[cellDescription]:LoadFromDrive()
-        -- Otherwise, create a data file for it
+            -- Otherwise, create a data file for it
         else
             LoadedCells[cellDescription]:CreateEntry()
         end
-    -- Otherwise, save momentary actor data so it can be sent
-    -- to the cell's new loader
+        -- Otherwise, save momentary actor data so it can be sent
+        -- to the cell's new loader
     else
         LoadedCells[cellDescription]:SaveActorPositions()
         LoadedCells[cellDescription]:SaveActorStatsDynamic()
@@ -867,7 +821,6 @@ logicHandler.LoadCell = function(cellDescription)
 end
 
 logicHandler.LoadCellForPlayer = function(pid, cellDescription)
-
     logicHandler.LoadCell(cellDescription)
 
     -- Record that this player has the cell loaded
@@ -884,8 +837,8 @@ logicHandler.LoadCellForPlayer = function(pid, cellDescription)
             tes3mp.LogAppend(enumerations.log.WARN, "- Ignoring setting of authority to " .. pid ..
                 " because of ongoing cell reset")
         end
-    -- Otherwise, only set this new visitor as the authority if their ping is noticeably lower
-    -- than that of the current authority
+        -- Otherwise, only set this new visitor as the authority if their ping is noticeably lower
+        -- than that of the current authority
     elseif tes3mp.GetAvgPing(pid) < (tes3mp.GetAvgPing(authPid) - config.pingDifferenceRequiredForAuthority) then
         tes3mp.LogMessage(enumerations.log.WARN, "Player " .. logicHandler.GetChatName(pid) ..
             " took over authority from player " .. logicHandler.GetChatName(authPid) ..
@@ -895,18 +848,14 @@ logicHandler.LoadCellForPlayer = function(pid, cellDescription)
 end
 
 logicHandler.UnloadCell = function(cellDescription)
-
     if LoadedCells[cellDescription] ~= nil then
-
         LoadedCells[cellDescription]:SaveToDrive()
         LoadedCells[cellDescription] = nil
     end
 end
 
 logicHandler.UnloadCellForPlayer = function(pid, cellDescription)
-
     if LoadedCells[cellDescription] ~= nil then
-
         -- No longer record that this player has the cell loaded
         LoadedCells[cellDescription]:RemoveVisitor(pid)
         LoadedCells[cellDescription]:SaveActorPositions()
@@ -919,7 +868,6 @@ logicHandler.UnloadCellForPlayer = function(pid, cellDescription)
             -- If the departing player was the cell's authority, set another
             -- player as the authority
             if LoadedCells[cellDescription]:GetAuthority() == pid then
-
                 local visitors = LoadedCells[cellDescription].visitors
 
                 if tableHelper.getCount(visitors) > 0 then
@@ -932,7 +880,6 @@ logicHandler.UnloadCellForPlayer = function(pid, cellDescription)
 end
 
 logicHandler.LoadRegionForPlayer = function(pid, regionName, isTeleported)
-
     if regionName == "" then return end
 
     tes3mp.LogMessage(enumerations.log.INFO, "Loading region " .. regionName .. " for " ..
@@ -956,8 +903,8 @@ logicHandler.LoadRegionForPlayer = function(pid, regionName, isTeleported)
         if isTeleported then
             WorldInstance:AddForcedWeatherUpdatePid(pid, regionName)
 
-        -- Only set this new visitor as the authority if they haven't been teleported here and
-        -- their ping is noticeably lower than that of the current authority
+            -- Only set this new visitor as the authority if they haven't been teleported here and
+            -- their ping is noticeably lower than that of the current authority
         elseif not isTeleported and
             tes3mp.GetAvgPing(pid) < (tes3mp.GetAvgPing(authPid) - config.pingDifferenceRequiredForAuthority) then
             tes3mp.LogMessage(enumerations.log.WARN, "Player " .. logicHandler.GetChatName(pid) ..
@@ -969,11 +916,9 @@ logicHandler.LoadRegionForPlayer = function(pid, regionName, isTeleported)
 end
 
 logicHandler.UnloadRegionForPlayer = function(pid, regionName)
-
     if regionName == "" then return end
 
     if WorldInstance.storedRegions[regionName] ~= nil then
-
         tes3mp.LogMessage(enumerations.log.INFO, "Unloading region " .. regionName .. " for " ..
             logicHandler.GetChatName(pid))
 
@@ -983,7 +928,6 @@ logicHandler.UnloadRegionForPlayer = function(pid, regionName)
         -- If this player was the region's authority, set another player
         -- as the authority
         if WorldInstance:GetRegionAuthority(regionName) == pid then
-
             local visitors = WorldInstance.storedRegions[regionName].visitors
 
             if tableHelper.getCount(visitors) > 0 then
@@ -997,7 +941,6 @@ logicHandler.UnloadRegionForPlayer = function(pid, regionName)
 end
 
 logicHandler.ResetCell = function(pid, cellDescription)
-
     tes3mp.SendMessage(pid, "Resetting cell " .. cellDescription .. "\n")
 
     -- If the desired cell is not loaded, load it temporarily
