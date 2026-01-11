@@ -379,19 +379,19 @@ end
 local function runStartup(pid, _)
     local _, isAdmin = dUtil.misc.getRanks(pid)
 
-    if isAdmin == false then
-        tes3mp.SendMessage(pid, "You need to be an admin to run this command\n")
-        return
+    if not isAdmin then
+        return tes3mp.SendMessage(pid, "You need to be an admin to run this command\n")
     end
 
     for _, scriptName in ipairs(config.worldStartupScripts) do
-        tes3mp.SendMessage(pid, "Running " .. color.Yellow .. scriptName .. color.White .. " script.\n")
-        logicHandler.RunConsoleCommandOnPlayer(pid, "startscript " .. scriptName, false)
+        tes3mp.SendMessage(pid, ('Running %s%s%s script\n'):format(color.Yellow, scriptName, color.White))
+        logicHandler.RunConsoleCommandOnPlayer(pid, ('startscript %s'):format(scriptName), false)
     end
 
     tes3mp.SendMessage(pid,
-        color.Red .. "Warning: " .. color.White .. "Make sure to run this command again later if you " ..
-        "reset the cells on this server.\n")
+        ('%sWarning:%s Make sure to run this command again later if you reset the cells on this server.\n'):format(
+            color.Red, color.White)
+    )
 
     WorldInstance.coreVariables.hasRunStartupScripts = true
 end
