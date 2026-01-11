@@ -1,4 +1,5 @@
 require("config")
+local inventoryHelper = require 'inventoryHelper'
 local patterns = require 'patterns'
 stateHelper = require("stateHelper")
 tableHelper = require("tableHelper")

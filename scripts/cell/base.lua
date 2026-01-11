@@ -2,7 +2,7 @@ local patterns = require 'patterns'
 
 contentFixer = require("contentFixer")
 tableHelper = require("tableHelper")
-inventoryHelper = require("inventoryHelper")
+local inventoryHelper = require 'inventoryHelper'
 packetBuilder = require("packetBuilder")
 
 local BaseCell = class("BaseCell")

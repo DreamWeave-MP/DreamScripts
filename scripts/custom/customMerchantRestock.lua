@@ -30,6 +30,8 @@
 -- Add the uniqueIndex of the merchant and table of items you want to restock in the format shown below
 -- Fuck that fella we got rust around these parts
 
+local inventoryHelper = require 'inventoryHelper'
+
 local merchantRestockLog = true
 local merchantData = nil
 

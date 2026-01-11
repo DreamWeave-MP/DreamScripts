@@ -1,4 +1,6 @@
 local color = require 'color'
+local inventoryHelper = require 'inventoryHelper'
+
 local eventHandler = {}
 
 commandHandler = require("commandHandler")

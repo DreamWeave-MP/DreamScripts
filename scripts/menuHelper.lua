@@ -1,6 +1,6 @@
 local patterns = require 'patterns'
 require("config")
-inventoryHelper = require("inventoryHelper")
+local inventoryHelper = require 'inventoryHelper'
 
 local menuHelper = {}
 menuHelper.conditions = {}
