@@ -1,7 +1,6 @@
 local commandHandler = {}
 
 function commandHandler.ProcessCommand(pid, cmd)
-
     if cmd[1] == nil then
         local message = "Please use a command after the / symbol.\n"
         tes3mp.SendMessage(pid, color.Error .. message .. color.Default, false)
@@ -38,10 +37,8 @@ function commandHandler.ProcessCommand(pid, cmd)
                 end
             end
         end
-
     elseif (cmd[1] == "teleportto" or cmd[1] == "tpto") and moderator then
         logicHandler.TeleportToPlayer(pid, pid, cmd[2])
-
     elseif (cmd[1] == "setauthority" or cmd[1] == "setauth") and moderator and #cmd > 2 then
         if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
             local cellDescription = tableHelper.concatenateFromIndex(cmd, 3)
@@ -56,7 +53,6 @@ function commandHandler.ProcessCommand(pid, cmd)
                 tes3mp.SendMessage(pid, "Cell \"" .. cellDescription .. "\" isn't loaded!\n", false)
             end
         end
-
     elseif cmd[1] == "kick" and moderator then
         if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
             local targetPid = tonumber(cmd[2])
@@ -75,7 +71,6 @@ function commandHandler.ProcessCommand(pid, cmd)
                 Players[targetPid]:Kick()
             end
         end
-
     elseif cmd[1] == "addadmin" and serverOwner then
         if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
             local targetPid = tonumber(cmd[2])
@@ -92,7 +87,6 @@ function commandHandler.ProcessCommand(pid, cmd)
                 Players[targetPid]:QuicksaveToDrive()
             end
         end
-
     elseif cmd[1] == "removeadmin" and serverOwner then
         if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
             local targetPid = tonumber(cmd[2])
@@ -112,7 +106,6 @@ function commandHandler.ProcessCommand(pid, cmd)
                 tes3mp.SendMessage(pid, message, false)
             end
         end
-
     elseif cmd[1] == "addmoderator" and admin then
         if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
             local targetPid = tonumber(cmd[2])
@@ -132,7 +125,6 @@ function commandHandler.ProcessCommand(pid, cmd)
                 Players[targetPid]:QuicksaveToDrive()
             end
         end
-
     elseif cmd[1] == "removemoderator" and admin then
         if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
             local targetPid = tonumber(cmd[2])
@@ -152,11 +144,8 @@ function commandHandler.ProcessCommand(pid, cmd)
                 tes3mp.SendMessage(pid, message, false)
             end
         end
-
     elseif cmd[1] == "setrace" and admin then
-
         if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-
             local targetPid = tonumber(cmd[2])
             local newRace = tableHelper.concatenateFromIndex(cmd, 3)
 
@@ -165,11 +154,8 @@ function commandHandler.ProcessCommand(pid, cmd)
             tes3mp.SetResetStats(targetPid, false)
             tes3mp.SendBaseInfo(targetPid)
         end
-
     elseif cmd[1] == "sethead" and admin then
-
         if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-
             local targetPid = tonumber(cmd[2])
             local newHead = tableHelper.concatenateFromIndex(cmd, 3)
 
@@ -178,11 +164,8 @@ function commandHandler.ProcessCommand(pid, cmd)
             tes3mp.SetResetStats(targetPid, false)
             tes3mp.SendBaseInfo(targetPid)
         end
-
     elseif cmd[1] == "sethair" and admin then
-
         if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-
             local targetPid = tonumber(cmd[2])
             local newHair = tableHelper.concatenateFromIndex(cmd, 3)
 
@@ -191,7 +174,6 @@ function commandHandler.ProcessCommand(pid, cmd)
             tes3mp.SetResetStats(targetPid, false)
             tes3mp.SendBaseInfo(targetPid)
         end
-
     elseif cmd[1] == "setattr" and moderator then
         if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
             local targetPid = tonumber(cmd[2])
@@ -219,7 +201,6 @@ function commandHandler.ProcessCommand(pid, cmd)
                 end
             end
         end
-
     elseif cmd[1] == "setskill" and moderator then
         if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
             local targetPid = tonumber(cmd[2])
@@ -247,34 +228,27 @@ function commandHandler.ProcessCommand(pid, cmd)
                 end
             end
         end
-
     elseif cmd[1] == "setmomentum" and moderator then
         if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-
             local targetPid = tonumber(cmd[2])
             local xValue = tonumber(cmd[3])
             local yValue = tonumber(cmd[4])
             local zValue = tonumber(cmd[5])
 
             if type(xValue) == "number" and type(yValue) == "number" and
-               type(zValue) == "number" then
-
+                type(zValue) == "number" then
                 tes3mp.SetMomentum(targetPid, xValue, yValue, zValue)
                 tes3mp.SendMomentum(targetPid)
             else
                 tes3mp.SendMessage(pid, "Not a valid argument. Use /setmomentum <pid> <x> <y> <z>\n", false)
             end
         end
-
     elseif cmd[1] == "setext" and admin then
         tes3mp.SetExterior(pid, cmd[2], cmd[3])
-
     elseif cmd[1] == "getpos" and moderator then
         logicHandler.PrintPlayerPosition(pid, cmd[2])
-
     elseif (cmd[1] == "setdifficulty" or cmd[1] == "setdiff") and admin then
         if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-
             local targetPid = tonumber(cmd[2])
             local difficulty = cmd[3]
 
@@ -292,10 +266,8 @@ function commandHandler.ProcessCommand(pid, cmd)
                 return false
             end
         end
-
     elseif cmd[1] == "setconsole" and admin then
         if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-
             local targetPid = tonumber(cmd[2])
             local targetName = ""
             local state = ""
@@ -310,8 +282,8 @@ function commandHandler.ProcessCommand(pid, cmd)
                 Players[targetPid]:SetConsoleAllowed("default")
                 state = " reset to default.\n"
             else
-                 tes3mp.SendMessage(pid, "Not a valid argument. Use /setconsole <pid> on/off/default\n", false)
-                 return false
+                tes3mp.SendMessage(pid, "Not a valid argument. Use /setconsole <pid> on/off/default\n", false)
+                return false
             end
 
             Players[targetPid]:LoadSettings()
@@ -320,10 +292,8 @@ function commandHandler.ProcessCommand(pid, cmd)
                 tes3mp.SendMessage(targetPid, "Console" .. state, false)
             end
         end
-
     elseif cmd[1] == "setbedrest" and admin then
         if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-
             local targetPid = tonumber(cmd[2])
             local targetName = ""
             local state = ""
@@ -338,8 +308,8 @@ function commandHandler.ProcessCommand(pid, cmd)
                 Players[targetPid]:SetBedRestAllowed("default")
                 state = " reset to default.\n"
             else
-                 tes3mp.SendMessage(pid, "Not a valid argument. Use /setbedrest <pid> on/off/default\n", false)
-                 return false
+                tes3mp.SendMessage(pid, "Not a valid argument. Use /setbedrest <pid> on/off/default\n", false)
+                return false
             end
 
             Players[targetPid]:LoadSettings()
@@ -348,10 +318,8 @@ function commandHandler.ProcessCommand(pid, cmd)
                 tes3mp.SendMessage(targetPid, "Bed resting" .. state, false)
             end
         end
-
     elseif (cmd[1] == "setwildernessrest" or cmd[1] == "setwildrest") and admin then
         if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-
             local targetPid = tonumber(cmd[2])
             local targetName = ""
             local state = ""
@@ -366,8 +334,8 @@ function commandHandler.ProcessCommand(pid, cmd)
                 Players[targetPid]:SetWildernessRestAllowed("default")
                 state = " reset to default.\n"
             else
-                 tes3mp.SendMessage(pid, "Not a valid argument. Use /setwildrest <pid> on/off/default\n", false)
-                 return false
+                tes3mp.SendMessage(pid, "Not a valid argument. Use /setwildrest <pid> on/off/default\n", false)
+                return false
             end
 
             Players[targetPid]:LoadSettings()
@@ -376,10 +344,8 @@ function commandHandler.ProcessCommand(pid, cmd)
                 tes3mp.SendMessage(targetPid, "Wilderness resting" .. state, false)
             end
         end
-
     elseif cmd[1] == "setwait" and admin then
         if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-
             local targetPid = tonumber(cmd[2])
             local targetName = ""
             local state = ""
@@ -394,8 +360,8 @@ function commandHandler.ProcessCommand(pid, cmd)
                 Players[targetPid]:SetWaitAllowed("default")
                 state = " reset to default.\n"
             else
-                 tes3mp.SendMessage(pid, "Not a valid argument. Use /setwait <pid> on/off/default\n", false)
-                 return false
+                tes3mp.SendMessage(pid, "Not a valid argument. Use /setwait <pid> on/off/default\n", false)
+                return false
             end
 
             Players[targetPid]:LoadSettings()
@@ -404,10 +370,8 @@ function commandHandler.ProcessCommand(pid, cmd)
                 tes3mp.SendMessage(targetPid, "Waiting" .. state, false)
             end
         end
-
     elseif (cmd[1] == "setphysicsfps" or cmd[1] == "setphysicsframerate") and admin then
         if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-
             local targetPid = tonumber(cmd[2])
             local physicsFramerate = cmd[3]
 
@@ -425,10 +389,8 @@ function commandHandler.ProcessCommand(pid, cmd)
                 return false
             end
         end
-
     elseif (cmd[1] == "setloglevel" or cmd[1] == "setenforcedloglevel") and admin then
         if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-
             local targetPid = tonumber(cmd[2])
             local logLevel = cmd[3]
 
@@ -446,10 +408,8 @@ function commandHandler.ProcessCommand(pid, cmd)
                 return false
             end
         end
-
     elseif cmd[1] == "setscale" and admin then
         if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-
             local targetPid = tonumber(cmd[2])
             local targetName = ""
             local scale = cmd[3]
@@ -457,8 +417,8 @@ function commandHandler.ProcessCommand(pid, cmd)
             if type(tonumber(scale)) == "number" then
                 scale = tonumber(scale)
             else
-                 tes3mp.SendMessage(pid, "Not a valid argument. Use /setscale <pid> <value>.\n", false)
-                 return false
+                tes3mp.SendMessage(pid, "Not a valid argument. Use /setscale <pid> <value>.\n", false)
+                return false
             end
 
             Players[targetPid]:SetScale(scale)
@@ -468,10 +428,8 @@ function commandHandler.ProcessCommand(pid, cmd)
                 tes3mp.SendMessage(targetPid, "Your scale is now " .. scale .. "\n", false)
             end
         end
-
     elseif cmd[1] == "setwerewolf" and admin then
         if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-
             local targetPid = tonumber(cmd[2])
             local targetName = ""
             local state = ""
@@ -483,8 +441,8 @@ function commandHandler.ProcessCommand(pid, cmd)
                 Players[targetPid]:SetWerewolfState(false)
                 state = " disabled.\n"
             else
-                 tes3mp.SendMessage(pid, "Not a valid argument. Use /setwerewolf <pid> on/off.\n", false)
-                 return false
+                tes3mp.SendMessage(pid, "Not a valid argument. Use /setwerewolf <pid> on/off.\n", false)
+                return false
             end
 
             Players[targetPid]:LoadShapeshift()
@@ -493,11 +451,8 @@ function commandHandler.ProcessCommand(pid, cmd)
                 tes3mp.SendMessage(targetPid, "Werewolf state" .. state, false)
             end
         end
-
     elseif cmd[1] == "disguise" and admin then
-
         if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-
             local targetPid = tonumber(cmd[2])
             local creatureRefId = tableHelper.concatenateFromIndex(cmd, 3)
 
@@ -515,11 +470,8 @@ function commandHandler.ProcessCommand(pid, cmd)
                 tes3mp.SendMessage(targetPid, "You are now disguised as " .. creatureRefId .. "\n", false)
             end
         end
-
     elseif cmd[1] == "usecreaturename" and admin then
-
         if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-
             local targetPid = tonumber(cmd[2])
             local nameState
 
@@ -528,21 +480,18 @@ function commandHandler.ProcessCommand(pid, cmd)
             elseif cmd[3] == "off" then
                 nameState = false
             else
-                 tes3mp.SendMessage(pid, "Not a valid argument. Use /usecreaturename <pid> on/off\n", false)
-                 return false
+                tes3mp.SendMessage(pid, "Not a valid argument. Use /usecreaturename <pid> on/off\n", false)
+                return false
             end
 
             Players[targetPid].data.shapeshift.displayCreatureName = nameState
             tes3mp.SetCreatureNameDisplayState(targetPid, nameState)
             tes3mp.SendShapeshift(targetPid)
         end
-
     elseif cmd[1] == "sethour" and moderator then
-
         local inputValue = tonumber(cmd[2])
 
         if type(inputValue) == "number" then
-
             if inputValue == 24 then
                 inputValue = 0
             end
@@ -556,13 +505,10 @@ function commandHandler.ProcessCommand(pid, cmd)
                 tes3mp.SendMessage(pid, "There aren't that many hours in a day.\n", false)
             end
         end
-
     elseif cmd[1] == "setday" and moderator then
-
         local inputValue = tonumber(cmd[2])
 
         if type(inputValue) == "number" then
-
             local daysInMonth = WorldInstance.monthLengths[WorldInstance.data.time.month]
 
             if inputValue <= daysInMonth then
@@ -573,9 +519,7 @@ function commandHandler.ProcessCommand(pid, cmd)
                 tes3mp.SendMessage(pid, "There are only " .. daysInMonth .. " days in the current month.\n", false)
             end
         end
-
     elseif cmd[1] == "setmonth" and moderator then
-
         local inputValue = tonumber(cmd[2])
 
         if type(inputValue) == "number" then
@@ -583,14 +527,11 @@ function commandHandler.ProcessCommand(pid, cmd)
             WorldInstance:QuicksaveToDrive()
             WorldInstance:LoadTime(pid, true)
         end
-
     elseif cmd[1] == "settimescale" and moderator then
-
         local inputPeriod = string.lower(tostring(cmd[2]))
         local inputValue = tonumber(cmd[3])
 
-        if tableHelper.containsValue({"day", "night", "both"}, inputPeriod) and type(inputValue) == "number" then
-
+        if tableHelper.containsValue({ "day", "night", "both" }, inputPeriod) and type(inputValue) == "number" then
             if inputPeriod == "day" or inputPeriod == "both" then
                 WorldInstance.data.time.dayTimeScale = inputValue
             end
@@ -605,9 +546,7 @@ function commandHandler.ProcessCommand(pid, cmd)
         else
             tes3mp.SendMessage(pid, "Invalid input! Please use /settimescale day/night/both <value>\n", false)
         end
-
     elseif cmd[1] == "setcollision" and admin then
-
         local collisionState
 
         if cmd[2] ~= nil and cmd[3] == "on" then
@@ -615,8 +554,8 @@ function commandHandler.ProcessCommand(pid, cmd)
         elseif cmd[2] ~= nil and cmd[3] == "off" then
             collisionState = false
         else
-             tes3mp.SendMessage(pid, "Not a valid argument. Use /setcollision <category> on/off\n", false)
-             return false
+            tes3mp.SendMessage(pid, "Not a valid argument. Use /setcollision <category> on/off\n", false)
+            return false
         end
 
         local categoryInput = string.upper(cmd[2])
@@ -643,9 +582,7 @@ function commandHandler.ProcessCommand(pid, cmd)
         tes3mp.SendWorldCollisionOverride(pid, true)
         tes3mp.SendMessage(pid, "Collision for " .. categoryInput .. " is now " .. cmd[3] ..
             " for all newly loaded cells.\n", false)
-
     elseif cmd[1] == "overridecollision" and admin then
-
         local collisionState
         local refId = cmd[2]
 
@@ -678,9 +615,7 @@ function commandHandler.ProcessCommand(pid, cmd)
 
         logicHandler.SendConfigCollisionOverrides(pid, true)
         Players[pid]:Message(message .. " for " .. refId .. " in newly loaded cells\n")
-
     elseif cmd[1] == "load" and admin then
-
         local scriptName = cmd[2]
 
         if scriptName == nil then
@@ -689,12 +624,12 @@ function commandHandler.ProcessCommand(pid, cmd)
             local wasLoaded = false
 
             if package.loaded[scriptName] then
-                
                 if type(package.loaded[scriptName]) ~= "table" then
-		    Players[pid]:Message(scriptName .. " was already loaded but it is not a valid lua module and thus cannot be properly reloaded.\n")
-		    return
-		end
-                
+                    Players[pid]:Message(scriptName ..
+                        " was already loaded but it is not a valid lua module and thus cannot be properly reloaded.\n")
+                    return
+                end
+
                 Players[pid]:Message(scriptName .. " was already loaded, so it is being reloaded.\n")
                 wasLoaded = true
             end
@@ -702,7 +637,6 @@ function commandHandler.ProcessCommand(pid, cmd)
             local result
 
             if wasLoaded then
-
                 -- Local objects that use functions from the script we are reloading
                 -- will keep their references to the old versions of those functions if
                 -- we do this:
@@ -736,9 +670,7 @@ function commandHandler.ProcessCommand(pid, cmd)
                 Players[pid]:Message(scriptName .. " could not be found.\n")
             end
         end
-
     elseif cmd[1] == "resetkills" and moderator and config.shareKills == true then
-
         -- Set all currently recorded kills to 0 for connected players
         for refId, killCount in pairs(WorldInstance.data.kills) do
             WorldInstance.data.kills[refId] = 0
@@ -747,12 +679,10 @@ function commandHandler.ProcessCommand(pid, cmd)
         WorldInstance:QuicksaveToDrive()
         WorldInstance:LoadKills(pid, true)
         tes3mp.SendMessage(pid, "All the kill counts for creatures and NPCs have been reset.\n", true)
-        
     elseif cmd[1] == "resetkills" and config.shareKills == false then
-	
-		if Players[pid].data.kills == nil then
-			Players[pid].data.kills = {}
-		end
+        if Players[pid].data.kills == nil then
+            Players[pid].data.kills = {}
+        end
         -- Set all currently recorded kills to 0 for players
         for refId, killCount in pairs(Players[pid].data.kills) do
             Players[pid].data.kills[refId] = 0
@@ -761,7 +691,6 @@ function commandHandler.ProcessCommand(pid, cmd)
         Players[pid]:QuicksaveToDrive()
         Players[pid]:LoadKills(pid, false)
         tes3mp.SendMessage(pid, "All the kill counts for creatures and NPCs have been reset.\n", false)
-        
     elseif cmd[1] == "suicide" then
         if config.allowSuicideCommand == true then
             tes3mp.SetHealthCurrent(pid, 0)
@@ -769,7 +698,6 @@ function commandHandler.ProcessCommand(pid, cmd)
         else
             tes3mp.SendMessage(pid, "That command is disabled on this server.\n", false)
         end
-
     elseif cmd[1] == "fixme" then
         if config.allowFixmeCommand == true then
             local currentTime = os.time()
@@ -780,7 +708,6 @@ function commandHandler.ProcessCommand(pid, cmd)
                 tes3mp.SendMessage(pid, message, false)
             elseif Players[pid].data.timestamps.lastFixMe == nil or
                 currentTime >= Players[pid].data.timestamps.lastFixMe + config.fixmeInterval then
-
                 logicHandler.RunConsoleCommandOnPlayer(pid, "fixme")
                 Players[pid].data.timestamps.lastFixMe = currentTime
                 tes3mp.SendMessage(pid, "You have fixed your position!\n", false)
@@ -802,19 +729,15 @@ function commandHandler.ProcessCommand(pid, cmd)
         else
             tes3mp.SendMessage(pid, "That command is disabled on this server.\n", false)
         end
-
     elseif cmd[1] == "storeconsole" and cmd[2] ~= nil and cmd[3] ~= nil and admin then
         if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-
             local targetPid = tonumber(cmd[2])
             Players[targetPid].storedConsoleCommand = tableHelper.concatenateFromIndex(cmd, 3)
 
             tes3mp.SendMessage(pid, "That console command is now stored for player " .. targetPid .. "\n", false)
         end
-
     elseif cmd[1] == "runconsole" and cmd[2] ~= nil and admin then
         if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-
             local targetPid = tonumber(cmd[2])
 
             if Players[targetPid].storedConsoleCommand == nil then
@@ -827,7 +750,6 @@ function commandHandler.ProcessCommand(pid, cmd)
                 local count = tonumber(cmd[3])
 
                 if count ~= nil and count > 1 then
-
                     count = count - 1
                     local interval = 1
 
@@ -852,10 +774,8 @@ function commandHandler.ProcessCommand(pid, cmd)
                 end
             end
         end
-
     elseif (cmd[1] == "placeat" or cmd[1] == "spawnat") and cmd[2] ~= nil and cmd[3] ~= nil and admin then
         if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-
             local targetPid = tonumber(cmd[2])
             local refId = tableHelper.concatenateFromIndex(cmd, 3)
             local packetType
@@ -868,7 +788,6 @@ function commandHandler.ProcessCommand(pid, cmd)
 
             logicHandler.CreateObjectAtPlayer(targetPid, dataTableBuilder.BuildObjectData(refId), packetType)
         end
-
     elseif (cmd[1] == "anim" or cmd[1] == "a") and cmd[2] ~= nil then
         local isValid = animHelper.PlayAnimation(pid, cmd[2])
 
@@ -877,9 +796,7 @@ function commandHandler.ProcessCommand(pid, cmd)
             tes3mp.SendMessage(pid, "That is not a valid animation. Try one of the following:\n" ..
                 validList .. "\n", false)
         end
-
     elseif cmd[1] == "speech" or cmd[1] == "s" then
-
         local isValid = false
 
         if cmd[2] ~= nil and cmd[3] ~= nil and type(tonumber(cmd[3])) == "number" then
@@ -891,11 +808,8 @@ function commandHandler.ProcessCommand(pid, cmd)
             tes3mp.SendMessage(pid, "That is not a valid speech. Try one of the following:\n"
                 .. validList .. "\n", false)
         end
-
     elseif cmd[1] == "confiscate" and moderator then
-
         if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-
             local targetPid = tonumber(cmd[2])
 
             if targetPid == pid then
@@ -911,9 +825,7 @@ function commandHandler.ProcessCommand(pid, cmd)
                 guiHelper.ShowInventoryList(config.customMenuIds.confiscate, pid, targetPid)
             end
         end
-
     elseif cmd[1] == "setai" and cmd[2] ~= nil and cmd[3] ~= nil and admin then
-
         local actionInput = cmd[3]
         local actionNumericalId
 
@@ -926,47 +838,36 @@ function commandHandler.ProcessCommand(pid, cmd)
         end
 
         if actionNumericalId == nil then
-
             Players[pid]:Message(actionInput .. " is not a valid AI action. Valid choices are " ..
                 tableHelper.concatenateTableIndexes(enumerations.ai, ", ") .. "\n")
         else
-
             local uniqueIndex = cmd[2]
             local cell = logicHandler.GetCellContainingActor(uniqueIndex)
 
             if cell == nil then
-
                 Players[pid]:Message("Could not find actor " .. uniqueIndex .. " in any loaded cell\n")
             else
-
                 local actionName = tableHelper.getIndexByValue(enumerations.ai, actionNumericalId)
                 local messageAction = enumerations.aiPrintableAction[actionName]
                 local message = uniqueIndex .. " is now " .. messageAction
 
                 if actionNumericalId == enumerations.ai.CANCEL then
-
                     logicHandler.SetAIForActor(cell, uniqueIndex, actionNumericalId)
                     Players[pid]:Message(message .. "\n")
-
                 elseif actionNumericalId == enumerations.ai.TRAVEL then
-
                     local posX, posY, posZ = tonumber(cmd[4]), tonumber(cmd[5]), tonumber(cmd[6])
 
                     if type(posX) == "number" and type(posY) == "number" and type(posZ) == "number" then
-
                         logicHandler.SetAIForActor(cell, uniqueIndex, actionNumericalId, nil, nil, posX, posY, posZ)
                         Players[pid]:Message(message .. " " .. posX .. " " .. posY .. " " .. posZ .. "\n")
                     else
                         Players[pid]:Message("Invalid travel coordinates! " ..
                             "Use /setai <uniqueIndex> travel <x> <y> <z>\n")
                     end
-
                 elseif actionNumericalId == enumerations.ai.WANDER then
-
                     local distance, duration = tonumber(cmd[4]), tonumber(cmd[5])
 
                     if type(distance) == "number" and type(duration) == "number" then
-
                         if cmd[6] == "true" then
                             shouldRepeat = true
                         else
@@ -981,9 +882,7 @@ function commandHandler.ProcessCommand(pid, cmd)
                         Players[pid]:Message("Invalid wander parameters! " ..
                             "Use /setai <uniqueIndex> wander <distance> <duration> true/false\n")
                     end
-
                 elseif cmd[4] ~= nil then
-
                     local target = cmd[4]
                     local hasPlayerTarget = false
 
@@ -1002,36 +901,26 @@ function commandHandler.ProcessCommand(pid, cmd)
 
                     Players[pid]:Message(message .. "\n")
                 else
-
                     Players[pid]:Message("Invalid AI action!\n")
                 end
             end
         end
-
     elseif cmd[1] == "storerecord" and cmd[2] ~= nil and cmd[3] ~= nil and admin then
         commandHandler.StoreRecord(pid, cmd)
-
     elseif cmd[1] == "createrecord" and cmd[2] ~= nil and admin then
         commandHandler.CreateRecord(pid, cmd)
-
     elseif cmd[1] == "help" then
-
         -- Check "scripts/menu/help.lua" if you want to change the contents of the help menus
         Players[pid].currentCustomMenu = "help player"
         menuHelper.DisplayMenu(pid, Players[pid].currentCustomMenu)
-
     elseif cmd[1] == "craft" then
-
         -- Check "scripts/menu/defaultCrafting.lua" if you want to change the example craft menu
         Players[pid].currentCustomMenu = "default crafting origin"
         menuHelper.DisplayMenu(pid, Players[pid].currentCustomMenu)
-
     elseif (cmd[1] == "advancedexample" or cmd[1] == "advex") and moderator then
-
         -- Check "scripts/menu/advancedExample.lua" if you want to change the advanced menu example
         Players[pid].currentCustomMenu = "advanced example origin"
         menuHelper.DisplayMenu(pid, Players[pid].currentCustomMenu)
-
     else
         local message = "Not a valid command. Type /help for more info.\n"
         tes3mp.SendMessage(pid, color.Error .. message .. color.Default, false)
@@ -1039,7 +928,6 @@ function commandHandler.ProcessCommand(pid, cmd)
 end
 
 function commandHandler.StoreRecord(pid, cmd)
-
     if Players[pid].data.customVariables == nil then
         Players[pid].data.customVariables = {}
     end
@@ -1089,7 +977,6 @@ function commandHandler.StoreRecord(pid, cmd)
 
         tes3mp.CustomMessageBox(pid, config.customMenuIds.recordPrint, text, "Ok")
     elseif inputSetting ~= nil then
-
         if inputSetting == "add" then
             local inputAdditionType = cmd[4]
             local inputConcatenation
@@ -1104,8 +991,7 @@ function commandHandler.StoreRecord(pid, cmd)
             end
 
             if inputAdditionType == "effect" and (inputType == "spell" or inputType == "potion"
-                or inputType == "enchantment" or inputType == "ingredient") then
-
+                    or inputType == "enchantment" or inputType == "ingredient") then
                 if inputType == "ingredient" and type(storedTable.effects) == "table"
                     and tableHelper.getCount(storedTable.effects) == 4 then
                     Players[pid]:Message("You have already reached the cap of 4 effects on an ingredient record.\n")
@@ -1117,11 +1003,16 @@ function commandHandler.StoreRecord(pid, cmd)
                     local inputEffectId = inputValues[1]
 
                     if type(tonumber(inputEffectId)) == "number" then
-
-                        local effect = { id = tonumber(inputEffectId), rangeType = tonumber(inputValues[2]),
-                            duration = tonumber(inputValues[3]), area = tonumber(inputValues[4]),
-                            magnitudeMin = tonumber(inputValues[5]), magnitudeMax = tonumber(inputValues[6]),
-                            attribute = tonumber(inputValues[7]), skill = tonumber(inputValues[8]) }
+                        local effect = {
+                            id = tonumber(inputEffectId),
+                            rangeType = tonumber(inputValues[2]),
+                            duration = tonumber(inputValues[3]),
+                            area = tonumber(inputValues[4]),
+                            magnitudeMin = tonumber(inputValues[5]),
+                            magnitudeMax = tonumber(inputValues[6]),
+                            attribute = tonumber(inputValues[7]),
+                            skill = tonumber(inputValues[8])
+                        }
                         table.insert(storedTable.effects, effect)
                         Players[pid]:Message("Added effect " .. inputConcatenation .. "\n")
                     else
@@ -1129,7 +1020,6 @@ function commandHandler.StoreRecord(pid, cmd)
                     end
                 end
             elseif inputAdditionType == "part" and (inputType == "armor" or inputType == "clothing") then
-
                 if storedTable.parts == nil then
                     storedTable.parts = {}
                 end
@@ -1137,16 +1027,17 @@ function commandHandler.StoreRecord(pid, cmd)
                 local inputPartType = inputValues[1]
 
                 if type(tonumber(inputPartType)) == "number" then
-
-                    local part = { partType = tonumber(inputPartType), malePart = inputValues[2],
-                        femalePart = inputValues[3] }
+                    local part = {
+                        partType = tonumber(inputPartType),
+                        malePart = inputValues[2],
+                        femalePart = inputValues[3]
+                    }
                     table.insert(storedTable.parts, part)
                     Players[pid]:Message("Added part " .. inputConcatenation .. "\n")
                 else
                     Players[pid]:Message("Please use a numerical value for the part type.\n")
                 end
-            elseif inputAdditionType == "item" and tableHelper.containsValue({"creature", "npc", "container"}, inputType) then
-
+            elseif inputAdditionType == "item" and tableHelper.containsValue({ "creature", "npc", "container" }, inputType) then
                 if storedTable.items == nil then
                     storedTable.items = {}
                 end
@@ -1165,9 +1056,7 @@ function commandHandler.StoreRecord(pid, cmd)
                 Players[pid]:Message(tostring(inputAdditionType) .. " is not a valid addition type for " ..
                     inputType .. " records.\n")
             end
-
         elseif tableHelper.containsValue(config.validRecordSettings[inputType], inputSetting) then
-
             local inputValue = tableHelper.concatenateFromIndex(cmd, 4)
 
             -- Although numerical values are accepted for gender, allow "male" and "female" input
@@ -1201,7 +1090,7 @@ function commandHandler.StoreRecord(pid, cmd)
                 local minValue = tonumber(cmd[4])
                 local maxValue = tonumber(cmd[5])
 
-                if type(minValue) == "number" and type(maxValue) == "number"  then
+                if type(minValue) == "number" and type(maxValue) == "number" then
                     storedTable[inputSetting] = { min = minValue, max = maxValue }
                 else
                     Players[pid]:Message("Please use two valid numerical values as the input for " ..
@@ -1256,7 +1145,6 @@ function commandHandler.StoreRecord(pid, cmd)
 end
 
 function commandHandler.CreateRecord(pid, cmd)
-
     if Players[pid].data.customVariables == nil then
         Players[pid].data.customVariables = {}
     end
@@ -1330,8 +1218,8 @@ function commandHandler.CreateRecord(pid, cmd)
                     ") you are trying to use for this " .. inputType .. " record does not exist.\n")
                 return
             end
-        -- Permanent records should only use other permanent records as enchantments, so
-        -- go no further if that is not the case
+            -- Permanent records should only use other permanent records as enchantments, so
+            -- go no further if that is not the case
         else
             Players[pid]:Message("You cannot use a generated enchantment record (" .. storedTable.enchantmentId ..
                 ") with a permanent record (" .. id .. ").\n")
@@ -1398,30 +1286,55 @@ function commandHandler.CreateRecord(pid, cmd)
     tes3mp.ClearRecords()
     tes3mp.SetRecordType(enumerations.recordType[string.upper(inputType)])
 
-    if inputType == "activator" then packetBuilder.AddActivatorRecord(id, savedTable)
-    elseif inputType == "apparatus" then packetBuilder.AddApparatusRecord(id, savedTable)
-    elseif inputType == "armor" then packetBuilder.AddArmorRecord(id, savedTable)
-    elseif inputType == "book" then packetBuilder.AddBookRecord(id, savedTable)
-    elseif inputType == "bodypart" then packetBuilder.AddBodyPartRecord(id, savedTable)
-    elseif inputType == "cell" then packetBuilder.AddCellRecord(id, savedTable)
-    elseif inputType == "clothing" then packetBuilder.AddClothingRecord(id, savedTable)
-    elseif inputType == "container" then packetBuilder.AddContainerRecord(id, savedTable)
-    elseif inputType == "creature" then packetBuilder.AddCreatureRecord(id, savedTable)
-    elseif inputType == "door" then packetBuilder.AddDoorRecord(id, savedTable)
-    elseif inputType == "enchantment" then packetBuilder.AddEnchantmentRecord(id, savedTable)
-    elseif inputType == "gamesetting" then packetBuilder.AddGameSettingRecord(id, savedTable)
-    elseif inputType == "ingredient" then packetBuilder.AddIngredientRecord(id, savedTable)
-    elseif inputType == "light" then packetBuilder.AddLightRecord(id, savedTable)
-    elseif inputType == "lockpick" then packetBuilder.AddLockpickRecord(id, savedTable)
-    elseif inputType == "miscellaneous" then packetBuilder.AddMiscellaneousRecord(id, savedTable)
-    elseif inputType == "npc" then packetBuilder.AddNpcRecord(id, savedTable)
-    elseif inputType == "potion" then packetBuilder.AddPotionRecord(id, savedTable)
-    elseif inputType == "probe" then packetBuilder.AddProbeRecord(id, savedTable)
-    elseif inputType == "repair" then packetBuilder.AddRepairRecord(id, savedTable)
-    elseif inputType == "script" then packetBuilder.AddScriptRecord(id, savedTable)
-    elseif inputType == "spell" then packetBuilder.AddSpellRecord(id, savedTable)
-    elseif inputType == "static" then packetBuilder.AddStaticRecord(id, savedTable)
-    elseif inputType == "weapon" then packetBuilder.AddWeaponRecord(id, savedTable) end
+    if inputType == "activator" then
+        packetBuilder.AddActivatorRecord(id, savedTable)
+    elseif inputType == "apparatus" then
+        packetBuilder.AddApparatusRecord(id, savedTable)
+    elseif inputType == "armor" then
+        packetBuilder.AddArmorRecord(id, savedTable)
+    elseif inputType == "book" then
+        packetBuilder.AddBookRecord(id, savedTable)
+    elseif inputType == "bodypart" then
+        packetBuilder.AddBodyPartRecord(id, savedTable)
+    elseif inputType == "cell" then
+        packetBuilder.AddCellRecord(id, savedTable)
+    elseif inputType == "clothing" then
+        packetBuilder.AddClothingRecord(id, savedTable)
+    elseif inputType == "container" then
+        packetBuilder.AddContainerRecord(id, savedTable)
+    elseif inputType == "creature" then
+        packetBuilder.AddCreatureRecord(id, savedTable)
+    elseif inputType == "door" then
+        packetBuilder.AddDoorRecord(id, savedTable)
+    elseif inputType == "enchantment" then
+        packetBuilder.AddEnchantmentRecord(id, savedTable)
+    elseif inputType == "gamesetting" then
+        packetBuilder.AddGameSettingRecord(id, savedTable)
+    elseif inputType == "ingredient" then
+        packetBuilder.AddIngredientRecord(id, savedTable)
+    elseif inputType == "light" then
+        packetBuilder.AddLightRecord(id, savedTable)
+    elseif inputType == "lockpick" then
+        packetBuilder.AddLockpickRecord(id, savedTable)
+    elseif inputType == "miscellaneous" then
+        packetBuilder.AddMiscellaneousRecord(id, savedTable)
+    elseif inputType == "npc" then
+        packetBuilder.AddNpcRecord(id, savedTable)
+    elseif inputType == "potion" then
+        packetBuilder.AddPotionRecord(id, savedTable)
+    elseif inputType == "probe" then
+        packetBuilder.AddProbeRecord(id, savedTable)
+    elseif inputType == "repair" then
+        packetBuilder.AddRepairRecord(id, savedTable)
+    elseif inputType == "script" then
+        packetBuilder.AddScriptRecord(id, savedTable)
+    elseif inputType == "spell" then
+        packetBuilder.AddSpellRecord(id, savedTable)
+    elseif inputType == "static" then
+        packetBuilder.AddStaticRecord(id, savedTable)
+    elseif inputType == "weapon" then
+        packetBuilder.AddWeaponRecord(id, savedTable)
+    end
 
     tes3mp.SendRecordDynamic(pid, true, false)
 
