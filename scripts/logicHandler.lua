@@ -40,36 +40,32 @@ logicHandler.InitializeWorld = function()
     end
 end
 
+--- Helper for chat commands where a calling player is attempting to run a chat command on another
+--- Determines if the target PID is valid and refers to a player which is currently logged into the server
+---@param pid PlayerId
+---@param targetPid PlayerId
 logicHandler.CheckPlayerValidity = function(pid, targetPid)
+    local valid, sendMessage = false, pid ~= nil
 
-    local valid = false
-    local sendMessage = true
-
-    if pid == nil then
-        sendMessage = false
-    end
-
-    if targetPid == nil or type(tonumber(targetPid)) ~= "number" then
-
+    local checkPid = tonumber(targetPid)
+    if not checkPid then
         if sendMessage then
-            local message = "Please specify the player ID.\n"
-            tes3mp.SendMessage(pid, message, false)
+            tes3mp.SendMessage(pid, "Please specify the player ID.\n", false)
         end
 
         return false
     end
 
-    targetPid = tonumber(targetPid)
-
-    if targetPid >= 0 and Players[targetPid] ~= nil and Players[targetPid]:IsLoggedIn() then
-        valid = true
+    local targetPlayer
+    if checkPid >= 0 then
+        targetPlayer = Players[checkPid]
+        if targetPlayer ~= nil and targetPlayer:IsLoggedIn() then
+            valid = true
+        end
     end
 
-    if not valid then
-        if sendMessage then
-            local message = "That player is not logged in!\n"
-            tes3mp.SendMessage(pid, message, false)
-        end
+    if not valid and sendMessage then
+        tes3mp.SendMessage(pid, "That player is not logged in!\n", false)
     end
 
     return valid
