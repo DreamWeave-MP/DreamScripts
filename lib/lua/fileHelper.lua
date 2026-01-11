@@ -1,14 +1,18 @@
 local patterns = require 'patterns'
-tableHelper = require("tableHelper")
+local tableHelper = require 'tableHelper'
 
-local fileHelper = {}
+---@class FileHelper
+local fileHelper = {
+    -- Avoid using the following filenames because of their reserved status on operating systems
+    invalidFilenames = { "CON", "PRN", "AUX", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5",
+        "COM6", "COM7", "COM8", "COM9", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7",
+        "LPT8", "LPT9" }
+}
 
--- Avoid using the following filenames because of their reserved status on operating systems
-fileHelper.invalidFilenames = { "CON", "PRN", "AUX", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5",
-    "COM6", "COM7", "COM8", "COM9", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7",
-    "LPT8", "LPT9" }
 
--- Turn an invalid filename into a valid one
+--- Turn an invalid filename into a valid one
+---@param filename string
+---@return string santiziedFilename
 function fileHelper.fixFilename(filename)
     -- Trim spaces at the start and end of the filename
     filename = filename:trim()
