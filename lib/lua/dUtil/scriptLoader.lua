@@ -117,6 +117,31 @@ function DScriptLoader.loadScriptInterface(scriptPath, scriptResult)
   Interfaces[scriptResult.interfaceName] = DScriptLoader.makeReadOnly(scriptResult.interface)
 end
 
+--- Given a loaded script and its path, insert relevant interfaces
+---@param scriptPath string sanitized relative script path for error output
+---@param scriptRegistration TES3MPScriptRegistration resulting table after invoking a script using dofile
+function DScriptLoader.loadScriptCommands(scriptPath, scriptRegistration)
+  ---@type CustomCommandHooks
+  local customCommandHooks = customCommandHooks:clearCommandsFromScript(scriptPath)
+
+  for commandName, commandRegistration in pairs(scriptRegistration.chatCommands or {}) do
+    if type(commandName ~= string) or commandName == '' or type(commandRegistration.callback) ~= 'function' then
+      tes3mp.LogAppend(
+        enumerations.log.ERROR,
+        ('Invalid inputs from script %s for chat command! Command Name: %s, command callback: %s')
+        :format(scriptPath, commandName, commandRegistration.callback)
+      )
+    end
+
+    customCommandHooks:registerCommand(commandName, {
+      definedBy = scriptPath,
+      callback = commandRegistration.callback,
+      nameRequirement = commandRegistration.nameRequirement,
+      rankRequirement = commandRegistration.rankRequirement,
+    })
+  end
+end
+
 --- Given a script name, attempt to load it into the tes3mp environment like an OpenMW Lua script.
 --- Can be called from the chat window by passing the second optional parameter, callerPid.
 ---@param scriptName string name of a script, relative to server/scripts/custom, to attempt to load
@@ -160,6 +185,7 @@ function DScriptLoader.loadScript(scriptName, callerPid)
 
   tableHelper.print(result)
   DScriptLoader.loadScriptInterface(scriptPath, result)
+  DScriptLoader.loadScriptCommands(scriptPath, result)
 end
 
 --- Load all scripts defined by config.customScripts

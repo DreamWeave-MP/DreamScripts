@@ -19,78 +19,164 @@
 
 ]]
 
+---@class CustomCommandHooks
+---@field commands table<string, TES3MPCommand>
+local customCommandHooks = {
+    commands = {},
+}
 
-local customCommandHooks = {}
-
-local specialCharacter = "/"
-
-customCommandHooks.commands = {}
-customCommandHooks.rankRequirement = {}
-customCommandHooks.nameRequirement = {}
-
-function customCommandHooks.registerCommand(cmd, callback)
-    customCommandHooks.commands[cmd] = callback 
+---@param cmd string Name of the new command to register
+---@param commandData TES3MPCommand
+function customCommandHooks:registerCommand(cmd, commandData)
+    self.commands[cmd] = commandData
 end
 
-function customCommandHooks.removeCommand(cmd)
-    customCommandHooks.commands[cmd] = nil 
-    customCommandHooks.rankRequirement[cmd] = nil
-    customCommandHooks.nameRequirement[cmd] = nil
+--- Searched for a given command by name
+---@param cmd string Name of the command to look up
+---@return TES3MPCommand? resulting command data, if found.
+function customCommandHooks:getCommand(cmd)
+    return self.commands[cmd]
 end
 
-function customCommandHooks.getCallback(cmd)
-    return customCommandHooks.commands[cmd]
-end
+--- Removes all commands registered by a particular script path.
+--- Used by DScriptLoader whenever a script is loaded to flush old references to its registered commands.
+---@param scriptPath string
+function customCommandHooks:clearCommandsFromScript(scriptPath)
+    for i = #self.commands, 1, -1 do
+        local definedCommand = self.commands[i]
 
-function customCommandHooks.setRankRequirement(cmd, rank)
-    if customCommandHooks.commands[cmd] ~= nil then
-        customCommandHooks.rankRequirement[cmd] = rank
-    end
-end
-
-function customCommandHooks.removeRankRequirement(cmd)
-    customCommandHooks.rankRequirement[cmd] = nil
-end
-
-function customCommandHooks.setNameRequirement(cmd, names)
-    if customCommandHooks.commands[cmd] ~= nil then
-        customCommandHooks.nameRequirement[cmd] = names
-    end
-end
-
-function customCommandHooks.addNameRequirement(cmd, name)
-    if customCommandHooks.commands[cmd] ~= nil then
-        if customCommandHooks.nameRequirement[cmd] == nil then
-            customCommandHooks.nameRequirement[cmd] = {}
+        if definedCommand.definedBy == scriptPath then
+            self.commands[i] = nil
         end
-        table.insert(customCommandHooks.nameRequirement[cmd], name)
     end
 end
 
-function customCommandHooks.removeNameRequirement(cmd)
-    customCommandHooks.nameRequirement[cmd] = nil
+---@param cmd string Name of the command to remove
+function customCommandHooks:removeCommand(cmd)
+    if not self:getCommand(cmd) then
+        return tes3mp.LogAppend(
+            enumerations.log.WARN,
+            ('Could not remove the command %s because it does not exist!'):format(cmd)
+        )
+    end
+
+    customCommandHooks.commands[cmd] = nil
 end
 
-function customCommandHooks.validator(eventStatus, pid, message)
-    if message:sub(1,1) == specialCharacter then
-        local cmd = (message:sub(2, #message)):split(" ")
-        local callback = customCommandHooks.getCallback(cmd[1])
-        if callback ~= nil then
-            if customCommandHooks.nameRequirement[cmd[1]] ~= nil then
-                if tableHelper.containsValue(customCommandHooks.nameRequirement[cmd[1]], Players[pid].accountName) then
-                    callback(pid, cmd)
-                    return customEventHooks.makeEventStatus(false, nil)
-                end
-            elseif customCommandHooks.rankRequirement[cmd[1]] ~= nil then
-                if Players[pid].data.settings.staffRank >= customCommandHooks.rankRequirement[cmd[1]] then
-                    callback(pid, cmd)
-                    return customEventHooks.makeEventStatus(false, nil)
-                end
-            else
-                callback(pid, cmd)
-                return customEventHooks.makeEventStatus(false, nil)
-            end
-        end
+---@param cmd string Name of the command whose callback you want to retrieve
+---@return function?
+function customCommandHooks:getCallback(cmd)
+    local command = self:getCommand(cmd)
+
+    if not command then return end
+
+    return command.callback
+end
+
+---@param cmd string name of the command to set a rank requirement for
+---@param rank number server rank requirement in order to use this particular command
+function customCommandHooks:setRankRequirement(cmd, rank)
+    local command = self.commands[cmd]
+
+    if not command then return end
+
+    command.rankRequirement = rank
+end
+
+---@param cmd string name of the command to strip a rank requirement from
+function customCommandHooks:removeRankRequirement(cmd)
+    local command = self:getCommand(cmd)
+
+    if not command then
+        return tes3mp.LogAppend(
+            enumerations.log.WARN,
+            ('Cannot remove the rank requirement from a command which doesn\'t exist: %s !')
+            :format(cmd)
+        )
+    end
+
+    command.rankRequirement = nil
+end
+
+---@param cmd string name of the command to set a name requirement for
+function customCommandHooks:setNameRequirement(cmd, names)
+    local command = self:getCommand(cmd)
+
+    if not command then
+        return tes3mp.LogAppend(
+            enumerations.log.WARN,
+            ('Cannot set a name requirement to a command which doesn\'t exist: %s !')
+            :format(cmd)
+        )
+    end
+
+    command.nameRequirement = names
+end
+
+---@param cmd string name of the command to add a name requirement to
+---@param name string name to add to the rank requirement list
+function customCommandHooks:addNameRequirement(cmd, name)
+    local command = self:getCommand(cmd)
+
+    if not command then
+        return tes3mp.LogAppend(
+            enumerations.log.WARN,
+            ('Cannot add a name requirement to a command which doesn\'t exist: %s !')
+            :format(cmd)
+        )
+    end
+
+    if not command.nameRequirement then command.nameRequirement = {} end
+
+    if tableHelper.containsValue(name) then
+        return tes3mp.LogAppend(
+            enumerations.log.WARN,
+            ('%s is already on the name requirements list for the command %s!')
+            :format(name, cmd)
+        )
+    end
+
+    table.insert(command.nameRequirement, name)
+end
+
+---@param cmd string name of the command whose name requirement is to be removed
+function customCommandHooks:removeNameRequirement(cmd)
+    local command = self:getCommand(cmd)
+
+    if not command then
+        return tes3mp.LogAppend(
+            enumerations.log.WARN,
+            ('Cannot remove the name requirement for a command which doesn\'t exist: %s !')
+            :format(cmd)
+        )
+    end
+
+    command.nameRequirement = nil
+end
+
+---@param _ table<string, boolean> eventStatus table
+---@param pid PlayerId
+---@param message string
+---@return boolean? eventStatus if false, breaks the eventValidator chain for this event
+function customCommandHooks.validator(_, pid, message)
+    if message:sub(1, 1) ~= '/' then return end
+
+    ---@type CommandTokens
+    local cmd = (message:sub(2, #message)):split(" ")
+
+    local command = customCommandHooks:getCommand(cmd[1])
+    if not command then return end
+
+    local commandNotAuthenticated = not command.rankRequirement and not command.nameRequirement
+
+    local allowedByName = command.nameRequirement and
+        tableHelper.containsValue(command.nameRequirement, Players[pid].accountName)
+
+    local allowedByRank = command.rankRequirement and Players[pid].data.settings.staffRank >= command.rankRequirement
+
+    if commandNotAuthenticated or allowedByName or allowedByRank then
+        command.callback(pid, cmd)
+        return customEventHooks.makeEventStatus(false, nil)
     end
 end
 
