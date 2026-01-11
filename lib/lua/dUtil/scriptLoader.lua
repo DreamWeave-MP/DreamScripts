@@ -68,12 +68,14 @@ DScriptLoader.Interfaces = setmetatable({},
   }
 )
 
----@class DreamWeaveScriptEnv
-local ScriptEnv = {
-  print = print,
-  tableHelper = tableHelper,
-  I = DScriptLoader.Interfaces,
-}
+---@return DreamWeaveScriptEnv
+function DScriptLoader.getScriptEnv()
+  return {
+    print = print,
+    tableHelper = tableHelper,
+    I = DScriptLoader.Interfaces,
+  }
+end
 
 --- Given a loaded script and its path, insert relevant interfaces
 --- Tries to flush old interfaces, but if the interface name has changed this isn't possible,
@@ -171,7 +173,7 @@ function DScriptLoader.loadScript(scriptName, callerPid)
     end
   end
 
-  setfenv(result, ScriptEnv)
+  setfenv(result, DScriptLoader.getScriptEnv())
   result = result()
 
   if type(result) ~= 'table' then
