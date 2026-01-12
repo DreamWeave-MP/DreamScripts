@@ -27,7 +27,7 @@ end
 
 --- Helper for chat commands where a calling player is attempting to run a chat command on another
 --- Determines if the target PID is valid and refers to a player which is currently logged into the server
----@param pid PlayerId
+---@param pid PlayerId?
 ---@param targetPid PlayerId
 ---@return boolean isValid, PlayerId? targetPid whether or not the PID is valid, plus validated PlayerID converted from string to int if so
 function logicHandler.CheckPlayerValidity(pid, targetPid)
