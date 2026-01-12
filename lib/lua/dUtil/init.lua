@@ -62,6 +62,10 @@ end
 
 ---@type DUtilModule
 local Module = {
+  ---@return DataFileRequirements
+  getRequiredDataFiles = function()
+    return loadDataFileList('requiredDataFiles.json', false)
+  end,
   ---@param writeLog boolean?
   ---@return DataFileRequirements
   loadRequiredDataFiles = function(writeLog)

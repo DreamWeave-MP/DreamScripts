@@ -44,8 +44,8 @@ World = nil
 pidsByIpAddress = {}
 
 ---@global
----@type DataFileRequirements?
-ClientDataFiles = nil
+---@type DataFileRequirements
+ClientDataFiles = dUtil.getRequiredDataFiles()
 
 ---@global
 ClientVariableScopes = nil

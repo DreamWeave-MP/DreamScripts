@@ -1,7 +1,7 @@
 local tableHelper = require 'tes3mp.util.table'
 
 if not ClientDataFiles then
-    ClientDataFiles = require('dUtil.init').loadRequiredDataFiles(false)
+    ClientDataFiles = require('dUtil.init').getRequiredDataFiles()
 end
 
 ---@class SpeechCollections
