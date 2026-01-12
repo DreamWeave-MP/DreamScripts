@@ -1,4 +1,6 @@
 local color = require 'color'
+local guiHelper = require 'tes3mp.guiHelper'
+local logicHandler = require 'logicHandler'
 
 local commandHandler = {}
 
@@ -732,84 +734,87 @@ function commandHandler.ProcessCommand(pid, cmd)
             tes3mp.SendMessage(pid, "That command is disabled on this server.\n", false)
         end
     elseif cmd[1] == "storeconsole" and cmd[2] ~= nil and cmd[3] ~= nil and admin then
-        if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-            local targetPid = tonumber(cmd[2])
-            Players[targetPid].storedConsoleCommand = tableHelper.concatenateFromIndex(cmd, 3)
+        local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+        if not isValid then return end
 
-            tes3mp.SendMessage(pid, "That console command is now stored for player " .. targetPid .. "\n", false)
-        end
+        Players[targetPid].storedConsoleCommand = tableHelper.concatenateFromIndex(cmd, 3)
+
+        tes3mp.SendMessage(pid, ('That console command is now stored for player %s\n'):format(targetPid), false)
     elseif cmd[1] == "runconsole" and cmd[2] ~= nil and admin then
-        if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-            local targetPid = tonumber(cmd[2])
+        local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+        if not isValid then return end
 
-            if Players[targetPid].storedConsoleCommand == nil then
-                tes3mp.SendMessage(pid, "There is no console command stored for player " .. targetPid ..
-                    ". Please run /storeconsole on them first.\n", false)
-            else
-                local consoleCommand = Players[targetPid].storedConsoleCommand
-                logicHandler.RunConsoleCommandOnPlayer(targetPid, consoleCommand)
+        if Players[targetPid].storedConsoleCommand == nil then
+            tes3mp.SendMessage(pid, "There is no console command stored for player " .. targetPid ..
+                ". Please run /storeconsole on them first.\n", false)
+        else
+            local consoleCommand = Players[targetPid].storedConsoleCommand
 
-                local count = tonumber(cmd[3])
+            local count = tonumber(cmd[3])
 
-                if count ~= nil and count > 1 then
-                    count = count - 1
-                    local interval = 1
+            if count ~= nil and count > 1 then
+                count = count - 1
+                local interval, newInterval = 1, tonumber(cmd[4])
 
-                    if tonumber(cmd[4]) ~= nil and tonumber(cmd[4]) > 1 then
-                        interval = tonumber(cmd[4])
-                    end
-
-                    local loopIndex = tableHelper.getUnusedNumericalIndex(ObjectLoops)
-                    local timerId = tes3mp.CreateTimerEx("OnObjectLoopTimeExpiration", interval, "i", loopIndex)
-
-                    ObjectLoops[loopIndex] = {
-                        packetType = "console",
-                        timerId = timerId,
-                        interval = interval,
-                        count = count,
-                        targetPid = targetPid,
-                        targetName = Players[targetPid].accountName,
-                        consoleCommand = consoleCommand
-                    }
-
-                    tes3mp.StartTimer(timerId)
+                if newInterval ~= nil and newInterval > 1 then
+                    interval = newInterval
                 end
+
+                local loopIndex = tableHelper.getUnusedNumericalIndex(ObjectLoops)
+                local timerId = tes3mp.CreateTimerEx("OnObjectLoopTimeExpiration", interval, "i", loopIndex)
+
+                ObjectLoops[loopIndex] = {
+                    packetType = "console",
+                    timerId = timerId,
+                    interval = interval,
+                    count = count,
+                    targetPid = targetPid,
+                    targetName = Players[targetPid].accountName,
+                    consoleCommand = consoleCommand
+                }
+
+                tes3mp.StartTimer(timerId)
             end
         end
-    elseif (cmd[1] == "placeat" or cmd[1] == "spawnat") and cmd[2] ~= nil and cmd[3] ~= nil and admin then
-        if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-            local targetPid = tonumber(cmd[2])
-            local refId = tableHelper.concatenateFromIndex(cmd, 3)
-            local packetType
+    elseif (cmd[1] == 'placeat' or cmd[1] == 'spawnat') and cmd[2] and cmd[3] and admin then
+        local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+        if not isValid then return end
 
-            if cmd[1] == "placeat" then
-                packetType = "place"
-            elseif cmd[1] == "spawnat" then
-                packetType = "spawn"
-            end
+        local refId = tableHelper.concatenateFromIndex(cmd, 3)
+        local packetType
 
-            logicHandler.CreateObjectAtPlayer(targetPid, dataTableBuilder.BuildObjectData(refId), packetType)
+        if cmd[1] == 'placeat' then
+            packetType = 'place'
+        elseif cmd[1] == 'spawnat' then
+            packetType = 'spawn'
         end
-    elseif (cmd[1] == "anim" or cmd[1] == "a") and cmd[2] ~= nil then
+
+        logicHandler.CreateObjectAtPlayer(targetPid, dataTableBuilder.BuildObjectData(refId), packetType)
+    elseif (cmd[1] == 'anim' or cmd[1] == 'a') and cmd[2] ~= nil then
         local isValid = animHelper.PlayAnimation(pid, cmd[2])
+        if isValid then return end
 
-        if not isValid then
-            local validList = animHelper.GetValidList(pid)
-            tes3mp.SendMessage(pid, "That is not a valid animation. Try one of the following:\n" ..
-                validList .. "\n", false)
-        end
-    elseif cmd[1] == "speech" or cmd[1] == "s" then
-        local isValid = false
+        local validList = animHelper.GetValidList(pid)
+        tes3mp.SendMessage(
+            pid,
+            ('That is not a valid animation. Try one of the following:\n%s\n'):format(validList),
+            false
+        )
+    elseif cmd[1] == 'speech' or cmd[1] == 's' then
+        local isValid, speechNum = false, tonumber(cmd[3])
 
-        if cmd[2] ~= nil and cmd[3] ~= nil and type(tonumber(cmd[3])) == "number" then
-            isValid = speechHelper.PlaySpeech(pid, cmd[2], tonumber(cmd[3]))
+        if cmd[2] and cmd[3] and type(speechNum) == 'number' then
+            isValid = speechHelper.PlaySpeech(pid, cmd[2], speechNum)
         end
 
-        if not isValid then
-            local validList = speechHelper.GetPrintableValidListForPid(pid)
-            tes3mp.SendMessage(pid, "That is not a valid speech. Try one of the following:\n"
-                .. validList .. "\n", false)
-        end
+        if isValid then return end
+
+        local validList = speechHelper.GetPrintableValidListForPid(pid)
+        tes3mp.SendMessage(
+            pid,
+            ('That is not a valid speech. Try one of the following:\n%s\n'):format(validList),
+            false
+        )
     elseif cmd[1] == "confiscate" and moderator then
         if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
             local targetPid = tonumber(cmd[2])
