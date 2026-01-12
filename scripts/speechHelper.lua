@@ -1,5 +1,6 @@
-local tableHelper = require 'tes3mp.util.table'
+local speechCollections = require 'speechCollections'
 local miscUtil = require 'tes3mp.util.misc'
+local tableHelper = require 'tes3mp.util.table'
 
 ---@class SpeechHelper
 local speechHelper = {}
