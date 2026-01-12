@@ -1,15 +1,13 @@
 require 'doc.dUtilDocs'
 
 local enumerations = require 'tes3mp.enumerations'
--- local jsonInterface = require 'jsonInterface'
+local jsonInterface = require 'jsonInterface'
 local tableHelper = require 'tes3mp.util.table'
 
 ---@param filename string
 ---@param log boolean? Whether or not to write initialization logs
 ---@return DataFileRequirements
 local function loadDataFileList(filename, log)
-  if not jsonInterface then return {} end
-
   local dataFileList = {}
   tes3mp.LogMessage(
     enumerations.log.INFO,
