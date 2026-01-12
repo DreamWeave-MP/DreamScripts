@@ -63,10 +63,10 @@ require("time")
 
 --- MenuHelper is stateful and should load prior to any module which possibly depends on it
 local menuHelper = require 'menuHelper'
+local logicHandler = require 'logicHandler'
 
 customEventHooks = require("customEventHooks")
 customCommandHooks = require("customCommandHooks")
-logicHandler = require("logicHandler")
 eventHandler = require("eventHandler")
 guiHelper = require("guiHelper")
 animHelper = require("animHelper")
