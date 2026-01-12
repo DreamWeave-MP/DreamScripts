@@ -173,6 +173,7 @@ function logicHandler.IsPlayerAllowedConsole(pid)
     return false
 end
 
+--- DEPRECATED: Use dUtil.misc.getPlayerByName instead!
 --- Get the Player object of either an online player or an offline one
 ---@param targetName string
 ---@return Player?

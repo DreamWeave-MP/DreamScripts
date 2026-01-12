@@ -1,5 +1,4 @@
 local enumerations = require 'tes3mp.enumerations'
--- local logicHandler = require 'tes3mp.logicHandler'
 local dUtil = require 'dUtil.init'
 
 ---@class PacketBuilder
@@ -96,7 +95,7 @@ function packetBuilder.AddObjectSpawn(uniqueIndex, objectData)
         tes3mp.SetObjectSummonDuration(finishTime - currentTime)
 
         if objectData.summon.summoner.playerName then
-            local player = logicHandler.GetPlayerByName(objectData.summon.summoner.playerName)
+            local player = dUtil.misc.GetPlayerByName(objectData.summon.summoner.playerName)
             tes3mp.SetObjectSummonerPid(player.pid)
         else
             local summonerSplitIndex = objectData.summon.summoner.uniqueIndex:split("-")

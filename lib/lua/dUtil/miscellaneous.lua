@@ -43,4 +43,28 @@ function MiscUtil.isValidIP(ip)
   return true
 end
 
+--- Get the Player object of either an online player or an offline one
+---@param targetName string
+---@return Player?
+function MiscUtil.GetPlayerByName(targetName)
+  local lowerTargetName = targetName:lower()
+
+  assert(Players ~= nil, 'Failed to find the global Players table! This should never happen!')
+
+  -- Check if the player is online
+  for _, player in pairs(Players) do
+    if lowerTargetName == player.accountName:lower() then
+      return player
+    end
+  end
+
+  -- If they're offline, try to load their account file
+  local targetPlayer = Player(nil, targetName)
+
+  if not targetPlayer:HasAccount() then return end
+
+  targetPlayer:LoadFromDrive()
+  return targetPlayer
+end
+
 return MiscUtil
