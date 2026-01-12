@@ -2,6 +2,7 @@
 
 ---@alias CommandTokens string[] pre-tokenized command string provided to all commandHandlers. The first value is always the name of the command entered, including the leading slash.
 ---@alias CommandHandler fun(pid: PlayerId, cmd: CommandTokens) Special function type for handling chat commands
+---@alias DataFileRequirements table<string, string[]>
 ---@alias GUIID integer Unique numeric Identifier for GUIs
 ---@alias Inventory Item[]
 ---@alias PlayerId integer zero-based integer indicating a unique player ID.

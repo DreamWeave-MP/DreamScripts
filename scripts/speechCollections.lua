@@ -1,7 +1,13 @@
+local tableHelper = require 'tes3mp.util.table'
+
+if not ClientDataFiles then
+    ClientDataFiles = require('dUtil.init').loadRequiredDataFiles(false)
+end
+
+---@class SpeechCollections
 local speechCollections = {}
 
-if tableHelper.containsCaseInsensitiveString(clientDataFiles, "Morrowind.esm") then
-
+if tableHelper.containsCaseInsensitiveString(ClientDataFiles, "Morrowind.esm") then
     speechCollections["argonian"] = {
         default = {
             folderPath = "a",
@@ -137,8 +143,11 @@ if tableHelper.containsCaseInsensitiveString(clientDataFiles, "Morrowind.esm") t
                 attack = { count = 14 },
                 flee = { count = 4 },
                 follower = { count = 3 },
-                hello = { count = 179, skip = { 1, 27, 47, 69, 70, 71, 72, 80, 81, 82, 83, 84, 85, 86,
-                    100, 101, 102, 103, 104, 105, 106, 107, 128, 129, 143, 144, 145, 171, 173, 174, 176 } },
+                hello = {
+                    count = 179,
+                    skip = { 1, 27, 47, 69, 70, 71, 72, 80, 81, 82, 83, 84, 85, 86,
+                        100, 101, 102, 103, 104, 105, 106, 107, 128, 129, 143, 144, 145, 171, 173, 174, 176 }
+                },
                 hit = { count = 10 },
                 idle = { count = 9 },
                 oppose = { count = 8 },
@@ -305,8 +314,7 @@ if tableHelper.containsCaseInsensitiveString(clientDataFiles, "Morrowind.esm") t
         }
     }
 
-    if tableHelper.containsCaseInsensitiveString(clientDataFiles, "Tribunal.esm") then
-
+    if tableHelper.containsCaseInsensitiveString(ClientDataFiles, "Tribunal.esm") then
         speechCollections["dark elf"]["tb"] = {
             folderPath = "d",
             malePrefix = "DM",
@@ -317,7 +325,7 @@ if tableHelper.containsCaseInsensitiveString(clientDataFiles, "Morrowind.esm") t
             },
             femaleFiles = {
                 hello = { count = 173, filePrefixOverride = "tHlo" },
-                idle = { count = 17, filePrefixOverride = "tIdl"  }
+                idle = { count = 17, filePrefixOverride = "tIdl" }
             }
         }
 
@@ -336,8 +344,7 @@ if tableHelper.containsCaseInsensitiveString(clientDataFiles, "Morrowind.esm") t
         }
     end
 
-    if tableHelper.containsCaseInsensitiveString(clientDataFiles, "Bloodmoon.esm") then
-
+    if tableHelper.containsCaseInsensitiveString(ClientDataFiles, "Bloodmoon.esm") then
         speechCollections["dark elf"]["bm"] = {
             folderPath = "d",
             malePrefix = "DM",

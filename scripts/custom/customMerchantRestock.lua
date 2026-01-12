@@ -30,7 +30,10 @@
 -- Add the uniqueIndex of the merchant and table of items you want to restock in the format shown below
 -- Fuck that fella we got rust around these parts
 
+local enumerations = require 'tes3mp.enumerations'
 local inventoryHelper = require 'inventoryHelper'
+local jsonInterface = require 'jsonInterface'
+local packetBuilder = require 'tes3mp.packet.builder'
 
 local merchantRestockLog = true
 local merchantData = nil
@@ -153,7 +156,7 @@ local function restockItems(pid, cellDescription, merchant, receivedObject)
           "Received a list item, do moar work to handle " .. name)
       end
       for _ = 1, count do
-        local item = recursiveGetLeveledItem(playerLevel, merchantData[name])
+        local item = RecursiveGetLeveledItem(playerLevel, merchantData[name])
         if item then
           tes3mp.LogAppend(enumerations.log.WARN, "Adding " .. item .. " to inventory from list " .. name)
           inventoryHelper.addItem(currentInventory, item, 1, -1, -1, "")
@@ -175,16 +178,16 @@ local function restockItems(pid, cellDescription, merchant, receivedObject)
   end
 end
 
-local function resetMerchantData(eventStatus, pid, cellDescription, objects)
+local function resetMerchantData(_, pid, cellDescription, objects)
   if not dataLoaded() then
     return tes3mp.LogAppend(enumerations.log.ERROR,
       'No merchant database loaded! Cannot reset merchant data!')
   end
   assert(merchantData)
 
-  if not Players[pid] or not Players[pid]:IsLoggedIn() or not dataLoaded() then return end
+  if not Players[pid] or not Players[pid]:IsLoggedIn() then return end
 
-  for uniqueIndex, object in pairs(objects) do
+  for _, object in pairs(objects) do
     if object.dialogueChoiceType ~= enumerations.dialogueChoice.BARTER then return end
 
     local target = object.refId
@@ -231,8 +234,9 @@ local function resetMerchantData(eventStatus, pid, cellDescription, objects)
   end
 end
 
-local function getInitialGold(eventStatus, pid, cellDescription, objects)
-  if not Players[pid] or not Players[pid]:IsLoggedIn() or not dataLoaded() then return end
+local function getInitialGold(_, pid, cellDescription, objects)
+  if not Players[pid] or not Players[pid]:IsLoggedIn() then return end
+
   if not dataLoaded() then
     return tes3mp.LogAppend(enumerations.log.ERROR,
       'No merchant database loaded! Cannot fetch initial gold!')
@@ -267,54 +271,54 @@ function RecursiveGetLeveledItem(comparatorLevel, leveledList)
     return tes3mp.LogAppend(enumerations.log.ERROR,
       'No merchant database loaded! Cannot fetch leveled item!')
   end
+
   assert(merchantData)
 
   local randomChance = math.random(100)
-  if randomChance > leveledList.chance_none then
-    local instance = {}
-    if leveledList.list_flags == 1 then
-      for _, entry in pairs(leveledList.items) do
-        local option = entry[1]
-        local requiredLevel = entry[2]
-        if requiredLevel <= comparatorLevel then
-          instance[#instance + 1] = option
-        end
+  if randomChance <= leveledList.chance_none then
+    return
+  end
+
+  local instance = {}
+
+  if leveledList.list_flags == 1 then
+    for _, entry in pairs(leveledList.items) do
+      local option, requiredLevel = entry[1], entry[2]
+
+      if requiredLevel <= comparatorLevel then
+        instance[#instance + 1] = option
       end
-    else
-      local highestAvailableLevel = -1
-      for _, entry in pairs(leveledList.items) do
-        local requiredLevel = entry[2]
-        if requiredLevel > highestAvailableLevel and requiredLevel <= comparatorLevel then
-          highestAvailableLevel = requiredLevel
-        end
-      end
-      if highestAvailableLevel ~= -1 then
-        for _, entry in pairs(leveledList.items) do
-          local option = entry[1]
-          local requiredLevel = entry[2]
-          if requiredLevel == highestAvailableLevel then
-            instance[#instance + 1] = option
-          end
-        end
+    end
+  else
+    local highestAvailableLevel = -1
+
+    for _, entry in ipairs(leveledList.items) do
+      local requiredLevel = entry[2]
+
+      if requiredLevel > highestAvailableLevel and requiredLevel <= comparatorLevel then
+        highestAvailableLevel = requiredLevel
       end
     end
 
-    if #instance ~= 0 then
-      randomChance = math.random(#instance)
-      if merchantData[instance[randomChance]] then
-        -- recurse into the child leveled list
-        return RecursiveGetLeveledItem(comparatorLevel, merchantData[instance[randomChance]])
-      else
-        -- return the item RefId
-        return instance[randomChance]
+    if highestAvailableLevel ~= -1 then
+      for _, entry in ipairs(leveledList.items) do
+        local option, requiredLevel = entry[1], entry[2]
+
+        if requiredLevel == highestAvailableLevel then
+          instance[#instance + 1] = option
+        end
       end
-    else
-      -- no applicable options
-      return
     end
-  else
-    -- chanceNone
-    return
+  end
+
+  if #instance ~= 0 then
+    randomChance = math.random(#instance)
+    if merchantData[instance[randomChance]] then
+      -- recurse into the child leveled list
+      return RecursiveGetLeveledItem(comparatorLevel, merchantData[instance[randomChance]])
+    else -- return the item RefId
+      return instance[randomChance]
+    end
   end
 end
 

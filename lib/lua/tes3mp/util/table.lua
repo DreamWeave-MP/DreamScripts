@@ -1,3 +1,4 @@
+local enumerations = require 'tes3mp.enumerations'
 local patterns = require 'patterns'
 
 ---@class TableHelper

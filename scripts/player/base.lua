@@ -1,13 +1,16 @@
-local config = require 'config'
-local class = require 'classy'
+local config = require 'tes3mp.config'
+local contentFixer = require 'contentFixer'
+local enumerations = require 'tes3mp.enumerations'
 local inventoryHelper = require 'inventoryHelper'
-local packetReader = require 'packetReader'
+local logicHandler = require 'tes3mp.logicHandler'
+local packetBuilder = require 'tes3mp.packet.builder'
+local packetReader = require 'tes3mp.packet.reader'
 local patterns = require 'patterns'
 local stateHelper = require 'stateHelper'
-local tableHelper = require 'tableHelper'
+local tableHelper = require 'tes3mp.util.table'
 
 ---@class BasePlayer
-local BasePlayer = class 'BasePlayer'
+local BasePlayer = require('classy')('BasePlayer')
 
 ---@param pid PlayerId
 ---@param playerName string
@@ -223,7 +226,7 @@ function BasePlayer:FinishLogin()
                     -- were already loaded upon first connecting to the server
                     if priorityLevel > 1 then
                         recordStore:LoadRecords(self.pid, recordStore.data.permanentRecords,
-                            tableHelper.getArrayFromIndexes(recordStore.data.permanentRecords))
+                            tableHelper.getArrayFromIndices(recordStore.data.permanentRecords))
                     end
 
                     -- Load the generated records linked to us in this record store
@@ -363,7 +366,7 @@ function BasePlayer:EndCharGen()
 
                 -- Load all the permanent records in this record store
                 recordStore:LoadRecords(self.pid, recordStore.data.permanentRecords,
-                    tableHelper.getArrayFromIndexes(recordStore.data.permanentRecords))
+                    tableHelper.getArrayFromIndices(recordStore.data.permanentRecords))
             end
         end
     end

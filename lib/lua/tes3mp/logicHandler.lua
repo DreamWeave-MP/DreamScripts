@@ -1,7 +1,13 @@
-local tableHelper = require 'tableHelper'
+assert(LoadedCells ~= nil, 'logicHandler does not have LoadedCells table in scope!')
+assert(Players ~= nil, 'logicHandler does not have Players table in scope!')
+assert(World ~= nil, 'logicHandler does not have the World module in scope!')
+
+local config = require 'tes3mp.config'
+local enumerations = require 'tes3mp.enumerations'
+local tableHelper = require 'tes3mp.util.table'
 local fileHelper = require 'fileHelper'
 local dataTableBuilder = require 'dataTableBuilder'
-local packetBuilder = require 'packetBuilder'
+local packetBuilder = require 'tes3mp.packet.builder'
 
 local logicHandler = {}
 

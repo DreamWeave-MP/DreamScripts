@@ -1,9 +1,12 @@
-require("config")
-fileHelper = require("fileHelper")
-tableHelper = require("tableHelper")
-local BasePlayer = require("player.base")
+local config = require 'tes3mp.config'
+local enumerations = require 'tes3mp.enumerations'
+local fileHelper = require 'fileHelper'
+local jsonInterface = require 'jsonInterface'
+local logicHandler = require 'tes3mp.logicHandler'
+local tableHelper = require 'tes3mp.util.table'
+local BasePlayer = require 'player.base'
 
-local Player = class("Player", BasePlayer)
+local Player = require('classy')('Player', BasePlayer)
 
 function Player:__init(pid, playerName)
     BasePlayer.__init(self, pid, playerName)

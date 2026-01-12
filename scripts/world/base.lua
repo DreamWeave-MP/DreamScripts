@@ -1,5 +1,10 @@
-stateHelper = require("stateHelper")
-local BaseWorld = class("BaseWorld")
+local config = require 'tes3mp.config'
+local enumerations = require 'tes3mp.enumerations'
+local logicHandler = require 'tes3mp.logicHandler'
+local stateHelper = require 'stateHelper'
+
+---@class BaseWorld
+local BaseWorld = require('classy')('BaseWorld')
 
 -- Keep this here because it's required in mathematical operations
 BaseWorld.defaultTimeScale = 30
@@ -9,7 +14,6 @@ BaseWorld.monthLengths = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 }
 BaseWorld.storedRegions = {}
 
 function BaseWorld:__init()
-
     self.coreVariables =
     {
         currentMpNum = 0,
@@ -40,7 +44,6 @@ function BaseWorld:HasEntry()
 end
 
 function BaseWorld:EnsureCoreVariablesExist()
-
     if self.coreVariables == nil then
         self.coreVariables = {}
     end
@@ -60,7 +63,6 @@ function BaseWorld:EnsureCoreVariablesExist()
 end
 
 function BaseWorld:EnsureTimeDataExists()
-
     if self.data.time == nil then
         self.data.time = config.defaultTimeTable
     end
@@ -71,14 +73,12 @@ function BaseWorld:HasRunStartupScripts()
 end
 
 function BaseWorld:GetRegionVisitorCount(regionName)
-
     if self.storedRegions[regionName] == nil then return 0 end
 
     return tableHelper.getCount(self.storedRegions[regionName].visitors)
 end
 
 function BaseWorld:AddRegionVisitor(pid, regionName)
-
     if self.storedRegions[regionName] == nil then
         self.storedRegions[regionName] = { visitors = {}, forcedWeatherUpdatePids = {} }
     end
@@ -90,7 +90,6 @@ function BaseWorld:AddRegionVisitor(pid, regionName)
 end
 
 function BaseWorld:RemoveRegionVisitor(pid, regionName)
-
     local loadedRegion = self.storedRegions[regionName]
 
     -- Only remove visitor if they are actually recorded as one
@@ -104,19 +103,16 @@ function BaseWorld:RemoveRegionVisitor(pid, regionName)
 end
 
 function BaseWorld:AddForcedWeatherUpdatePid(pid, regionName)
-
     local loadedRegion = self.storedRegions[regionName]
     table.insert(loadedRegion.forcedWeatherUpdatePids, pid)
 end
 
 function BaseWorld:RemoveForcedWeatherUpdatePid(pid, regionName)
-
     local loadedRegion = self.storedRegions[regionName]
     tableHelper.removeValue(loadedRegion.forcedWeatherUpdatePids, pid)
 end
 
 function BaseWorld:IsForcedWeatherUpdatePid(pid, regionName)
-
     local loadedRegion = self.storedRegions[regionName]
 
     if tableHelper.containsValue(loadedRegion.forcedWeatherUpdatePids, pid) then
@@ -127,7 +123,6 @@ function BaseWorld:IsForcedWeatherUpdatePid(pid, regionName)
 end
 
 function BaseWorld:GetRegionAuthority(regionName)
-
     if self.storedRegions[regionName] ~= nil then
         return self.storedRegions[regionName].authority
     end
@@ -136,7 +131,6 @@ function BaseWorld:GetRegionAuthority(regionName)
 end
 
 function BaseWorld:SetRegionAuthority(pid, regionName)
-
     self.storedRegions[regionName].authority = pid
     tes3mp.LogMessage(enumerations.log.INFO, "Authority of region " .. regionName .. " is now " ..
         logicHandler.GetChatName(pid))
@@ -146,7 +140,6 @@ function BaseWorld:SetRegionAuthority(pid, regionName)
 end
 
 function BaseWorld:IncrementDay()
-
     self.data.time.daysPassed = self.data.time.daysPassed + 1
 
     local day = self.data.time.day
@@ -154,7 +147,6 @@ function BaseWorld:IncrementDay()
 
     -- Is the new day higher than the number of days in the current month?
     if day + 1 > (self.monthLengths[month] or 0) then
-
         -- Is the new month higher than the number of months in a year?
         if month + 1 > 12 then
             self.data.time.year = self.data.time.year + 1
@@ -165,13 +157,11 @@ function BaseWorld:IncrementDay()
 
         self.data.time.day = 1
     else
-
         self.data.time.day = day + 1
     end
 end
 
 function BaseWorld:GetCurrentTimeScale()
-
     if self.data.time.dayTimeScale == nil then self.data.time.dayTimeScale = self.defaultTimeScale end
     if self.data.time.nightTimeScale == nil then self.data.time.nightTimeScale = self.defaultTimeScale end
 
@@ -236,11 +226,9 @@ function BaseWorld:LoadMap(pid)
 end
 
 function BaseWorld:LoadKills(pid, forEveryone)
-
     tes3mp.ClearKillChanges()
 
     for refId, killCount in pairs(self.data.kills) do
-
         tes3mp.AddKill(refId, killCount)
     end
 
@@ -248,11 +236,9 @@ function BaseWorld:LoadKills(pid, forEveryone)
 end
 
 function BaseWorld:LoadRegionWeather(regionName, pid, forEveryone, forceState)
-
     local region = self.storedRegions[regionName]
 
     if region.currentWeather ~= nil then
-
         tes3mp.SetWeatherRegion(regionName)
         tes3mp.SetWeatherCurrent(region.currentWeather)
         tes3mp.SetWeatherNext(region.nextWeather)
@@ -267,9 +253,7 @@ function BaseWorld:LoadRegionWeather(regionName, pid, forEveryone, forceState)
 end
 
 function BaseWorld:LoadWeather(pid, forEveryone, forceState)
-
     for regionName, region in pairs(self.storedRegions) do
-
         if region.currentWeather ~= nil then
             self:LoadRegionWeather(regionName, pid, forEveryone, forceState)
         end
@@ -277,7 +261,6 @@ function BaseWorld:LoadWeather(pid, forEveryone, forceState)
 end
 
 function BaseWorld:LoadTime(pid, forEveryone)
-
     tes3mp.SetHour(self.data.time.hour)
     tes3mp.SetDay(self.data.time.day)
 
@@ -334,11 +317,9 @@ function BaseWorld:SaveClientScriptGlobal(variables)
 end
 
 function BaseWorld:SaveKills(pid)
-
     tes3mp.ReadReceivedWorldstate()
 
     for index = 0, tes3mp.GetKillChangesSize() - 1 do
-
         local refId = tes3mp.GetKillRefId(index)
         local number = tes3mp.GetKillNumber(index)
         self.data.kills[refId] = number
@@ -348,7 +329,6 @@ function BaseWorld:SaveKills(pid)
 end
 
 function BaseWorld:SaveRegionWeather(regionName)
-
     local loadedRegion = self.storedRegions[regionName]
     loadedRegion.currentWeather = tes3mp.GetWeatherCurrent()
     loadedRegion.nextWeather = tes3mp.GetWeatherNext()
@@ -361,7 +341,6 @@ function BaseWorld:SaveMapExploration(pid)
 end
 
 function BaseWorld:SaveMapTiles(mapTiles)
-
     for index, mapTile in ipairs(mapTiles) do
         -- We need to save the image file using the original index in the packet
         tes3mp.SaveMapTileImageFile(index - 1, config.dataPath .. "/map/" .. mapTile.filename)

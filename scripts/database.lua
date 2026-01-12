@@ -1,10 +1,11 @@
 -- This is a very unfinished and out-of-date example of using a database in TES3MP
 
-tableHelper = require("tableHelper")
-Database = class("Database")
+local enumerations = require 'tes3mp.enumerations'
+local tableHelper = require 'tes3mp.util.table'
+
+Database = require('classy')('Database')
 
 function Database:LoadDriver(driver)
-
     self.driver = require("luasql." .. driver)
 
     -- Create environment object
@@ -16,12 +17,10 @@ function Database:LoadDriver(driver)
 end
 
 function Database:Connect(databasePath)
-
     self.connection = assert(self.env:connect(databasePath))
 end
 
 function Database:Execute(query)
-
     local response = self.connection:execute(query)
 
     if response == nil then
@@ -32,7 +31,6 @@ function Database:Execute(query)
 end
 
 function Database:Escape(string)
-
     string = self.connection:escape(string)
     return string
 end
@@ -41,7 +39,6 @@ end
 --@param tableName The name of the table. [string]
 --@param columnArray An array (to keep column ordering) of key/value pairs. [table]
 function Database:CreateTable(tableName, columnArray)
-
     local query = string.format("CREATE TABLE IF NOT EXISTS %s(", tableName)
 
     for index, column in pairs(columnArray) do
@@ -64,7 +61,6 @@ function Database:CreateTable(tableName, columnArray)
 end
 
 function Database:DeleteRows(tableName, condition)
-
     local query = string.format("DELETE FROM %s %s", tableName, condition)
     self:Execute(query)
 end
@@ -73,14 +69,12 @@ end
 --@param tableName The name of the table. [string]
 --@param valueTable A key/value table where the keys are the names of columns. [table]
 function Database:InsertRow(tableName, valueTable)
-
     local query = string.format("INSERT OR REPLACE INTO %s", tableName)
     local queryColumns = ""
     local queryValues = ""
     local count = 0
 
     for column, value in pairs(valueTable) do
-
         count = count + 1
 
         if count > 1 then
@@ -93,20 +87,17 @@ function Database:InsertRow(tableName, valueTable)
     end
 
     if count > 0 then
-
         query = query .. string.format("(%s) VALUES(%s)", queryColumns, queryValues)
         self:Execute(query)
     end
 end
 
 function Database:SelectRow(tableName, condition)
-
     local rows = self:SelectRows(tableName, condition)
     return rows[1]
 end
 
 function Database:SelectRows(tableName, condition)
-
     local query = string.format("SELECT * FROM %s %s", tableName, condition)
     local cursor = self:Execute(query)
     local rows = {}
@@ -121,7 +112,6 @@ function Database:SelectRows(tableName, condition)
 end
 
 function Database:GetSingleValue(tableName, column, condition)
-
     local query = string.format("SELECT %s FROM %s %s", column, tableName, condition)
     local cursor = self:Execute(query)
     local row = cursor:fetch({}, "a")
@@ -134,13 +124,11 @@ function Database:GetSingleValue(tableName, column, condition)
 end
 
 function Database:SavePlayer(dbPid, data)
-
     -- Put all of these INSERT statements into a single transaction to avoid freezes
     self:Execute("BEGIN TRANSACTION;")
 
     for category, categoryTable in pairs(data) do
         if tableHelper.usesNumericalKeys(categoryTable) then
-
             local tableName = "player_slots_" .. category
 
             -- Delete the current slots before repopulating them
@@ -153,7 +141,6 @@ function Database:SavePlayer(dbPid, data)
                 self:InsertRow(tableName, tempTable)
             end
         elseif category ~= "login" then
-
             local tableName = "player_" .. category
             tes3mp.LogMessage(enumerations.log.INFO, "Saving category " .. category)
             local tempTable = tableHelper.deepCopy(categoryTable)
@@ -166,11 +153,9 @@ function Database:SavePlayer(dbPid, data)
 end
 
 function Database:LoadPlayer(dbPid, data)
-
     local slotTables = { "equipment", "inventory", "spellbook" }
 
     for category, categoryTable in pairs(data) do
-
         if tableHelper.containsValue(slotTables, category) then
             local tableName = "player_slots_" .. category
 
@@ -190,7 +175,6 @@ function Database:LoadPlayer(dbPid, data)
             local row = self:SelectRow(tableName, string.format("WHERE dbPid = '%s'", dbPid))
 
             if row ~= nil then
-
                 -- Remove database-only indexes in case we want to save the data again to a different format
                 row.dbPid = nil
 
@@ -203,9 +187,7 @@ function Database:LoadPlayer(dbPid, data)
 end
 
 function Database:SaveWorld(data)
-
     for category, categoryTable in pairs(data) do
-
         local tableName = "world_" .. category
         local tempTable = tableHelper.deepCopy(categoryTable)
         tempTable.rowid = 0
@@ -214,9 +196,7 @@ function Database:SaveWorld(data)
 end
 
 function Database:LoadWorld(data)
-
     for category, categoryTable in pairs(data) do
-
         local tableName = "world_" .. category
         local row = self:SelectRow(tableName, "WHERE rowid = 0")
 
@@ -229,52 +209,49 @@ function Database:LoadWorld(data)
 end
 
 function Database:CreateCellTables()
-
     local columnList, valueTable
 
     -- Frequently reused rows related to database cell IDs
-    local dbCidRow = {dbCid = "INTEGER PRIMARY KEY ASC"}
-    local constraintRow = {constraint = "FOREIGN KEY(dbCid) REFERENCES cell_entry(dbCid)" }
+    local dbCidRow = { dbCid = "INTEGER PRIMARY KEY ASC" }
+    local constraintRow = { constraint = "FOREIGN KEY(dbCid) REFERENCES cell_entry(dbCid)" }
 
     columnList = {
         dbCidRow,
-        {description = "TEXT UNIQUE"}
+        { description = "TEXT UNIQUE" }
     }
 
     self:CreateTable("cell_entry", columnList)
 end
 
 function Database:CreateWorldTables()
-
     local columnList
 
     columnList = {
-        {currentMpNum = "INTEGER"}
+        { currentMpNum = "INTEGER" }
     }
 
     self:CreateTable("world_general", columnList)
 end
 
 function Database:CreatePlayerTables()
-
     local columnList, valueTable
 
     -- Frequently reused rows related to database player IDs
-    local dbPidRow = {dbPid = "INTEGER PRIMARY KEY ASC"}
-    local constraintRow = {constraint = "FOREIGN KEY(dbPid) REFERENCES player_login(dbPid)" }
+    local dbPidRow = { dbPid = "INTEGER PRIMARY KEY ASC" }
+    local constraintRow = { constraint = "FOREIGN KEY(dbPid) REFERENCES player_login(dbPid)" }
 
     columnList = {
         dbPidRow,
-        {name = "TEXT UNIQUE"},
-        {password = "TEXT"}
+        { name = "TEXT UNIQUE" },
+        { password = "TEXT" }
     }
 
     self:CreateTable("player_login", columnList)
 
     columnList = {
         dbPidRow,
-        {admin = "INTEGER"},
-        {consoleAllowed = "TEXT NOT NULL CHECK (consoleAllowed IN ('true', 'false', 'default'))"},
+        { admin = "INTEGER" },
+        { consoleAllowed = "TEXT NOT NULL CHECK (consoleAllowed IN ('true', 'false', 'default'))" },
         constraintRow
     }
 
@@ -282,12 +259,12 @@ function Database:CreatePlayerTables()
 
     columnList = {
         dbPidRow,
-        {race = "TEXT"},
-        {head = "TEXT"},
-        {hair = "TEXT"},
-        {gender = "BOOLEAN NOT NULL CHECK (gender IN (0, 1))"},
-        {class = "TEXT"},
-        {birthsign = "TEXT"},
+        { race = "TEXT" },
+        { head = "TEXT" },
+        { hair = "TEXT" },
+        { gender = "BOOLEAN NOT NULL CHECK (gender IN (0, 1))" },
+        { class = "TEXT" },
+        { birthsign = "TEXT" },
         constraintRow
     }
 
@@ -295,12 +272,12 @@ function Database:CreatePlayerTables()
 
     columnList = {
         dbPidRow,
-        {name = "TEXT"},
-        {description = "TEXT"},
-        {specialization = "INTEGER"},
-        {majorAttributes = "TEXT"},
-        {majorSkills = "TEXT"},
-        {minorSkills = "TEXT"},
+        { name = "TEXT" },
+        { description = "TEXT" },
+        { specialization = "INTEGER" },
+        { majorAttributes = "TEXT" },
+        { majorSkills = "TEXT" },
+        { minorSkills = "TEXT" },
         constraintRow
     }
 
@@ -308,13 +285,13 @@ function Database:CreatePlayerTables()
 
     columnList = {
         dbPidRow,
-        {cell = "TEXT"},
-        {posX = "NUMERIC"},
-        {posY = "NUMERIC"},
-        {posZ = "NUMERIC"},
-        {rotX = "NUMERIC"},
-        {rotY = "NUMERIC"},
-        {rotZ = "NUMERIC"},
+        { cell = "TEXT" },
+        { posX = "NUMERIC" },
+        { posY = "NUMERIC" },
+        { posZ = "NUMERIC" },
+        { rotX = "NUMERIC" },
+        { rotY = "NUMERIC" },
+        { rotZ = "NUMERIC" },
         constraintRow
     }
 
@@ -322,14 +299,14 @@ function Database:CreatePlayerTables()
 
     columnList = {
         dbPidRow,
-        {level = "INTEGER"},
-        {levelProgress = "INTEGER"},
-        {healthBase = "NUMERIC"},
-        {healthCurrent = "NUMERIC"},
-        {magickaBase = "NUMERIC"},
-        {magickaCurrent = "NUMERIC"},
-        {fatigueBase = "NUMERIC"},
-        {fatigueCurrent = "NUMERIC"},
+        { level = "INTEGER" },
+        { levelProgress = "INTEGER" },
+        { healthBase = "NUMERIC" },
+        { healthCurrent = "NUMERIC" },
+        { magickaBase = "NUMERIC" },
+        { magickaCurrent = "NUMERIC" },
+        { fatigueBase = "NUMERIC" },
+        { fatigueCurrent = "NUMERIC" },
         constraintRow
     }
 
@@ -364,11 +341,11 @@ function Database:CreatePlayerTables()
     self:CreateTable("player_skillProgress", columnList)
 
     columnList = {
-        {dbPid = "INTEGER"},
-        {slot = "INTEGER"},
-        {refId = "TEXT"},
-        {count = "INTEGER"},
-        {charge = "INTEGER"},
+        { dbPid = "INTEGER" },
+        { slot = "INTEGER" },
+        { refId = "TEXT" },
+        { count = "INTEGER" },
+        { charge = "INTEGER" },
         constraintRow
     }
 
@@ -376,9 +353,9 @@ function Database:CreatePlayerTables()
     self:CreateTable("player_slots_inventory", columnList)
 
     columnList = {
-        {dbPid = "INTEGER"},
-        {slot = "INTEGER"},
-        {spellId = "TEXT"},
+        { dbPid = "INTEGER" },
+        { slot = "INTEGER" },
+        { spellId = "TEXT" },
         constraintRow
     }
 

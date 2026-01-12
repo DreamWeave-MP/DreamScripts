@@ -1,13 +1,12 @@
-Database = require("database")
-local BaseCell = require("cell.base")
+Database = require 'database'
+local BaseCell = require 'cell.base'
 
-local Cell = class("Cell", BaseCell)
+local Cell = require('classy')('Cell', BaseCell)
 
 function Cell:__init(cellDescription)
     BaseCell.__init(self, cellDescription)
 
     if self.hasEntry == nil then
-
         -- Not implemented yet
     end
 end

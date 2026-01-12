@@ -1,6 +1,9 @@
-local dkjson = require("dkjson")
-local cjson
-local cjsonExists = doesModuleExist("cjson")
+local config = require 'tes3mp.config'
+local dkjson = require 'dkjson'
+local enumerations = require 'tes3mp.enumerations'
+local miscUtil = require 'tes3mp.util.misc'
+local cjsonExists, cjson = miscUtil.doesModuleExist 'cjson'
+
 local LocalDataPath = tes3mp.GetDataPath()
 
 ---@type DUtilModule
@@ -141,6 +144,14 @@ function jsonInterface.quicksave(fileName, data)
     else
         return jsonInterface.save(fileName, data)
     end
+end
+
+-- Lua's default io library for input/output can't open Unicode filenames on Windows,
+-- which is why on Windows it's replaced by TES3MP's io2 (https://github.com/TES3MP/Lua-io2)
+if tes3mp.GetOperatingSystemType() == "Windows" then
+    jsonInterface.setLibrary(require("io2"))
+else
+    jsonInterface.setLibrary(io)
 end
 
 return jsonInterface

@@ -1,4 +1,4 @@
-local config = require 'config'
+local config = require 'tes3mp.config'
 local patterns = require 'patterns'
 local inventoryHelper = require 'inventoryHelper'
 
@@ -181,13 +181,13 @@ local menuHelper = {
 
     destinations = {
         ---@param inputMenu string
-        ---@param inputEffects MenuEffect[]
+        ---@param inputEffects MenuEffect[]?
         ---@return DefaultDestination
         setDefault = function(inputMenu, inputEffects)
             ---@type DefaultDestination
             local destination = {
                 targetMenu = inputMenu,
-                effects = inputEffects
+                effects = inputEffects or {}
             }
 
             return destination

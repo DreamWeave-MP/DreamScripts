@@ -1,7 +1,10 @@
-require("config")
-fileHelper = require("fileHelper")
-tableHelper = require("tableHelper")
-local BaseRecordStore = require("recordstore.base")
+local class = require 'classy'
+local config = require 'tes3mp.config'
+local enumerations = require 'tes3mp.enumerations'
+local jsonInterface = require 'jsonInterface'
+local tableHelper = require 'tes3mp.util.table'
+
+local BaseRecordStore = require 'recordstore.base'
 
 local RecordStore = class("RecordStore", BaseRecordStore)
 

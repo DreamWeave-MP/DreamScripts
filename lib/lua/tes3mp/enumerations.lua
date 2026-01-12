@@ -1,5 +1,5 @@
 ---@class Enumerations
-enumerations = {}
+local enumerations = {}
 
 ---@enum AIState
 enumerations.ai = { CANCEL = 0, ACTIVATE = 1, COMBAT = 2, ESCORT = 3, FOLLOW = 4, TRAVEL = 5, WANDER = 6 }

@@ -1,7 +1,8 @@
+local config = require 'tes3mp.config'
+local enumerations = require 'tes3mp.enumerations'
 local patterns = require 'patterns'
 
-local class = require 'classy'
-local StateHelper = class 'StateHelper'
+local StateHelper = require('classy')('StateHelper')
 
 function StateHelper:LoadJournal(pid, stateObject)
     if stateObject.data.journal == nil then

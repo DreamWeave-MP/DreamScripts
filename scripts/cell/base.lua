@@ -1,11 +1,13 @@
-local patterns = require 'patterns'
-
+local class = require 'classy'
+local config = require 'tes3mp.config'
 local contentFixer = require 'contentFixer'
-local tableHelper = require 'tableHelper'
+local enumerations = require 'tes3mp.enumerations'
 local inventoryHelper = require 'inventoryHelper'
-packetBuilder = require("packetBuilder")
+local packetBuilder = require 'tes3mp.packet.builder'
+local patterns = require 'patterns'
+local tableHelper = require 'tes3mp.util.table'
 
-local BaseCell = class("BaseCell")
+local BaseCell = class 'BaseCell'
 
 function BaseCell:__init(cellDescription)
     self.data =
@@ -1998,7 +2000,7 @@ function BaseCell:LoadGeneratedRecords(pid)
 
         if recordStore ~= nil then
             recordStore:LoadGeneratedRecords(pid, recordStore.data.generatedRecords,
-                tableHelper.getArrayFromIndexes(recordList))
+                tableHelper.getArrayFromIndices(recordList))
         end
     end
 end

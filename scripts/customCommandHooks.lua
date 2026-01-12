@@ -19,6 +19,9 @@
 
 ]]
 
+local enumerations = require 'tes3mp.enumerations'
+local tableHelper = require 'tesmp3util.table'
+
 ---@class CustomCommandHooks
 ---@field commands table<string, TES3MPCommand>
 local customCommandHooks = {

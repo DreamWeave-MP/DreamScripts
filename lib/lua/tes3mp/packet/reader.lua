@@ -1,3 +1,5 @@
+local enumerations = require 'tes3mp.enumerations'
+
 ---@class PacketReader
 local packetReader = {}
 

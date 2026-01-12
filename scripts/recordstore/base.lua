@@ -1,7 +1,9 @@
-local class = require 'classy'
+local enumerations = require 'tes3mp.enumerations'
 local logicHandler = require 'tes3mp.logicHandler'
+local packetBuilder = require 'tes3mp.packet.builder'
+local tableHelper = require 'tes3mp.util.table'
 
-local BaseRecordStore = class 'BaseRecordStore'
+local BaseRecordStore = require('classy')('BaseRecordStore')
 
 BaseRecordStore.defaultData =
 {

@@ -1,6 +1,10 @@
 local color = require 'color'
-local guiHelper = require 'tes3mp.guiHelper'
-local logicHandler = require 'logicHandler'
+local dataTableBuilder = require 'dataTableBuilder'
+local enumerations = require 'tes3mp.enumerations'
+local guiHelper = require 'tes3mp.util.gui'
+local logicHandler = require 'tes3mp.logicHandler'
+local miscUtil = require 'tes3mp.util.misc'
+local packetBuilder = require 'tes3mp.packet.builder'
 
 local commandHandler = {}
 
@@ -579,7 +583,7 @@ function commandHandler.ProcessCommand(pid, cmd)
             end
         else
             tes3mp.SendMessage(pid, categoryInput .. " is not a valid object category. Valid choices are " ..
-                tableHelper.concatenateTableIndexes(enumerations.objectCategories, ", ") .. "\n", false)
+                tableHelper.concatenateTableIndices(enumerations.objectCategories, ", ") .. "\n", false)
             return false
         end
 
@@ -665,7 +669,7 @@ function commandHandler.ProcessCommand(pid, cmd)
                     package.loaded[scriptName][key] = value
                 end
             else
-                result = prequire(scriptName)
+                result = miscUtil.prequire(scriptName)
             end
 
             if result then
@@ -846,7 +850,7 @@ function commandHandler.ProcessCommand(pid, cmd)
 
         if actionNumericalId == nil then
             Players[pid]:Message(actionInput .. " is not a valid AI action. Valid choices are " ..
-                tableHelper.concatenateTableIndexes(enumerations.ai, ", ") .. "\n")
+                tableHelper.concatenateTableIndices(enumerations.ai, ", ") .. "\n")
         else
             local uniqueIndex = cmd[2]
             local cell = logicHandler.GetCellContainingActor(uniqueIndex)
@@ -947,7 +951,7 @@ function commandHandler.StoreRecord(pid, cmd)
 
     if config.validRecordSettings[inputType] == nil then
         Players[pid]:Message("Record type " .. inputType .. " is invalid. Please use one of the following " ..
-            "valid types instead: " .. tableHelper.concatenateTableIndexes(config.validRecordSettings, ", ") .. "\n")
+            "valid types instead: " .. tableHelper.concatenateTableIndices(config.validRecordSettings, ", ") .. "\n")
         return
     else
         if Players[pid].data.customVariables.storedRecords[inputType] == nil then
@@ -1170,7 +1174,7 @@ function commandHandler.CreateRecord(pid, cmd)
 
     if config.validRecordSettings[inputType] == nil then
         Players[pid]:Message("Record type " .. inputType .. " is invalid. Please use one of the following " ..
-            "valid types instead: " .. tableHelper.concatenateTableIndexes(config.validRecordSettings, ", ") .. "\n")
+            "valid types instead: " .. tableHelper.concatenateTableIndices(config.validRecordSettings, ", ") .. "\n")
         return
     else
         if Players[pid].data.customVariables.storedRecords[inputType] == nil then

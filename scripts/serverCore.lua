@@ -1,3 +1,10 @@
+local enumerations = require 'tes3mp.enumerations'
+local jsonInterface = require 'jsonInterface'
+local tableHelper = require 'tes3mp.util.table'
+
+---@type DUtilModule
+local dUtil = require 'dUtil.init'
+
 require 'doc.tes3mpDocs'
 
 --- Global string overrides load before any possibly-dependent modules
@@ -27,11 +34,11 @@ World = nil
 ---@global
 pidsByIpAddress = {}
 ---@global
-clientDataFiles = {}
+ClientDataFiles = dUtil.loadRequiredDataFiles(true)
 ---@global
-clientVariableScopes = {}
+ClientVariableScopes = require 'clientVariableScopes'
 ---@global
-speechCollections = {}
+SpeechCollections = require 'speechCollections'
 
 ---@global
 hourCounter = nil
@@ -41,37 +48,23 @@ updateTimerId = nil
 ---@global
 banList = {}
 
-require("utils")
-require("enumerations")
-tableHelper = require("tableHelper")
-jsonInterface = require("jsonInterface")
+local miscUtil = require 'tes3mp.util.misc'
 
----@type DUtilModule
-local dUtil = require 'dUtil.init'
-
--- Lua's default io library for input/output can't open Unicode filenames on Windows,
--- which is why on Windows it's replaced by TES3MP's io2 (https://github.com/TES3MP/Lua-io2)
-if tes3mp.GetOperatingSystemType() == "Windows" then
-    jsonInterface.setLibrary(require("io2"))
-else
-    jsonInterface.setLibrary(io)
-end
-
-require 'color'
-require("config")
-require("time")
+local config = require 'tes3mp.config'
+local time = require 'time'
 
 --- MenuHelper is stateful and should load prior to any module which possibly depends on it
-local menuHelper = require 'menuHelper'
+local menuHelper = require 'tes3mp.util.menu'
 local logicHandler = require 'tes3mp.logicHandler'
 
-customEventHooks = require("customEventHooks")
-customCommandHooks = require("customCommandHooks")
-eventHandler = require("eventHandler")
-animHelper = require("animHelper")
-speechHelper = require("speechHelper")
+customEventHooks = require 'customEventHooks'
+customCommandHooks = require 'customCommandHooks'
+commandHandler = require 'commandHandler'
+eventHandler = require 'eventHandler'
+animHelper = require 'animHelper'
+speechHelper = require 'speechHelper'
 
-if (config.databaseType ~= nil and config.databaseType ~= "json") and doesModuleExist("luasql." .. config.databaseType) then
+if (config.databaseType ~= nil and config.databaseType ~= "json") and miscUtil.doesModuleExist("luasql." .. config.databaseType) then
     Database = require("database")
     Database:LoadDriver(config.databaseType)
 
@@ -318,58 +311,7 @@ function OnServerScriptCrash(errorMessage)
     customEventHooks.triggerHandlers("OnServerExit", customEventHooks.makeEventStatus(true, true), { errorMessage })
 end
 
-function LoadDataFileList(filename)
-    local dataFileList = {}
-    tes3mp.LogMessage(enumerations.log.INFO, "Reading " .. filename)
-
-    local jsonDataFileList = jsonInterface.load(filename)
-
-    if jsonDataFileList == nil then
-        tes3mp.LogMessage(enumerations.log.ERROR, "Data file list " .. filename .. " cannot be read!")
-        tes3mp.StopServer(2)
-    else
-        -- Fix numerical keys to print plugins in the correct order
-        tableHelper.fixNumericalKeys(jsonDataFileList, true)
-
-        for listIndex, pluginEntry in ipairs(jsonDataFileList) do
-            for entryIndex, checksumStringArray in pairs(pluginEntry) do
-                dataFileList[listIndex] = {}
-                dataFileList[listIndex].name = entryIndex
-
-                local checksums = {}
-                local debugMessage = ("- %d: \"%s\": ["):format(listIndex, entryIndex)
-
-                for _, checksumString in ipairs(checksumStringArray) do
-                    debugMessage = debugMessage .. ("%X, "):format(tonumber(checksumString, 16))
-                    table.insert(checksums, tonumber(checksumString, 16))
-                end
-                dataFileList[listIndex].checksums = checksums
-                table.insert(dataFileList[listIndex], "")
-
-                debugMessage = debugMessage .. "\b\b]"
-                tes3mp.LogAppend(enumerations.log.WARN, debugMessage)
-            end
-        end
-
-        return dataFileList
-    end
-end
-
 function OnRequestDataFileList()
-    local dataFileList = LoadDataFileList("requiredDataFiles.json")
-
-    for _, entry in ipairs(dataFileList) do
-        local name = entry.name
-        table.insert(clientDataFiles, name)
-
-        if tableHelper.isEmpty(entry.checksums) then
-            tes3mp.AddDataFileRequirement(name, "")
-        else
-            for _, checksum in ipairs(entry.checksums) do
-                tes3mp.AddDataFileRequirement(name, checksum)
-            end
-        end
-    end
 end
 
 -- Older server builds will call an "OnRequestPluginList" event instead of

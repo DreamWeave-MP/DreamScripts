@@ -1,13 +1,16 @@
 local color = require 'color'
-local guiHelper = require 'tes3mp.guiHelper'
+local config = require 'tes3mp.config'
+local dataTableBuilder = require 'dataTableBuilder'
+local enumerations = require 'tes3mp.enumerations'
+local guiHelper = require 'tes3mp.util.gui'
 local inventoryHelper = require 'inventoryHelper'
 local logicHandler = require 'tes3mp.logicHandler'
-local packetReader = require 'packetReader'
+local packetBuilder = require 'tes3mp.packet.builder'
+local packetReader = require 'tes3mp.packet.reader'
+local tableHelper = require 'tes3mp.util.table'
 
 ---@class EventHandler
 local eventHandler = {}
-
-commandHandler = require 'commandHandler'
 
 local consoleKickMessage = " has been kicked for using the console despite not having the permission to do so.\n"
 
@@ -140,12 +143,12 @@ eventHandler.InitializeDefaultValidators = function()
             end
         end)
 
-    -- Ignore packets with global variables that are listed under clientVariableScopes.globals.ignored
+    -- Ignore packets with global variables that are listed under ClientVariableScopes.globals.ignored
     customEventHooks.registerValidator("OnClientScriptGlobal", function(eventStatus, pid, variables)
         for id, variable in pairs(variables) do
-            if tableHelper.containsValue(clientVariableScopes.globals.ignored, id) then
+            if tableHelper.containsValue(ClientVariableScopes.globals.ignored, id) then
                 tes3mp.LogAppend(enumerations.log.INFO, "- Ignoring attempt at setting global variable " .. id ..
-                    " because it is listed as an ignored variable in clientVariableScopes")
+                    " because it is listed as an ignored variable in ClientVariableScopes")
                 return customEventHooks.makeEventStatus(false, false)
             end
         end
@@ -253,7 +256,7 @@ eventHandler.InitializeDefaultHandlers = function()
             end
         end
 
-        cell:RequestContainers(pid, tableHelper.getArrayFromIndexes(actors))
+        cell:RequestContainers(pid, tableHelper.getArrayFromIndices(actors))
     end)
 
     -- Upon accepting an object placement, request its container if it has one
@@ -275,7 +278,7 @@ eventHandler.InitializeDefaultHandlers = function()
     -- Upon accepting an object spawn, request its container
     customEventHooks.registerHandler("OnObjectSpawn", function(eventStatus, pid, cellDescription, objects)
         local cell = LoadedCells[cellDescription]
-        cell:RequestContainers(pid, tableHelper.getArrayFromIndexes(objects))
+        cell:RequestContainers(pid, tableHelper.getArrayFromIndices(objects))
     end)
 
     -- Don't allow state spam from clients
@@ -510,7 +513,7 @@ eventHandler.OnPlayerConnect = function(pid, playerName)
 
             -- Load all the permanent records in this record store
             recordStore:LoadRecords(pid, recordStore.data.permanentRecords,
-                tableHelper.getArrayFromIndexes(recordStore.data.permanentRecords))
+                tableHelper.getArrayFromIndices(recordStore.data.permanentRecords))
         end
 
         tes3mp.SetDifficulty(pid, config.difficulty)
@@ -1360,7 +1363,7 @@ eventHandler.OnGenericObjectEvent = function(pid, cellDescription, packetType)
                 end
 
                 if not tableHelper.isEmpty(targetPlayers) then
-                    local chatNames = logicHandler.GetChatNames(tableHelper.getArrayFromIndexes(targetPlayers))
+                    local chatNames = logicHandler.GetChatNames(tableHelper.getArrayFromIndices(targetPlayers))
                     debugMessage = debugMessage .. "players: " .. tableHelper.concatenateArrayValues(chatNames, 1, ", ")
                 end
 
@@ -1368,7 +1371,7 @@ eventHandler.OnGenericObjectEvent = function(pid, cellDescription, packetType)
 
                 LoadedCells[cellDescription]:SaveObjectsByPacketType(packetType, objects)
                 LoadedCells[cellDescription]:LoadObjectsByPacketType(packetType, pid, objects,
-                    tableHelper.getArrayFromIndexes(objects), true)
+                    tableHelper.getArrayFromIndices(objects), true)
             end
 
             customEventHooks.triggerHandlers("On" .. packetType, eventStatus,
@@ -1699,7 +1702,7 @@ eventHandler.OnRecordDynamic = function(pid)
             end
 
             recordStore:SaveGeneratedRecords(recordTable)
-            recordStore:LoadGeneratedRecords(pid, recordTable, tableHelper.getArrayFromIndexes(recordTable), true)
+            recordStore:LoadGeneratedRecords(pid, recordTable, tableHelper.getArrayFromIndices(recordTable), true)
 
             for _, player in pairs(Players) do
                 for recordId, record in pairs(recordTable) do
@@ -1851,25 +1854,25 @@ eventHandler.OnClientScriptGlobal = function(pid)
                 local isKillSync, isQuestSync, isFactionRanksSync, isFactionExpulsionSync, isWorldwideSync =
                     false, false, false, false, false
 
-                isKillSync = tableHelper.containsCaseInsensitiveString(clientVariableScopes.globals.kills, id)
+                isKillSync = tableHelper.containsCaseInsensitiveString(ClientVariableScopes.globals.kills, id)
 
                 if not isKillSync then
                     isQuestSync = config.shareJournal == true and
-                        tableHelper.containsCaseInsensitiveString(clientVariableScopes.globals.quest, id)
+                        tableHelper.containsCaseInsensitiveString(ClientVariableScopes.globals.quest, id)
                 end
 
                 if not isQuestSync then
                     isFactionRanksSync = config.shareFactionRanks == true and
-                        tableHelper.containsCaseInsensitiveString(clientVariableScopes.globals.factionRanks, id)
+                        tableHelper.containsCaseInsensitiveString(ClientVariableScopes.globals.factionRanks, id)
                 end
 
                 if not isFactionRanksSync then
                     isFactionExpulsionSync = config.shareFactionExpulsion == true and
-                        tableHelper.containsCaseInsensitiveString(clientVariableScopes.globals.factionExpulsion, id)
+                        tableHelper.containsCaseInsensitiveString(ClientVariableScopes.globals.factionExpulsion, id)
                 end
 
                 if not isFactionExpulsionSync then
-                    isWorldwideSync = tableHelper.containsCaseInsensitiveString(clientVariableScopes.globals.worldwide,
+                    isWorldwideSync = tableHelper.containsCaseInsensitiveString(ClientVariableScopes.globals.worldwide,
                         id)
                 end
 
@@ -1888,7 +1891,7 @@ eventHandler.OnClientScriptGlobal = function(pid)
                 -- i.e. sendToOtherPlayers is true and skipAttachedPlayer is true
                 tes3mp.SendClientScriptGlobal(pid, true, true)
                 tes3mp.LogMessage(enumerations.log.INFO, "Synchronized ClientScriptGlobal from " ..
-                    logicHandler.GetChatName(pid) .. " about " .. tableHelper.concatenateTableIndexes(variables, ", "))
+                    logicHandler.GetChatName(pid) .. " about " .. tableHelper.concatenateTableIndices(variables, ", "))
             end
         end
 

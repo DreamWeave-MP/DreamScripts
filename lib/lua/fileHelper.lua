@@ -1,5 +1,5 @@
 local patterns = require 'patterns'
-local tableHelper = require 'tableHelper'
+local tableHelper = require 'tes3mp.util.table'
 
 ---@class FileHelper
 local fileHelper = {

@@ -1,8 +1,11 @@
-require("config")
-tableHelper = require("tableHelper")
+local config = require 'tes3mp.config'
+local enumerations = require 'tes3mp.enumerations'
+local jsonInterface = require 'jsonInterface'
+local tableHelper = require 'tes3mp.util.table'
+
 local BaseWorld = require("world.base")
 
-local World = class("World", BaseWorld)
+local World = require('classy')("World", BaseWorld)
 
 function World:__init()
     BaseWorld.__init(self)
@@ -61,7 +64,6 @@ function World:LoadFromDrive()
         tableHelper.fixNumericalKeys(self.data)
     end
 end
-
 
 -- Deprecated functions with confusing names, kept around for backwards compatibility
 function World:Save()

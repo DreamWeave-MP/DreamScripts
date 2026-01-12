@@ -1,4 +1,6 @@
-local tableHelper = require 'tableHelper'
+local config = require 'tes3mp.config'
+local enumerations = require 'tes3mp.enumerations'
+local tableHelper = require 'tes3mp.util.table'
 
 local contentFixer = {}
 
@@ -118,30 +120,27 @@ function contentFixer.AdjustWorldCorprusVariables(journal)
     return madeAdjustment
 end
 
-customEventHooks.registerHandler("OnPlayerJournal", function(eventStatus, pid, playerPacket)
-    if config.shareJournal == true then
-        local madeAdjustment = contentFixer.AdjustWorldCorprusVariables(playerPacket.journal)
+customEventHooks.registerHandler("OnPlayerJournal", function(_, pid, playerPacket)
+    if not config.shareJournal then return end
+    local madeAdjustment = contentFixer.AdjustWorldCorprusVariables(playerPacket.journal)
 
-        if madeAdjustment == true then
-            for otherPid, otherPlayer in pairs(Players) do
-                if otherPid ~= pid then
-                    contentFixer.AdjustSharedCorprusState(otherPid)
-                end
+    if madeAdjustment then
+        for otherPid in pairs(Players) do
+            if otherPid ~= pid then
+                contentFixer.AdjustSharedCorprusState(otherPid)
             end
         end
     end
 end)
 
-customEventHooks.registerHandler("OnPlayerFinishLogin", function(eventStatus, pid)
-    if config.shareJournal == true then
-        contentFixer.AdjustSharedCorprusState(pid)
-    end
+customEventHooks.registerHandler("OnPlayerFinishLogin", function(_, pid)
+    if not config.shareJournal then return end
+    contentFixer.AdjustSharedCorprusState(pid)
 end)
 
-customEventHooks.registerHandler("OnWorldReload", function(eventStatus)
-    if config.shareJournal == true then
-        contentFixer.AdjustWorldCorprusVariables(WorldInstance.data.journal)
-    end
+customEventHooks.registerHandler("OnWorldReload", function(_)
+    if not config.shareJournal then return end
+    contentFixer.AdjustWorldCorprusVariables(WorldInstance.data.journal)
 end)
 
 return contentFixer

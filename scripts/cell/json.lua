@@ -1,9 +1,12 @@
-require("config")
-fileHelper = require("fileHelper")
-tableHelper = require("tableHelper")
-local BaseCell = require("cell.base")
+local config = require 'tes3mp.config'
+local enumerations = require 'tes3mp.enumerations'
+local fileHelper = require 'fileHelper'
+local jsonInterface = require 'jsonInterface'
+local tableHelper = require 'tes3mp.util.table'
+local BaseCell = require 'cell.base'
 
-local Cell = class("Cell", BaseCell)
+---@class JSONCell
+local Cell = require('classy')("Cell", BaseCell)
 
 function Cell:__init(cellDescription)
     BaseCell.__init(self, cellDescription)

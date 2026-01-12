@@ -1,21 +1,35 @@
-tableHelper = require("tableHelper")
-require("utils")
+local tableHelper = require 'tes3mp.util.table'
+local miscUtil = require 'tes3mp.util.misc'
 
+---@class SpeechHelper
 local speechHelper = {}
 
-local speechTypesToFilePrefixes = { attack = "Atk", flee = "Fle", follower = "Flw", hello = "Hlo", hit = "Hit",
-    idle = "Idl", intruder = "int", oppose = "OP", service = "Srv", thief = "Thf", uniform = "uni" }
+local speechTypesToFilePrefixes = {
+    attack = "Atk",
+    flee = "Fle",
+    follower = "Flw",
+    hello = "Hlo",
+    hit = "Hit",
+    idle = "Idl",
+    intruder = "int",
+    oppose = "OP",
+    service = "Srv",
+    thief = "Thf",
+    uniform = "uni"
+}
 
 function speechHelper.GetSpeechPathFromCollection(speechCollectionTable, speechType, speechIndex, gender)
-
     if speechCollectionTable == nil or speechTypesToFilePrefixes[speechType] == nil then
         return nil
     end
 
     local genderTableName
 
-    if gender == 0 then genderTableName = "femaleFiles"
-    else genderTableName = "maleFiles" end
+    if gender == 0 then
+        genderTableName = "femaleFiles"
+    else
+        genderTableName = "maleFiles"
+    end
 
     local speechTypeTable = speechCollectionTable[genderTableName][speechType]
 
@@ -59,13 +73,12 @@ function speechHelper.GetSpeechPathFromCollection(speechCollectionTable, speechT
         indexPrefix = speechCollectionTable.malePrefix
     end
 
-    speechPath = speechPath .. filePrefix .. "_" .. indexPrefix .. prefixZeroes(speechIndex, 3) .. ".mp3"
+    speechPath = speechPath .. filePrefix .. "_" .. indexPrefix .. miscUtil.prefixZeroes(speechIndex, 3) .. ".mp3"
 
     return speechPath
 end
 
 function speechHelper.GetSpeechPath(pid, speechInput, speechIndex)
-
     local speechCollectionKey
     local speechType
 
@@ -85,7 +98,6 @@ function speechHelper.GetSpeechPath(pid, speechInput, speechIndex)
     local speechCollectionTable = speechCollections[race][speechCollectionKey]
 
     if speechCollectionTable ~= nil then
-
         local gender = Players[pid].data.character.gender
 
         return speechHelper.GetSpeechPathFromCollection(speechCollectionTable, speechType, speechIndex, gender)
@@ -95,7 +107,6 @@ function speechHelper.GetSpeechPath(pid, speechInput, speechIndex)
 end
 
 function speechHelper.GetPrintableValidListForSpeechCollection(speechCollectionTable, gender, collectionPrefix)
-
     local validList = {}
     local genderTableName
 
@@ -104,7 +115,7 @@ function speechHelper.GetPrintableValidListForSpeechCollection(speechCollectionT
     else
         genderTableName = "maleFiles"
     end
-    
+
     if speechCollectionTable[genderTableName] ~= nil then
         for speechType, typeDetails in pairs(speechCollectionTable[genderTableName]) do
             local validInput = ""
@@ -128,7 +139,6 @@ function speechHelper.GetPrintableValidListForSpeechCollection(speechCollectionT
 end
 
 function speechHelper.GetPrintableValidListForPid(pid)
-
     local validList = {}
 
     local race = string.lower(Players[pid].data.character.race)
@@ -141,7 +151,9 @@ function speechHelper.GetPrintableValidListForPid(pid)
 
     for speechCollectionKey, speechCollectionTable in pairs(speechCollections[race]) do
         if speechCollectionKey ~= "default" then
-            tableHelper.insertValues(validList, speechHelper.GetPrintableValidListForSpeechCollection(speechCollectionTable, gender, speechCollectionKey .. "_"))
+            tableHelper.insertValues(validList,
+                speechHelper.GetPrintableValidListForSpeechCollection(speechCollectionTable, gender,
+                    speechCollectionKey .. "_"))
         end
     end
 
@@ -149,7 +161,6 @@ function speechHelper.GetPrintableValidListForPid(pid)
 end
 
 function speechHelper.PlaySpeech(pid, speechInput, speechIndex)
-
     local speechPath = speechHelper.GetSpeechPath(pid, speechInput, speechIndex)
 
     if speechPath ~= nil then

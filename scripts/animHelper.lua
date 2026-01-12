@@ -1,18 +1,24 @@
-tableHelper = require("tableHelper")
+local tableHelper = require 'tes3mp.util.table'
 
 local animHelper = {}
 
-local defaultAnimNames = { "hit1", "hit2", "hit3", "hit4", "hit5", "idle2", "idle3", "idle4",
-    "idle5", "idle6", "idle7", "idle8", "idle9", "pickprobe" }
+local defaultAnimNames = { 'hit1', 'hit2', 'hit3', 'hit4', 'hit5', 'idle2', 'idle3', 'idle4',
+    'idle5', 'idle6', 'idle7', 'idle8', 'idle9', 'pickprobe' }
 
-local generalAnimAliases = { act_impatient = "idle6", check_missing_item = "idle9", examine_hand = "idle7",
-    look_behind = "idle3", shift_feet = "idle2", scratch_neck = "idle4", touch_chin = "idle8",
-    touch_shoulder = "idle5" }
-local femaleAnimAliases = { adjust_hair = "idle4", touch_hip = "idle5" }
-local beastAnimAliases = { act_confused = "idle9", look_around = "idle2", touch_hands = "idle6" }
+local generalAnimAliases = {
+    act_impatient = 'idle6',
+    check_missing_item = 'idle9',
+    examine_hand = 'idle7',
+    look_behind = 'idle3',
+    shift_feet = 'idle2',
+    scratch_neck = 'idle4',
+    touch_chin = 'idle8',
+    touch_shoulder = 'idle5'
+}
+local femaleAnimAliases = { adjust_hair = 'idle4', touch_hip = 'idle5' }
+local beastAnimAliases = { act_confused = 'idle9', look_around = 'idle2', touch_hands = 'idle6' }
 
 function animHelper.GetAnimation(pid, animAlias)
-
     -- Is this animation included in the default animation names?
     if tableHelper.containsValue(defaultAnimNames, animAlias) then
         return animAlias
@@ -23,7 +29,7 @@ function animHelper.GetAnimation(pid, animAlias)
         local isBeast = false
         local isFemale = false
 
-        if race == "khajiit" or race == "argonian" then
+        if race == 'khajiit' or race == 'argonian' then
             isBeast = true
         elseif gender == 0 then
             isFemale = true
@@ -32,10 +38,10 @@ function animHelper.GetAnimation(pid, animAlias)
         if generalAnimAliases[animAlias] ~= nil then
             -- Did we use a general alias for something named differently for beasts?
             if isBeast and tableHelper.containsValue(beastAnimAliases, generalAnimAliases[animAlias]) then
-                return "invalid"
-            -- Did we use a general alias for something named differently for females?
+                return 'invalid'
+                -- Did we use a general alias for something named differently for females?
             elseif isFemale and tableHelper.containsValue(femaleAnimAliases, generalAnimAliases[animAlias]) then
-                return "invalid"
+                return 'invalid'
             else
                 return generalAnimAliases[animAlias]
             end
@@ -46,11 +52,10 @@ function animHelper.GetAnimation(pid, animAlias)
         end
     end
 
-    return "invalid"
+    return 'invalid'
 end
 
 function animHelper.GetValidList(pid)
-
     local validList = {}
 
     local race = string.lower(Players[pid].data.character.race)
@@ -59,17 +64,16 @@ function animHelper.GetValidList(pid)
     local isBeast = false
     local isFemale = false
 
-    if race == "khajiit" or race == "argonian" then
+    if race == 'khajiit' or race == 'argonian' then
         isBeast = true
     elseif gender == 0 then
         isFemale = true
     end
 
     for generalAlias, defaultAnim in pairs(generalAnimAliases) do
-
         if (not isBeast and not isFemale) or
-           (isBeast and not tableHelper.containsValue(beastAnimAliases, defaultAnim)) or
-           (isFemale and not tableHelper.containsValue(femaleAnimAliases, defaultAnim)) then
+            (isBeast and not tableHelper.containsValue(beastAnimAliases, defaultAnim)) or
+            (isFemale and not tableHelper.containsValue(femaleAnimAliases, defaultAnim)) then
             table.insert(validList, generalAlias)
         end
     end
@@ -86,14 +90,13 @@ function animHelper.GetValidList(pid)
         end
     end
 
-    return tableHelper.concatenateFromIndex(validList, 1, ", ")
+    return tableHelper.concatenateFromIndex(validList, 1, ', ')
 end
 
 function animHelper.PlayAnimation(pid, animAlias)
-
     local defaultAnim = animHelper.GetAnimation(pid, animAlias)
 
-    if defaultAnim ~= "invalid" then
+    if defaultAnim ~= 'invalid' then
         tes3mp.PlayAnimation(pid, defaultAnim, 0, 1, false)
         return true
     end

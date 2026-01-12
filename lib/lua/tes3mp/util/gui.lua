@@ -1,11 +1,11 @@
 local logicHandler = require 'tes3mp.logicHandler'
-local tableHelper = require 'tableHelper'
+local tableHelper = require 'tes3mp.util.table'
 
 ---@class GUIHelper
 local guiHelper = {
     names = { 'LOGIN', 'REGISTER', 'PLAYERSLIST', 'CELLSLIST' },
-    ID = tableHelper.enum(guiHelper.names),
 }
+guiHelper.ID = tableHelper.enum(guiHelper.names)
 
 ---@param pid PlayerId
 function guiHelper.ShowLogin(pid)

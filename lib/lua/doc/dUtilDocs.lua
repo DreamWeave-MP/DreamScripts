@@ -7,6 +7,7 @@
 ---@field I table<string, table<any, any>> Global script interfaces to be accessed by other mods
 
 ---@class DUtilModule
+---@field loadRequiredDataFiles fun(writeLog: boolean): DataFileRequirements
 ---@field io DUtilIO
 ---@field misc DUtilMisc
 ---@field vector3 Vector3Module

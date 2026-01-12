@@ -1,4 +1,7 @@
-function prefixZeroes(inputString, desiredLength)
+---@class TES3MPMiscUtil
+local miscUtil = {}
+
+function miscUtil.prefixZeroes(inputString, desiredLength)
     local length = string.len(inputString)
 
     while length < desiredLength do
@@ -10,14 +13,14 @@ function prefixZeroes(inputString, desiredLength)
 end
 
 -- Based on https://stackoverflow.com/a/34965917
-function prequire(...)
+function miscUtil.prequire(...)
     local status, lib = pcall(require, ...)
     if status then return lib end
 
     return nil
 end
 
-function doesModuleExist(name)
+function miscUtil.doesModuleExist(name)
     if package.loaded[name] then
         return true
     else
@@ -31,3 +34,5 @@ function doesModuleExist(name)
         return false
     end
 end
+
+return miscUtil

@@ -1,16 +1,18 @@
-dataTableBuilder = {}
+local dataTableBuilder = {}
 
-dataTableBuilder.BuildAIData = function(targetPid, targetUniqueIndex, action,
-    posX, posY, posZ, distance, duration, shouldRepeat)
+function dataTableBuilder.BuildAIData(targetPid, targetUniqueIndex, action,
+                                      posX, posY, posZ, distance, duration, shouldRepeat)
+    local ai = {
+        action = action,
+        posX = posX,
+        posY = posY,
+        posZ = posZ,
+        distance = distance,
+        duration = duration,
+        shouldRepeat = shouldRepeat,
+    }
 
-    local ai = {}
-    ai.action = action
-    ai.posX, ai.posY, ai.posZ = posX, posY, posZ
-    ai.distance = distance
-    ai.duration = duration
-    ai.shouldRepeat = shouldRepeat
-
-    if targetPid ~= nil then
+    if targetPid then
         ai.targetPlayer = Players[targetPid].accountName
     else
         ai.targetUniqueIndex = targetUniqueIndex
@@ -19,17 +21,21 @@ dataTableBuilder.BuildAIData = function(targetPid, targetUniqueIndex, action,
     return ai
 end
 
--- Use with logicHandler.CreateObject() functions
-dataTableBuilder.BuildObjectData = function(refId, count, charge, enchantmentCharge, soul)
-
-    local objectData = {}
-    objectData.refId = refId
-    objectData.count = count or 1
-    objectData.charge = charge or -1
-    objectData.enchantmentCharge = enchantmentCharge or -1
-    objectData.soul = soul or ""
-
-    return objectData
+--- Use with logicHandler.CreateObject() functions
+---@param refId string
+---@param count integer?
+---@param charge integer?
+---@param enchantmentCharge integer?
+---@param soul string?
+---@return Item
+function dataTableBuilder.BuildObjectData(refId, count, charge, enchantmentCharge, soul)
+    return {
+        refId = refId,
+        count = count or 1,
+        charge = charge or -1,
+        enchantmentCharge = enchantmentCharge or -1,
+        soul = soul or "",
+    }
 end
 
 return dataTableBuilder
