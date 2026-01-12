@@ -73,9 +73,9 @@ if (config.databaseType ~= nil and config.databaseType ~= "json") and miscUtil.d
     RecordStore = require("recordstore.sql")
     World = require("world.sql")
 else
-    Cell = require("cell.json")
-    RecordStore = require("recordstore.json")
     World = require("world.json")
+    RecordStore = require("recordstore.json")
+    Cell = require("cell.json")
     Player = require("player.json")
 end
 
