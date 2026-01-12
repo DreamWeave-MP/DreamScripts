@@ -27,6 +27,7 @@
 ---@class TES3MPModule
 ---@field BanAddress fun(ipAddress: string) Given an IP Address string, bans it. Doesn't perform any validation, so caller functions need to do so themselves.
 ---@field CustomMessageBox fun(pid: PlayerId, id: integer, label: string, items: string) Displays a multiple-choice message box to the target PID
+---@field GetAvgPing fun(pid: PlayerId): integer returns a specific player's average ping
 ---@field GetOperatingSystemType fun(): OSType
 ---@field GetSHA256Hash fun(input: string): string Given some string input, hashes it
 ---@field LogMessage fun(logLevel: LogLevel, logMessage: string) Emits a message to the server log & stdout at the provided log level
