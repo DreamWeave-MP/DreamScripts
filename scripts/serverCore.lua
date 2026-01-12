@@ -34,7 +34,7 @@ World = nil
 ---@global
 pidsByIpAddress = {}
 ---@global
-ClientDataFiles = dUtil.loadRequiredDataFiles(true)
+ClientDataFiles = {}
 ---@global
 ClientVariableScopes = require 'clientVariableScopes'
 ---@global
@@ -312,6 +312,7 @@ function OnServerScriptCrash(errorMessage)
 end
 
 function OnRequestDataFileList()
+    dUtil.loadRequiredDataFiles(true)
 end
 
 -- Older server builds will call an "OnRequestPluginList" event instead of
