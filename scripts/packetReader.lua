@@ -1,7 +1,7 @@
-packetReader = {}
+---@class PacketReader
+local packetReader = {}
 
-packetReader.GetPlayerPacketTables = function(pid, packetType)
-
+function packetReader.GetPlayerPacketTables(pid, packetType)
     local packetTable = {}
 
     if packetType == "PlayerClass" then
@@ -181,20 +181,18 @@ packetReader.GetPlayerPacketTables = function(pid, packetType)
         packetTable.cooldowns = {}
 
         for changesIndex = 0, tes3mp.GetCooldownChangesSize(pid) - 1 do
-
             local cooldown = {
                 spellId = tes3mp.GetCooldownSpellId(pid, changesIndex),
                 startDay = tes3mp.GetCooldownStartDay(pid, changesIndex),
                 startHour = tes3mp.GetCooldownStartHour(pid, changesIndex)
             }
-            
+
             table.insert(packetTable.cooldowns, cooldown)
         end
     elseif packetType == "PlayerQuickKeys" then
         packetTable.quickKeys = {}
 
         for changesIndex = 0, tes3mp.GetQuickKeyChangesSize(pid) - 1 do
-
             local slot = tes3mp.GetQuickKeySlot(pid, changesIndex)
 
             packetTable.quickKeys[slot] = {
@@ -229,7 +227,6 @@ packetReader.GetPlayerPacketTables = function(pid, packetType)
 end
 
 packetReader.GetActorPacketTables = function(packetType)
-    
     local packetTables = { actors = {} }
     local actorListSize = tes3mp.GetActorListSize()
 
@@ -241,12 +238,11 @@ packetReader.GetActorPacketTables = function(packetType)
         actor.uniqueIndex = uniqueIndex
 
         -- Only non-repetitive actor packets contain refId information
-        if tableHelper.containsValue({"ActorList", "ActorDeath"}, packetType) then
+        if tableHelper.containsValue({ "ActorList", "ActorDeath" }, packetType) then
             actor.refId = tes3mp.GetActorRefId(packetIndex)
         end
 
         if packetType == "ActorEquipment" then
-
             actor.equipment = {}
             local equipmentSize = tes3mp.GetEquipmentSize()
 
@@ -263,12 +259,10 @@ packetReader.GetActorPacketTables = function(packetType)
                 end
             end
         elseif packetType == "ActorSpellsActive" then
-
             actor.spellsActive = {}
             local spellsActiveChangesSize = tes3mp.GetActorSpellsActiveChangesSize(packetIndex)
 
             for spellIndex = 0, spellsActiveChangesSize - 1 do
-
                 local spellId = tes3mp.GetActorSpellsActiveId(packetIndex, spellIndex)
 
                 if actor.spellsActive[spellId] == nil then
@@ -318,7 +312,6 @@ packetReader.GetActorPacketTables = function(packetType)
                 end
             end
         elseif packetType == "ActorDeath" then
-
             actor.deathState = tes3mp.GetActorDeathState(packetIndex)
             actor.killer = {}
 
@@ -345,7 +338,6 @@ packetReader.GetActorPacketTables = function(packetType)
 end
 
 packetReader.GetObjectPacketTables = function(packetType)
-
     local packetTables = { objects = {}, players = {} }
     local objectListSize = tes3mp.GetObjectListSize()
 
@@ -353,9 +345,8 @@ packetReader.GetObjectPacketTables = function(packetType)
 
     for packetIndex = 0, objectListSize - 1 do
         local object, uniqueIndex, player, pid = nil, nil, nil, nil
-        
-        if tableHelper.containsValue({"ObjectActivate", "ObjectHit", "ObjectSound", "ConsoleCommand"}, packetType) then
 
+        if tableHelper.containsValue({ "ObjectActivate", "ObjectHit", "ObjectSound", "ConsoleCommand" }, packetType) then
             local isObjectPlayer = tes3mp.IsObjectPlayer(packetIndex)
 
             if isObjectPlayer then
@@ -369,7 +360,6 @@ packetReader.GetObjectPacketTables = function(packetType)
             end
 
             if packetType == "ObjectSound" then
-
                 local soundId = tes3mp.GetObjectSoundId(packetIndex)
 
                 if isObjectPlayer then
@@ -377,9 +367,7 @@ packetReader.GetObjectPacketTables = function(packetType)
                 else
                     object.soundId = soundId
                 end
-
             elseif packetType == "ObjectActivate" then
-
                 local doesObjectHaveActivatingPlayer = tes3mp.DoesObjectHavePlayerActivating(packetIndex)
 
                 if doesObjectHaveActivatingPlayer then
@@ -404,9 +392,7 @@ packetReader.GetObjectPacketTables = function(packetType)
                         object.activatingUniqueIndex = activatingUniqueIndex
                     end
                 end
-
             elseif packetType == "ObjectHit" then
-
                 local hit = {
                     success = tes3mp.GetObjectHitSuccess(packetIndex),
                     damage = tes3mp.GetObjectHitDamage(packetIndex),
@@ -450,12 +436,14 @@ packetReader.GetObjectPacketTables = function(packetType)
             object.refId = tes3mp.GetObjectRefId(packetIndex)
             object.uniqueIndex = uniqueIndex
 
-            if tableHelper.containsValue({"ObjectPlace", "ObjectSpawn"}, packetType) then
-                
+            if tableHelper.containsValue({ "ObjectPlace", "ObjectSpawn" }, packetType) then
                 object.location = {
-                    posX = tes3mp.GetObjectPosX(packetIndex), posY = tes3mp.GetObjectPosY(packetIndex),
-                    posZ = tes3mp.GetObjectPosZ(packetIndex), rotX = tes3mp.GetObjectRotX(packetIndex),
-                    rotY = tes3mp.GetObjectRotY(packetIndex), rotZ = tes3mp.GetObjectRotZ(packetIndex)
+                    posX = tes3mp.GetObjectPosX(packetIndex),
+                    posY = tes3mp.GetObjectPosY(packetIndex),
+                    posZ = tes3mp.GetObjectPosZ(packetIndex),
+                    rotX = tes3mp.GetObjectRotX(packetIndex),
+                    rotY = tes3mp.GetObjectRotY(packetIndex),
+                    rotZ = tes3mp.GetObjectRotZ(packetIndex)
                 }
 
                 if packetType == "ObjectPlace" then
@@ -491,7 +479,6 @@ packetReader.GetObjectPacketTables = function(packetType)
                         end
                     end
                 end
-
             elseif packetType == "ObjectLock" then
                 object.lockLevel = tes3mp.GetObjectLockLevel(packetIndex)
             elseif packetType == "ObjectDialogueChoice" then
@@ -510,8 +497,7 @@ packetReader.GetObjectPacketTables = function(packetType)
                 object.state = tes3mp.GetObjectState(packetIndex)
             elseif packetType == "DoorState" then
                 object.doorState = tes3mp.GetObjectDoorState(packetIndex)
-            elseif packetType =="ClientScriptLocal" then
-
+            elseif packetType == "ClientScriptLocal" then
                 local variables = {}
                 local variableCount = tes3mp.GetClientLocalsSize(packetIndex)
 
@@ -520,8 +506,8 @@ packetReader.GetObjectPacketTables = function(packetType)
                     local variableType = tes3mp.GetClientLocalVariableType(packetIndex, variableIndex)
                     local value
 
-                    if tableHelper.containsValue({enumerations.variableType.SHORT, enumerations.variableType.LONG},
-                        variableType) then
+                    if tableHelper.containsValue({ enumerations.variableType.SHORT, enumerations.variableType.LONG },
+                            variableType) then
                         value = tes3mp.GetClientLocalIntValue(packetIndex, variableIndex)
                     elseif variableType == enumerations.variableType.FLOAT then
                         value = tes3mp.GetClientLocalFloatValue(packetIndex, variableIndex)
@@ -549,7 +535,6 @@ packetReader.GetObjectPacketTables = function(packetType)
 end
 
 packetReader.GetWorldMapTileArray = function()
-
     local mapTileArray = {}
     local mapTileCount = tes3mp.GetMapChangesSize()
 
@@ -568,7 +553,6 @@ packetReader.GetWorldMapTileArray = function()
 end
 
 packetReader.GetClientScriptGlobalPacketTable = function()
-
     local variables = {}
     local variableCount = tes3mp.GetClientGlobalsSize()
 
@@ -576,8 +560,8 @@ packetReader.GetClientScriptGlobalPacketTable = function()
         local id = tes3mp.GetClientGlobalId(index)
         local variable = { variableType = tes3mp.GetClientGlobalVariableType(index) }
 
-        if tableHelper.containsValue({enumerations.variableType.SHORT, enumerations.variableType.LONG},
-            variable.variableType) then
+        if tableHelper.containsValue({ enumerations.variableType.SHORT, enumerations.variableType.LONG },
+                variable.variableType) then
             variable.intValue = tes3mp.GetClientGlobalIntValue(index)
         elseif variable.variableType == enumerations.variableType.FLOAT then
             variable.floatValue = tes3mp.GetClientGlobalFloatValue(index)
@@ -590,7 +574,6 @@ packetReader.GetClientScriptGlobalPacketTable = function()
 end
 
 packetReader.GetRecordDynamicArray = function(pid)
-
     local recordArray = {}
     local recordCount = tes3mp.GetRecordCount(pid)
     local recordNumericalType = tes3mp.GetRecordType(pid)
@@ -607,7 +590,6 @@ packetReader.GetRecordDynamicArray = function(pid)
             record.cost = tes3mp.GetRecordCost(recordIndex)
             record.flags = tes3mp.GetRecordFlags(recordIndex)
             record.effects = packetReader.GetRecordPacketEffectArray(recordIndex)
-
         elseif recordNumericalType == enumerations.recordType.POTION then
             record.weight = math.floor(tes3mp.GetRecordWeight(recordIndex) * 100) / 100
             record.value = tes3mp.GetRecordValue(recordIndex)
@@ -619,7 +601,6 @@ packetReader.GetRecordDynamicArray = function(pid)
 
             -- Temporary data that should be discarded afterwards
             record.quantity = tes3mp.GetRecordQuantity(recordIndex)
-
         elseif recordNumericalType == enumerations.recordType.ENCHANTMENT then
             record.subtype = tes3mp.GetRecordSubtype(recordIndex)
             record.cost = tes3mp.GetRecordCost(recordIndex)
@@ -629,7 +610,6 @@ packetReader.GetRecordDynamicArray = function(pid)
 
             -- Temporary data that should be discarded afterwards
             record.clientsideEnchantmentId = tes3mp.GetRecordId(recordIndex)
-
         else
             record.baseId = tes3mp.GetRecordBaseId(recordIndex)
             record.enchantmentCharge = tes3mp.GetRecordEnchantmentCharge(recordIndex)
@@ -661,12 +641,10 @@ packetReader.GetRecordDynamicArray = function(pid)
 end
 
 packetReader.GetRecordPacketEffectArray = function(recordIndex)
-
     local effectArray = {}
     local effectCount = tes3mp.GetRecordEffectCount(recordIndex)
 
     for effectIndex = 0, effectCount - 1 do
-
         local effect = {
             id = tes3mp.GetRecordEffectId(recordIndex, effectIndex),
             attribute = tes3mp.GetRecordEffectAttribute(recordIndex, effectIndex),
