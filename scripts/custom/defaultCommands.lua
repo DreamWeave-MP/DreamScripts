@@ -1,5 +1,5 @@
 local color = require 'color'
-local logicHandler = require 'logicHandler'
+local logicHandler = require 'tes3mp.logicHandler'
 local patterns = require 'patterns'
 
 ---@type DUtilModule

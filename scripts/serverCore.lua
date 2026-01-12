@@ -63,7 +63,7 @@ require("time")
 
 --- MenuHelper is stateful and should load prior to any module which possibly depends on it
 local menuHelper = require 'menuHelper'
-local logicHandler = require 'logicHandler'
+local logicHandler = require 'tes3mp.logicHandler'
 
 customEventHooks = require("customEventHooks")
 customCommandHooks = require("customCommandHooks")
