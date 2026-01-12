@@ -4,7 +4,7 @@ local enumerations = require 'tes3mp.enumerations'
 local guiHelper = require 'tes3mp.util.gui'
 local logicHandler = require 'tes3mp.logicHandler'
 local miscUtil = require 'tes3mp.util.misc'
-local speechHelper = require 'speechHelper'
+local speechHelper = require 'tes3mp.util.speech'
 local packetBuilder = require 'tes3mp.packet.builder'
 
 ---@class CommandHandler

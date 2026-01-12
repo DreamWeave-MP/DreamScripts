@@ -247,7 +247,7 @@ function OnServerPostInit()
     local eventStatus = customEventHooks.triggerValidators("OnServerPostInit", {})
     if eventStatus.validDefaultHandler then
         ClientVariableScopes = require 'clientVariableScopes'
-        SpeechCollections = require 'speechCollections'
+        SpeechCollections = require 'tes3mp.util.speechCollections'
 
         eventHandler.InitializeDefaultValidators()
         eventHandler.InitializeDefaultHandlers()

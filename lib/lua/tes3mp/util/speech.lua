@@ -1,4 +1,4 @@
-local speechCollections = require 'speechCollections'
+local speechCollections = require 'tes3mp.util.speechCollections'
 local miscUtil = require 'tes3mp.util.misc'
 local tableHelper = require 'tes3mp.util.table'
 
