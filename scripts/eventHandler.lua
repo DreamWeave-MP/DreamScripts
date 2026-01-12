@@ -1,5 +1,6 @@
 local color = require 'color'
 local inventoryHelper = require 'inventoryHelper'
+local packetReader = require 'packetReader'
 
 local eventHandler = {}
 
