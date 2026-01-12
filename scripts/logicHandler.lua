@@ -1,11 +1,7 @@
-tableHelper = require("tableHelper")
-fileHelper = require("fileHelper")
-inventoryHelper = require("inventoryHelper")
-contentFixer = require("contentFixer")
-menuHelper = require("menuHelper")
-dataTableBuilder = require("dataTableBuilder")
-packetBuilder = require("packetBuilder")
-packetReader = require("packetReader")
+local tableHelper = require 'tableHelper'
+local fileHelper = require 'fileHelper'
+local dataTableBuilder = require 'dataTableBuilder'
+local packetBuilder = require 'packetBuilder'
 
 local logicHandler = {}
 
@@ -34,7 +30,7 @@ end
 ---@param pid PlayerId
 ---@param targetPid PlayerId
 ---@return boolean isValid, PlayerId? targetPid whether or not the PID is valid, plus validated PlayerID converted from string to int if so
-logicHandler.CheckPlayerValidity = function(pid, targetPid)
+function logicHandler.CheckPlayerValidity(pid, targetPid)
     local valid, sendMessage = false, pid ~= nil
 
     local checkPid = tonumber(targetPid)
@@ -69,8 +65,10 @@ logicHandler.CheckPlayerValidity = function(pid, targetPid)
     return valid, checkPid
 end
 
--- Get the "Name (pid)" representation of a player used in chat
-logicHandler.GetChatName = function(pid)
+--- Get the "Name (pid)" representation of a player used in chat
+---@param pid PlayerId
+---@return string chatName
+function logicHandler.GetChatName(pid)
     if pid == nil then
         return "Unlogged player (nil)"
     end
@@ -82,8 +80,9 @@ logicHandler.GetChatName = function(pid)
     end
 end
 
--- Get a array of chat names corresponding to an array of player IDs
-logicHandler.GetChatNames = function(pidArray)
+--- Get a array of chat names corresponding to an array of player IDs
+---@param pidArray PlayerId[]
+function logicHandler.GetChatNames(pidArray)
     local chatNames = {}
 
     for _, pid in pairs(pidArray) do
@@ -93,16 +92,18 @@ logicHandler.GetChatNames = function(pidArray)
     return chatNames
 end
 
--- Iterate through a table of pids and find the player with the
--- lowest ping in it
-logicHandler.GetLowestPingPid = function(pidArray)
+--- Iterate through a table of pids and find the player with the
+--- lowest ping in it
+---@param pidArray PlayerId[]
+---@return PlayerId fastestPlayer
+function logicHandler.GetLowestPingPid(pidArray)
     local lowestPing
     local lowestPingPid
 
     for _, pid in pairs(pidArray) do
         local currentPing = tes3mp.GetAvgPing(pid)
 
-        if lowestPing == nil or currentPing < lowestPing then
+        if not lowestPing or currentPing < lowestPing then
             lowestPing = currentPing
             lowestPingPid = pid
         end
@@ -111,10 +112,14 @@ logicHandler.GetLowestPingPid = function(pidArray)
     return lowestPingPid
 end
 
-logicHandler.IsNameAllowed = function(inputName)
+--- Whether or not a specific name can be used on the server
+---@param inputName string
+---@return boolean isNameAllowed
+function logicHandler.IsNameAllowed(inputName)
+    inputName = inputName:lower()
     if type(config.disallowedNameStrings) == "table" then
         for _, disallowedNameString in pairs(config.disallowedNameStrings) do
-            if string.find(string.lower(inputName), string.lower(disallowedNameString)) ~= nil then
+            if inputName:find(disallowedNameString:lower()) then
                 return false
             end
         end
@@ -123,16 +128,16 @@ logicHandler.IsNameAllowed = function(inputName)
     return true
 end
 
--- Check if there is already a player with this name on the server
-logicHandler.IsPlayerNameLoggedIn = function(newName)
+--- Check if there is already a player with this name on the server
+---@param newName string
+---@return boolean isLoggedIn
+function logicHandler.IsPlayerNameLoggedIn(newName)
     -- Make sure we also check the account name this new player would end up having
-    local newAccountName = fileHelper.fixFilename(newName)
+    local newAccountName, lowerName = fileHelper.fixFilename(newName):lower(), newName:lower()
 
-    for pid, player in pairs(Players) do
+    for _, player in pairs(Players) do
         if player:IsLoggedIn() then
-            if string.lower(player.name) == string.lower(newName) then
-                return true
-            elseif string.lower(player.accountName) == string.lower(newAccountName) then
+            if player.name:lower() == lowerName or player.accountName:lower() == newAccountName then
                 return true
             end
         end
@@ -141,13 +146,15 @@ logicHandler.IsPlayerNameLoggedIn = function(newName)
     return false
 end
 
-logicHandler.IsPlayerAllowedConsole = function(pid)
+---@param pid PlayerId
+---@return boolean canUseConsole
+function logicHandler.IsPlayerAllowedConsole(pid)
     local player = Players[pid]
 
-    if player ~= nil and player:IsLoggedIn() then
+    if player and player:IsLoggedIn() then
         if player:IsAdmin() or player.data.settings.consoleAllowed == true then
             return true
-        elseif player.data.settings.consoleAllowed == "default" and config.allowConsole then
+        elseif player.data.settings.consoleAllowed == 'default' and config.allowConsole then
             return true
         end
     end
@@ -155,11 +162,15 @@ logicHandler.IsPlayerAllowedConsole = function(pid)
     return false
 end
 
--- Get the Player object of either an online player or an offline one
-logicHandler.GetPlayerByName = function(targetName)
+--- Get the Player object of either an online player or an offline one
+---@param targetName string
+---@return Player?
+function logicHandler.GetPlayerByName(targetName)
+    local lowerTargetName = targetName:lower()
+
     -- Check if the player is online
-    for iteratorPid, player in pairs(Players) do
-        if string.lower(targetName) == string.lower(player.accountName) then
+    for _, player in pairs(Players) do
+        if lowerTargetName == player.accountName:lower() then
             return player
         end
     end
@@ -167,15 +178,15 @@ logicHandler.GetPlayerByName = function(targetName)
     -- If they're offline, try to load their account file
     local targetPlayer = Player(nil, targetName)
 
-    if targetPlayer:HasAccount() == true then
+    if targetPlayer:HasAccount() then
         targetPlayer:LoadFromDrive()
         return targetPlayer
-    else
-        return nil
     end
 end
 
-logicHandler.BanPlayer = function(pid, targetName)
+---@param pid PlayerId
+---@param targetName string
+function logicHandler.BanPlayer(pid, targetName)
     -- Ban players based on their account names, i.e. based on the filenames used for their JSON files that
     -- have had invalid characters replaced
     local accountName = fileHelper.fixFilename(targetName)
@@ -190,7 +201,7 @@ logicHandler.BanPlayer = function(pid, targetName)
             tes3mp.SendMessage(pid, "All IP addresses stored for " .. targetName ..
                 " are now banned.\n", false)
 
-            for index, ipAddress in pairs(targetPlayer.data.ipAddresses) do
+            for _, ipAddress in pairs(targetPlayer.data.ipAddresses) do
                 tes3mp.BanAddress(ipAddress)
             end
         else
