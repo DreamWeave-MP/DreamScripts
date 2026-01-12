@@ -1,21 +1,26 @@
-tableHelper = require("tableHelper")
+local logicHandler = require 'logicHandler'
+local tableHelper = require 'tableHelper'
 
-guiHelper = {}
-guiHelper.names = {"LOGIN", "REGISTER", "PLAYERSLIST", "CELLSLIST"}
-guiHelper.ID = tableHelper.enum(guiHelper.names)
+---@class GUIHelper
+local guiHelper = {
+    names = { "LOGIN", "REGISTER", "PLAYERSLIST", "CELLSLIST" },
+    ID = tableHelper.enum(guiHelper.names),
+}
 
-guiHelper.ShowLogin = function(pid)
+---@param pid PlayerId
+function guiHelper.ShowLogin(pid)
     tes3mp.PasswordDialog(pid, guiHelper.ID.LOGIN, "Enter your password:", "")
 end
 
-guiHelper.ShowRegister = function(pid)
+---@param pid PlayerId
+function guiHelper.ShowRegister(pid)
     tes3mp.PasswordDialog(pid, guiHelper.ID.REGISTER, "Create new password:",
         "Warning: there is no guarantee that your password will be stored securely on any game server, so you should use " ..
         "a unique one for each server.")
 end
 
-local GetConnectedPlayerList = function()
-
+---@return string PlayerListString
+local function GetConnectedPlayerList()
     local lastPid = tes3mp.GetLastPlayerId()
     local list = ""
     local divider = ""
@@ -27,7 +32,6 @@ local GetConnectedPlayerList = function()
             divider = "\n"
         end
         if Players[playerIndex] ~= nil and Players[playerIndex]:IsLoggedIn() then
-
             list = list .. tostring(Players[playerIndex].name) .. " (pid: " .. tostring(Players[playerIndex].pid) ..
                 ", ping: " .. tostring(tes3mp.GetAvgPing(Players[playerIndex].pid)) .. ")" .. divider
         end
@@ -36,14 +40,15 @@ local GetConnectedPlayerList = function()
     return list
 end
 
-local GetLoadedCellList = function()
+---@return string LoadedCellString
+local function GetLoadedCellList()
     local list = ""
     local divider = ""
 
     local cellCount = logicHandler.GetLoadedCellCount()
     local cellIndex = 0
 
-    for key, value in pairs(LoadedCells) do
+    for key in pairs(LoadedCells) do
         cellIndex = cellIndex + 1
 
         if cellIndex == cellCount then
@@ -59,14 +64,15 @@ local GetLoadedCellList = function()
     return list
 end
 
-local GetLoadedRegionList = function()
+---@return string LoadedRegionString
+local function GetLoadedRegionList()
     local list = ""
     local divider = ""
 
     local regionCount = logicHandler.GetLoadedRegionCount()
     local regionIndex = 0
 
-    for key, value in pairs(WorldInstance.storedRegions) do
+    for key in pairs(WorldInstance.storedRegions) do
         local visitorCount = WorldInstance:GetRegionVisitorCount(key)
 
         if visitorCount > 0 then
@@ -86,14 +92,14 @@ local GetLoadedRegionList = function()
     return list
 end
 
-local GetPlayerInventoryList = function(pid)
-
+---@param pid PlayerId
+---@return string InventoryItemList
+local function GetPlayerInventoryList(pid)
     local list = ""
     local divider = ""
     local lastItemIndex = tableHelper.getCount(Players[pid].data.inventory)
 
     for index, currentItem in ipairs(Players[pid].data.inventory) do
-
         if index == lastItemIndex then
             divider = ""
         else
@@ -106,8 +112,9 @@ local GetPlayerInventoryList = function(pid)
     return list
 end
 
-guiHelper.ShowPlayerList = function(pid)
-
+--- Display a list box to a specific PID, of all connected players
+---@param pid PlayerId
+function guiHelper.ShowPlayerList(pid)
     local playerCount = logicHandler.GetConnectedPlayerCount()
     local label = playerCount .. " connected player"
 
@@ -118,8 +125,9 @@ guiHelper.ShowPlayerList = function(pid)
     tes3mp.ListBox(pid, guiHelper.ID.PLAYERSLIST, label, GetConnectedPlayerList())
 end
 
-guiHelper.ShowCellList = function(pid)
-
+--- Show all loaded cells
+---@param pid PlayerId
+function guiHelper.ShowCellList(pid)
     local cellCount = logicHandler.GetLoadedCellCount()
     local label = cellCount .. " loaded cell"
 
@@ -130,8 +138,9 @@ guiHelper.ShowCellList = function(pid)
     tes3mp.ListBox(pid, guiHelper.ID.CELLSLIST, label, GetLoadedCellList())
 end
 
-guiHelper.ShowRegionList = function(pid)
-
+--- Displays all loaded regions
+---@param pid PlayerId
+function guiHelper.ShowRegionList(pid)
     local regionCount = logicHandler.GetLoadedRegionCount()
     local label = regionCount .. " loaded region"
 
@@ -142,8 +151,11 @@ guiHelper.ShowRegionList = function(pid)
     tes3mp.ListBox(pid, guiHelper.ID.CELLSLIST, label, GetLoadedRegionList())
 end
 
-guiHelper.ShowInventoryList = function(menuId, pid, inventoryPid)
-
+--- Displays to pid the inventory of inventoryPid
+---@param menuId integer
+---@param pid PlayerId
+---@param inventoryPid PlayerId
+function guiHelper.ShowInventoryList(menuId, pid, inventoryPid)
     local inventoryCount = tableHelper.getCount(Players[pid].data.inventory)
     local label = inventoryCount .. " item"
 
