@@ -120,27 +120,27 @@ function contentFixer.AdjustWorldCorprusVariables(journal)
     return madeAdjustment
 end
 
-customEventHooks.registerHandler("OnPlayerJournal", function(_, pid, playerPacket)
-    if not config.shareJournal then return end
-    local madeAdjustment = contentFixer.AdjustWorldCorprusVariables(playerPacket.journal)
-
-    if madeAdjustment then
-        for otherPid in pairs(Players) do
-            if otherPid ~= pid then
-                contentFixer.AdjustSharedCorprusState(otherPid)
-            end
-        end
-    end
-end)
-
-customEventHooks.registerHandler("OnPlayerFinishLogin", function(_, pid)
-    if not config.shareJournal then return end
-    contentFixer.AdjustSharedCorprusState(pid)
-end)
-
-customEventHooks.registerHandler("OnWorldReload", function(_)
-    if not config.shareJournal then return end
-    contentFixer.AdjustWorldCorprusVariables(WorldInstance.data.journal)
-end)
+-- customEventHooks.registerHandler("OnPlayerJournal", function(_, pid, playerPacket)
+--     if not config.shareJournal then return end
+--     local madeAdjustment = contentFixer.AdjustWorldCorprusVariables(playerPacket.journal)
+--
+--     if madeAdjustment then
+--         for otherPid in pairs(Players) do
+--             if otherPid ~= pid then
+--                 contentFixer.AdjustSharedCorprusState(otherPid)
+--             end
+--         end
+--     end
+-- end)
+--
+-- customEventHooks.registerHandler("OnPlayerFinishLogin", function(_, pid)
+--     if not config.shareJournal then return end
+--     contentFixer.AdjustSharedCorprusState(pid)
+-- end)
+--
+-- customEventHooks.registerHandler("OnWorldReload", function(_)
+--     if not config.shareJournal then return end
+--     contentFixer.AdjustWorldCorprusVariables(WorldInstance.data.journal)
+-- end)
 
 return contentFixer
