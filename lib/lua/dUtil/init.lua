@@ -74,6 +74,7 @@ local Module = {
       table.insert(clientDataFiles, name)
 
       if tableHelper.isEmpty(entry.checksums) then
+        error('We made it here!')
         tes3mp.AddDataFileRequirement(name, '')
       else
         for _, checksum in ipairs(entry.checksums) do
@@ -82,7 +83,6 @@ local Module = {
       end
     end
 
-    error('We made it here!')
     return clientDataFiles
   end,
   ---@type DUtilIO
