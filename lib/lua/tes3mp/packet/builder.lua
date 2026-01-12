@@ -1,5 +1,6 @@
 local enumerations = require 'tes3mp.enumerations'
-local logicHandler = require 'tes3mp.logicHandler'
+-- local logicHandler = require 'tes3mp.logicHandler'
+local dUtil = require 'dUtil.init'
 
 ---@class PacketBuilder
 local packetBuilder = {}
