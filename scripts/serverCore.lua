@@ -48,10 +48,10 @@ pidsByIpAddress = {}
 ClientDataFiles = nil
 
 ---@global
-ClientVariableScopes = require 'clientVariableScopes'
+ClientVariableScopes = nil
 
 ---@global
-SpeechCollections = require 'speechCollections'
+SpeechCollections = nil
 
 ---@global
 hourCounter = nil
@@ -247,8 +247,8 @@ function OnServerPostInit()
     tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnServerPostInit\"")
     local eventStatus = customEventHooks.triggerValidators("OnServerPostInit", {})
     if eventStatus.validDefaultHandler then
-        clientVariableScopes = require("clientVariableScopes")
-        speechCollections = require("speechCollections")
+        ClientVariableScopes = require 'clientVariableScopes'
+        SpeechCollections = require 'speechCollections'
 
         eventHandler.InitializeDefaultValidators()
         eventHandler.InitializeDefaultHandlers()
