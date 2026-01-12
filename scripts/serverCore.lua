@@ -3,6 +3,44 @@ require 'doc.tes3mpDocs'
 --- Global string overrides load before any possibly-dependent modules
 require 'dUtil.stringMeta'
 
+---@global
+Players = {}
+---@global
+LoadedCells = {}
+---@global
+RecordStores = {}
+---@global
+ObjectLoops = {}
+---@global
+WorldInstance = nil
+---@global
+Database = nil
+---@global
+Player = nil
+---@global
+Cell = nil
+---@global
+RecordStore = nil
+---@global
+World = nil
+
+---@global
+pidsByIpAddress = {}
+---@global
+clientDataFiles = {}
+---@global
+clientVariableScopes = {}
+---@global
+speechCollections = {}
+
+---@global
+hourCounter = nil
+---@global
+updateTimerId = nil
+
+---@global
+banList = {}
+
 require("utils")
 require("enumerations")
 tableHelper = require("tableHelper")
@@ -24,6 +62,9 @@ require 'color'
 require("config")
 require("time")
 
+--- MenuHelper is stateful and should load prior to any module which possibly depends on it
+local menuHelper = require 'menuHelper'
+
 customEventHooks = require("customEventHooks")
 customCommandHooks = require("customCommandHooks")
 logicHandler = require("logicHandler")
@@ -31,30 +72,14 @@ eventHandler = require("eventHandler")
 guiHelper = require("guiHelper")
 animHelper = require("animHelper")
 speechHelper = require("speechHelper")
-menuHelper = require("menuHelper")
 
 ---@type DScriptLoader
 local ScriptLoader = require 'dUtil.scriptLoader' {
     customCommandHooks = customCommandHooks,
+    menuHelper = menuHelper,
 }
 
 ScriptLoader.loadAllScripts()
-
-Database = nil
-Player = nil
-Cell = nil
-RecordStore = nil
-World = nil
-
-pidsByIpAddress = {}
-clientDataFiles = {}
-clientVariableScopes = {}
-speechCollections = {}
-
-hourCounter = nil
-updateTimerId = nil
-
-banList = {}
 
 if (config.databaseType ~= nil and config.databaseType ~= "json") and doesModuleExist("luasql." .. config.databaseType) then
     Database = require("database")

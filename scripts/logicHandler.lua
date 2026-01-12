@@ -9,18 +9,7 @@ packetReader = require("packetReader")
 
 local logicHandler = {}
 
-Players = {}
-LoadedCells = {}
-RecordStores = {}
-WorldInstance = nil
-ObjectLoops = {}
-Menus = {}
-
-for _, menuFile in ipairs(config.menuHelperFiles) do
-    require("menu/" .. menuFile)
-end
-
-logicHandler.InitializeWorld = function()
+function logicHandler.InitializeWorld()
     WorldInstance = World()
 
     -- If the world has a data entry, load it
