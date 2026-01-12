@@ -578,7 +578,7 @@ function packetBuilder.AddLockpickRecord(id, record)
     tes3mp.AddRecord()
 end
 
-functino packetBuilder.AddMiscellaneousRecord(id, record)
+function packetBuilder.AddMiscellaneousRecord(id, record)
     tes3mp.SetRecordId(id)
     if record.baseId then tes3mp.SetRecordBaseId(record.baseId) end
     if record.name then tes3mp.SetRecordName(record.name) end
