@@ -6,8 +6,8 @@ local cjsonExists, cjson = miscUtil.doesModuleExist 'cjson'
 
 local LocalDataPath = tes3mp.GetDataPath()
 
----@type DUtilModule
-local dUtil = require 'dUtil.init'
+---@type DUtilIO
+local DIO = require 'dUtil.io'
 
 if cjsonExists then
     cjson = require("cjson")
@@ -91,7 +91,7 @@ function jsonInterface.writeToFile(fileName, content)
     local filePath = string.format("%s/%s", config.dataPath, fileName)
 
     local dir = fileName:match("(.*[/\\])")
-    if dir and not dUtil.io.isDir(dir) then
+    if dir and not DIO.isDir(dir) then
         local currentPath = LocalDataPath .. '/' -- Is this portable?
 
         for segment in dir:gmatch("[^/\\]+") do
@@ -99,12 +99,12 @@ function jsonInterface.writeToFile(fileName, content)
 
             currentPath = string.format("%s%s/", currentPath, segment)
 
-            if dUtil.io.fileExists(currentPath) then
+            if DIO.fileExists(currentPath) then
                 tes3mp.LogMessage(enumerations.log.ERROR,
                     'Cannot create directory ' .. currentPath .. ' as it is already a file that exists!')
                 return false
-            elseif not dUtil.io.isDir(currentPath) then
-                local result = dUtil.io.mkdir(currentPath)
+            elseif not DIO.isDir(currentPath) then
+                local result = DIO.mkdir(currentPath)
                 if not result then
                     tes3mp.LogMessage(enumerations.log.ERROR,
                         "Failed to create directory: " .. currentPath .. ' result: ' .. tostring(result))
