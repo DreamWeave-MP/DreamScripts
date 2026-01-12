@@ -1,3 +1,4 @@
+local clientVariableScopes = require 'tes3mp.clientVariableScopes'
 local color = require 'color'
 local config = require 'tes3mp.config'
 local dataTableBuilder = require 'dataTableBuilder'
@@ -146,7 +147,7 @@ eventHandler.InitializeDefaultValidators = function()
     -- Ignore packets with global variables that are listed under ClientVariableScopes.globals.ignored
     customEventHooks.registerValidator("OnClientScriptGlobal", function(eventStatus, pid, variables)
         for id, variable in pairs(variables) do
-            if tableHelper.containsValue(ClientVariableScopes.globals.ignored, id) then
+            if tableHelper.containsValue(clientVariableScopes.globals.ignored, id) then
                 tes3mp.LogAppend(enumerations.log.INFO, "- Ignoring attempt at setting global variable " .. id ..
                     " because it is listed as an ignored variable in ClientVariableScopes")
                 return customEventHooks.makeEventStatus(false, false)
@@ -1854,25 +1855,25 @@ eventHandler.OnClientScriptGlobal = function(pid)
                 local isKillSync, isQuestSync, isFactionRanksSync, isFactionExpulsionSync, isWorldwideSync =
                     false, false, false, false, false
 
-                isKillSync = tableHelper.containsCaseInsensitiveString(ClientVariableScopes.globals.kills, id)
+                isKillSync = tableHelper.containsCaseInsensitiveString(clientVariableScopes.globals.kills, id)
 
                 if not isKillSync then
                     isQuestSync = config.shareJournal == true and
-                        tableHelper.containsCaseInsensitiveString(ClientVariableScopes.globals.quest, id)
+                        tableHelper.containsCaseInsensitiveString(clientVariableScopes.globals.quest, id)
                 end
 
                 if not isQuestSync then
                     isFactionRanksSync = config.shareFactionRanks == true and
-                        tableHelper.containsCaseInsensitiveString(ClientVariableScopes.globals.factionRanks, id)
+                        tableHelper.containsCaseInsensitiveString(clientVariableScopes.globals.factionRanks, id)
                 end
 
                 if not isFactionRanksSync then
                     isFactionExpulsionSync = config.shareFactionExpulsion == true and
-                        tableHelper.containsCaseInsensitiveString(ClientVariableScopes.globals.factionExpulsion, id)
+                        tableHelper.containsCaseInsensitiveString(clientVariableScopes.globals.factionExpulsion, id)
                 end
 
                 if not isFactionExpulsionSync then
-                    isWorldwideSync = tableHelper.containsCaseInsensitiveString(ClientVariableScopes.globals.worldwide,
+                    isWorldwideSync = tableHelper.containsCaseInsensitiveString(clientVariableScopes.globals.worldwide,
                         id)
                 end
 
