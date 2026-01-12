@@ -6,7 +6,14 @@ config = {}
 config.dataPath = tes3mp.GetDataPath()
 
 -- Array of script paths used to load handlers, validators, and interfaces from
-config.customScripts = { 'defaultCommands', 'customMerchantRestock', }
+-- These directories are always relative to server/scripts/custom
+config.customScripts = {
+    'menu.help',
+    'menu.defaultCrafting',
+    'menu.advancedExample',
+    'defaultCommands',
+    'customMerchantRestock',
+}
 
 -- The game mode displayed for this server in the server browser
 config.gameMode = "Default"
@@ -258,9 +265,6 @@ config.rankColors = { serverOwner = color.Orange, admin = color.Red, moderator =
 -- Which numerical IDs should be used by custom menus implemented in the Lua scripts,
 -- to prevent other menu inputs from being taken into account for them
 config.customMenuIds = { menuHelper = 9001, confiscate = 9002, recordPrint = 9003 }
-
--- The menu files that should be loaded for menuHelper, from the scripts/menu subfolder
-config.menuHelperFiles = { "help", "defaultCrafting", "advancedExample" }
 
 -- What the difference in ping needs to be in favor of a new arrival to a cell or region
 -- compared to that cell or region's current player authority for the new arrival to become
