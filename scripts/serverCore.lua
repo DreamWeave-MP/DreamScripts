@@ -73,10 +73,10 @@ if (config.databaseType ~= nil and config.databaseType ~= "json") and miscUtil.d
     RecordStore = require("recordstore.sql")
     World = require("world.sql")
 else
-    Player = require("player.json")
     Cell = require("cell.json")
     RecordStore = require("recordstore.json")
     World = require("world.json")
+    Player = require("player.json")
 end
 
 --- MenuHelper is stateful and should load prior to any module which possibly depends on it
