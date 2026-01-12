@@ -1,4 +1,7 @@
 local color = require 'color'
+local menuHelper = require 'tes3mp.util.menu'
+
+local Menus = {}
 
 Menus["default crafting origin"] = {
     text = color.Orange .. "What would you like to craft?\n" ..
@@ -176,4 +179,9 @@ Menus["reward generic plural"] = {
         { caption = "Craft more", destinations = { menuHelper.destinations.setFromCustomVariable("previousCustomMenu") } },
         { caption = "Exit",       destinations = nil }
     }
+}
+
+---@type TES3MPScriptRegistration
+return {
+    Menus = Menus,
 }

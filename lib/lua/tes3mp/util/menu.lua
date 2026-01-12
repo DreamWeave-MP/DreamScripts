@@ -110,7 +110,7 @@ local menuHelper = {
         end,
 
         --- Removes a set of items when an element is clicked
-        ---@param inputRefIds string[]
+        ---@param inputRefIds string|string[]
         ---@param inputCount integer
         ---@return RemoveItemEffect
         removeItem = function(inputRefIds, inputCount)
@@ -206,7 +206,7 @@ local menuHelper = {
 
         ---@param inputMenu string
         ---@param inputConditions DisplayCondition[]
-        ---@param inputEffects MenuEffect[]
+        ---@param inputEffects MenuEffect[]?
         ---@return ConditionalDestination
         setConditional = function(inputMenu, inputConditions, inputEffects)
             ---@type ConditionalDestination
