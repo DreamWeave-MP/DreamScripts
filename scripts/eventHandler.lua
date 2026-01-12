@@ -1,10 +1,13 @@
 local color = require 'color'
+local guiHelper = require 'tes3mp.guiHelper'
 local inventoryHelper = require 'inventoryHelper'
+local logicHandler = require 'tes3mp.logicHandler'
 local packetReader = require 'packetReader'
 
+---@class EventHandler
 local eventHandler = {}
 
-commandHandler = require("commandHandler")
+commandHandler = require 'commandHandler'
 
 local consoleKickMessage = " has been kicked for using the console despite not having the permission to do so.\n"
 

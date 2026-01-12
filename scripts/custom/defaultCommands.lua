@@ -1,4 +1,5 @@
 local color = require 'color'
+local guiHelper = require 'tes3mp.guiHelper'
 local logicHandler = require 'tes3mp.logicHandler'
 local patterns = require 'patterns'
 
