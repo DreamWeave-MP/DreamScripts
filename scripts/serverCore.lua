@@ -79,8 +79,6 @@ else
     World = require("world.json")
 end
 
-tes3mp.LogAppend(enumerations.log.WARN, ('world: %s\n\n, world type: %s'):format(World, type(World)))
-tableHelper.print(World)
 --- MenuHelper is stateful and should load prior to any module which possibly depends on it
 local menuHelper = require 'tes3mp.util.menu'
 local logicHandler = require 'tes3mp.logicHandler'

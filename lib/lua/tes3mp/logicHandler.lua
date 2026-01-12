@@ -1,16 +1,18 @@
 assert(LoadedCells ~= nil, 'logicHandler does not have LoadedCells table in scope!')
 assert(Players ~= nil, 'logicHandler does not have Players table in scope!')
 
-local tableHelper = require 'tes3mp.util.table'
-tableHelper.print(World)
-assert(World ~= nil, 'logicHandler does not have the World module in scope!')
-
 local config = require 'tes3mp.config'
 local enumerations = require 'tes3mp.enumerations'
 local tableHelper = require 'tes3mp.util.table'
 local fileHelper = require 'fileHelper'
 local dataTableBuilder = require 'dataTableBuilder'
 local packetBuilder = require 'tes3mp.packet.builder'
+
+if World == nil then
+    tes3mp.LogAppend(enumerations.log.WARN,
+        ('Warning! logicHandler has been invoked without World in scope! Good luck . . .\n%s\n'):format(debug.traceback(3))
+    )
+end
 
 local logicHandler = {}
 
