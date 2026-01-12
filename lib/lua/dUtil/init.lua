@@ -77,7 +77,6 @@ local Module = {
         tes3mp.AddDataFileRequirement(name, '')
       else
         for _, checksum in ipairs(entry.checksums) do
-          print(name, checksum)
           tes3mp.AddDataFileRequirement(name, checksum)
         end
       end

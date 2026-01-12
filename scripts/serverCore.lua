@@ -12,36 +12,50 @@ require 'dUtil.stringMeta'
 
 ---@global
 Players = {}
+
 ---@global
 LoadedCells = {}
+
 ---@global
 RecordStores = {}
+
 ---@global
 ObjectLoops = {}
+
 ---@global
 WorldInstance = nil
+
 ---@global
 Database = nil
+
 ---@global
 Player = nil
+
 ---@global
 Cell = nil
+
 ---@global
 RecordStore = nil
+
 ---@global
 World = nil
 
 ---@global
 pidsByIpAddress = {}
+
 ---@global
-ClientDataFiles = {}
+---@type DataFileRequirements?
+ClientDataFiles = nil
+
 ---@global
 ClientVariableScopes = require 'clientVariableScopes'
+
 ---@global
 SpeechCollections = require 'speechCollections'
 
 ---@global
 hourCounter = nil
+
 ---@global
 updateTimerId = nil
 
