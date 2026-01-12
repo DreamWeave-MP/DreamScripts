@@ -72,14 +72,6 @@ guiHelper = require("guiHelper")
 animHelper = require("animHelper")
 speechHelper = require("speechHelper")
 
----@type DScriptLoader
-local ScriptLoader = require 'dUtil.scriptLoader' {
-    customCommandHooks = customCommandHooks,
-    menuHelper = menuHelper,
-}
-
-ScriptLoader.loadAllScripts()
-
 if (config.databaseType ~= nil and config.databaseType ~= "json") and doesModuleExist("luasql." .. config.databaseType) then
     Database = require("database")
     Database:LoadDriver(config.databaseType)
@@ -105,6 +97,14 @@ else
     RecordStore = require("recordstore.json")
     World = require("world.json")
 end
+
+---@type DScriptLoader
+local ScriptLoader = require 'dUtil.scriptLoader' {
+    customCommandHooks = customCommandHooks,
+    menuHelper = menuHelper,
+}
+
+ScriptLoader.loadAllScripts()
 
 function LoadBanList()
     tes3mp.LogMessage(enumerations.log.INFO, "Reading banlist.json")
