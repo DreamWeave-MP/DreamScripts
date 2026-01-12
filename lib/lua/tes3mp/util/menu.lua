@@ -149,7 +149,7 @@ local menuHelper = {
         --- Helper which runs a player function
         --- When an element is activated
         ---@param inputFunctionName string
-        ---@param inputArguments any[]
+        ---@param inputArguments any[]?
         ---@return PlayerFunctionEffect
         runPlayerFunction = function(inputFunctionName, inputArguments)
             ---@type PlayerFunctionEffect
@@ -163,9 +163,9 @@ local menuHelper = {
         end,
 
         --- Helper which runs a global function when a button is clicked
-        ---@param inputObjectName string
+        ---@param inputObjectName string?
         ---@param inputFunctionName string
-        ---@param inputArguments string
+        ---@param inputArguments any[]?
         ---@return GlobalFunctionEffect
         runGlobalFunction = function(inputObjectName, inputFunctionName, inputArguments)
             local effect = {
@@ -180,7 +180,7 @@ local menuHelper = {
     },
 
     destinations = {
-        ---@param inputMenu string
+        ---@param inputMenu string?
         ---@param inputEffects MenuEffect[]?
         ---@return DefaultDestination
         setDefault = function(inputMenu, inputEffects)

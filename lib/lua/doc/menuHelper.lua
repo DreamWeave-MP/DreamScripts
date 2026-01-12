@@ -71,7 +71,7 @@
 ---@field arguments any[]
 
 ---@class DefaultDestination: MenuDestination
----@field targetMenu string
+---@field targetMenu string?
 ---@field effects MenuEffect[]
 
 ---@class CustomVariableDestination: MenuDestination

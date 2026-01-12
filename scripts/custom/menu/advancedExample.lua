@@ -1,4 +1,7 @@
 local color = require 'color'
+local menuHelper = require 'tes3mp.util.menu'
+
+local Menus = {}
 
 Menus["advanced example origin"] = {
     text = {
@@ -115,4 +118,9 @@ Menus["advanced example global"] = {
         { caption = "Back", destinations = { menuHelper.destinations.setFromCustomVariable("previousCustomMenu") } },
         { caption = "Exit", destinations = nil }
     }
+}
+
+---@type TES3MPScriptRegistration
+return {
+    Menus = Menus,
 }
