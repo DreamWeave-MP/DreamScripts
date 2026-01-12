@@ -1,18 +1,20 @@
-local BaseRecordStore = class("BaseRecordStore")
+local class = require 'classy'
+local logicHandler = require 'tes3mp.logicHandler'
 
-BaseRecordStore.defaultData = 
-    {
-        general = {
-            currentGeneratedNum = 0
-        },
-        permanentRecords = {},
-        generatedRecords = {},
-        recordLinks = {},
-        unlinkedRecordsToCheck = {}
-    }
+local BaseRecordStore = class 'BaseRecordStore'
+
+BaseRecordStore.defaultData =
+{
+    general = {
+        currentGeneratedNum = 0
+    },
+    permanentRecords = {},
+    generatedRecords = {},
+    recordLinks = {},
+    unlinkedRecordsToCheck = {}
+}
 
 function BaseRecordStore:__init(storeType)
-
     self.data = tableHelper.deepCopy(self.defaultData)
     self.storeType = storeType
 end
@@ -22,7 +24,6 @@ function BaseRecordStore:HasEntry()
 end
 
 function BaseRecordStore:EnsureDataStructure()
-
     for key, value in pairs(self.defaultData) do
         if self.data[key] == nil then
             self.data[key] = tableHelper.deepCopy(value)
@@ -51,7 +52,6 @@ end
 -- Go through all the generated records that were at some point tracked as having no links remaining
 -- and delete them if they still have no links
 function BaseRecordStore:DeleteUnlinkedRecords()
-
     if type(self.data.unlinkedRecordsToCheck) == "table" then
         for arrayIndex, recordId in pairs(self.data.unlinkedRecordsToCheck) do
             if not self:HasLinks(recordId) then
@@ -64,7 +64,6 @@ function BaseRecordStore:DeleteUnlinkedRecords()
 end
 
 function BaseRecordStore:DeleteGeneratedRecord(recordId)
-
     if self.data.generatedRecords[recordId] == nil then
         tes3mp.LogMessage(enumerations.log.WARN, "Tried deleting " .. self.storeType .. " record " .. recordId ..
             " which doesn't exist!")
@@ -96,7 +95,6 @@ end
 
 -- Check whether there are any links remaining to a certain generated record
 function BaseRecordStore:HasLinks(recordId)
-
     local recordLinks = self.data.recordLinks
 
     if recordLinks[recordId] == nil then
@@ -104,7 +102,7 @@ function BaseRecordStore:HasLinks(recordId)
     elseif (recordLinks[recordId].cells ~= nil and not tableHelper.isEmpty(recordLinks[recordId].cells)) or
         (recordLinks[recordId].players ~= nil and not tableHelper.isEmpty(recordLinks[recordId].players)) then
         return true
-    -- Is this an enchantment record? If so, check for links to other records for enchantable items
+        -- Is this an enchantment record? If so, check for links to other records for enchantable items
     elseif self.storeType == "enchantment" then
         for _, enchantableType in pairs(config.enchantableRecordTypes) do
             if recordLinks[recordId].records ~= nil and recordLinks[recordId].records[enchantableType] ~= nil and not
@@ -120,7 +118,6 @@ end
 -- Add a link between a record and another record from a different record store,
 -- i.e. for enchantments being used by other items
 function BaseRecordStore:AddLinkToRecord(recordId, otherRecordId, otherStoreType)
-
     local recordLinks = self.data.recordLinks
 
     if recordLinks[recordId] == nil then recordLinks[recordId] = {} end
@@ -133,12 +130,10 @@ function BaseRecordStore:AddLinkToRecord(recordId, otherRecordId, otherStoreType
 end
 
 function BaseRecordStore:RemoveLinkToRecord(recordId, otherRecordId, otherStoreType)
-
     local recordLinks = self.data.recordLinks
 
     if recordLinks[recordId] ~= nil and recordLinks[recordId].records ~= nil and
         recordLinks[recordId].records[otherStoreType] ~= nil then
-
         local linkIndex = tableHelper.getIndexByValue(recordLinks[recordId].records[otherStoreType], otherRecordId)
 
         if linkIndex ~= nil then
@@ -153,7 +148,6 @@ end
 
 -- Add a link between a record and a cell it is found in
 function BaseRecordStore:AddLinkToCell(recordId, cell)
-
     local cellDescription = cell.description
     local recordLinks = self.data.recordLinks
 
@@ -166,12 +160,10 @@ function BaseRecordStore:AddLinkToCell(recordId, cell)
 end
 
 function BaseRecordStore:RemoveLinkToCell(recordId, cell)
-
     local cellDescription = cell.description
     local recordLinks = self.data.recordLinks
 
     if recordLinks[recordId] ~= nil and recordLinks[recordId].cells ~= nil then
-
         local linkIndex = tableHelper.getIndexByValue(recordLinks[recordId].cells, cellDescription)
 
         if linkIndex ~= nil then
@@ -186,7 +178,6 @@ end
 
 -- Add a link between a record and a player in whose inventory or spellbook it is found
 function BaseRecordStore:AddLinkToPlayer(recordId, player)
-
     local accountName = player.accountName
     local recordLinks = self.data.recordLinks
 
@@ -199,7 +190,6 @@ function BaseRecordStore:AddLinkToPlayer(recordId, player)
 end
 
 function BaseRecordStore:RemoveLinkToPlayer(recordId, player)
-
     local accountName = player.accountName
     local recordLinks = self.data.recordLinks
 
@@ -218,7 +208,6 @@ function BaseRecordStore:RemoveLinkToPlayer(recordId, player)
 end
 
 function BaseRecordStore:LoadGeneratedRecords(pid, recordList, idArray, forEveryone)
-
     if type(recordList) ~= "table" then return end
     if type(idArray) ~= "table" then return end
 
@@ -236,7 +225,6 @@ function BaseRecordStore:LoadGeneratedRecords(pid, recordList, idArray, forEvery
 
     for _, recordId in pairs(idArray) do
         if recordList[recordId] ~= nil and not tableHelper.containsValue(Players[pid].generatedRecordsReceived, recordId) then
-
             table.insert(Players[pid].generatedRecordsReceived, recordId)
             table.insert(validIdArray, recordId)
 
@@ -264,7 +252,6 @@ function BaseRecordStore:LoadGeneratedRecords(pid, recordList, idArray, forEvery
 end
 
 function BaseRecordStore:LoadRecords(pid, recordList, idArray, forEveryone)
-
     if type(recordList) ~= "table" then return end
     if type(idArray) ~= "table" then return end
 
@@ -289,8 +276,8 @@ end
 -- Check if a record is a perfect match for any of the records whose IDs
 -- are contained in an ID array, with optional parameters that allow starting
 -- from the end of the idArray and performing a limited number of checks
-function BaseRecordStore:GetMatchingRecordId(comparedRecord, recordList, idArray, ignoredKeys, useReverseOrder, maximumChecks)
-
+function BaseRecordStore:GetMatchingRecordId(comparedRecord, recordList, idArray, ignoredKeys, useReverseOrder,
+                                             maximumChecks)
     if idArray == nil then
         return nil
     end
@@ -316,7 +303,6 @@ function BaseRecordStore:GetMatchingRecordId(comparedRecord, recordList, idArray
     end
 
     for arrayIndex = initialValue, finalValue, increment do
-
         local recordId = idArray[arrayIndex]
         local record = recordList[recordId]
 
@@ -329,7 +315,6 @@ function BaseRecordStore:GetMatchingRecordId(comparedRecord, recordList, idArray
 end
 
 function BaseRecordStore:SaveGeneratedRecords(recordTable)
-
     for recordId, record in pairs(recordTable) do
         self.data.generatedRecords[recordId] = tableHelper.deepCopy(record)
 
