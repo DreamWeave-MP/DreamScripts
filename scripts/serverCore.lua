@@ -53,17 +53,6 @@ local miscUtil = require 'tes3mp.util.misc'
 local config = require 'tes3mp.config'
 local time = require 'time'
 
---- MenuHelper is stateful and should load prior to any module which possibly depends on it
-local menuHelper = require 'tes3mp.util.menu'
-local logicHandler = require 'tes3mp.logicHandler'
-
-customEventHooks = require 'customEventHooks'
-customCommandHooks = require 'customCommandHooks'
-commandHandler = require 'commandHandler'
-eventHandler = require 'eventHandler'
-animHelper = require 'animHelper'
-speechHelper = require 'speechHelper'
-
 if (config.databaseType ~= nil and config.databaseType ~= "json") and miscUtil.doesModuleExist("luasql." .. config.databaseType) then
     Database = require("database")
     Database:LoadDriver(config.databaseType)
@@ -89,6 +78,17 @@ else
     RecordStore = require("recordstore.json")
     World = require("world.json")
 end
+
+--- MenuHelper is stateful and should load prior to any module which possibly depends on it
+local menuHelper = require 'tes3mp.util.menu'
+local logicHandler = require 'tes3mp.logicHandler'
+
+customEventHooks = require 'customEventHooks'
+customCommandHooks = require 'customCommandHooks'
+commandHandler = require 'commandHandler'
+eventHandler = require 'eventHandler'
+animHelper = require 'animHelper'
+speechHelper = require 'speechHelper'
 
 ---@type DScriptLoader
 local ScriptLoader = require 'dUtil.scriptLoader' {
