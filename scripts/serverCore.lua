@@ -44,7 +44,6 @@ banList = {}
 require("utils")
 require("enumerations")
 tableHelper = require("tableHelper")
-class = require("classy")
 jsonInterface = require("jsonInterface")
 
 ---@type DUtilModule
