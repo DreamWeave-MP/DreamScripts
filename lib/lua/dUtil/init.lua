@@ -67,6 +67,7 @@ local Module = {
   loadRequiredDataFiles = function(writeLog)
     local dataFileList = loadDataFileList('requiredDataFiles.json', writeLog)
 
+    error('We made it here!')
     local clientDataFiles = {}
 
     for _, entry in ipairs(dataFileList) do
