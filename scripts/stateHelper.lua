@@ -1,6 +1,7 @@
 local patterns = require 'patterns'
 
-StateHelper = class("StateHelper")
+local class = require 'classy'
+local StateHelper = class 'StateHelper'
 
 function StateHelper:LoadJournal(pid, stateObject)
     if stateObject.data.journal == nil then
