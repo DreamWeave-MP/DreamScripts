@@ -1,10 +1,16 @@
-require("config")
+local config = require 'config'
+local class = require 'classy'
 local inventoryHelper = require 'inventoryHelper'
+local packetReader = require 'packetReader'
 local patterns = require 'patterns'
-stateHelper = require("stateHelper")
-tableHelper = require("tableHelper")
-local BasePlayer = class("BasePlayer")
+local stateHelper = require 'stateHelper'
+local tableHelper = require 'tableHelper'
 
+---@class BasePlayer
+local BasePlayer = class 'BasePlayer'
+
+---@param pid PlayerId
+---@param playerName string
 function BasePlayer:__init(pid, playerName)
     self.dbPid = nil
 
