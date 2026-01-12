@@ -102,7 +102,6 @@ customCommandHooks = require 'customCommandHooks'
 commandHandler = require 'commandHandler'
 eventHandler = require 'eventHandler'
 animHelper = require 'animHelper'
-speechHelper = require 'speechHelper'
 
 ---@type DScriptLoader
 local ScriptLoader = require 'dUtil.scriptLoader' {
