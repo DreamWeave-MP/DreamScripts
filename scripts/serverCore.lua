@@ -79,6 +79,7 @@ else
     World = require("world.json")
 end
 
+tableHelper.print(World)
 --- MenuHelper is stateful and should load prior to any module which possibly depends on it
 local menuHelper = require 'tes3mp.util.menu'
 local logicHandler = require 'tes3mp.logicHandler'
