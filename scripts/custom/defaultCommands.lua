@@ -3,6 +3,7 @@ local config = require 'tes3mp.config'
 local guiHelper = require 'tes3mp.util.gui'
 local logicHandler = require 'tes3mp.logicHandler'
 local patterns = require 'patterns'
+local tableHelper = require 'tes3mp.util.table'
 
 ---@type DUtilModule
 local dUtil = require 'dUtil.init'
