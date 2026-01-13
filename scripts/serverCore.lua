@@ -1234,26 +1234,27 @@ function OnLoginTimeExpiration(pid, accountName)
     local player = Players[pid]
     if not player or player.accountName ~= accountName then return end
 
-    if noCustomEventHooks('OnLoginTimeExpiration') then
-        return
+    local eventStatus
+    if CustomEventHooks then
+        eventStatus = CustomEventHooks.triggerValidators(
+            'OnLoginTimeExpiration',
+            { pid }
+        )
     else
-        assert(CustomEventHooks)
+        eventStatus = dUtil.makeEventStatus(true, true)
     end
-
-    local eventStatus = CustomEventHooks.triggerValidators(
-        'OnLoginTimeExpiration',
-        { pid }
-    )
 
     if eventStatus.validDefaultHandler then
         logicHandler.AuthCheck(pid)
     end
 
-    CustomEventHooks.triggerHandlers(
-        'OnLoginTimeExpiration',
-        eventStatus,
-        { pid }
-    )
+    if CustomEventHooks then
+        CustomEventHooks.triggerHandlers(
+            'OnLoginTimeExpiration',
+            eventStatus,
+            { pid }
+        )
+    end
 end
 
 function OnDeathTimeExpiration(pid, accountName)
