@@ -2,9 +2,8 @@ local config = require 'tes3mp.config'
 local enumerations = require 'tes3mp.enumerations'
 local tableHelper = require 'tes3mp.util.table'
 
+---@class ContentFixer
 local contentFixer = {}
-
-
 
 function contentFixer.AdjustSharedCorprusState(pid)
     local corprusId = "corprus"
@@ -59,6 +58,8 @@ end
 
 ---@type TES3MPScriptRegistration
 return {
+    interface = contentFixer,
+    interfaceName = 'contentFixer',
     eventHandlers = {
         OnPlayerFinishLogin = function(_, pid)
             if not config.shareJournal then return end
