@@ -242,7 +242,9 @@ end
 
 function OnServerPostInit()
     tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnServerPostInit\"")
-    local eventStatus = customEventHooks.triggerValidators("OnServerPostInit", {})
+
+    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators("OnServerPostInit", {})
+
     if eventStatus.validDefaultHandler then
         eventHandler.InitializeDefaultValidators()
         eventHandler.InitializeDefaultHandlers()
@@ -305,7 +307,8 @@ function OnServerPostInit()
 
         tes3mp.SetRuleString("respawnCell", respawnCell)
     end
-    customEventHooks.triggerHandlers("OnServerPostInit", eventStatus, {})
+
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers("OnServerPostInit", eventStatus, {})
 end
 
 function OnServerExit(errorState)
