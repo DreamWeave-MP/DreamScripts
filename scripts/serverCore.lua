@@ -713,8 +713,29 @@ function OnPlayerSendMessage(pid, message)
 end
 
 function OnPlayerDeath(pid)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnPlayerDeath\" for " .. logicHandler.GetChatName(pid))
-    eventHandler.OnPlayerDeath(pid)
+    tes3mp.LogMessage(
+        enumerations.log.INFO,
+        ('Called "OnPlayerDeath" for %s')
+        :format(logicHandler.GetChatName(pid))
+    )
+
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
+    if not isValid or not targetPid then return end
+
+    local eventStatus
+    if CustomEventHooks then
+        eventStatus = CustomEventHooks.triggerValidators("OnPlayerDeath", { pid })
+    else
+        eventStatus = dUtil.misc.makeEventStatus()
+    end
+
+    if eventStatus.validDefaultHandler then
+        Players[pid]:ProcessDeath()
+    end
+
+    if CustomEventHooks then
+        CustomEventHooks.triggerHandlers("OnPlayerDeath", eventStatus, { pid })
+    end
 end
 
 function OnPlayerAttribute(pid)
