@@ -1,6 +1,7 @@
 local config = require 'tes3mp.config'
 local enumerations = require 'tes3mp.enumerations'
 local patterns = require 'patterns'
+local tableHelper = require 'tes3mp.util.table'
 
 local StateHelper = require('classy')('StateHelper')
 
