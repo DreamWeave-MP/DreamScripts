@@ -31,8 +31,6 @@ local ClientVariableScopes = {
     globals = {}
 }
 
-print('ClientVariableScopes:\n\n')
-tableHelper.print(ClientDataFiles)
 if tableHelper.containsCaseInsensitiveString(ClientDataFiles, "Morrowind.esm") then
     local addedVariableScopes = {
         globals = {
@@ -807,6 +805,4 @@ if tableHelper.containsCaseInsensitiveString(ClientDataFiles, "Sky_Main.esm") th
     tableHelper.merge(ClientVariableScopes, addedVariableScopes, true)
 end
 
-print('final variable Scopes:\n\n')
-tableHelper.print(ClientVariableScopes)
 return ClientVariableScopes
