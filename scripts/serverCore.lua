@@ -419,12 +419,6 @@ function OnRequestPluginList()
 end
 
 function OnPlayerConnect(pid)
-    if noCustomEventHooks('OnPlayerConnect') then
-        return
-    else
-        assert(CustomEventHooks)
-    end
-
     tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnPlayerConnect\" for pid " .. pid)
 
     local playerName = tes3mp.GetName(pid)
@@ -464,7 +458,12 @@ function OnPlayerConnect(pid)
     local player = Players[pid]
     player.name = playerName
 
-    local eventStatus = CustomEventHooks.triggerValidators('OnPlayerConnect', { pid })
+    local eventStatus
+    if CustomEventHooks then
+        eventStatus = CustomEventHooks.triggerValidators('OnPlayerConnect', { pid })
+    else
+        eventStatus = dUtil.makeEventStatus(true, true)
+    end
 
     if eventStatus.validDefaultHandler then
         -- Send instanced spawn cell record now so it has time to arrive
@@ -570,7 +569,9 @@ function OnPlayerConnect(pid)
         tes3mp.StartTimer(Players[pid].loginTimerId)
     end
 
-    CustomEventHooks.triggerHandlers('OnPlayerConnect', eventStatus, { pid })
+    if CustomEventHooks then
+        CustomEventHooks.triggerHandlers('OnPlayerConnect', eventStatus, { pid })
+    end
 end
 
 function OnPlayerDisconnect(pid)
