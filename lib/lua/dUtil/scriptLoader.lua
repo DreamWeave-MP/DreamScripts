@@ -255,7 +255,19 @@ end
 --- Upon failure, for any reason, the server will be terminated.
 --- This function should only be called upon initializing the server, OR when attempting to reload all running lua scripts.
 function DScriptLoader.loadAllScripts()
+  --- Reinitialize all interfaces when reloading all scripts
   Interfaces = {}
+
+  ---@type MenuHelper
+  local menuHelper = Deps.menuHelper
+  --- Flush registered menus as well
+  menuHelper.Menus = {}
+
+  ---@type CustomCommandHooks
+  local commandHooks = Deps.customCommandHooks
+  --- And commands
+  commandHooks.commands = {}
+
   for _, scriptName in ipairs(config.customScripts) do
     DScriptLoader.loadScript(scriptName)
   end
