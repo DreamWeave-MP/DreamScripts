@@ -89,27 +89,6 @@ eventHandler.OnPlayerCellChange = function(pid)
     end
 end
 
-eventHandler.OnPlayerJournal = function(pid)
-    assert(Deps)
-    if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
-        local playerPacket = packetReader.GetPlayerPacketTables(pid, "PlayerJournal")
-
-        local eventStatus = Deps.customEventHooks.triggerValidators("OnPlayerJournal", { pid, playerPacket })
-        if eventStatus.validDefaultHandler then
-            if config.shareJournal == true then
-                WorldInstance:SaveJournal(playerPacket)
-
-                -- Send this PlayerJournal packet to other players (sendToOthersPlayers is true),
-                -- but skip sending it to the player we got it from (skipAttachedPlayer is true)
-                tes3mp.SendJournalChanges(pid, true, true)
-            else
-                Players[pid]:SaveJournal(playerPacket)
-            end
-        end
-        Deps.customEventHooks.triggerHandlers("OnPlayerJournal", eventStatus, { pid, playerPacket })
-    end
-end
-
 eventHandler.OnPlayerFaction = function(pid)
     assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
