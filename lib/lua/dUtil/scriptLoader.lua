@@ -295,14 +295,18 @@ function DScriptLoader.loadScript(scriptName, callerPid)
   local customEventHooks = Interfaces.customEventHooks
   if customEventHooks then
     if customEventHooks.validators then
-      for i = #customEventHooks.validators, 1, -1 do
-        if customEventHooks.validators[i].definedBy == scriptPath then customEventHooks.validators[i] = nil end
+      for eventName, eventValidatorsArray in pairs(customEventHooks.validators) do
+        for i = #eventValidatorsArray, 1, -1 do
+          if customEventHooks.validators[i].definedBy == scriptPath then customEventHooks.validators[i] = nil end
+        end
       end
     end
 
     if customEventHooks.handlers then
-      for i = #customEventHooks.handlers, 1, -1 do
-        if customEventHooks.handlers[i].definedBy == scriptPath then customEventHooks.handlers[i] = nil end
+      for eventName, eventHandlersArray in pairs(customEventHooks.handlers) do
+        for i = #eventHandlersArray, 1, -1 do
+          if customEventHooks.handlers[i].definedBy == scriptPath then customEventHooks.handlers[i] = nil end
+        end
       end
     end
   end
