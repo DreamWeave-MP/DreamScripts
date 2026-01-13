@@ -263,10 +263,12 @@ end
 
 ---@class DScriptLoaderDeps
 ---@field customCommandHooks CustomCommandHooks
+---@field menuHelper MenuHelper
 
 ---@param deps DScriptLoaderDeps
 return function(deps)
   assert(deps.customCommandHooks)
+  assert(deps.menuHelper)
 
   Deps = deps
 
