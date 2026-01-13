@@ -210,49 +210,43 @@ function OnServerInit()
         tes3mp.StopServer(1)
     end
 
-    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators("OnServerInit", {})
+    WorldInstance = World()
 
-    if eventStatus.validDefaultHandler then
-        WorldInstance = World()
+    -- If the world has a data entry, load it
+    if WorldInstance:HasEntry() then
+        WorldInstance:LoadFromDrive()
+        WorldInstance:EnsureCoreVariablesExist()
+        WorldInstance:EnsureTimeDataExists()
 
-        -- If the world has a data entry, load it
-        if WorldInstance:HasEntry() then
-            WorldInstance:LoadFromDrive()
-            WorldInstance:EnsureCoreVariablesExist()
-            WorldInstance:EnsureTimeDataExists()
+        -- Get the current mpNum from the loaded world
+        tes3mp.SetCurrentMpNum(WorldInstance:GetCurrentMpNum())
 
-            -- Get the current mpNum from the loaded world
-            tes3mp.SetCurrentMpNum(WorldInstance:GetCurrentMpNum())
+        ScriptLoader.Interfaces.customEventHooks.triggerHandlers("OnWorldReload",
+            ScriptLoader.Interfaces.customEventHooks.makeEventStatus(true, true), {})
 
-            ScriptLoader.Interfaces.customEventHooks.triggerHandlers("OnWorldReload",
-                ScriptLoader.Interfaces.customEventHooks.makeEventStatus(true, true), {})
-
-            -- Otherwise, create a data file for it
-        else
-            WorldInstance:CreateEntry()
-        end
-
-        for priorityLevel, recordStoreTypes in ipairs(config.recordStoreLoadOrder) do
-            for _, storeType in ipairs(recordStoreTypes) do
-                logicHandler.LoadRecordStore(storeType)
-            end
-        end
-
-        hourCounter = WorldInstance.data.time.hour
-        WorldInstance:UpdateFrametimeMultiplier()
-
-        updateTimerId = tes3mp.CreateTimer("UpdateTime", time.seconds(1))
-        tes3mp.StartTimer(updateTimerId)
-
-        logicHandler.PushPlayerList(Players)
-
-        LoadBanList()
-
-        tes3mp.SetDataFileEnforcementState(config.enforceDataFiles)
-        tes3mp.SetScriptErrorIgnoringState(config.ignoreScriptErrors)
+        -- Otherwise, create a data file for it
+    else
+        WorldInstance:CreateEntry()
     end
 
-    ScriptLoader.Interfaces.customEventHooks.triggerHandlers("OnServerInit", eventStatus, {})
+    for _, recordStoreTypes in ipairs(config.recordStoreLoadOrder) do
+        for _, storeType in ipairs(recordStoreTypes) do
+            logicHandler.LoadRecordStore(storeType)
+        end
+    end
+
+    hourCounter = WorldInstance.data.time.hour
+    WorldInstance:UpdateFrametimeMultiplier()
+
+    updateTimerId = tes3mp.CreateTimer("UpdateTime", time.seconds(1))
+    tes3mp.StartTimer(updateTimerId)
+
+    logicHandler.PushPlayerList(Players)
+
+    LoadBanList()
+
+    tes3mp.SetDataFileEnforcementState(config.enforceDataFiles)
+    tes3mp.SetScriptErrorIgnoringState(config.ignoreScriptErrors)
 end
 
 function OnServerPostInit()
