@@ -322,12 +322,6 @@ function RecursiveGetLeveledItem(comparatorLevel, leveledList)
   end
 end
 
--- customEventHooks.registerHandler("OnObjectDialogueChoice", resetMerchantData)
--- customEventHooks.registerValidator("OnObjectMiscellaneous", getInitialGold)
--- customEventHooks.registerHandler("OnServerPostInit", loadMerchants)
---
--- customCommandHooks.registerCommand("reloadmerchants", loadMerchants)
-
 ---@type TES3MPScriptRegistration
 return {
   interfaceName = 'customMerchantRestock',
@@ -339,10 +333,12 @@ return {
     end,
   },
   eventHandlers = {
-    onObjectDialogueChoice = resetMerchantData,
-    onServerPostInit = loadMerchants,
+    OnObjectDialogueChoice = resetMerchantData,
+    OnServerPostInit = loadMerchants,
   },
-  eventValidators = {},
+  eventValidators = {
+    OnObjectMiscellaneous = getInitialGold,
+  },
   chatCommands = {
     reloadMerchants = {
       callback = loadMerchants,
