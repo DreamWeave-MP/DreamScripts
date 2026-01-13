@@ -1,6 +1,7 @@
 local config = require 'tes3mp.config'
 local patterns = require 'patterns'
 local inventoryHelper = require 'tes3mp.util.inventory'
+local tableHelper = require 'tes3mp.util.table'
 
 require 'doc.menuHelper'
 
