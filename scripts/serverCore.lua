@@ -1,8 +1,7 @@
 local enumerations = require 'tes3mp.enumerations'
 local dataTableBuilder = require 'dataTableBuilder'
 local guiHelper = require 'tes3mp.util.gui'
----@type InventoryHelper
-local inventoryHelper = require 'tes3mp.util.menu'
+local inventoryHelper = require 'tes3mp.util.inventory'
 local jsonInterface = require 'jsonInterface'
 local packetBuilder = require 'tes3mp.packet.builder'
 local tableHelper = require 'tes3mp.util.table'
