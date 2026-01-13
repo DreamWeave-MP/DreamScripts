@@ -98,6 +98,10 @@ function DScriptLoader.getScriptEnv()
     string = string,
     table = table,
     tes3mp = tes3mp,
+    debug = {
+      loadScript = DScriptLoader.loadScript,
+      loadAllScripts = DScriptLoader.loadAllScripts,
+    },
     --- TES3MP Globals
     banList = banList,
     hourCounter = hourCounter,
@@ -279,6 +283,13 @@ local AllowedFields = {
 ---@param scriptName string name of a script, relative to server/scripts/custom, to attempt to load
 ---@param callerPid PlayerId? optional PlayerId
 function DScriptLoader.loadScript(scriptName, callerPid)
+  if not scriptName or type(scriptName) ~= 'string' then
+    tes3mp.LogAppend(
+      enumerations.log.ERROR,
+      ('Invalid script path provided to DScriptLoader.loadScript: %s'):format(scriptName)
+    )
+  end
+
   local scriptPath       = DScriptLoader.sanitizePath(ScriptPathFormatter:format(scriptName))
 
   local customEventHooks = Interfaces.customEventHooks
