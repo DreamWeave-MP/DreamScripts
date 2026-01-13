@@ -806,4 +806,6 @@ if tableHelper.containsCaseInsensitiveString(ClientDataFiles, "Sky_Main.esm") th
     tableHelper.merge(ClientVariableScopes, addedVariableScopes, true)
 end
 
+print('final variable Scopes:\n\n')
+tableHelper.print(ClientVariableScopes)
 return ClientVariableScopes
