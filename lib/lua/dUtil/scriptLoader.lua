@@ -279,7 +279,22 @@ local AllowedFields = {
 ---@param scriptName string name of a script, relative to server/scripts/custom, to attempt to load
 ---@param callerPid PlayerId? optional PlayerId
 function DScriptLoader.loadScript(scriptName, callerPid)
-  local scriptPath = DScriptLoader.sanitizePath(ScriptPathFormatter:format(scriptName))
+  local scriptPath       = DScriptLoader.sanitizePath(ScriptPathFormatter:format(scriptName))
+
+  local customEventHooks = Interfaces.customEventHooks
+  if customEventHooks then
+    if customEventHooks.validators then
+      for i = #customEventHooks.validators, 1, -1 do
+        if customEventHooks.validators[i].definedBy == scriptPath then customEventHooks.validators[i] = nil end
+      end
+    end
+
+    if customEventHooks.handlers then
+      for i = #customEventHooks.handlers, 1, -1 do
+        if customEventHooks.handlers[i].definedBy == scriptPath then customEventHooks.handlers[i] = nil end
+      end
+    end
+  end
 
   tes3mp.LogAppend(enumerations.log.INFO, ('Attempting to load custom script from path: %s'):format(scriptPath))
   local ok, result = pcall(function() return assert(loadfile(scriptPath)) end)
