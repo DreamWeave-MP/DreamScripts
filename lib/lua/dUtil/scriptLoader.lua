@@ -326,7 +326,7 @@ function DScriptLoader.loadScript(scriptName, callerPid)
     end
   end
 
-  -- tableHelper.print(result)
+  tableHelper.print(result)
   DScriptLoader.loadScriptInterface(scriptPath, result)
   DScriptLoader.loadScriptCommands(scriptPath, result)
   DScriptLoader.loadScriptMenus(scriptPath, result)
