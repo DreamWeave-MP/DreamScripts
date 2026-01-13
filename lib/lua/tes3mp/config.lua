@@ -16,11 +16,15 @@ config.customScripts = {
     --- The interface defined by customCommandHooks is required for all scripts to
     --- Define chat commands. Don't remove it or change its order.
     'customCommandHooks',
+    'defaultCommands',
+    --- The default handlers and validators defined by tes3mp are very important!
+    --- Don't mess with them!
+    'defaultValidators',
+    'defaultHandlers',
     -- 'menu.help',
     -- 'menu.defaultCrafting',
     -- 'menu.advancedExample',
-    'defaultCommands',
-    'defaultValidators',
+    --- Custom scripts may be added here
     'customMerchantRestock',
 }
 
