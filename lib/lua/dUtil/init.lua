@@ -66,7 +66,7 @@ local Module = {
   getRequiredDataFiles = function()
     return loadDataFileList('requiredDataFiles.json', false)
   end,
-  ---@param writeLog boolean?
+  ---@param writeLog boolean? This should only EVER be called with true, once, when the server is initialized. Not heeding this warning or modifying its primary call site in any way will cause very bad things to happen. This function is safe to call with the first parameter as `false` at any point in time.
   ---@return DataFileRequirements
   loadRequiredDataFiles = function(writeLog)
     local dataFileList = loadDataFileList('requiredDataFiles.json', writeLog)
