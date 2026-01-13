@@ -1,6 +1,6 @@
 local color = require 'color'
 
-config = {}
+local config = {}
 
 -- The path used by the server for its data folder
 config.dataPath = tes3mp.GetDataPath()
