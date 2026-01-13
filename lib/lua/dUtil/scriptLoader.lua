@@ -169,6 +169,15 @@ function DScriptLoader.loadScriptCommands(scriptPath, scriptRegistration)
   end
 end
 
+local AllowedFields = {
+  chatCommands = true,
+  eventHandlers = true,
+  eventValidators = true,
+  interface = true,
+  interfaceName = true,
+  menus = true,
+}
+
 --- Given a script name, attempt to load it into the tes3mp environment like an OpenMW Lua script.
 --- Can be called from the chat window by passing the second optional parameter, callerPid.
 ---@param scriptName string name of a script, relative to server/scripts/custom, to attempt to load
@@ -210,6 +219,17 @@ function DScriptLoader.loadScript(scriptName, callerPid)
     tes3mp.StopServer(12)
   end
 
+  for elementName in pairs(result) do
+    if not AllowedFields[elementName] then
+      tes3mp.LogAppend(
+        enumerations.log.FATAL,
+        ('Failed to load script %s as it returned an invalid field: %s. The server will now terminate!')
+        :format(scriptPath, elementName)
+      )
+      tes3mp.StopServer(9)
+    end
+  end
+
   tableHelper.print(result)
   DScriptLoader.loadScriptInterface(scriptPath, result)
   DScriptLoader.loadScriptCommands(scriptPath, result)
@@ -219,6 +239,7 @@ end
 --- Upon failure, for any reason, the server will be terminated.
 --- This function should only be called upon initializing the server, OR when attempting to reload all running lua scripts.
 function DScriptLoader.loadAllScripts()
+  Interfaces = {}
   for _, scriptName in ipairs(config.customScripts) do
     DScriptLoader.loadScript(scriptName)
   end
