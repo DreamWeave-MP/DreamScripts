@@ -1,5 +1,10 @@
 local enumerations = require 'tes3mp.enumerations'
+local dataTableBuilder = require 'dataTableBuilder'
+local guiHelper = require 'tes3mp.util.gui'
+---@type InventoryHelper
+local inventoryHelper = require 'tes3mp.util.menu'
 local jsonInterface = require 'jsonInterface'
+local packetBuilder = require 'tes3mp.packet.builder'
 local tableHelper = require 'tes3mp.util.table'
 
 ---@type DUtilModule
@@ -359,28 +364,160 @@ function OnPlayerConnect(pid)
     end
 
     if not logicHandler.IsNameAllowed(playerName) then
-        local message = playerName .. " (" .. pid .. ") " .. "joined and tried to use a disallowed name.\n"
-        tes3mp.SendMessage(pid, message, true)
+        tes3mp.SendMessage(
+            pid,
+            ('%s (%s) joined and tried to use a disallowed name.\n')
+            :format(playerName, pid),
+            true
+        )
         tes3mp.Kick(pid)
-    elseif logicHandler.IsPlayerNameLoggedIn(playerName) then
-        local message = playerName .. " (" .. pid .. ") " .. "joined and tried to use an existing player's name.\n"
-        tes3mp.SendMessage(pid, message, true)
-        tes3mp.Kick(pid)
-    else
-        tes3mp.LogAppend(enumerations.log.INFO, "- New player is named " .. playerName)
-        eventHandler.OnPlayerConnect(pid, playerName)
+        return
     end
+
+    if logicHandler.IsPlayerNameLoggedIn(playerName) then
+        tes3mp.SendMessage(
+            pid,
+            ('%s (%s) joined and tried to use an existing player\'s name.\n')
+            :format(playerName, pid),
+            true
+        )
+        tes3mp.Kick(pid)
+        return
+    end
+
+    tes3mp.LogAppend(
+        enumerations.log.INFO,
+        ('- New player is named %s'):format(playerName)
+    )
+
+    Players[pid] = Player(pid, playerName)
+    local player = Players[pid]
+    player.name = playerName
+
+    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators('OnPlayerConnect', { pid })
+
+    if eventStatus.validDefaultHandler then
+        -- Send instanced spawn cell record now so it has time to arrive
+        if config.useInstancedSpawn and config.instancedSpawn then
+            local spawnUsed = tableHelper.shallowCopy(config.instancedSpawn)
+            local originalCellDescription = spawnUsed.cellDescription
+            spawnUsed.cellDescription = ('%s - Instance for %s'):format(originalCellDescription, playerName)
+
+            tes3mp.ClearRecords()
+            tes3mp.SetRecordType(enumerations.recordType.CELL)
+            packetBuilder.AddCellRecord(spawnUsed.cellDescription, { baseId = originalCellDescription })
+            tes3mp.SendRecordDynamic(pid, false, false)
+        end
+
+        -- Load high priority permanent records
+        for _, storeType in ipairs(config.recordStoreLoadOrder[1]) do
+            local recordStore = RecordStores[storeType]
+
+            -- Load all the permanent records in this record store
+            recordStore:LoadRecords(pid, recordStore.data.permanentRecords,
+                tableHelper.getArrayFromIndices(recordStore.data.permanentRecords))
+        end
+
+        tes3mp.SetDifficulty(pid, config.difficulty)
+        tes3mp.SetConsoleAllowed(pid, config.allowConsole)
+        tes3mp.SetBedRestAllowed(pid, config.allowBedRest)
+        tes3mp.SetWildernessRestAllowed(pid, config.allowWildernessRest)
+        tes3mp.SetWaitAllowed(pid, config.allowWait)
+        tes3mp.SetPhysicsFramerate(pid, config.physicsFramerate)
+        tes3mp.SetEnforcedLogLevel(pid, config.enforcedLogLevel)
+        tes3mp.SendSettings(pid)
+
+        logicHandler.SendClientScriptDisables(pid, false)
+        logicHandler.SendClientScriptSettings(pid, false)
+
+        tes3mp.SetPlayerCollisionState(config.enablePlayerCollision)
+        tes3mp.SetActorCollisionState(config.enableActorCollision)
+        tes3mp.SetPlacedObjectCollisionState(config.enablePlacedObjectCollision)
+        tes3mp.UseActorCollisionForPlacedObjects(config.useActorCollisionForPlacedObjects)
+
+        logicHandler.SendConfigCollisionOverrides(pid, false)
+
+        WorldInstance:LoadTime(pid, false)
+
+        local chatName = logicHandler.GetChatName(pid)
+        local message = ('%s has joined the server'):format(chatName)
+
+        local ipAddress = tes3mp.GetIP(pid)
+        Players[pid].ipAddress = ipAddress
+
+        if not pidsByIpAddress[ipAddress] then pidsByIpAddress[ipAddress] = {} end
+
+        if not tableHelper.isEmpty(pidsByIpAddress[ipAddress]) then
+            local otherPlayerNames = {}
+
+            for _, otherPid in pairs(pidsByIpAddress[ipAddress]) do
+                table.insert(otherPlayerNames, logicHandler.GetChatName(otherPid))
+            end
+
+            message = ('%s, from the same IP address as %s'):format(
+                message,
+                tableHelper.concatenateArrayValues(otherPlayerNames, 1, ', ')
+            )
+        end
+
+        message = message .. '.\n'
+        tes3mp.SendMessage(pid, message, true)
+
+        if tableHelper.getCount(pidsByIpAddress[ipAddress]) + 1 > config.maxClientsPerIP then
+            tes3mp.SendMessage(
+                pid,
+                ('%s has been kicked because this server allows a maximum of %s clients from the same IP address.\n')
+                :format(chatName, config.maxClientsPerIP),
+                true
+            )
+            tes3mp.Kick(pid)
+            Players[pid] = nil
+            return
+        else
+            table.insert(pidsByIpAddress[ipAddress], pid)
+        end
+
+        message = ('Welcome %s\nYou have %s seconds to '):format(playerName, config.loginTime)
+
+        if player:HasAccount() then
+            message = message .. 'log in.\n'
+            guiHelper.ShowLogin(pid)
+        else
+            message = message .. 'register.\n'
+            guiHelper.ShowRegister(pid)
+        end
+
+        tes3mp.SendMessage(pid, message, false)
+
+        player.loginTimerId = tes3mp.CreateTimerEx(
+            'OnLoginTimeExpiration',
+            time.seconds(config.loginTime),
+            'is',
+            pid,
+            Players[pid].accountName
+        )
+
+        tes3mp.StartTimer(Players[pid].loginTimerId)
+    end
+
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers('OnPlayerConnect', eventStatus, { pid })
 end
 
 function OnPlayerDisconnect(pid)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnPlayerDisconnect\" for " .. logicHandler.GetChatName(pid))
+    tes3mp.LogMessage(
+        enumerations.log.INFO,
+        ('Called "OnPlayerDisconnect" for '):format(logicHandler.GetChatName(pid))
+    )
 
     eventHandler.OnPlayerDisconnect(pid)
 end
 
 function OnPlayerResurrect(pid)
-    ScriptLoader.Interfaces.customEventHooks.triggerHandlers("OnPlayerResurrect",
-        ScriptLoader.Interfaces.customEventHooks.makeEventStatus(true, true), { pid })
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+        'OnPlayerResurrect',
+        ScriptLoader.Interfaces.customEventHooks.makeEventStatus(true, true),
+        { pid }
+    )
 end
 
 function OnPlayerSendMessage(pid, message)
@@ -676,24 +813,244 @@ function OnClientScriptGlobal(pid)
     eventHandler.OnClientScriptGlobal(pid)
 end
 
+---@param pid PlayerId
+---@param idGui GUIID
+---@param data string|integer
 function OnGUIAction(pid, idGui, data)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnGUIAction\" for " .. logicHandler.GetChatName(pid))
-    eventHandler.OnGUIAction(pid, idGui, data)
+    tes3mp.LogMessage(
+        enumerations.log.INFO,
+        ('Called "OnGUIAction" for %s'):format(logicHandler.GetChatName(pid))
+    )
+
+    local player = Players[pid]
+    if not player then return end
+
+    data = tostring(data) -- data can be numeric, but we should convert it to a string
+
+    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
+        'OnGUIAction',
+        { pid, idGui, data }
+    )
+
+    if eventStatus.validDefaultHandler then
+        if player:IsLoggedIn() then
+            if idGui == config.customMenuIds.confiscate and player.confiscationTargetName ~= nil then
+                local targetName = player.confiscationTargetName
+                local targetPlayer = logicHandler.GetPlayerByName(targetName)
+                assert(targetPlayer)
+
+                -- Because the window's item index starts from 0 while the Lua table for
+                -- inventories starts from 1, adjust the former here
+                local inventoryItemIndex = data + 1
+                local item = targetPlayer.data.inventory[inventoryItemIndex]
+
+                if item then
+                    inventoryHelper.addItem(
+                        player.data.inventory,
+                        item.refId,
+                        item.count,
+                        item.charge,
+                        item.enchantmentCharge,
+                        item.soul
+                    )
+                    player:LoadItemChanges({ item }, enumerations.inventory.ADD)
+
+                    -- If the item is equipped by the target, unequip it first
+                    if inventoryHelper.containsItem(targetPlayer.data.equipment, item.refId, item.charge) then
+                        local equipmentItemIndex = inventoryHelper.getItemIndex(targetPlayer.data.equipment,
+                            item.refId, item.charge)
+                        if equipmentItemIndex then
+                            targetPlayer.data.equipment[equipmentItemIndex] = nil
+                        end
+                    end
+
+                    targetPlayer.data.inventory[inventoryItemIndex] = nil
+                    tableHelper.cleanNils(targetPlayer.data.inventory)
+
+                    player:Message(('You\'ve confiscated %s from %s\n'):format(item.refId, targetName))
+
+                    if targetPlayer:IsLoggedIn() then
+                        targetPlayer:LoadItemChanges({ item }, enumerations.inventory.REMOVE)
+                    end
+                else
+                    player:Message('Invalid item index\n')
+                end
+
+                targetPlayer:SetConfiscationState(false)
+                targetPlayer:QuicksaveToDrive()
+
+                player.confiscationTargetName = nil
+            elseif idGui == config.customMenuIds.menuHelper and Players[pid].currentCustomMenu then
+                local buttonIndex = tonumber(data) + 1
+                local buttonPressed = player.displayedMenuButtons[buttonIndex]
+
+                local destination = menuHelper.GetButtonDestination(pid, buttonPressed)
+
+                player.previousCustomMenu = player.currentCustomMenu
+                menuHelper.ProcessEffects(pid, destination.effects)
+
+                if destination.targetMenu then
+                    menuHelper.DisplayMenu(pid, destination.targetMenu)
+                    player.currentCustomMenu = destination.targetMenu
+                end
+            end
+        else
+            if idGui == guiHelper.ID.LOGIN then
+                if not data then
+                    player:Message("Incorrect password!\n")
+                    guiHelper.ShowLogin(pid)
+                    return
+                end
+
+                player:LoadFromDrive()
+                local passwordSalt = player.data.login.passwordSalt
+
+                if player.data.login.passwordHash ~= tes3mp.GetSHA256Hash(data .. passwordSalt) then
+                    player:Message('Incorrect password!\n')
+                    guiHelper.ShowLogin(pid)
+                    return
+                end
+
+                -- Is this player on the banlist? If so, store their new IP and ban them
+                if tableHelper.containsValue(banList.playerNames, player.accountName:lower()) then
+                    player:SaveIpAddress()
+
+                    player:Message(('%s is banned from this server.\n'):format(player.accountName))
+                    tes3mp.BanAddress(tes3mp.GetIP(pid))
+                else
+                    player:FinishLogin()
+                    player:Message(('You have successfully logged in.\n%s'):format(config.chatWindowInstructions))
+
+                    if not WorldInstance:HasRunStartupScripts() then
+                        player:Message(config.startupScriptsInstructions)
+                    end
+                end
+            elseif idGui == guiHelper.ID.REGISTER then
+                if player:HasAccount() then
+                    tes3mp.LogMessage(
+                        enumerations.log.ERROR,
+                        ('Warning! %s replied to login for existing account with regsitration attempt and has been banned.')
+                        :format(logicHandler.GetChatName(pid))
+                    )
+
+                    local ipAddress = tes3mp.GetIP(pid)
+                    table.insert(banList.ipAddresses, ipAddress)
+
+                    SaveBanList()
+                    tes3mp.BanAddress(ipAddress)
+                    return
+                elseif not data then
+                    player:Message('Password can not be empty\n')
+                    guiHelper.ShowRegister(pid)
+                    return
+                end
+
+                player:Register(data)
+                player:Message(('You have successfully registered.\n%s'):format(config.chatWindowInstructions))
+
+                if not WorldInstance:HasRunStartupScripts() then
+                    player:Message(config.startupScriptsInstructions)
+                end
+            end
+        end
+    end
+
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+        'OnGUIAction',
+        eventStatus,
+        { pid, idGui, data }
+    )
 end
 
 function OnMpNumIncrement(currentMpNum)
-    eventHandler.OnMpNumIncrement(currentMpNum)
+    WorldInstance:SetCurrentMpNum(currentMpNum)
 end
 
 -- Timer-based events
+---@param pid PlayerId
+---@param accountName string
 function OnLoginTimeExpiration(pid, accountName)
-    eventHandler.OnLoginTimeExpiration(pid, accountName)
+    local player = Players[pid]
+    if not player or player.accountName ~= accountName then return end
+
+    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
+        'OnLoginTimeExpiration',
+        { pid }
+    )
+
+    if eventStatus.validDefaultHandler then
+        logicHandler.AuthCheck(pid)
+    end
+
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+        'OnLoginTimeExpiration',
+        eventStatus,
+        { pid }
+    )
 end
 
 function OnDeathTimeExpiration(pid, accountName)
-    eventHandler.OnDeathTimeExpiration(pid, accountName)
+    local player = Players[pid]
+    if not player or not player:IsLoggedIn() or player.accountName ~= accountName then return end
+
+    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
+        'OnDeathTimeExpiration',
+        { pid }
+    )
+    if eventStatus.validDefaultHandler then
+        player:Resurrect()
+    end
+
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+        'OnDeathTimeExpiration',
+        eventStatus,
+        { pid }
+    )
 end
 
+---@param loopIndex integer
 function OnObjectLoopTimeExpiration(loopIndex)
-    eventHandler.OnObjectLoopTimeExpiration(loopIndex)
+    local objectLoop = ObjectLoops[loopIndex]
+    if not objectLoop then return end
+
+    local loop = ObjectLoops[loopIndex]
+    local pid = loop.targetPid
+    local loopEnded = false
+
+    local player = Players[pid]
+    if player and player:IsLoggedIn() and player.accountName == loop.targetName then
+        local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
+            'OnObjectLoopTimeExpiration',
+            { pid, loopIndex }
+        )
+
+        if eventStatus.validDefaultHandler then
+            if loop.packetType == 'place' or loop.packetType == 'spawn' then
+                logicHandler.CreateObjectAtPlayer(pid, dataTableBuilder.BuildObjectData(loop.refId), loop.packetType)
+            elseif loop.packetType == 'console' then
+                logicHandler.RunConsoleCommandOnPlayer(pid, loop.consoleCommand)
+            end
+
+            loop.count = loop.count - 1
+
+            if loop.count > 0 then
+                ObjectLoops[loopIndex] = loop
+                tes3mp.RestartTimer(loop.timerId, loop.interval)
+            else
+                loopEnded = true
+            end
+        end
+
+        ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+            'OnObjectLoopTimeExpiration',
+            eventStatus,
+            { pid, loopIndex }
+        )
+    else
+        loopEnded = true
+    end
+
+    if loopEnded then
+        ObjectLoops[loopIndex] = nil
+    end
 end
