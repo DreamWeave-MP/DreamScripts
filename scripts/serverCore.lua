@@ -52,6 +52,7 @@ pidsByIpAddress = {}
 ClientDataFiles = dUtil.loadRequiredDataFiles(false)
 
 ---@global
+---@type integer?
 HourCounter = nil
 
 ---@global
@@ -557,7 +558,98 @@ function OnPlayerDisconnect(pid)
         ('Called "OnPlayerDisconnect" for '):format(logicHandler.GetChatName(pid))
     )
 
-    eventHandler.OnPlayerDisconnect(pid)
+    local message = ('%s has left the server.\n'):format(logicHandler.GetChatName(pid))
+    tes3mp.SendMessage(pid, message, true)
+
+    -- If this player has disconnected before properly logging in, remove their pid
+    -- from the table tracking IP addresses
+    if tes3mp.GetIP(pid) == 'UNASSIGNED_SYSTEM_ADDRESS' then
+        for _, pids in pairs(pidsByIpAddress) do
+            if tableHelper.containsValue(pids, pid) then
+                tableHelper.removeValue(pids, pid)
+            end
+        end
+    end
+
+    local player = Players[pid]
+    if player and player:IsLoggedIn() then
+        local eventStatus
+        if CustomEventHooks then
+            eventStatus = CustomEventHooks.triggerValidators('OnPlayerDisconnect', { pid })
+        end
+
+        if not CustomEventHooks or eventStatus.validDefaultHandler then
+            local ipAddress = player.ipAddress
+
+            if pidsByIpAddress[ipAddress] and tableHelper.containsValue(pidsByIpAddress[ipAddress], pid) then
+                tableHelper.removeValue(pidsByIpAddress[ipAddress], pid)
+            end
+
+            player.data.timestamps.lastDisconnect = os.time()
+            player.data.timestamps.lastSessionDuration = os.time() - player.data.timestamps.lastLogin
+
+            -- Adjust the time left for this player's active spells
+            player:UpdateActiveSpellTimes()
+
+            player:DeleteSummons()
+
+            -- Was this player confiscating from someone? If so, clear that
+            if player.confiscationTargetName then
+                local targetName = player.confiscationTargetName
+                local targetPlayer = logicHandler.GetPlayerByName(targetName)
+                targetPlayer:SetConfiscationState(false)
+            end
+
+            player:SaveCell(packetReader.GetPlayerPacketTables(pid, 'PlayerCellChange'))
+            player:SaveStatsDynamic(packetReader.GetPlayerPacketTables(pid, 'PlayerStatsDynamic'))
+            tes3mp.LogMessage(enumerations.log.INFO, 'Saving player ' .. logicHandler.GetChatName(pid))
+            player:SaveToDrive()
+
+            -- Unload every cell for this player
+            for _, loadedCellDescription in pairs(player.cellsLoaded) do
+                if CustomEventHooks then
+                    local cellUnloadStatus = CustomEventHooks.triggerValidators(
+                        'OnCellUnload',
+                        { pid, loadedCellDescription }
+                    )
+
+                    if cellUnloadStatus.validDefaultHandler then
+                        logicHandler.UnloadCellForPlayer(pid, loadedCellDescription)
+                    end
+
+                    CustomEventHooks.triggerHandlers(
+                        'OnCellUnload',
+                        cellUnloadStatus,
+                        { pid, loadedCellDescription }
+                    )
+                else
+                    logicHandler.UnloadCellForPlayer(pid, loadedCellDescription)
+                end
+            end
+
+            if player.data.location.regionName ~= nil then
+                logicHandler.UnloadRegionForPlayer(pid, player.data.location.regionName)
+            end
+        end
+
+        if CustomEventHooks then
+            CustomEventHooks.triggerHandlers('OnPlayerDisconnect', eventStatus, { pid })
+        end
+
+        player:Destroy()
+        player = nil
+    end
+
+    -- If the server is now empty, quick saving of data isn't important anymore, so do a slower save of
+    -- the world and record store data to human-readable JSON
+    if next(Players) ~= nil then return end
+
+    WorldInstance:SaveToDrive()
+
+    for _, recordStore in pairs(RecordStores) do
+        recordStore:DeleteUnlinkedRecords()
+        recordStore:SaveToDrive()
+    end
 end
 
 function OnPlayerResurrect(pid)
