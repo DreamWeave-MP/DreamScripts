@@ -264,7 +264,7 @@ function OnServerInit()
         if CustomEventHooks then
             CustomEventHooks.triggerHandlers(
                 'OnWorldReload',
-                CustomEventHooks.makeEventStatus(true, true),
+                dUtil.misc.makeEventStatus(),
                 {}
             )
         end
@@ -301,7 +301,7 @@ function OnServerPostInit()
     if CustomEventHooks then
         eventStatus = CustomEventHooks.triggerValidators('OnServerPostInit', {})
     else
-        eventStatus = dUtil.makeEventStatus(true, true)
+        eventStatus = dUtil.misc.makeEventStatus()
     end
 
     if eventStatus.validDefaultHandler then
@@ -377,22 +377,23 @@ function OnServerExit(errorState)
 
     CustomEventHooks.triggerHandlers(
         'OnServerExit',
-        CustomEventHooks.makeEventStatus(true, true),
+        dUtil.misc.makeEventStatus(),
         { errorState }
     )
 end
 
 function OnServerScriptCrash(errorMessage)
     tes3mp.LogMessage(enumerations.log.ERROR, 'Server crash from script error!')
+
+    if CustomEventHooks then
+        CustomEventHooks.triggerHandlers(
+            'OnServerExit',
+            dUtil.misc.makeEventStatus(),
+            { errorMessage }
+        )
+    end
+
     tes3mp.StopServer(7)
-
-    if not CustomEventHooks then return end
-
-    CustomEventHooks.triggerHandlers(
-        'OnServerExit',
-        CustomEventHooks.makeEventStatus(true, true),
-        { errorMessage }
-    )
 end
 
 function OnRequestDataFileList()
@@ -449,7 +450,7 @@ function OnPlayerConnect(pid)
     if CustomEventHooks then
         eventStatus = CustomEventHooks.triggerValidators('OnPlayerConnect', { pid })
     else
-        eventStatus = dUtil.makeEventStatus(true, true)
+        eventStatus = dUtil.misc.makeEventStatus()
     end
 
     if eventStatus.validDefaultHandler then
@@ -586,7 +587,7 @@ function OnPlayerDisconnect(pid)
         if CustomEventHooks then
             eventStatus = CustomEventHooks.triggerValidators('OnPlayerDisconnect', { pid })
         else
-            eventStatus = dUtil.makeEventStatus(true, true)
+            eventStatus = dUtil.misc.makeEventStatus()
         end
 
         if eventStatus.validDefaultHandler then
@@ -667,7 +668,7 @@ function OnPlayerResurrect(pid)
     if CustomEventHooks then
         CustomEventHooks.triggerHandlers(
             'OnPlayerResurrect',
-            dUtil.makeEventStatus(true, true),
+            dUtil.misc.makeEventStatus(),
             { pid }
         )
     end
@@ -686,7 +687,7 @@ function OnPlayerSendMessage(pid, message)
     if CustomEventHooks then
         eventStatus = CustomEventHooks.triggerValidators('OnPlayerSendMessage', { pid, message })
     else
-        eventStatus = dUtil.makeEventStatus(true, true)
+        eventStatus = dUtil.misc.makeEventStatus()
     end
 
     if eventStatus.validDefaultHandler and message:sub(1, 1) ~= '/' then
@@ -781,7 +782,7 @@ function OnPlayerSpellsActive(pid)
     if CustomEventHooks then
         eventStatus = CustomEventHooks.triggerValidators('OnPlayerSpellsActive', { pid, playerPacket })
     else
-        eventStatus = dUtil.makeEventStatus(true, true)
+        eventStatus = dUtil.misc.makeEventStatus()
     end
 
     if eventStatus.validDefaultHandler then
@@ -853,7 +854,7 @@ function OnPlayerEndCharGen(pid)
     if CustomEventHooks then
         eventStatus = CustomEventHooks.triggerValidators('OnPlayerEndCharGen', { pid })
     else
-        eventStatus = dUtil.makeEventStatus(true, true)
+        eventStatus = dUtil.misc.makeEventStatus()
     end
 
     if eventStatus.validDefaultHandler then
@@ -1072,7 +1073,7 @@ function OnGUIAction(pid, idGui, data)
             { pid, idGui, data }
         )
     else
-        eventStatus = dUtil.makeEventStatus(true, true)
+        eventStatus = dUtil.misc.makeEventStatus()
     end
 
     if eventStatus.validDefaultHandler then
@@ -1225,7 +1226,7 @@ function OnLoginTimeExpiration(pid, accountName)
             { pid }
         )
     else
-        eventStatus = dUtil.makeEventStatus(true, true)
+        eventStatus = dUtil.misc.makeEventStatus()
     end
 
     if eventStatus.validDefaultHandler then
@@ -1254,7 +1255,7 @@ function OnDeathTimeExpiration(pid, accountName)
             { pid }
         )
     else
-        eventStatus = dUtil.makeEventStatus(true, true)
+        eventStatus = dUtil.misc.makeEventStatus()
     end
 
     if eventStatus.validDefaultHandler then
@@ -1288,7 +1289,7 @@ function OnObjectLoopTimeExpiration(loopIndex)
                 { pid, loopIndex }
             )
         else
-            eventStatus = dUtil.makeEventStatus(true, true)
+            eventStatus = dUtil.misc.makeEventStatus()
         end
 
         if eventStatus.validDefaultHandler then

@@ -180,7 +180,7 @@ function customCommandHooks.validator(_, pid, message)
 
     if commandNotAuthenticated or allowedByName or allowedByRank then
         command.callback(pid, cmd)
-        return dUtil.makeEventStatus(false, nil)
+        return dUtil.misc.makeEventStatus(false, false)
     end
 end
 

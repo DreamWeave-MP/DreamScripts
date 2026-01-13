@@ -67,4 +67,25 @@ function MiscUtil.GetPlayerByName(targetName)
   return targetPlayer
 end
 
+--- Returns an EventStatusTable used to determine whether or not certain behaviors should run.
+--- This function is used as a return value from events, or, from simulating such.
+--- It will assume `true` for nil values provided to either parameter, so it may be called with no arguments to get true values of both.
+---@param validDefaultHandler boolean? Whether or not default behaviors should run after a validator.
+---@param validCustomHandlers boolean? Whether or not to run custom handlers for certain behaviors. This must be checked explicitly, it is ignored by CustomEventHooks.
+---@return EventStatusTable
+function MiscUtil.makeEventStatus(validDefaultHandler, validCustomHandlers)
+  if validDefaultHandler == nil then
+    validDefaultHandler = true
+  end
+
+  if validCustomHandlers == nil then
+    validCustomHandlers = true
+  end
+
+  return {
+    validDefaultHandler = validDefaultHandler,
+    validCustomHandlers = validCustomHandlers
+  }
+end
+
 return MiscUtil

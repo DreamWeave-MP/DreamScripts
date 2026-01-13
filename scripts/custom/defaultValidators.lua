@@ -7,11 +7,11 @@ local tableHelper = require 'tes3mp.util.table'
 
 -- Don't create objects mentioned in config.disallowedCreateRefIds
 local function defaultCreationValidator(_, _, _, objects)
-  for uniqueIndex, object in pairs(objects) do
+  for _, object in pairs(objects) do
     if tableHelper.containsValue(config.disallowedCreateRefIds, object.refId) then
       tes3mp.LogAppend(enumerations.log.INFO, "- Rejected attempt at creating " .. object.refId ..
         " " .. object.uniqueIndex .. " because it is disallowed in the server config")
-      return dUtil.makeEventStatus(false, false)
+      return dUtil.misc.makeEventStatus(false, false)
     end
   end
 end
@@ -25,7 +25,7 @@ return {
         if tableHelper.containsValue(clientVariableScopes.globals.ignored, id) then
           tes3mp.LogAppend(enumerations.log.INFO, "- Ignoring attempt at setting global variable " .. id ..
             " because it is listed as an ignored variable in ClientVariableScopes")
-          return dUtil.makeEventStatus(false, false)
+          return dUtil.misc.makeEventStatus(false, false)
         end
       end
     end,
@@ -41,7 +41,7 @@ return {
         debugMessage = debugMessage .. "\n- consoleCommand: " .. consoleCommand
         tes3mp.LogMessage(enumerations.log.INFO, debugMessage)
         tes3mp.Kick(pid)
-        return dUtil.makeEventStatus(false, false)
+        return dUtil.misc.makeEventStatus(false, false)
       end
     end,
     -- Don't change door states for objects mentioned in config.disallowedDoorStateRefIds
@@ -53,7 +53,7 @@ return {
             :format(object.refId, object.uniqueIndex)
           )
 
-          return dUtil.makeEventStatus(false, false)
+          return dUtil.misc.makeEventStatus(false, false)
         end
       end
     end,
@@ -80,20 +80,20 @@ return {
             ('%s is a preexisting object that is already tracked as being deleted')
             :format(debugMessage)
           )
-          return dUtil.makeEventStatus(false, false)
+          return dUtil.misc.makeEventStatus(false, false)
         elseif mpNum ~= 0 and cellData.objectData[uniqueIndex] == nil then
           tes3mp.LogAppend(
             enumerations.log.INFO,
             ('%s is a server-created object that is no longer supposed to exist')
             :format(debugMessage)
           )
-          return dUtil.makeEventStatus(false, false)
+          return dUtil.misc.makeEventStatus(false, false)
         elseif tableHelper.containsValue(config.disallowedActivateRefIds, object.refId) then
           tes3mp.LogAppend(
             enumerations.log.INFO,
             ('%s is disallowed in the server config'):format(debugMessage)
           )
-          return dUtil.makeEventStatus(false, false)
+          return dUtil.misc.makeEventStatus(false, false)
         end
       end
     end,
@@ -107,11 +107,11 @@ return {
 
       for uniqueIndex, object in pairs(objects) do
         if tableHelper.containsValue(unusableContainerUniqueIndexes, uniqueIndex) then
-          return dUtil.makeEventStatus(false, false)
+          return dUtil.misc.makeEventStatus(false, false)
         elseif tableHelper.containsValue(config.disallowedDeleteRefIds, object.refId) then
           tes3mp.LogAppend(enumerations.log.INFO, "- Rejected attempt at deleting " .. object.refId ..
             " " .. object.uniqueIndex .. " because it is disallowed in the server config")
-          return dUtil.makeEventStatus(false, false)
+          return dUtil.misc.makeEventStatus(false, false)
         end
       end
     end,
@@ -124,20 +124,20 @@ return {
             ('- Rejected attempt at changing lock for %s %s because it is disallowed in the server config')
             :format(object.refId, object.uniqueIndex)
           )
-          return dUtil.makeEventStatus(false, false)
+          return dUtil.misc.makeEventStatus(false, false)
         end
       end
     end,
     OnObjectPlace = defaultCreationValidator,
     -- Don't validate scales larger than the maximum set in the config
     OnObjectScale = function(_, _, _, objects)
-      for uniqueIndex, object in pairs(objects) do
+      for _, object in pairs(objects) do
         if object.scale >= config.maximumObjectScale then
           tes3mp.LogAppend(enumerations.log.INFO,
             ('- Rejected attempt at setting scale of %s %s to %s because it exceeds the server\'s maximum of %d')
             :format(object.refId, object.uniqueIndex, object.scale, config.maximumObjectScale)
           )
-          return dUtil.makeEventStatus(false, false)
+          return dUtil.misc.makeEventStatus(false, false)
         end
       end
     end,
@@ -151,7 +151,7 @@ return {
             ("- Rejected attempt at changing state for %s %s because it is disallowed in the server config")
             :format(object.refId, object.uniqueIndex)
           )
-          return dUtil.makeEventStatus(false, false)
+          return dUtil.misc.makeEventStatus(false, false)
         end
       end
     end,
@@ -165,7 +165,7 @@ return {
             :format(object.refId, object.uniqueIndex)
           )
 
-          return dUtil.makeEventStatus(false, false)
+          return dUtil.misc.makeEventStatus(false, false)
         end
       end
     end,
