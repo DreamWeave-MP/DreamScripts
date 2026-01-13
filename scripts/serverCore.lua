@@ -1071,12 +1071,6 @@ end
 ---@param idGui GUIID
 ---@param data string|integer
 function OnGUIAction(pid, idGui, data)
-    if noCustomEventHooks('OnGUIAction') then
-        return
-    else
-        assert(CustomEventHooks)
-    end
-
     tes3mp.LogMessage(
         enumerations.log.INFO,
         ('Called "OnGUIAction" for %s'):format(logicHandler.GetChatName(pid))
@@ -1087,10 +1081,15 @@ function OnGUIAction(pid, idGui, data)
 
     data = tostring(data) -- data can be numeric, but we should convert it to a string
 
-    local eventStatus = CustomEventHooks.triggerValidators(
-        'OnGUIAction',
-        { pid, idGui, data }
-    )
+    local eventStatus
+    if CustomEventHooks then
+        eventStatus = CustomEventHooks.triggerValidators(
+            'OnGUIAction',
+            { pid, idGui, data }
+        )
+    else
+        eventStatus = dUtil.makeEventStatus(true, true)
+    end
 
     if eventStatus.validDefaultHandler then
         if player:IsLoggedIn() then
@@ -1215,11 +1214,13 @@ function OnGUIAction(pid, idGui, data)
         end
     end
 
-    CustomEventHooks.triggerHandlers(
-        'OnGUIAction',
-        eventStatus,
-        { pid, idGui, data }
-    )
+    if CustomEventHooks then
+        CustomEventHooks.triggerHandlers(
+            'OnGUIAction',
+            eventStatus,
+            { pid, idGui, data }
+        )
+    end
 end
 
 function OnMpNumIncrement(currentMpNum)
