@@ -259,6 +259,10 @@ function OnServerPostInit()
     tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnServerPostInit\"")
 
     ScriptLoader.loadAllScripts()
+    if not ScriptLoader.Interfaces.customEventHooks then
+        tes3mp.LogAppend(enumerations.log.ERROR, 'Failed to locate customEventHooks Interface! Server refusing to start!')
+        tes3mp.StopServer(16)
+    end
 
     local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators("OnServerPostInit", {})
 
