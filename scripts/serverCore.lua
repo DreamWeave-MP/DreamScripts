@@ -1288,12 +1288,6 @@ end
 
 ---@param loopIndex integer
 function OnObjectLoopTimeExpiration(loopIndex)
-    if noCustomEventHooks('OnObjectLoopTimeExpiration') then
-        return
-    else
-        assert(CustomEventHooks)
-    end
-
     local objectLoop = ObjectLoops[loopIndex]
     if not objectLoop then return end
 
@@ -1303,10 +1297,15 @@ function OnObjectLoopTimeExpiration(loopIndex)
 
     local player = Players[pid]
     if player and player:IsLoggedIn() and player.accountName == loop.targetName then
-        local eventStatus = CustomEventHooks.triggerValidators(
-            'OnObjectLoopTimeExpiration',
-            { pid, loopIndex }
-        )
+        local eventStatus
+        if CustomEventHooks then
+            eventStatus = CustomEventHooks.triggerValidators(
+                'OnObjectLoopTimeExpiration',
+                { pid, loopIndex }
+            )
+        else
+            eventStatus = dUtil.makeEventStatus(true, true)
+        end
 
         if eventStatus.validDefaultHandler then
             if loop.packetType == 'place' or loop.packetType == 'spawn' then
@@ -1325,11 +1324,13 @@ function OnObjectLoopTimeExpiration(loopIndex)
             end
         end
 
-        CustomEventHooks.triggerHandlers(
-            'OnObjectLoopTimeExpiration',
-            eventStatus,
-            { pid, loopIndex }
-        )
+        if CustomEventHooks then
+            CustomEventHooks.triggerHandlers(
+                'OnObjectLoopTimeExpiration',
+                eventStatus,
+                { pid, loopIndex }
+            )
+        end
     else
         loopEnded = true
     end
