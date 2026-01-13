@@ -98,6 +98,22 @@ function DScriptLoader.getScriptEnv()
     string = string,
     table = table,
     tes3mp = tes3mp,
+    --- TES3MP Globals
+    banList = banList,
+    hourCounter = hourCounter,
+    pidsByIpAddress = pidsByIpAddress,
+    updateTimerId = updateTimerId,
+    Cell = Cell,
+    ClientDataFiles = ClientDataFiles,
+    Database = Database,
+    LoadedCells = LoadedCells,
+    ObjectLoops = ObjectLoops,
+    Player = Player,
+    Players = Players,
+    RecordStores = RecordStores,
+    RecordStore = RecordStore,
+    World = World,
+    WorldInstance = WorldInstance,
   }
 
   return ScriptEnv
