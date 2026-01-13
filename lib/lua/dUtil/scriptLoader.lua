@@ -215,6 +215,56 @@ function DScriptLoader.loadScriptMenus(scriptPath, scriptRegistration)
   end
 end
 
+--- Given a loaded script and its path, load all eventHandlers and validators it defines
+---@param scriptPath string sanitized relative script path for error output
+---@param scriptRegistration TES3MPScriptRegistration resulting table after invoking a script using dofile
+function DScriptLoader.loadScriptHandlers(scriptPath, scriptRegistration)
+  if not scriptRegistration.eventHandlers and not scriptRegistration.eventValidators then return end
+  local customEventHooks = Interfaces.customEventHooks
+
+  if not customEventHooks then
+    return tes3mp.LogAppend(
+      enumerations.log.ERROR,
+      ('%s tried to define eventHandlers or eventValidators, but was loaded before customEventHooks. Sorry!'):format(
+        scriptPath)
+    )
+  elseif scriptRegistration.eventHandlers and type(scriptRegistration.eventHandlers) ~= 'table' then
+    tes3mp.LogAppend(
+      enumerations.log.ERROR,
+      ('Script %s defined eventHandlers which were not a table: %s\nTerminating server. Oops!'):format(scriptPath,
+        scriptRegistration.eventHandlers)
+    )
+    tes3mp.StopServer(1)
+  elseif scriptRegistration.eventValidators and type(scriptRegistration.eventValidators) ~= 'table' then
+    tes3mp.LogAppend(
+      enumerations.log.ERROR,
+      ('Script %s defined eventValidators which were not a table: %s\nTerminating server. Oops!'):format(scriptPath,
+        scriptRegistration.eventValidators)
+    )
+    tes3mp.StopServer(1)
+  end
+
+  ---@cast customEventHooks CustomEventHooks
+
+  for eventName, eventHandler in pairs(scriptRegistration.eventHandlers or {}) do
+    assert(type(eventName) == 'string' and type(eventHandler) == 'function')
+
+    customEventHooks.registerHandler(eventName, {
+      definedBy = scriptPath,
+      callback = eventHandler,
+    })
+  end
+
+  for eventName, eventValidator in pairs(scriptRegistration.eventValidators or {}) do
+    assert(type(eventName) == 'string' and type(eventValidator) == 'function')
+
+    customEventHooks.registerValidator(eventName, {
+      definedBy = scriptPath,
+      callback = eventValidator,
+    })
+  end
+end
+
 local AllowedFields = {
   chatCommands = true,
   eventHandlers = true,

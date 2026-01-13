@@ -2011,15 +2011,4 @@ eventHandler.OnObjectLoopTimeExpiration = function(loopIndex)
     end
 end
 
----@class EventHandlerDeps
----@field customEventHooks CustomEventHooks
-
----@param eventHandlerDeps EventHandlerDeps
----@return EventHandler
-return function(eventHandlerDeps)
-    assert(eventHandlerDeps.customEventHooks)
-
-    Deps = eventHandlerDeps
-
-    return eventHandler
-end
+return eventHandler
