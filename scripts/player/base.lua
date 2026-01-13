@@ -1,7 +1,7 @@
 local config = require 'tes3mp.config'
 local contentFixer = require 'contentFixer'
 local enumerations = require 'tes3mp.enumerations'
-local inventoryHelper = require 'inventoryHelper'
+local inventoryHelper = require 'tes3mp.util.inventory'
 local logicHandler = require 'tes3mp.logicHandler'
 local packetBuilder = require 'tes3mp.packet.builder'
 local packetReader = require 'tes3mp.packet.reader'
