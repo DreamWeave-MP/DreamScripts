@@ -161,7 +161,7 @@ function DScriptLoader.loadScriptInterface(scriptPath, scriptResult)
   Interfaces[scriptResult.interfaceName] = DScriptLoader.makeReadOnly(scriptResult.interface)
 end
 
---- Given a loaded script and its path, insert relevant interfaces
+--- Given a loaded script and its path, insert chat commands
 ---@param scriptPath string sanitized relative script path for error output
 ---@param scriptRegistration TES3MPScriptRegistration resulting table after invoking a script using dofile
 function DScriptLoader.loadScriptCommands(scriptPath, scriptRegistration)
@@ -182,6 +182,26 @@ function DScriptLoader.loadScriptCommands(scriptPath, scriptRegistration)
       nameRequirement = commandRegistration.nameRequirement,
       rankRequirement = commandRegistration.rankRequirement,
     })
+  end
+end
+
+--- Given a loaded script and its path, insert relevant interfaces
+---@param scriptPath string sanitized relative script path for error output
+---@param scriptRegistration TES3MPScriptRegistration resulting table after invoking a script using dofile
+function DScriptLoader.loadScriptMenus(scriptPath, scriptRegistration)
+  local scriptMenus = scriptRegistration.menus
+  if not scriptMenus then
+    return
+  elseif type(scriptMenus) ~= 'table' then
+    tes3mp.LogAppend(
+      enumerations.log.FATAL,
+      ('Failed to load the script %s as it attempt to define menus which were not a table: %s')
+      :format(scriptPath, scriptMenus)
+    )
+  end
+
+  for menuName, menuContent in pairs(scriptMenus) do
+    Deps.menuHelper.Menus[menuName] = menuContent
   end
 end
 
@@ -249,6 +269,7 @@ function DScriptLoader.loadScript(scriptName, callerPid)
   -- tableHelper.print(result)
   DScriptLoader.loadScriptInterface(scriptPath, result)
   DScriptLoader.loadScriptCommands(scriptPath, result)
+  DScriptLoader.loadScriptMenus(scriptPath, result)
 end
 
 --- Load all scripts defined by config.customScripts
