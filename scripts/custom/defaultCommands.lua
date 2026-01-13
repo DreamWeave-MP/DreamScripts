@@ -124,7 +124,7 @@ end
 ---@type CommandHandler
 local function inviteAlly(pid, cmd)
     local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
-    if not isValid then return end
+    if not isValid or not targetPid then return end
 
     local callingPlayer, targetPlayer, senderMessage = Players[pid], Players[targetPid], nil
     local targetName = logicHandler.getChatName(targetPid)
@@ -191,7 +191,7 @@ end
 ---@type CommandHandler
 local function joinTeam(pid, cmd)
     local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
-    if not isValid then return end
+    if not isValid or not targetPid then return end
 
     local callingPlayer, targetPlayer, senderMessage = Players[pid], Players[targetPid], nil
     local targetName = logicHandler.getChatName(targetPid)
@@ -226,7 +226,7 @@ end
 ---@type CommandHandler
 local function leaveTeam(pid, cmd)
     local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
-    if not isValid then return end
+    if not isValid or not targetPid then return end
 
     local senderMessage = ('You are not an ally of %s\n'):format(logicHandler.GetChatName(targetPid))
 
@@ -287,7 +287,7 @@ local function msg(pid, cmd)
     end
 
     local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
-    if not isValid then return end
+    if not isValid or not targetPid then return end
 
     local message = ('%s to %s: %s\n'):format(
         logicHandler.GetChatName(pid),
