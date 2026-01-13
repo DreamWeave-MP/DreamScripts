@@ -110,6 +110,7 @@ if tableHelper.containsCaseInsensitiveString(ClientDataFiles, "Morrowind.esm") t
         }
     }
 
+    print('Merging morrowind vars...')
     tableHelper.merge(ClientVariableScopes, addedVariableScopes, true)
 end
 
@@ -803,7 +804,6 @@ if tableHelper.containsCaseInsensitiveString(ClientDataFiles, "Sky_Main.esm") th
         }
     }
 
-    print('Merging bloodmoon vars...')
     tableHelper.merge(ClientVariableScopes, addedVariableScopes, true)
 end
 
