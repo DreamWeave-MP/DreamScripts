@@ -789,37 +789,37 @@ eventHandler.OnGUIAction = function(pid, idGui, data)
     return false
 end
 
-eventHandler.OnPlayerSendMessage = function(pid, message)
-    if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
-        tes3mp.LogMessage(enumerations.log.INFO, logicHandler.GetChatName(pid) .. ": " .. message)
+---@param pid PlayerId
+---@param message string
+function eventHandler.OnPlayerSendMessage(pid, message)
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
+    if not isValid or not targetPid then return end
 
-        local eventStatus = customEventHooks.triggerValidators("OnPlayerSendMessage", { pid, message })
+    tes3mp.LogMessage(enumerations.log.INFO, logicHandler.GetChatName(pid) .. ": " .. message)
 
-        if eventStatus.validDefaultHandler then
-            -- Is this a chat command? If so, pass it over to the commandHandler
-            if message:sub(1, 1) == '/' then
-                local command = (message:sub(2, #message)):split(" ")
-                commandHandler.ProcessCommand(pid, command)
-            else
-                local message = color.White .. logicHandler.GetChatName(pid) .. ": " .. message .. "\n"
+    local eventStatus = customEventHooks.triggerValidators("OnPlayerSendMessage", { pid, message })
 
-                -- Check for chat overrides that add extra text
-                if Players[pid]:IsServerStaff() then
-                    if Players[pid]:IsServerOwner() then
-                        message = config.rankColors.serverOwner .. "[Owner] " .. message
-                    elseif Players[pid]:IsAdmin() then
-                        message = config.rankColors.admin .. "[Admin] " .. message
-                    elseif Players[pid]:IsModerator() then
-                        message = config.rankColors.moderator .. "[Mod] " .. message
-                    end
+    if eventStatus.validDefaultHandler then
+        -- Is this a chat command? If so, pass it over to the commandHandler
+        if message:sub(1, 1) ~= '/' then
+            message = color.White .. logicHandler.GetChatName(pid) .. ": " .. message .. "\n"
+
+            -- Check for chat overrides that add extra text
+            if Players[pid]:IsServerStaff() then
+                if Players[pid]:IsServerOwner() then
+                    message = config.rankColors.serverOwner .. "[Owner] " .. message
+                elseif Players[pid]:IsAdmin() then
+                    message = config.rankColors.admin .. "[Admin] " .. message
+                elseif Players[pid]:IsModerator() then
+                    message = config.rankColors.moderator .. "[Mod] " .. message
                 end
-
-                tes3mp.SendMessage(pid, message, true)
             end
-        end
 
-        customEventHooks.triggerHandlers("OnPlayerSendMessage", eventStatus, { pid, message })
+            tes3mp.SendMessage(pid, message, true)
+        end
     end
+
+    customEventHooks.triggerHandlers("OnPlayerSendMessage", eventStatus, { pid, message })
 end
 
 eventHandler.OnPlayerEndCharGen = function(pid)
