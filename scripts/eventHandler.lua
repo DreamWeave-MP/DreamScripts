@@ -979,66 +979,72 @@ eventHandler.OnWorldWeather = function(pid)
 end
 
 eventHandler.OnClientScriptGlobal = function(pid)
-    assert(Deps)
-    if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
-        tes3mp.ReadReceivedWorldstate()
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
+    if not isValid or not targetPid then
+        return tes3mp.Kick(pid)
+    end
 
-        local variables = packetReader.GetClientScriptGlobalPacketTable()
-        local eventStatus = Deps.customEventHooks.triggerValidators("OnClientScriptGlobal", { pid, variables })
+    tes3mp.ReadReceivedWorldstate()
 
-        if eventStatus.validDefaultHandler then
-            local shouldSync = false
+    local variables, eventStatus = packetReader.GetClientScriptGlobalPacketTable()
+    if CustomEventHooks then
+        eventStatus = CustomEventHooks.triggerValidators("OnClientScriptGlobal", { pid, variables })
+    else
+        eventStatus = dUtil.misc.makeEventStatus()
+    end
 
-            -- Iterate through the global IDs in the ClientScriptGlobal packet and only sync and save them
-            -- when applicable
-            for id, variable in pairs(variables) do
-                local isKillSync, isQuestSync, isFactionRanksSync, isFactionExpulsionSync, isWorldwideSync =
-                    false, false, false, false, false
+    if eventStatus.validDefaultHandler then
+        local shouldSync = false
 
-                isKillSync = tableHelper.containsCaseInsensitiveString(clientVariableScopes.globals.kills, id)
+        -- Iterate through the global IDs in the ClientScriptGlobal packet and only sync and save them
+        -- when applicable
+        for id in pairs(variables) do
+            local isKillSync, isQuestSync, isFactionRanksSync, isFactionExpulsionSync, isWorldwideSync =
+                false, false, false, false, false
 
-                if not isKillSync then
-                    isQuestSync = config.shareJournal == true and
-                        tableHelper.containsCaseInsensitiveString(clientVariableScopes.globals.quest, id)
-                end
+            isKillSync = tableHelper.containsCaseInsensitiveString(clientVariableScopes.globals.kills, id)
 
-                if not isQuestSync then
-                    isFactionRanksSync = config.shareFactionRanks == true and
-                        tableHelper.containsCaseInsensitiveString(clientVariableScopes.globals.factionRanks, id)
-                end
-
-                if not isFactionRanksSync then
-                    isFactionExpulsionSync = config.shareFactionExpulsion == true and
-                        tableHelper.containsCaseInsensitiveString(clientVariableScopes.globals.factionExpulsion, id)
-                end
-
-                if not isFactionExpulsionSync then
-                    isWorldwideSync = tableHelper.containsCaseInsensitiveString(clientVariableScopes.globals.worldwide,
-                        id)
-                end
-
-                if isKillSync or isQuestSync or isFactionRanksSync or isFactionExpulsionSync or isWorldwideSync then
-                    WorldInstance:SaveClientScriptGlobal(variables)
-                    shouldSync = true
-                else
-                    Players[pid]:SaveClientScriptGlobal(variables)
-                end
+            if not isKillSync then
+                isQuestSync = config.shareJournal == true and
+                    tableHelper.containsCaseInsensitiveString(clientVariableScopes.globals.quest, id)
             end
 
-            if shouldSync then
-                tes3mp.CopyReceivedWorldstateToStore()
-                -- The client already has this global value on their client, so we
-                -- only send it to other players
-                -- i.e. sendToOtherPlayers is true and skipAttachedPlayer is true
-                tes3mp.SendClientScriptGlobal(pid, true, true)
-                tes3mp.LogMessage(enumerations.log.INFO, "Synchronized ClientScriptGlobal from " ..
-                    logicHandler.GetChatName(pid) .. " about " .. tableHelper.concatenateTableIndices(variables, ", "))
+            if not isQuestSync then
+                isFactionRanksSync = config.shareFactionRanks == true and
+                    tableHelper.containsCaseInsensitiveString(clientVariableScopes.globals.factionRanks, id)
+            end
+
+            if not isFactionRanksSync then
+                isFactionExpulsionSync = config.shareFactionExpulsion == true and
+                    tableHelper.containsCaseInsensitiveString(clientVariableScopes.globals.factionExpulsion, id)
+            end
+
+            if not isFactionExpulsionSync then
+                isWorldwideSync = tableHelper.containsCaseInsensitiveString(clientVariableScopes.globals.worldwide,
+                    id)
+            end
+
+            if isKillSync or isQuestSync or isFactionRanksSync or isFactionExpulsionSync or isWorldwideSync then
+                WorldInstance:SaveClientScriptGlobal(variables)
+                shouldSync = true
+            else
+                Players[pid]:SaveClientScriptGlobal(variables)
             end
         end
 
-        Deps.customEventHooks.triggerHandlers("OnClientScriptGlobal", eventStatus, { pid, variables })
-    else
-        tes3mp.Kick(pid)
+        if shouldSync then
+            tes3mp.CopyReceivedWorldstateToStore()
+            -- The client already has this global value on their client, so we
+            -- only send it to other players
+            -- i.e. sendToOtherPlayers is true and skipAttachedPlayer is true
+            tes3mp.SendClientScriptGlobal(pid, true, true)
+            tes3mp.LogMessage(enumerations.log.INFO, "Synchronized ClientScriptGlobal from " ..
+                logicHandler.GetChatName(pid) .. " about " .. tableHelper.concatenateTableIndices(variables, ", "))
+        end
+    end
+
+    if CustomEventHooks then
+        CustomEventHooks.triggerHandlers("OnClientScriptGlobal", eventStatus, { pid, variables })
     end
 end
 
