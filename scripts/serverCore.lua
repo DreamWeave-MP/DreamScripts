@@ -215,7 +215,24 @@ function OnServerInit()
     local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators("OnServerInit", {})
 
     if eventStatus.validDefaultHandler then
-        logicHandler.InitializeWorld()
+        WorldInstance = World()
+
+        -- If the world has a data entry, load it
+        if WorldInstance:HasEntry() then
+            WorldInstance:LoadFromDrive()
+            WorldInstance:EnsureCoreVariablesExist()
+            WorldInstance:EnsureTimeDataExists()
+
+            -- Get the current mpNum from the loaded world
+            tes3mp.SetCurrentMpNum(WorldInstance:GetCurrentMpNum())
+
+            ScriptLoader.Interfaces.customEventHooks.triggerHandlers("OnWorldReload",
+                ScriptLoader.Interfaces.customEventHooks.makeEventStatus(true, true), {})
+
+            -- Otherwise, create a data file for it
+        else
+            WorldInstance:CreateEntry()
+        end
 
         for priorityLevel, recordStoreTypes in ipairs(config.recordStoreLoadOrder) do
             for _, storeType in ipairs(recordStoreTypes) do

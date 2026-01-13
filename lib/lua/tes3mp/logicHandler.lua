@@ -9,33 +9,7 @@ local fileHelper = require 'fileHelper'
 local dataTableBuilder = require 'dataTableBuilder'
 local packetBuilder = require 'tes3mp.packet.builder'
 
-if World == nil then
-    tes3mp.LogAppend(enumerations.log.WARN,
-        ('Warning! logicHandler has been invoked without World in scope! Good luck . . .\n%s\n'):format(debug.traceback(3))
-    )
-end
-
 local logicHandler = {}
-
-function logicHandler.InitializeWorld()
-    WorldInstance = World()
-
-    -- If the world has a data entry, load it
-    if WorldInstance:HasEntry() then
-        WorldInstance:LoadFromDrive()
-        WorldInstance:EnsureCoreVariablesExist()
-        WorldInstance:EnsureTimeDataExists()
-
-        -- Get the current mpNum from the loaded world
-        tes3mp.SetCurrentMpNum(WorldInstance:GetCurrentMpNum())
-
-        customEventHooks.triggerHandlers("OnWorldReload", customEventHooks.makeEventStatus(true, true), {})
-
-        -- Otherwise, create a data file for it
-    else
-        WorldInstance:CreateEntry()
-    end
-end
 
 --- Helper for chat commands where a calling player is attempting to run a chat command on another
 --- Determines if the target PID is valid and refers to a player which is currently logged into the server
