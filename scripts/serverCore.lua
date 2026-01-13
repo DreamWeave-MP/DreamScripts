@@ -116,6 +116,19 @@ local ScriptLoader = require 'dUtil.scriptLoader' {
     menuHelper = menuHelper,
 }
 
+---@param moduleName string
+---@return boolean notLoaded if this function returns true, CustomEventHooks is undefined and any functions depending on it should be skipped
+local function noCustomEventHooks(moduleName)
+    if not CustomEventHooks then
+        tes3mp.LogAppend(
+            enumerations.log.WARN,
+            ('CustomEventHooks not loaded. Skipping: eventHandlers for module: %s'):format(moduleName)
+        )
+    end
+
+    return CustomEventHooks == nil
+end
+
 function LoadBanList()
     tes3mp.LogMessage(enumerations.log.INFO, "Reading banlist.json")
     banList = jsonInterface.load("banlist.json")
@@ -273,11 +286,10 @@ function OnServerInit()
 end
 
 function OnServerPostInit()
-    if not CustomEventHooks then
-        return tes3mp.LogAppend(
-            enumerations.log.WARN,
-            ('CustomEventHooks not loaded. Skipping: eventHandlers for: %s'):format('OnServerPostInit')
-        )
+    if noCustomEventHooks('OnServerPostInit') then
+        return
+    else
+        assert(CustomEventHooks)
     end
 
     tes3mp.LogMessage(enumerations.log.INFO, 'Called "OnServerPostInit"')
@@ -385,11 +397,10 @@ function OnRequestPluginList()
 end
 
 function OnPlayerConnect(pid)
-    if not CustomEventHooks then
-        return tes3mp.LogAppend(
-            enumerations.log.WARN,
-            ('CustomEventHooks not loaded. Skipping: eventHandlers for: %s'):format('OnPlayerConnect')
-        )
+    if noCustomEventHooks('OnPlayerConnect') then
+        return
+    else
+        assert(CustomEventHooks)
     end
 
     tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnPlayerConnect\" for pid " .. pid)
@@ -550,11 +561,10 @@ function OnPlayerDisconnect(pid)
 end
 
 function OnPlayerResurrect(pid)
-    if not CustomEventHooks then
-        return tes3mp.LogAppend(
-            enumerations.log.WARN,
-            ('CustomEventHooks not loaded. Skipping: eventHandlers for: %s'):format('OnPlayerResurrect')
-        )
+    if noCustomEventHooks('OnPlayerResurrect') then
+        return
+    else
+        assert(CustomEventHooks)
     end
 
     CustomEventHooks.triggerHandlers(
@@ -861,11 +871,10 @@ end
 ---@param idGui GUIID
 ---@param data string|integer
 function OnGUIAction(pid, idGui, data)
-    if not CustomEventHooks then
-        return tes3mp.LogAppend(
-            enumerations.log.WARN,
-            ('CustomEventHooks not loaded. Skipping: eventHandlers for: %s'):format('OnGUIAction')
-        )
+    if noCustomEventHooks('OnGUIAction') then
+        return
+    else
+        assert(CustomEventHooks)
     end
 
     tes3mp.LogMessage(
@@ -1024,11 +1033,10 @@ function OnLoginTimeExpiration(pid, accountName)
     local player = Players[pid]
     if not player or player.accountName ~= accountName then return end
 
-    if not CustomEventHooks then
-        return tes3mp.LogAppend(
-            enumerations.log.WARN,
-            ('CustomEventHooks not loaded. Skipping: eventHandlers for: %s'):format('OnLoginTimeExpiration')
-        )
+    if noCustomEventHooks('OnLoginTimeExpiration') then
+        return
+    else
+        assert(CustomEventHooks)
     end
 
     local eventStatus = CustomEventHooks.triggerValidators(
@@ -1051,11 +1059,10 @@ function OnDeathTimeExpiration(pid, accountName)
     local player = Players[pid]
     if not player or not player:IsLoggedIn() or player.accountName ~= accountName then return end
 
-    if not CustomEventHooks then
-        return tes3mp.LogAppend(
-            enumerations.log.WARN,
-            ('CustomEventHooks not loaded. Skipping: eventHandlers for: %s'):format('OnDeathTimeExpiration')
-        )
+    if noCustomEventHooks('OnDeathTimeExpiration') then
+        return
+    else
+        assert(CustomEventHooks)
     end
 
     local eventStatus = CustomEventHooks.triggerValidators(
@@ -1076,11 +1083,10 @@ end
 
 ---@param loopIndex integer
 function OnObjectLoopTimeExpiration(loopIndex)
-    if not CustomEventHooks then
-        return tes3mp.LogAppend(
-            enumerations.log.WARN,
-            ('CustomEventHooks not loaded. Skipping: eventHandlers for: %s'):format('OnObjectLoopTimeExpiration')
-        )
+    if noCustomEventHooks('OnObjectLoopTimeExpiration') then
+        return
+    else
+        assert(CustomEventHooks)
     end
 
     local objectLoop = ObjectLoops[loopIndex]
