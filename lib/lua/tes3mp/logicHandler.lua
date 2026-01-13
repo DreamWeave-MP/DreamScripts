@@ -40,7 +40,7 @@ end
 --- Helper for chat commands where a calling player is attempting to run a chat command on another
 --- Determines if the target PID is valid and refers to a player which is currently logged into the server
 ---@param pid PlayerId?
----@param targetPid PlayerId
+---@param targetPid string|PlayerId
 ---@return boolean isValid, PlayerId? targetPid whether or not the PID is valid, plus validated PlayerID converted from string to int if so
 function logicHandler.CheckPlayerValidity(pid, targetPid)
     local valid, sendMessage = false, pid ~= nil
@@ -48,6 +48,7 @@ function logicHandler.CheckPlayerValidity(pid, targetPid)
     local checkPid = tonumber(targetPid)
     if not checkPid then
         if sendMessage then
+            assert(pid ~= nil and type(pid) == 'number')
             tes3mp.SendMessage(pid, "Please specify a valid numeric player ID greater than or equal to 0.\n", false)
         end
 
@@ -64,6 +65,7 @@ function logicHandler.CheckPlayerValidity(pid, targetPid)
 
     if pid and targetPlayer == Players[pid] then
         if sendMessage then
+            assert(pid ~= nil and type(pid) == 'number')
             tes3mp.SendMessage(pid, 'Please specify a player other than yourself.\n', false)
         end
 
@@ -71,6 +73,7 @@ function logicHandler.CheckPlayerValidity(pid, targetPid)
     end
 
     if not valid and sendMessage then
+        assert(pid ~= nil and type(pid) == 'number')
         tes3mp.SendMessage(pid, "That player is not logged in!\n", false)
     end
 
