@@ -91,9 +91,18 @@ end
 local menuHelper = require 'tes3mp.util.menu'
 local logicHandler = require 'tes3mp.logicHandler'
 
-customEventHooks = require 'customEventHooks'
 commandHandler = require 'commandHandler'
-eventHandler = require 'eventHandler'
+
+local customEventHooks = require 'customEventHooks'
+--- The eventHandler uses customEventHooks as a dependency due to registering many built-in eventHandlers/Validators itself
+--- We probably should change this so that all the built-in validators and handlers are loaded naturally as a consequence of the server's
+--- Initialization instead of making onServerPostInit subject to it
+--- *possibly*, we should delete eventHandler altogether
+--- and merge its validators/handlers into builtin scripts that load after customEventHooks
+local eventHandler = require 'eventHandler' {
+    customEventHooks = customEventHooks,
+}
+
 animHelper = require 'animHelper'
 
 ---@type DScriptLoader

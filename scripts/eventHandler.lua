@@ -10,6 +10,9 @@ local packetBuilder = require 'tes3mp.packet.builder'
 local packetReader = require 'tes3mp.packet.reader'
 local tableHelper = require 'tes3mp.util.table'
 
+---@type EventHandlerDeps?
+local Deps = nil
+
 ---@class EventHandler
 local eventHandler = {}
 
@@ -18,21 +21,22 @@ local consoleKickMessage = " has been kicked for using the console despite not h
 local sendKills = {}
 
 eventHandler.InitializeDefaultValidators = function()
+    assert(Deps)
     -- Don't validate object deletions for currently unusable containers (such as
     -- dying actors whose corpses players try to dispose of too early)
     --
     -- Additionally, don't delete objects mentioned in config.disallowedDeleteRefIds
-    customEventHooks.registerValidator("OnObjectDelete", function(eventStatus, pid, cellDescription, objects)
+    Deps.customEventHooks.registerValidator("OnObjectDelete", function(eventStatus, pid, cellDescription, objects)
         local cell = LoadedCells[cellDescription]
         local unusableContainerUniqueIndexes = cell.unusableContainerUniqueIndexes
 
         for uniqueIndex, object in pairs(objects) do
             if tableHelper.containsValue(unusableContainerUniqueIndexes, uniqueIndex) then
-                return customEventHooks.makeEventStatus(false, false)
+                return Deps.customEventHooks.makeEventStatus(false, false)
             elseif tableHelper.containsValue(config.disallowedDeleteRefIds, object.refId) then
                 tes3mp.LogAppend(enumerations.log.INFO, "- Rejected attempt at deleting " .. object.refId ..
                     " " .. object.uniqueIndex .. " because it is disallowed in the server config")
-                return customEventHooks.makeEventStatus(false, false)
+                return Deps.customEventHooks.makeEventStatus(false, false)
             end
         end
     end)
@@ -43,82 +47,83 @@ eventHandler.InitializeDefaultValidators = function()
             if tableHelper.containsValue(config.disallowedCreateRefIds, object.refId) then
                 tes3mp.LogAppend(enumerations.log.INFO, "- Rejected attempt at creating " .. object.refId ..
                     " " .. object.uniqueIndex .. " because it is disallowed in the server config")
-                return customEventHooks.makeEventStatus(false, false)
+                return Deps.customEventHooks.makeEventStatus(false, false)
             end
         end
     end
 
-    customEventHooks.registerValidator("OnObjectPlace", defaultCreationValidator)
-    customEventHooks.registerValidator("OnObjectSpawn", defaultCreationValidator)
+    Deps.customEventHooks.registerValidator("OnObjectPlace", defaultCreationValidator)
+    Deps.customEventHooks.registerValidator("OnObjectSpawn", defaultCreationValidator)
 
     -- Don't validate scales larger than the maximum set in the config
-    customEventHooks.registerValidator("OnObjectScale", function(eventStatus, pid, cellDescription, objects)
+    Deps.customEventHooks.registerValidator("OnObjectScale", function(eventStatus, pid, cellDescription, objects)
         for uniqueIndex, object in pairs(objects) do
             if object.scale >= config.maximumObjectScale then
                 tes3mp.LogAppend(enumerations.log.INFO, "- Rejected attempt at setting scale of " .. object.refId ..
                     " " .. object.uniqueIndex .. " to " .. object.scale .. " because it exceeds the server's " ..
                     "maximum of " .. config.maximumObjectScale)
-                return customEventHooks.makeEventStatus(false, false)
+                return Deps.customEventHooks.makeEventStatus(false, false)
             end
         end
     end)
 
     -- Don't change lock levels for objects mentioned in config.disallowedLockRefIds
-    customEventHooks.registerValidator("OnObjectLock",
+    Deps.customEventHooks.registerValidator("OnObjectLock",
         function(eventStatus, pid, cellDescription, objects, targetPlayers)
             for uniqueIndex, object in pairs(objects) do
                 if tableHelper.containsValue(config.disallowedLockRefIds, object.refId) then
                     tes3mp.LogAppend(enumerations.log.INFO,
                         "- Rejected attempt at changing lock for " .. object.refId ..
                         " " .. object.uniqueIndex .. " because it is disallowed in the server config")
-                    return customEventHooks.makeEventStatus(false, false)
+                    return Deps.customEventHooks.makeEventStatus(false, false)
                 end
             end
         end)
 
     -- Don't change traps for objects mentioned in config.disallowedTrapRefIds
-    customEventHooks.registerValidator("OnObjectTrap",
+    Deps.customEventHooks.registerValidator("OnObjectTrap",
         function(eventStatus, pid, cellDescription, objects, targetPlayers)
             for uniqueIndex, object in pairs(objects) do
                 if tableHelper.containsValue(config.disallowedTrapRefIds, object.refId) then
                     tes3mp.LogAppend(enumerations.log.INFO,
                         "- Rejected attempt at changing trap for " .. object.refId ..
                         " " .. object.uniqueIndex .. " because it is disallowed in the server config")
-                    return customEventHooks.makeEventStatus(false, false)
+                    return Deps.customEventHooks.makeEventStatus(false, false)
                 end
             end
         end)
 
     -- Don't change states for objects mentioned in config.disallowedStateRefIds
-    customEventHooks.registerValidator("OnObjectState",
+    Deps.customEventHooks.registerValidator("OnObjectState",
         function(eventStatus, pid, cellDescription, objects, targetPlayers)
             for uniqueIndex, object in pairs(objects) do
                 if tableHelper.containsValue(config.disallowedStateRefIds, object.refId) then
                     tes3mp.LogAppend(enumerations.log.INFO,
                         "- Rejected attempt at changing state for " .. object.refId ..
                         " " .. object.uniqueIndex .. " because it is disallowed in the server config")
-                    return customEventHooks.makeEventStatus(false, false)
+                    return Deps.customEventHooks.makeEventStatus(false, false)
                 end
             end
         end)
 
     -- Don't change door states for objects mentioned in config.disallowedDoorStateRefIds
-    customEventHooks.registerValidator("OnDoorState", function(eventStatus, pid, cellDescription, objects, targetPlayers)
-        for uniqueIndex, object in pairs(objects) do
-            if tableHelper.containsValue(config.disallowedDoorStateRefIds, object.refId) then
-                tes3mp.LogAppend(enumerations.log.INFO,
-                    "- Rejected attempt at changing door state for " .. object.refId ..
-                    " " .. object.uniqueIndex .. " because it is disallowed in the server config")
-                return customEventHooks.makeEventStatus(false, false)
+    Deps.customEventHooks.registerValidator("OnDoorState",
+        function(eventStatus, pid, cellDescription, objects, targetPlayers)
+            for uniqueIndex, object in pairs(objects) do
+                if tableHelper.containsValue(config.disallowedDoorStateRefIds, object.refId) then
+                    tes3mp.LogAppend(enumerations.log.INFO,
+                        "- Rejected attempt at changing door state for " .. object.refId ..
+                        " " .. object.uniqueIndex .. " because it is disallowed in the server config")
+                    return Deps.customEventHooks.makeEventStatus(false, false)
+                end
             end
-        end
-    end)
+        end)
 
     -- Don't activate objects that are supposed to already be deleted according to the
     -- server, preventing item duping
     --
     -- Additionally, don't activate objects mentioned in config.disallowedActivateRefIds
-    customEventHooks.registerValidator("OnObjectActivate",
+    Deps.customEventHooks.registerValidator("OnObjectActivate",
         function(eventStatus, pid, cellDescription, objects, targetPlayers)
             for uniqueIndex, object in pairs(objects) do
                 local debugMessage = "- Rejected attempt at activating " .. object.refId .. " " ..
@@ -132,55 +137,57 @@ eventHandler.InitializeDefaultValidators = function()
                 if refNum ~= 0 and tableHelper.containsValue(LoadedCells[cellDescription].data.packets.delete, uniqueIndex) then
                     tes3mp.LogAppend(enumerations.log.INFO, debugMessage .. " is a preexisting object that is already "
                         .. "tracked as being deleted")
-                    return customEventHooks.makeEventStatus(false, false)
+                    return Deps.customEventHooks.makeEventStatus(false, false)
                 elseif mpNum ~= 0 and LoadedCells[cellDescription].data.objectData[uniqueIndex] == nil then
                     tes3mp.LogAppend(enumerations.log.INFO, debugMessage .. " is a server-created object that is "
                         .. "no longer supposed to exist")
-                    return customEventHooks.makeEventStatus(false, false)
+                    return Deps.customEventHooks.makeEventStatus(false, false)
                 elseif tableHelper.containsValue(config.disallowedActivateRefIds, object.refId) then
                     tes3mp.LogAppend(enumerations.log.INFO, debugMessage .. " is disallowed in the server config")
-                    return customEventHooks.makeEventStatus(false, false)
+                    return Deps.customEventHooks.makeEventStatus(false, false)
                 end
             end
         end)
 
     -- Ignore packets with global variables that are listed under ClientVariableScopes.globals.ignored
-    customEventHooks.registerValidator("OnClientScriptGlobal", function(eventStatus, pid, variables)
+    Deps.customEventHooks.registerValidator("OnClientScriptGlobal", function(eventStatus, pid, variables)
         for id, variable in pairs(variables) do
             if tableHelper.containsValue(clientVariableScopes.globals.ignored, id) then
                 tes3mp.LogAppend(enumerations.log.INFO, "- Ignoring attempt at setting global variable " .. id ..
                     " because it is listed as an ignored variable in ClientVariableScopes")
-                return customEventHooks.makeEventStatus(false, false)
+                return Deps.customEventHooks.makeEventStatus(false, false)
             end
         end
     end)
 
     -- Don't allow console commands from players who lack the permissions for them and haven't been asked
     -- to run the console commands by the server itself; kick them instead
-    customEventHooks.registerValidator("OnConsoleCommand", function(eventStatus, pid, cellDescription, consoleCommand,
-                                                                    objects, targetPlayers)
-        local hasConsoleCommandQueued = tableHelper.containsValue(Players[pid].consoleCommandsQueued, consoleCommand)
+    Deps.customEventHooks.registerValidator("OnConsoleCommand",
+        function(eventStatus, pid, cellDescription, consoleCommand,
+                 objects, targetPlayers)
+            local hasConsoleCommandQueued = tableHelper.containsValue(Players[pid].consoleCommandsQueued, consoleCommand)
 
-        if not logicHandler.IsPlayerAllowedConsole(pid) and not hasConsoleCommandQueued then
-            local debugMessage = "Rejected ConsoleCommand from " .. logicHandler.GetChatName(pid) ..
-                " about " .. cellDescription .. " and kicked them due to them not being allowed to" ..
-                " use the console"
-            debugMessage = debugMessage .. "\n- consoleCommand: " .. consoleCommand
-            tes3mp.LogMessage(enumerations.log.INFO, debugMessage)
-            tes3mp.Kick(pid)
-            return customEventHooks.makeEventStatus(false, false)
-        end
-    end)
+            if not logicHandler.IsPlayerAllowedConsole(pid) and not hasConsoleCommandQueued then
+                local debugMessage = "Rejected ConsoleCommand from " .. logicHandler.GetChatName(pid) ..
+                    " about " .. cellDescription .. " and kicked them due to them not being allowed to" ..
+                    " use the console"
+                debugMessage = debugMessage .. "\n- consoleCommand: " .. consoleCommand
+                tes3mp.LogMessage(enumerations.log.INFO, debugMessage)
+                tes3mp.Kick(pid)
+                return Deps.customEventHooks.makeEventStatus(false, false)
+            end
+        end)
 end
 
 eventHandler.InitializeDefaultHandlers = function()
+    assert(Deps)
     -- Upon receiving an actor death:
     -- 1) Add 1 to the kill count for its ID and send it to players
     -- 2) Add it to the cell's currently unusable containers
     -- 3) Request its container
     -- Note: points 2 and 3 are temporary and will be handled better when
     --       servers load up .esm data by default.
-    customEventHooks.registerHandler("OnActorDeath", function(eventStatus, pid, cellDescription, actors)
+    Deps.customEventHooks.registerHandler("OnActorDeath", function(eventStatus, pid, cellDescription, actors)
         local cell = LoadedCells[cellDescription]
 
         tes3mp.ClearKillChanges()
@@ -261,7 +268,7 @@ eventHandler.InitializeDefaultHandlers = function()
     end)
 
     -- Upon accepting an object placement, request its container if it has one
-    customEventHooks.registerHandler("OnObjectPlace", function(eventStatus, pid, cellDescription, objects)
+    Deps.customEventHooks.registerHandler("OnObjectPlace", function(eventStatus, pid, cellDescription, objects)
         local containerUniqueIndexesRequested = {}
         local cell = LoadedCells[cellDescription]
 
@@ -277,13 +284,13 @@ eventHandler.InitializeDefaultHandlers = function()
     end)
 
     -- Upon accepting an object spawn, request its container
-    customEventHooks.registerHandler("OnObjectSpawn", function(eventStatus, pid, cellDescription, objects)
+    Deps.customEventHooks.registerHandler("OnObjectSpawn", function(eventStatus, pid, cellDescription, objects)
         local cell = LoadedCells[cellDescription]
         cell:RequestContainers(pid, tableHelper.getArrayFromIndices(objects))
     end)
 
     -- Don't allow state spam from clients
-    customEventHooks.registerHandler("OnObjectState", function(eventStatus, pid, cellDescription, objects)
+    Deps.customEventHooks.registerHandler("OnObjectState", function(eventStatus, pid, cellDescription, objects)
         local cell = LoadedCells[cellDescription]
 
         for uniqueIndex, object in pairs(objects) do
@@ -315,7 +322,7 @@ eventHandler.InitializeDefaultHandlers = function()
     end)
 
     -- Print object activations and send an ObjectActivate packet back to the player
-    customEventHooks.registerHandler("OnObjectActivate",
+    Deps.customEventHooks.registerHandler("OnObjectActivate",
         function(eventStatus, pid, cellDescription, objects, targetPlayers)
             if eventStatus.validDefaultHandler == false then return end
 
@@ -358,94 +365,96 @@ eventHandler.InitializeDefaultHandlers = function()
         end)
 
     -- Print object hits
-    customEventHooks.registerHandler("OnObjectHit", function(eventStatus, pid, cellDescription, objects, targetPlayers)
-        if eventStatus.validDefaultHandler == false then return end
+    Deps.customEventHooks.registerHandler("OnObjectHit",
+        function(eventStatus, pid, cellDescription, objects, targetPlayers)
+            if eventStatus.validDefaultHandler == false then return end
 
-        local debugMessage = nil
+            local debugMessage = nil
 
-        for uniqueIndex, object in pairs(objects) do
-            debugMessage = "- "
+            for uniqueIndex, object in pairs(objects) do
+                debugMessage = "- "
 
-            if object.hittingPid == nil then
-                debugMessage = debugMessage .. object.hittingRefId .. " " .. object.hittingUniqueIndex
-            else
-                debugMessage = debugMessage .. logicHandler.GetChatName(object.hittingPid)
-            end
+                if object.hittingPid == nil then
+                    debugMessage = debugMessage .. object.hittingRefId .. " " .. object.hittingUniqueIndex
+                else
+                    debugMessage = debugMessage .. logicHandler.GetChatName(object.hittingPid)
+                end
 
-            if object.hit.success == true then
-                debugMessage = debugMessage .. " has successfully hit "
+                if object.hit.success == true then
+                    debugMessage = debugMessage .. " has successfully hit "
 
-                if config.shareKills == false and object.hittingPid ~= nil then
-                    if sendKills[uniqueIndex] == nil then
-                        sendKills[uniqueIndex] = { timestamp = os.time(), playersName = {} }
-                    else
-                        if os.time() - sendKills[uniqueIndex].timestamp >= 600 then
+                    if config.shareKills == false and object.hittingPid ~= nil then
+                        if sendKills[uniqueIndex] == nil then
                             sendKills[uniqueIndex] = { timestamp = os.time(), playersName = {} }
                         else
-                            sendKills[uniqueIndex].timestamp = os.time()
+                            if os.time() - sendKills[uniqueIndex].timestamp >= 600 then
+                                sendKills[uniqueIndex] = { timestamp = os.time(), playersName = {} }
+                            else
+                                sendKills[uniqueIndex].timestamp = os.time()
+                            end
                         end
+
+                        tableHelper.insertValueIfMissing(sendKills[uniqueIndex].playersName,
+                            string.lower(Players[object.hittingPid].accountName))
                     end
-
-                    tableHelper.insertValueIfMissing(sendKills[uniqueIndex].playersName,
-                        string.lower(Players[object.hittingPid].accountName))
+                else
+                    debugMessage = debugMessage .. " has missed hitting "
                 end
-            else
-                debugMessage = debugMessage .. " has missed hitting "
+
+                debugMessage = debugMessage .. object.refId .. " " .. uniqueIndex
+
+                tes3mp.LogAppend(enumerations.log.INFO, debugMessage)
             end
 
-            debugMessage = debugMessage .. object.refId .. " " .. uniqueIndex
+            for targetPid, targetPlayer in pairs(targetPlayers) do
+                debugMessage = "- "
 
-            tes3mp.LogAppend(enumerations.log.INFO, debugMessage)
-        end
+                if targetPlayer.hittingPid == nil then
+                    debugMessage = debugMessage .. targetPlayer.hittingRefId .. " " .. targetPlayer.hittingUniqueIndex
+                else
+                    debugMessage = debugMessage .. logicHandler.GetChatName(targetPlayer.hittingPid)
+                end
 
-        for targetPid, targetPlayer in pairs(targetPlayers) do
-            debugMessage = "- "
+                if targetPlayer.hit.success == true then
+                    debugMessage = debugMessage .. " has successfully hit "
+                else
+                    debugMessage = debugMessage .. " has missed hitting "
+                end
 
-            if targetPlayer.hittingPid == nil then
-                debugMessage = debugMessage .. targetPlayer.hittingRefId .. " " .. targetPlayer.hittingUniqueIndex
-            else
-                debugMessage = debugMessage .. logicHandler.GetChatName(targetPlayer.hittingPid)
+                debugMessage = debugMessage .. logicHandler.GetChatName(targetPid)
+
+                tes3mp.LogAppend(enumerations.log.VERBOSE, debugMessage)
             end
-
-            if targetPlayer.hit.success == true then
-                debugMessage = debugMessage .. " has successfully hit "
-            else
-                debugMessage = debugMessage .. " has missed hitting "
-            end
-
-            debugMessage = debugMessage .. logicHandler.GetChatName(targetPid)
-
-            tes3mp.LogAppend(enumerations.log.VERBOSE, debugMessage)
-        end
-    end)
+        end)
 
     -- Print object sounds and send an ObjectSound packet to other players
-    customEventHooks.registerHandler("OnObjectSound", function(eventStatus, pid, cellDescription, objects, targetPlayers)
-        if eventStatus.validDefaultHandler == false then return end
+    Deps.customEventHooks.registerHandler("OnObjectSound",
+        function(eventStatus, pid, cellDescription, objects, targetPlayers)
+            if eventStatus.validDefaultHandler == false then return end
 
-        local debugMessage = nil
+            local debugMessage = nil
 
-        for uniqueIndex, object in pairs(objects) do
-            debugMessage = "- " .. uniqueIndex .. " played sound " .. object.soundId
+            for uniqueIndex, object in pairs(objects) do
+                debugMessage = "- " .. uniqueIndex .. " played sound " .. object.soundId
 
-            tes3mp.LogAppend(enumerations.log.INFO, debugMessage)
-        end
+                tes3mp.LogAppend(enumerations.log.INFO, debugMessage)
+            end
 
-        for targetPid, targetPlayer in pairs(targetPlayers) do
-            debugMessage = "- " .. logicHandler.GetChatName(targetPid) .. " played sound " .. targetPlayer.soundId
+            for targetPid, targetPlayer in pairs(targetPlayers) do
+                debugMessage = "- " .. logicHandler.GetChatName(targetPid) .. " played sound " .. targetPlayer.soundId
 
-            tes3mp.LogAppend(enumerations.log.INFO, debugMessage)
-        end
+                tes3mp.LogAppend(enumerations.log.INFO, debugMessage)
+            end
 
-        tes3mp.CopyReceivedObjectListToStore()
-        -- Sounds are played unilaterally clientside before being sent to the server, so we
-        -- send the packet to other players, but we avoid sending it to the original player
-        -- i.e. sendToOtherPlayers is true and skipAttachedPlayer is true
-        tes3mp.SendObjectSound(true, true)
-    end)
+            tes3mp.CopyReceivedObjectListToStore()
+            -- Sounds are played unilaterally clientside before being sent to the server, so we
+            -- send the packet to other players, but we avoid sending it to the original player
+            -- i.e. sendToOtherPlayers is true and skipAttachedPlayer is true
+            tes3mp.SendObjectSound(true, true)
+        end)
 
     -- Print object restocking and send an ObjectRestock packet back to the player
-    customEventHooks.registerHandler("OnObjectRestock", function(eventStatus, pid, cellDescription, objects)
+    Deps.customEventHooks.registerHandler("OnObjectRestock", function(eventStatus, pid, cellDescription, objects)
         if eventStatus.validDefaultHandler == false then return end
 
         local debugMessage = nil
@@ -465,7 +474,7 @@ eventHandler.InitializeDefaultHandlers = function()
     end)
 
     -- Print object dialogue choice and send an ObjectDialogueChoice packet back to the player
-    customEventHooks.registerHandler("OnObjectDialogueChoice", function(eventStatus, pid, cellDescription, objects)
+    Deps.customEventHooks.registerHandler("OnObjectDialogueChoice", function(eventStatus, pid, cellDescription, objects)
         if eventStatus.validDefaultHandler == false then return end
 
         local debugMessage = nil
@@ -490,10 +499,11 @@ eventHandler.InitializeDefaultHandlers = function()
 end
 
 eventHandler.OnPlayerConnect = function(pid, playerName)
+    assert(Deps)
     Players[pid] = Player(pid, playerName)
     Players[pid].name = playerName
 
-    local eventStatus = customEventHooks.triggerValidators("OnPlayerConnect", { pid })
+    local eventStatus = Deps.customEventHooks.triggerValidators("OnPlayerConnect", { pid })
 
     if eventStatus.validDefaultHandler then
         -- Send instanced spawn cell record now so it has time to arrive
@@ -588,10 +598,11 @@ eventHandler.OnPlayerConnect = function(pid, playerName)
         tes3mp.StartTimer(Players[pid].loginTimerId)
     end
 
-    customEventHooks.triggerHandlers("OnPlayerConnect", eventStatus, { pid })
+    Deps.customEventHooks.triggerHandlers("OnPlayerConnect", eventStatus, { pid })
 end
 
 eventHandler.OnPlayerDisconnect = function(pid)
+    assert(Deps)
     local message = logicHandler.GetChatName(pid) .. " has left the server.\n"
     tes3mp.SendMessage(pid, message, true)
 
@@ -607,7 +618,7 @@ eventHandler.OnPlayerDisconnect = function(pid)
 
     if Players[pid] ~= nil then
         if Players[pid]:IsLoggedIn() then
-            local eventStatus = customEventHooks.triggerValidators("OnPlayerDisconnect", { pid })
+            local eventStatus = Deps.customEventHooks.triggerValidators("OnPlayerDisconnect", { pid })
 
             if eventStatus.validDefaultHandler then
                 local ipAddress = Players[pid].ipAddress
@@ -638,11 +649,12 @@ eventHandler.OnPlayerDisconnect = function(pid)
 
                 -- Unload every cell for this player
                 for index, loadedCellDescription in pairs(Players[pid].cellsLoaded) do
-                    local eventStatus = customEventHooks.triggerValidators("OnCellUnload", { pid, loadedCellDescription })
+                    local eventStatus = Deps.customEventHooks.triggerValidators("OnCellUnload",
+                        { pid, loadedCellDescription })
                     if eventStatus.validDefaultHandler then
                         logicHandler.UnloadCellForPlayer(pid, loadedCellDescription)
                     end
-                    customEventHooks.triggerHandlers("OnCellUnload", eventStatus, { pid, loadedCellDescription })
+                    Deps.customEventHooks.triggerHandlers("OnCellUnload", eventStatus, { pid, loadedCellDescription })
                 end
 
                 if Players[pid].data.location.regionName ~= nil then
@@ -650,7 +662,7 @@ eventHandler.OnPlayerDisconnect = function(pid)
                 end
             end
 
-            customEventHooks.triggerHandlers("OnPlayerDisconnect", eventStatus, { pid })
+            Deps.customEventHooks.triggerHandlers("OnPlayerDisconnect", eventStatus, { pid })
 
             Players[pid]:Destroy()
             Players[pid] = nil
@@ -669,11 +681,15 @@ eventHandler.OnPlayerDisconnect = function(pid)
     end
 end
 
-eventHandler.OnGUIAction = function(pid, idGui, data)
+---@param pid PlayerId
+---@param idGui GUIID
+---@param data string|integer
+function eventHandler.OnGUIAction(pid, idGui, data)
+    assert(Deps)
     if Players[pid] ~= nil then
         data = tostring(data) -- data can be numeric, but we should convert it to a string
 
-        local eventStatus = customEventHooks.triggerValidators("OnGUIAction", { pid, idGui, data })
+        local eventStatus = Deps.customEventHooks.triggerValidators("OnGUIAction", { pid, idGui, data })
 
         if eventStatus.validDefaultHandler then
             if Players[pid]:IsLoggedIn() then
@@ -783,7 +799,7 @@ eventHandler.OnGUIAction = function(pid, idGui, data)
             end
         end
 
-        customEventHooks.triggerHandlers("OnGUIAction", eventStatus, { pid, idGui, data })
+        Deps.customEventHooks.triggerHandlers("OnGUIAction", eventStatus, { pid, idGui, data })
     end
 
     return false
@@ -792,12 +808,13 @@ end
 ---@param pid PlayerId
 ---@param message string
 function eventHandler.OnPlayerSendMessage(pid, message)
+    assert(Deps)
     local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
     if not isValid or not targetPid then return end
 
     tes3mp.LogMessage(enumerations.log.INFO, logicHandler.GetChatName(pid) .. ": " .. message)
 
-    local eventStatus = customEventHooks.triggerValidators("OnPlayerSendMessage", { pid, message })
+    local eventStatus = Deps.customEventHooks.triggerValidators("OnPlayerSendMessage", { pid, message })
 
     if eventStatus.validDefaultHandler then
         -- Is this a chat command? If so, pass it over to the commandHandler
@@ -819,29 +836,31 @@ function eventHandler.OnPlayerSendMessage(pid, message)
         end
     end
 
-    customEventHooks.triggerHandlers("OnPlayerSendMessage", eventStatus, { pid, message })
+    Deps.customEventHooks.triggerHandlers("OnPlayerSendMessage", eventStatus, { pid, message })
 end
 
 eventHandler.OnPlayerEndCharGen = function(pid)
+    assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
-        local eventStatus = customEventHooks.triggerValidators("OnPlayerEndCharGen", { pid })
+        local eventStatus = Deps.customEventHooks.triggerValidators("OnPlayerEndCharGen", { pid })
         if eventStatus.validDefaultHandler then
             Players[pid]:EndCharGen()
         end
-        customEventHooks.triggerHandlers("OnPlayerEndCharGen", eventStatus, { pid })
-        customEventHooks.triggerHandlers("OnPlayerAuthentified", eventStatus, { pid })
+        Deps.customEventHooks.triggerHandlers("OnPlayerEndCharGen", eventStatus, { pid })
+        Deps.customEventHooks.triggerHandlers("OnPlayerAuthentified", eventStatus, { pid })
     end
 end
 
 eventHandler.OnGenericPlayerEvent = function(pid, packetType)
+    assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
         local playerPacket = packetReader.GetPlayerPacketTables(pid, packetType)
 
-        local eventStatus = customEventHooks.triggerValidators("On" .. packetType, { pid, playerPacket })
+        local eventStatus = Deps.customEventHooks.triggerValidators("On" .. packetType, { pid, playerPacket })
         if eventStatus.validDefaultHandler then
             Players[pid]:SaveDataByPacketType(packetType, playerPacket)
         end
-        customEventHooks.triggerHandlers("On" .. packetType, eventStatus, { pid, playerPacket })
+        Deps.customEventHooks.triggerHandlers("On" .. packetType, eventStatus, { pid, playerPacket })
     end
 end
 
@@ -882,10 +901,11 @@ eventHandler.OnPlayerQuickKeys = function(pid)
 end
 
 eventHandler.OnPlayerSpellsActive = function(pid)
+    assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
         local playerPacket = packetReader.GetPlayerPacketTables(pid, "PlayerSpellsActive")
 
-        local eventStatus = customEventHooks.triggerValidators("OnPlayerSpellsActive", { pid, playerPacket })
+        local eventStatus = Deps.customEventHooks.triggerValidators("OnPlayerSpellsActive", { pid, playerPacket })
         if eventStatus.validDefaultHandler then
             Players[pid]:SaveSpellsActive(playerPacket)
 
@@ -893,11 +913,12 @@ eventHandler.OnPlayerSpellsActive = function(pid)
             -- but skip sending it to the player we got it from (skipAttachedPlayer is true)
             tes3mp.SendSpellsActiveChanges(pid, true, true)
         end
-        customEventHooks.triggerHandlers("OnPlayerSpellsActive", eventStatus, { pid, playerPacket })
+        Deps.customEventHooks.triggerHandlers("OnPlayerSpellsActive", eventStatus, { pid, playerPacket })
     end
 end
 
 eventHandler.OnPlayerCellChange = function(pid)
+    assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
         local playerPacket = packetReader.GetPlayerPacketTables(pid, "PlayerCellChange")
         local currentCellDescription = playerPacket.location.cell
@@ -905,7 +926,7 @@ eventHandler.OnPlayerCellChange = function(pid)
         if not tableHelper.containsValue(config.forbiddenCells, currentCellDescription) then
             local previousCellDescription = Players[pid].data.location.cell
 
-            local eventStatus = customEventHooks.triggerValidators("OnPlayerCellChange",
+            local eventStatus = Deps.customEventHooks.triggerValidators("OnPlayerCellChange",
                 { pid, playerPacket, previousCellDescription })
 
             if eventStatus.validDefaultHandler then
@@ -963,7 +984,7 @@ eventHandler.OnPlayerCellChange = function(pid)
                 end
             end
 
-            customEventHooks.triggerHandlers("OnPlayerCellChange", eventStatus,
+            Deps.customEventHooks.triggerHandlers("OnPlayerCellChange", eventStatus,
                 { pid, playerPacket, previousCellDescription })
         else
             Players[pid].data.location.posX = tes3mp.GetPreviousCellPosX(pid)
@@ -976,20 +997,22 @@ eventHandler.OnPlayerCellChange = function(pid)
 end
 
 eventHandler.OnPlayerDeath = function(pid)
+    assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
-        local eventStatus = customEventHooks.triggerValidators("OnPlayerDeath", { pid })
+        local eventStatus = Deps.customEventHooks.triggerValidators("OnPlayerDeath", { pid })
         if eventStatus.validDefaultHandler then
             Players[pid]:ProcessDeath()
         end
-        customEventHooks.triggerHandlers("OnPlayerDeath", eventStatus, { pid })
+        Deps.customEventHooks.triggerHandlers("OnPlayerDeath", eventStatus, { pid })
     end
 end
 
 eventHandler.OnPlayerJournal = function(pid)
+    assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
         local playerPacket = packetReader.GetPlayerPacketTables(pid, "PlayerJournal")
 
-        local eventStatus = customEventHooks.triggerValidators("OnPlayerJournal", { pid, playerPacket })
+        local eventStatus = Deps.customEventHooks.triggerValidators("OnPlayerJournal", { pid, playerPacket })
         if eventStatus.validDefaultHandler then
             if config.shareJournal == true then
                 WorldInstance:SaveJournal(playerPacket)
@@ -1001,15 +1024,16 @@ eventHandler.OnPlayerJournal = function(pid)
                 Players[pid]:SaveJournal(playerPacket)
             end
         end
-        customEventHooks.triggerHandlers("OnPlayerJournal", eventStatus, { pid, playerPacket })
+        Deps.customEventHooks.triggerHandlers("OnPlayerJournal", eventStatus, { pid, playerPacket })
     end
 end
 
 eventHandler.OnPlayerFaction = function(pid)
+    assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
         local action = tes3mp.GetFactionChangesAction(pid)
 
-        local eventStatus = customEventHooks.triggerValidators("OnPlayerFaction", { pid, action })
+        local eventStatus = Deps.customEventHooks.triggerValidators("OnPlayerFaction", { pid, action })
 
         if eventStatus.validDefaultHandler then
             if action == enumerations.faction.RANK then
@@ -1041,13 +1065,14 @@ eventHandler.OnPlayerFaction = function(pid)
             end
         end
 
-        customEventHooks.triggerHandlers("OnPlayerFaction", eventStatus, { pid, action })
+        Deps.customEventHooks.triggerHandlers("OnPlayerFaction", eventStatus, { pid, action })
     end
 end
 
 eventHandler.OnPlayerTopic = function(pid)
+    assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
-        local eventStatus = customEventHooks.triggerValidators("OnPlayerTopic", { pid })
+        local eventStatus = Deps.customEventHooks.triggerValidators("OnPlayerTopic", { pid })
 
         if eventStatus.validDefaultHandler then
             if config.shareTopics == true then
@@ -1060,13 +1085,14 @@ eventHandler.OnPlayerTopic = function(pid)
             end
         end
 
-        customEventHooks.triggerHandlers("OnPlayerTopic", eventStatus, { pid })
+        Deps.customEventHooks.triggerHandlers("OnPlayerTopic", eventStatus, { pid })
     end
 end
 
 eventHandler.OnPlayerBounty = function(pid)
+    assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
-        local eventStatus = customEventHooks.triggerValidators("OnPlayerBounty", { pid })
+        local eventStatus = Deps.customEventHooks.triggerValidators("OnPlayerBounty", { pid })
 
         if eventStatus.validDefaultHandler then
             if config.shareBounty == true then
@@ -1092,13 +1118,14 @@ eventHandler.OnPlayerBounty = function(pid)
             end
         end
 
-        customEventHooks.triggerHandlers("OnPlayerBounty", eventStatus, { pid })
+        Deps.customEventHooks.triggerHandlers("OnPlayerBounty", eventStatus, { pid })
     end
 end
 
 eventHandler.OnPlayerReputation = function(pid)
+    assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
-        local eventStatus = customEventHooks.triggerValidators("OnPlayerReputation", { pid })
+        local eventStatus = Deps.customEventHooks.triggerValidators("OnPlayerReputation", { pid })
 
         if eventStatus.validDefaultHandler then
             if config.shareReputation == true then
@@ -1110,24 +1137,26 @@ eventHandler.OnPlayerReputation = function(pid)
                 Players[pid]:SaveReputation()
             end
         end
-        customEventHooks.triggerHandlers("OnPlayerReputation", eventStatus, { pid })
+        Deps.customEventHooks.triggerHandlers("OnPlayerReputation", eventStatus, { pid })
     end
 end
 
 eventHandler.OnPlayerBook = function(pid)
+    assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
-        local eventStatus = customEventHooks.triggerValidators("OnPlayerBook", { pid })
+        local eventStatus = Deps.customEventHooks.triggerValidators("OnPlayerBook", { pid })
         if eventStatus.validDefaultHandler then
             Players[pid]:AddBooks()
         end
-        customEventHooks.triggerHandlers("OnPlayerBook", eventStatus, { pid })
+        Deps.customEventHooks.triggerHandlers("OnPlayerBook", eventStatus, { pid })
     end
 end
 
 eventHandler.OnPlayerItemUse = function(pid)
+    assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
         local itemRefId = tes3mp.GetUsedItemRefId(pid)
-        local eventStatus = customEventHooks.triggerValidators("OnPlayerItemUse", { pid, itemRefId })
+        local eventStatus = Deps.customEventHooks.triggerValidators("OnPlayerItemUse", { pid, itemRefId })
 
         if eventStatus.validDefaultHandler then
             tes3mp.LogMessage(enumerations.log.INFO,
@@ -1137,37 +1166,39 @@ eventHandler.OnPlayerItemUse = function(pid)
             -- this packet back to the player before they can use the item
             tes3mp.SendItemUse(pid)
         end
-        customEventHooks.triggerHandlers("OnPlayerItemUse", eventStatus, { pid, itemRefId })
+        Deps.customEventHooks.triggerHandlers("OnPlayerItemUse", eventStatus, { pid, itemRefId })
     end
 end
 
 eventHandler.OnPlayerMiscellaneous = function(pid)
+    assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
         local changeType = tes3mp.GetMiscellaneousChangeType(pid)
 
         if changeType == enumerations.miscellaneous.MARK_LOCATION then
-            local eventStatus = customEventHooks.triggerValidators("OnPlayerMarkLocation", { pid })
+            local eventStatus = Deps.customEventHooks.triggerValidators("OnPlayerMarkLocation", { pid })
             if eventStatus.validDefaultHandler then
                 Players[pid]:SaveMarkLocation()
             end
-            customEventHooks.triggerHandlers("OnPlayerMarkLocation", eventStatus, { pid })
+            Deps.customEventHooks.triggerHandlers("OnPlayerMarkLocation", eventStatus, { pid })
         elseif changeType == enumerations.miscellaneous.SELECTED_SPELL then
-            local eventStatus = customEventHooks.triggerValidators("OnPlayerSelectedSpell", { pid })
+            local eventStatus = Deps.customEventHooks.triggerValidators("OnPlayerSelectedSpell", { pid })
             if eventStatus.validDefaultHandler then
                 Players[pid]:SaveSelectedSpell()
             end
-            customEventHooks.triggerHandlers("OnPlayerSelectedSpell", eventStatus, { pid })
+            Deps.customEventHooks.triggerHandlers("OnPlayerSelectedSpell", eventStatus, { pid })
         end
     end
 end
 
 eventHandler.OnCellLoad = function(pid, cellDescription)
+    assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
-        local eventStatus = customEventHooks.triggerValidators("OnCellLoad", { pid, cellDescription })
+        local eventStatus = Deps.customEventHooks.triggerValidators("OnCellLoad", { pid, cellDescription })
         if eventStatus.validDefaultHandler then
             logicHandler.LoadCellForPlayer(pid, cellDescription)
         end
-        customEventHooks.triggerHandlers("OnCellLoad", eventStatus, { pid, cellDescription })
+        Deps.customEventHooks.triggerHandlers("OnCellLoad", eventStatus, { pid, cellDescription })
     else
         tes3mp.LogMessage(enumerations.log.WARN, "Undefined behavior: invalid player " .. pid ..
             " loaded cell " .. cellDescription)
@@ -1175,30 +1206,33 @@ eventHandler.OnCellLoad = function(pid, cellDescription)
 end
 
 eventHandler.OnCellUnload = function(pid, cellDescription)
+    assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
-        local eventStatus = customEventHooks.triggerValidators("OnCellUnload", { pid, cellDescription })
+        local eventStatus = Deps.customEventHooks.triggerValidators("OnCellUnload", { pid, cellDescription })
         if eventStatus.validDefaultHandler then
             logicHandler.UnloadCellForPlayer(pid, cellDescription)
         end
-        customEventHooks.triggerHandlers("OnCellUnload", eventStatus, { pid, cellDescription })
+        Deps.customEventHooks.triggerHandlers("OnCellUnload", eventStatus, { pid, cellDescription })
     end
 end
 
 eventHandler.OnCellDeletion = function(cellDescription)
-    local eventStatus = customEventHooks.triggerValidators("OnCellDeletion", { cellDescription })
+    assert(Deps)
+    local eventStatus = Deps.customEventHooks.triggerValidators("OnCellDeletion", { cellDescription })
     if eventStatus.validDefaultHandler then
         logicHandler.UnloadCell(cellDescription)
     end
-    customEventHooks.triggerHandlers("OnCellDeletion", eventStatus, { cellDescription })
+    Deps.customEventHooks.triggerHandlers("OnCellDeletion", eventStatus, { cellDescription })
 end
 
 eventHandler.OnGenericActorEvent = function(pid, cellDescription, packetType)
+    assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
         if LoadedCells[cellDescription] ~= nil then
             tes3mp.ReadReceivedActorList()
             local actors = packetReader.GetActorPacketTables(packetType).actors
 
-            local eventStatus = customEventHooks.triggerValidators("On" .. packetType,
+            local eventStatus = Deps.customEventHooks.triggerValidators("On" .. packetType,
                 { pid, cellDescription, actors })
 
             if eventStatus.validDefaultHandler then
@@ -1207,7 +1241,7 @@ eventHandler.OnGenericActorEvent = function(pid, cellDescription, packetType)
 
                 LoadedCells[cellDescription]:SaveActorsByPacketType(packetType, actors)
             end
-            customEventHooks.triggerHandlers("On" .. packetType, eventStatus,
+            Deps.customEventHooks.triggerHandlers("On" .. packetType, eventStatus,
                 { pid, cellDescription, actors })
         else
             tes3mp.LogMessage(enumerations.log.WARN, "Undefined behavior: " .. logicHandler.GetChatName(pid) ..
@@ -1231,9 +1265,10 @@ eventHandler.OnActorSpellsActive = function(pid, cellDescription)
 end
 
 eventHandler.OnActorAI = function(pid, cellDescription)
+    assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
         if LoadedCells[cellDescription] ~= nil then
-            local eventStatus = customEventHooks.triggerValidators("OnActorAI", { pid, cellDescription })
+            local eventStatus = Deps.customEventHooks.triggerValidators("OnActorAI", { pid, cellDescription })
             if eventStatus.validDefaultHandler then
                 tes3mp.ReadReceivedActorList()
                 tes3mp.CopyReceivedActorListToStore()
@@ -1244,7 +1279,7 @@ eventHandler.OnActorAI = function(pid, cellDescription)
                 -- i.e. sendToOtherVisitors is true and skipAttachedPlayer is true
                 tes3mp.SendActorAI(true, true)
             end
-            customEventHooks.triggerHandlers("OnActorAI", eventStatus, { pid, cellDescription })
+            Deps.customEventHooks.triggerHandlers("OnActorAI", eventStatus, { pid, cellDescription })
         else
             tes3mp.LogMessage(enumerations.log.WARN, "Undefined behavior: " .. logicHandler.GetChatName(pid) ..
                 " sent ActorAI for unloaded " .. cellDescription)
@@ -1255,12 +1290,13 @@ eventHandler.OnActorAI = function(pid, cellDescription)
 end
 
 eventHandler.OnActorDeath = function(pid, cellDescription)
+    assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
         if LoadedCells[cellDescription] ~= nil then
             tes3mp.ReadReceivedActorList()
             local actors = packetReader.GetActorPacketTables("ActorDeath").actors
 
-            local eventStatus = customEventHooks.triggerValidators("OnActorDeath", { pid, cellDescription, actors })
+            local eventStatus = Deps.customEventHooks.triggerValidators("OnActorDeath", { pid, cellDescription, actors })
 
             if eventStatus.validDefaultHandler then
                 tes3mp.LogMessage(enumerations.log.INFO, "Saving ActorDeath from " .. logicHandler.GetChatName(pid) ..
@@ -1281,7 +1317,7 @@ eventHandler.OnActorDeath = function(pid, cellDescription)
 
                 LoadedCells[cellDescription]:SaveActorsByPacketType("ActorDeath", actors)
             end
-            customEventHooks.triggerHandlers("OnActorDeath", eventStatus, { pid, cellDescription, actors })
+            Deps.customEventHooks.triggerHandlers("OnActorDeath", eventStatus, { pid, cellDescription, actors })
         else
             tes3mp.LogMessage(enumerations.log.WARN, "Undefined behavior: " .. logicHandler.GetChatName(pid) ..
                 " sent ActorDeath for unloaded " .. cellDescription)
@@ -1290,6 +1326,7 @@ eventHandler.OnActorDeath = function(pid, cellDescription)
 end
 
 eventHandler.OnActorCellChange = function(pid, cellDescription)
+    assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
         local isCellLoaded = LoadedCells[cellDescription] ~= nil
 
@@ -1297,11 +1334,11 @@ eventHandler.OnActorCellChange = function(pid, cellDescription)
             logicHandler.LoadCell(cellDescription)
         end
 
-        local eventStatus = customEventHooks.triggerValidators("OnActorCellChange", { pid, cellDescription })
+        local eventStatus = Deps.customEventHooks.triggerValidators("OnActorCellChange", { pid, cellDescription })
         if eventStatus.validDefaultHandler then
             LoadedCells[cellDescription]:SaveActorCellChanges(pid)
         end
-        customEventHooks.triggerHandlers("OnActorCellChange", eventStatus, { pid, cellDescription })
+        Deps.customEventHooks.triggerHandlers("OnActorCellChange", eventStatus, { pid, cellDescription })
 
         if not isCellLoaded then
             logicHandler.UnloadCell(cellDescription)
@@ -1312,6 +1349,7 @@ eventHandler.OnActorCellChange = function(pid, cellDescription)
 end
 
 eventHandler.OnGenericObjectEvent = function(pid, cellDescription, packetType)
+    assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
         tes3mp.ReadReceivedObjectList()
         local packetOrigin = tes3mp.GetObjectListOrigin()
@@ -1345,7 +1383,7 @@ eventHandler.OnGenericObjectEvent = function(pid, cellDescription, packetType)
                 logicHandler.LoadCell(cellDescription)
             end
 
-            local eventStatus = customEventHooks.triggerValidators("On" .. packetType,
+            local eventStatus = Deps.customEventHooks.triggerValidators("On" .. packetType,
                 { pid, cellDescription, objects, targetPlayers })
 
             if eventStatus.validDefaultHandler then
@@ -1375,7 +1413,7 @@ eventHandler.OnGenericObjectEvent = function(pid, cellDescription, packetType)
                     tableHelper.getArrayFromIndices(objects), true)
             end
 
-            customEventHooks.triggerHandlers("On" .. packetType, eventStatus,
+            Deps.customEventHooks.triggerHandlers("On" .. packetType, eventStatus,
                 { pid, cellDescription, objects, targetPlayers })
 
             if not isCellLoaded then
@@ -1448,6 +1486,7 @@ eventHandler.OnClientScriptLocal = function(pid, cellDescription)
 end
 
 eventHandler.OnConsoleCommand = function(pid, cellDescription)
+    assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
         tes3mp.ReadReceivedObjectList()
 
@@ -1456,7 +1495,7 @@ eventHandler.OnConsoleCommand = function(pid, cellDescription)
         local targetPlayers = packetTables.players
         local consoleCommand = tes3mp.GetObjectListConsoleCommand()
 
-        local eventStatus = customEventHooks.triggerValidators("OnConsoleCommand",
+        local eventStatus = Deps.customEventHooks.triggerValidators("OnConsoleCommand",
             { pid, cellDescription, consoleCommand,
                 objects, targetPlayers })
 
@@ -1493,7 +1532,7 @@ eventHandler.OnConsoleCommand = function(pid, cellDescription)
             tes3mp.LogMessage(enumerations.log.INFO, debugMessage)
         end
 
-        customEventHooks.triggerHandlers("OnConsoleCommand", eventStatus, { pid, cellDescription, consoleCommand,
+        Deps.customEventHooks.triggerHandlers("OnConsoleCommand", eventStatus, { pid, cellDescription, consoleCommand,
             objects, targetPlayers })
     else
         tes3mp.Kick(pid)
@@ -1501,6 +1540,7 @@ eventHandler.OnConsoleCommand = function(pid, cellDescription)
 end
 
 eventHandler.OnContainer = function(pid, cellDescription)
+    assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
         tes3mp.ReadReceivedObjectList()
         local packetOrigin = tes3mp.GetObjectListOrigin()
@@ -1562,7 +1602,7 @@ eventHandler.OnContainer = function(pid, cellDescription)
         end
 
         if isAllowed then
-            local eventStatus = customEventHooks.triggerValidators("OnContainer", { pid, cellDescription, objects })
+            local eventStatus = Deps.customEventHooks.triggerValidators("OnContainer", { pid, cellDescription, objects })
             if eventStatus.validDefaultHandler then
                 local useTemporaryLoad = false
 
@@ -1579,7 +1619,7 @@ eventHandler.OnContainer = function(pid, cellDescription)
                     logicHandler.UnloadCell(cellDescription)
                 end
             end
-            customEventHooks.triggerHandlers("OnContainer", eventStatus, { pid, cellDescription, objects })
+            Deps.customEventHooks.triggerHandlers("OnContainer", eventStatus, { pid, cellDescription, objects })
         else
             tes3mp.LogMessage(enumerations.log.INFO, "Rejected Container from " .. logicHandler.GetChatName(pid) ..
                 " about " .. tableHelper.concatenateArrayValues(rejectedObjects, 1, ", "))
@@ -1590,6 +1630,7 @@ eventHandler.OnContainer = function(pid, cellDescription)
 end
 
 eventHandler.OnVideoPlay = function(pid)
+    assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
         tes3mp.ReadReceivedObjectList()
         local packetOrigin = tes3mp.GetObjectListOrigin()
@@ -1619,19 +1660,20 @@ eventHandler.OnVideoPlay = function(pid)
                 table.insert(videos, videoFilename)
                 tes3mp.LogAppend(enumerations.log.WARN, "- videoFilename " .. videoFilename)
             end
-            local eventStatus = customEventHooks.triggerValidators("OnVideoPlay", { pid, videos })
+            local eventStatus = Deps.customEventHooks.triggerValidators("OnVideoPlay", { pid, videos })
             if eventStatus.validDefaultHandler then
                 tes3mp.CopyReceivedObjectListToStore()
                 -- Send this VideoPlay packet to other players (sendToOthersPlayers is true),
                 -- but skip sending it to the player we got it from (skipAttachedPlayer is true)
                 tes3mp.SendVideoPlay(true, true)
             end
-            customEventHooks.triggerHandlers("OnVideoPlay", eventStatus, { pid, videos })
+            Deps.customEventHooks.triggerHandlers("OnVideoPlay", eventStatus, { pid, videos })
         end
     end
 end
 
 eventHandler.OnRecordDynamic = function(pid)
+    assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
         tes3mp.ReadReceivedWorldstate()
 
@@ -1673,7 +1715,7 @@ eventHandler.OnRecordDynamic = function(pid)
             isEnchantable = tableHelper.containsValue(config.enchantableRecordTypes, storeType)
         end
 
-        local eventStatus = customEventHooks.triggerValidators("OnRecordDynamic", { pid, recordArray, storeType })
+        local eventStatus = Deps.customEventHooks.triggerValidators("OnRecordDynamic", { pid, recordArray, storeType })
 
         if eventStatus.validDefaultHandler then
             for _, record in ipairs(recordArray) do
@@ -1765,13 +1807,14 @@ eventHandler.OnRecordDynamic = function(pid)
                 Players[pid]:LoadItemChanges(itemArray, enumerations.inventory.ADD)
             end
         end
-        customEventHooks.triggerHandlers("OnRecordDynamic", eventStatus, { pid, recordTable, storeType })
+        Deps.customEventHooks.triggerHandlers("OnRecordDynamic", eventStatus, { pid, recordTable, storeType })
     end
 end
 
 eventHandler.OnWorldKillCount = function(pid)
+    assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
-        local eventStatus = customEventHooks.triggerValidators("OnWorldKillCount", { pid })
+        local eventStatus = Deps.customEventHooks.triggerValidators("OnWorldKillCount", { pid })
         if eventStatus.validDefaultHandler then
             WorldInstance:SaveKills(pid)
             tes3mp.CopyReceivedWorldstateToStore()
@@ -1780,16 +1823,17 @@ eventHandler.OnWorldKillCount = function(pid)
             -- but skip sending it to the player we got it from (skipAttachedPlayer is true)
             tes3mp.SendWorldKillCount(pid, true, true)
         end
-        customEventHooks.triggerHandlers("OnWorldKillCount", eventStatus, { pid })
+        Deps.customEventHooks.triggerHandlers("OnWorldKillCount", eventStatus, { pid })
     end
 end
 
 eventHandler.OnWorldMap = function(pid)
+    assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
         tes3mp.ReadReceivedWorldstate()
         local mapTileArray = packetReader.GetWorldMapTileArray()
 
-        local eventStatus = customEventHooks.triggerValidators("OnWorldMap", { pid, mapTileArray })
+        local eventStatus = Deps.customEventHooks.triggerValidators("OnWorldMap", { pid, mapTileArray })
         if eventStatus.validDefaultHandler then
             WorldInstance:SaveMapTiles(mapTileArray)
 
@@ -1801,13 +1845,14 @@ eventHandler.OnWorldMap = function(pid)
                 tes3mp.SendWorldMap(pid, true, true)
             end
         end
-        customEventHooks.triggerHandlers("OnWorldMap", eventStatus, { pid, mapTileArray })
+        Deps.customEventHooks.triggerHandlers("OnWorldMap", eventStatus, { pid, mapTileArray })
     end
 end
 
 eventHandler.OnWorldWeather = function(pid)
+    assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
-        local eventStatus = customEventHooks.triggerValidators("OnWorldWeather", { pid })
+        local eventStatus = Deps.customEventHooks.triggerValidators("OnWorldWeather", { pid })
         if eventStatus.validDefaultHandler then
             tes3mp.ReadReceivedWorldstate()
 
@@ -1835,16 +1880,17 @@ eventHandler.OnWorldWeather = function(pid)
                 end
             end
         end
-        customEventHooks.triggerHandlers("OnWorldWeather", eventStatus, { pid })
+        Deps.customEventHooks.triggerHandlers("OnWorldWeather", eventStatus, { pid })
     end
 end
 
 eventHandler.OnClientScriptGlobal = function(pid)
+    assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
         tes3mp.ReadReceivedWorldstate()
 
         local variables = packetReader.GetClientScriptGlobalPacketTable()
-        local eventStatus = customEventHooks.triggerValidators("OnClientScriptGlobal", { pid, variables })
+        local eventStatus = Deps.customEventHooks.triggerValidators("OnClientScriptGlobal", { pid, variables })
 
         if eventStatus.validDefaultHandler then
             local shouldSync = false
@@ -1896,7 +1942,7 @@ eventHandler.OnClientScriptGlobal = function(pid)
             end
         end
 
-        customEventHooks.triggerHandlers("OnClientScriptGlobal", eventStatus, { pid, variables })
+        Deps.customEventHooks.triggerHandlers("OnClientScriptGlobal", eventStatus, { pid, variables })
     else
         tes3mp.Kick(pid)
     end
@@ -1907,26 +1953,29 @@ eventHandler.OnMpNumIncrement = function(currentMpNum)
 end
 
 eventHandler.OnLoginTimeExpiration = function(pid, accountName)
+    assert(Deps)
     if Players[pid] ~= nil and Players[pid].accountName == accountName then
-        local eventStatus = customEventHooks.triggerValidators("OnLoginTimeExpiration", { pid })
+        local eventStatus = Deps.customEventHooks.triggerValidators("OnLoginTimeExpiration", { pid })
         if eventStatus.validDefaultHandler then
             logicHandler.AuthCheck(pid)
         end
-        customEventHooks.triggerHandlers("OnLoginTimeExpiration", eventStatus, { pid })
+        Deps.customEventHooks.triggerHandlers("OnLoginTimeExpiration", eventStatus, { pid })
     end
 end
 
 eventHandler.OnDeathTimeExpiration = function(pid, accountName)
+    assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() and Players[pid].accountName == accountName then
-        local eventStatus = customEventHooks.triggerValidators("OnDeathTimeExpiration", { pid })
+        local eventStatus = Deps.customEventHooks.triggerValidators("OnDeathTimeExpiration", { pid })
         if eventStatus.validDefaultHandler then
             Players[pid]:Resurrect()
         end
-        customEventHooks.triggerHandlers("OnDeathTimeExpiration", eventStatus, { pid })
+        Deps.customEventHooks.triggerHandlers("OnDeathTimeExpiration", eventStatus, { pid })
     end
 end
 
 eventHandler.OnObjectLoopTimeExpiration = function(loopIndex)
+    assert(Deps)
     if ObjectLoops[loopIndex] ~= nil then
         local loop = ObjectLoops[loopIndex]
         local pid = loop.targetPid
@@ -1934,7 +1983,7 @@ eventHandler.OnObjectLoopTimeExpiration = function(loopIndex)
 
         if Players[pid] ~= nil and Players[pid]:IsLoggedIn() and
             Players[pid].accountName == loop.targetName then
-            local eventStatus = customEventHooks.triggerValidators("OnObjectLoopTimeExpiration", { pid, loopIndex })
+            local eventStatus = Deps.customEventHooks.triggerValidators("OnObjectLoopTimeExpiration", { pid, loopIndex })
             if eventStatus.validDefaultHandler then
                 if loop.packetType == "place" or loop.packetType == "spawn" then
                     logicHandler.CreateObjectAtPlayer(pid, dataTableBuilder.BuildObjectData(loop.refId), loop.packetType)
@@ -1951,7 +2000,7 @@ eventHandler.OnObjectLoopTimeExpiration = function(loopIndex)
                     loopEnded = true
                 end
             end
-            customEventHooks.triggerHandlers("OnObjectLoopTimeExpiration", eventStatus, { pid, loopIndex })
+            Deps.customEventHooks.triggerHandlers("OnObjectLoopTimeExpiration", eventStatus, { pid, loopIndex })
         else
             loopEnded = true
         end
@@ -1962,4 +2011,15 @@ eventHandler.OnObjectLoopTimeExpiration = function(loopIndex)
     end
 end
 
-return eventHandler
+---@class EventHandlerDeps
+---@field customEventHooks CustomEventHooks
+
+---@param eventHandlerDeps EventHandlerDeps
+---@return EventHandler
+return function(eventHandlerDeps)
+    assert(eventHandlerDeps.customEventHooks)
+
+    Deps = eventHandlerDeps
+
+    return eventHandler
+end
