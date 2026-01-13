@@ -119,19 +119,6 @@ local ScriptLoader = require 'dUtil.scriptLoader' {
     menuHelper = menuHelper,
 }
 
----@param moduleName string
----@return boolean notLoaded if this function returns true, CustomEventHooks is undefined and any functions depending on it should be skipped
-local function noCustomEventHooks(moduleName)
-    if not CustomEventHooks then
-        tes3mp.LogAppend(
-            enumerations.log.WARN,
-            ('CustomEventHooks not loaded. Skipping: eventHandlers for module: %s'):format(moduleName)
-        )
-    end
-
-    return CustomEventHooks == nil
-end
-
 local function onGenericPlayerEvent(pid, packetType)
     local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
     if not isValid or not targetPid then return end
