@@ -677,17 +677,13 @@ function OnPlayerDisconnect(pid)
 end
 
 function OnPlayerResurrect(pid)
-    if noCustomEventHooks('OnPlayerResurrect') then
-        return
-    else
-        assert(CustomEventHooks)
+    if CustomEventHooks then
+        CustomEventHooks.triggerHandlers(
+            'OnPlayerResurrect',
+            dUtil.makeEventStatus(true, true),
+            { pid }
+        )
     end
-
-    CustomEventHooks.triggerHandlers(
-        'OnPlayerResurrect',
-        CustomEventHooks.makeEventStatus(true, true),
-        { pid }
-    )
 end
 
 ---@param pid PlayerId
