@@ -319,7 +319,8 @@ end
 
 function OnServerScriptCrash(errorMessage)
     tes3mp.LogMessage(enumerations.log.ERROR, "Server crash from script error!")
-    customEventHooks.triggerHandlers("OnServerExit", customEventHooks.makeEventStatus(true, true), { errorMessage })
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers("OnServerExit",
+        ScriptLoader.Interfaces.customEventHooks.makeEventStatus(true, true), { errorMessage })
 end
 
 function OnRequestDataFileList()
