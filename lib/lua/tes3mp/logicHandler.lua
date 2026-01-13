@@ -32,7 +32,7 @@ function logicHandler.CheckPlayerValidity(pid, targetPid)
     local targetPlayer
     if checkPid >= 0 then
         targetPlayer = Players[checkPid]
-        if targetPlayer ~= nil and targetPlayer:IsLoggedIn() then
+        if targetPlayer and targetPlayer:IsLoggedIn() then
             valid = true
         end
     end
