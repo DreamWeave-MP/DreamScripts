@@ -45,7 +45,7 @@ pidsByIpAddress = {}
 
 ---@global
 ---@type DataFileRequirements
-ClientDataFiles = dUtil.getRequiredDataFiles()
+ClientDataFiles = dUtil.loadRequiredDataFiles(false)
 
 ---@global
 hourCounter = nil

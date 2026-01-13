@@ -77,11 +77,15 @@ local Module = {
       local name = entry.name
       table.insert(clientDataFiles, name)
 
-      if tableHelper.isEmpty(entry.checksums) then
-        tes3mp.AddDataFileRequirement(name, '')
-      else
-        for _, checksum in ipairs(entry.checksums) do
-          tes3mp.AddDataFileRequirement(name, checksum)
+      -- Bit of an awkward hack, but we don't necessarily always want to call the C++ functions for this.
+      -- It should be safe to call this just the once to initialize ClientDataFiles, without mutating globally
+      if writeLog then
+        if tableHelper.isEmpty(entry.checksums) then
+          tes3mp.AddDataFileRequirement(name, '')
+        else
+          for _, checksum in ipairs(entry.checksums) do
+            tes3mp.AddDataFileRequirement(name, checksum)
+          end
         end
       end
     end
