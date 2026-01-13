@@ -2,6 +2,7 @@ local config = require 'tes3mp.config'
 local enumerations = require 'tes3mp.enumerations'
 local logicHandler = require 'tes3mp.logicHandler'
 local stateHelper = require 'stateHelper'
+local tableHelper = require 'tes3mp.util.table'
 
 ---@class BaseWorld
 local BaseWorld = require('classy')('BaseWorld')
