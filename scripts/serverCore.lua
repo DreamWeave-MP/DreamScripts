@@ -263,7 +263,6 @@ function OnServerPostInit()
     local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators("OnServerPostInit", {})
 
     if eventStatus.validDefaultHandler then
-        eventHandler.InitializeDefaultValidators()
         eventHandler.InitializeDefaultHandlers()
 
         tes3mp.SetGameMode(config.gameMode)

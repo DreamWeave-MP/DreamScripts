@@ -20,6 +20,7 @@ config.customScripts = {
     -- 'menu.defaultCrafting',
     -- 'menu.advancedExample',
     'defaultCommands',
+    'defaultValidators',
     'customMerchantRestock',
 }
 
