@@ -1,9 +1,11 @@
+local color = require 'color'
 local enumerations = require 'tes3mp.enumerations'
 local dataTableBuilder = require 'dataTableBuilder'
 local guiHelper = require 'tes3mp.util.gui'
 local inventoryHelper = require 'tes3mp.util.inventory'
 local jsonInterface = require 'jsonInterface'
 local packetBuilder = require 'tes3mp.packet.builder'
+local packetReader = require 'tes3mp.packet.reader'
 local tableHelper = require 'tes3mp.util.table'
 
 ---@type DUtilModule
@@ -128,6 +130,25 @@ local function noCustomEventHooks(moduleName)
     end
 
     return CustomEventHooks == nil
+end
+
+local function onGenericPlayerEvent(pid, packetType)
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
+    if not isValid or not targetPid then return end
+    local player = Players[targetPid]
+
+    local playerPacket = packetReader.GetPlayerPacketTables(pid, packetType)
+
+    if not CustomEventHooks then
+        return player:SaveDataByPacketType(packetType, playerPacket)
+    end
+
+    local eventStatus = CustomEventHooks.triggerValidators("On" .. packetType, { pid, playerPacket })
+    if eventStatus.validDefaultHandler then
+        player:SaveDataByPacketType(packetType, playerPacket)
+    end
+
+    CustomEventHooks.triggerHandlers("On" .. packetType, eventStatus, { pid, playerPacket })
 end
 
 function LoadBanList()
@@ -576,9 +597,11 @@ function OnPlayerDisconnect(pid)
         local eventStatus
         if CustomEventHooks then
             eventStatus = CustomEventHooks.triggerValidators('OnPlayerDisconnect', { pid })
+        else
+            eventStatus = dUtil.makeEventStatus(true, true)
         end
 
-        if not CustomEventHooks or eventStatus.validDefaultHandler then
+        if eventStatus.validDefaultHandler then
             local ipAddress = player.ipAddress
 
             if pidsByIpAddress[ipAddress] and tableHelper.containsValue(pidsByIpAddress[ipAddress], pid) then
@@ -666,8 +689,41 @@ function OnPlayerResurrect(pid)
     )
 end
 
+---@param pid PlayerId
+---@param message string
 function OnPlayerSendMessage(pid, message)
-    eventHandler.OnPlayerSendMessage(pid, message)
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
+    if not isValid or not targetPid then return end
+
+    local chatMessage = ('%s: %s'):format(logicHandler.GetChatName(pid), message)
+    tes3mp.LogMessage(enumerations.log.INFO, chatMessage)
+
+    local eventStatus
+    if CustomEventHooks then
+        eventStatus = CustomEventHooks.triggerValidators('OnPlayerSendMessage', { pid, message })
+    else
+        eventStatus = dUtil.makeEventStatus(true, true)
+    end
+
+    if eventStatus.validDefaultHandler and message:sub(1, 1) ~= '/' then
+        chatMessage = ('%s%s\n'):format(color.White, chatMessage)
+        local isModerator, isAdmin, isOwner = dUtil.misc.getRanks(targetPid)
+
+        -- Check for chat overrides that add extra text
+        if isOwner then
+            chatMessage = ('%s[Owner] %s'):format(config.rankColors.serverOwner, chatMessage)
+        elseif isAdmin then
+            chatMessage = ('%s[Admin] %s'):format(config.rankColors.admin, chatMessage)
+        elseif isModerator then
+            chatMessage = ('%s[Mod] %s'):format(config.rankColors.moderator, chatMessage)
+        end
+
+        tes3mp.SendMessage(targetPid, chatMessage, true)
+    end
+
+    if CustomEventHooks then
+        CustomEventHooks.triggerHandlers('OnPlayerSendMessage', eventStatus, { pid, message })
+    end
 end
 
 function OnPlayerDeath(pid)
@@ -677,21 +733,46 @@ end
 
 function OnPlayerAttribute(pid)
     tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnPlayerAttribute\" for " .. logicHandler.GetChatName(pid))
-    eventHandler.OnPlayerAttribute(pid)
+    onGenericPlayerEvent(pid, "PlayerAttribute")
 end
 
 function OnPlayerSkill(pid)
-    eventHandler.OnPlayerSkill(pid)
+    onGenericPlayerEvent(pid, "PlayerSkill")
 end
 
 function OnPlayerLevel(pid)
     tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnPlayerLevel\" for " .. logicHandler.GetChatName(pid))
-    eventHandler.OnPlayerLevel(pid)
+    onGenericPlayerEvent(pid, "PlayerLevel")
 end
 
 function OnPlayerShapeshift(pid)
     tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnPlayerShapeshift\" for " .. logicHandler.GetChatName(pid))
-    eventHandler.OnPlayerShapeshift(pid)
+    onGenericPlayerEvent(pid, "PlayerShapeshift")
+end
+
+function OnPlayerEquipment(pid)
+    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnPlayerEquipment\" for " .. logicHandler.GetChatName(pid))
+    onGenericPlayerEvent(pid, "PlayerEquipment")
+end
+
+function OnPlayerInventory(pid)
+    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnPlayerInventory\" for " .. logicHandler.GetChatName(pid))
+    onGenericPlayerEvent(pid, "PlayerInventory")
+end
+
+function OnPlayerSpellbook(pid)
+    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnPlayerSpellbook\" for " .. logicHandler.GetChatName(pid))
+    onGenericPlayerEvent(pid, "PlayerSpellbook")
+end
+
+function OnPlayerCooldowns(pid)
+    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnPlayerCooldowns\" for " .. logicHandler.GetChatName(pid))
+    onGenericPlayerEvent(pid, "PlayerCooldowns")
+end
+
+function OnPlayerQuickKeys(pid)
+    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnPlayerQuickKeys\" for " .. logicHandler.GetChatName(pid))
+    onGenericPlayerEvent(pid, "PlayerQuickKeys")
 end
 
 function OnPlayerCellChange(pid)
@@ -699,34 +780,37 @@ function OnPlayerCellChange(pid)
     eventHandler.OnPlayerCellChange(pid)
 end
 
-function OnPlayerEquipment(pid)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnPlayerEquipment\" for " .. logicHandler.GetChatName(pid))
-    eventHandler.OnPlayerEquipment(pid)
-end
-
-function OnPlayerInventory(pid)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnPlayerInventory\" for " .. logicHandler.GetChatName(pid))
-    eventHandler.OnPlayerInventory(pid)
-end
-
-function OnPlayerSpellbook(pid)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnPlayerSpellbook\" for " .. logicHandler.GetChatName(pid))
-    eventHandler.OnPlayerSpellbook(pid)
-end
-
+---@param pid PlayerId
 function OnPlayerSpellsActive(pid)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnPlayerSpellsActive\" for " .. logicHandler.GetChatName(pid))
-    eventHandler.OnPlayerSpellsActive(pid)
-end
+    tes3mp.LogMessage(
+        enumerations.log.INFO,
+        ('Called "OnPlayerSpellsActive" for ')
+        :format(logicHandler.GetChatName(pid))
+    )
 
-function OnPlayerCooldowns(pid)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnPlayerCooldowns\" for " .. logicHandler.GetChatName(pid))
-    eventHandler.OnPlayerCooldowns(pid)
-end
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
+    if not isValid or not targetPid then return end
 
-function OnPlayerQuickKeys(pid)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnPlayerQuickKeys\" for " .. logicHandler.GetChatName(pid))
-    eventHandler.OnPlayerQuickKeys(pid)
+    local playerPacket = packetReader.GetPlayerPacketTables(pid, 'PlayerSpellsActive')
+
+    local eventStatus
+    if CustomEventHooks then
+        eventStatus = CustomEventHooks.triggerValidators('OnPlayerSpellsActive', { pid, playerPacket })
+    else
+        eventStatus = dUtil.makeEventStatus(true, true)
+    end
+
+    if eventStatus.validDefaultHandler then
+        Players[targetPid]:SaveSpellsActive(playerPacket)
+
+        -- Send this PlayerSpellsActive packet to other players (sendToOthersPlayers is true),
+        -- but skip sending it to the player we got it from (skipAttachedPlayer is true)
+        tes3mp.SendSpellsActiveChanges(pid, true, true)
+    end
+
+    if CustomEventHooks then
+        CustomEventHooks.triggerHandlers('OnPlayerSpellsActive', eventStatus, { pid, playerPacket })
+    end
 end
 
 function OnPlayerJournal(pid)
@@ -770,8 +854,32 @@ function OnPlayerMiscellaneous(pid)
 end
 
 function OnPlayerEndCharGen(pid)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnPlayerEndCharGen\" for " .. logicHandler.GetChatName(pid))
-    eventHandler.OnPlayerEndCharGen(pid)
+    tes3mp.LogMessage(
+        enumerations.log.INFO,
+        ('Called "OnPlayerEndCharGen" for %s')
+        :format(logicHandler.GetChatName(pid))
+    )
+
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
+    if not isValid or not targetPid then return end
+
+    local player = Players[targetPid]
+
+    local eventStatus
+    if CustomEventHooks then
+        eventStatus = CustomEventHooks.triggerValidators('OnPlayerEndCharGen', { pid })
+    else
+        eventStatus = dUtil.makeEventStatus(true, true)
+    end
+
+    if eventStatus.validDefaultHandler then
+        player:EndCharGen()
+    end
+
+    if CustomEventHooks then
+        CustomEventHooks.triggerHandlers('OnPlayerEndCharGen', eventStatus, { pid })
+        CustomEventHooks.triggerHandlers('OnPlayerAuthentified', eventStatus, { pid })
+    end
 end
 
 function OnCellLoad(pid, cellDescription)
