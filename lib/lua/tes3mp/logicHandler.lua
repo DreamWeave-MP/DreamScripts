@@ -398,6 +398,7 @@ logicHandler.SendClientScriptSettings = function(pid, forEveryone)
 
     tes3mp.ClearSynchronizedClientGlobalIds()
 
+    tableHelper.print(clientVariableScopes)
     for _, variableCategory in pairs({ "personal", "quest", "kills", "factionRanks",
         "factionExpulsion", "worldwide" }) do
         for _, globalId in pairs(clientVariableScopes.globals[variableCategory]) do

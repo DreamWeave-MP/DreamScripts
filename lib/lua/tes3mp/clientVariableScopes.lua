@@ -31,6 +31,8 @@ local ClientVariableScopes = {
     globals = {}
 }
 
+print('ClientVariableScopes:\n\n')
+tableHelper.print(ClientDataFiles)
 if tableHelper.containsCaseInsensitiveString(ClientDataFiles, "Morrowind.esm") then
     local addedVariableScopes = {
         globals = {
