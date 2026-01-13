@@ -122,5 +122,5 @@ Menus["advanced example global"] = {
 
 ---@type TES3MPScriptRegistration
 return {
-    Menus = Menus,
+    menus = Menus,
 }

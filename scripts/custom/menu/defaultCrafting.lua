@@ -183,5 +183,5 @@ Menus["reward generic plural"] = {
 
 ---@type TES3MPScriptRegistration
 return {
-    Menus = Menus,
+    menus = Menus,
 }

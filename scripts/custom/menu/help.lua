@@ -761,5 +761,5 @@ Menus['help record example weapon 1'] = {
 
 ---@type TES3MPScriptRegistration
 return {
-    Menus = Menus,
+    menus = Menus,
 }
