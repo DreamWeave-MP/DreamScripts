@@ -1,17 +1,24 @@
 ---@meta
 
+---@alias CellDescription string Name of a cell as defined by content files
 ---@alias CommandTokens string[] pre-tokenized command string provided to all commandHandlers. The first value is always the name of the command entered, including the leading slash.
 ---@alias CommandHandler fun(pid: PlayerId, cmd: CommandTokens) Special function type for handling chat commands
+---@alias ContentFixMap table<CellDescription, ContentFixType>
 ---@alias DataFileRequirements table<string, string[]>
 ---@alias GUIID integer Unique numeric Identifier for GUIs
 ---@alias Inventory Item[]
 ---@alias PlayerId integer zero-based integer indicating a unique player ID.
+---@alias RefNum integer reference to a unique reference number defined by content files
 
 ---@alias OSType
 ---| 'Windows'
 ---| 'Linux'
 ---| 'OS X'
 ---| 'Unknown OS' -- This one probably shouldn't happen!
+
+---@class ContentFixType
+---@field disable RefNum[]?
+---@field unlock RefNum[]?
 
 ---@class Item
 ---@field enchantmentCharge integer -1 if not enchanted.

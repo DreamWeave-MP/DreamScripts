@@ -1,12 +1,41 @@
 local class = require 'classy'
 local config = require 'tes3mp.config'
-local contentFixer = require 'contentFixer'
 local enumerations = require 'tes3mp.enumerations'
 local inventoryHelper = require 'tes3mp.util.inventory'
 local logicHandler = require 'tes3mp.logicHandler'
 local packetBuilder = require 'tes3mp.packet.builder'
 local patterns = require 'patterns'
 local tableHelper = require 'tes3mp.util.table'
+
+---@param pid PlayerId
+---@param cellDescription CellDescription
+local function fixCell(pid, cellDescription)
+    local cellFixes = config.contentFixesByCell[cellDescription]
+    if not cellFixes then return end
+
+    for action, refNumArray in pairs(cellFixes) do
+        tes3mp.ClearObjectList()
+        tes3mp.SetObjectListPid(pid)
+        tes3mp.SetObjectListCell(cellDescription)
+
+        for arrayIndex, refNum in ipairs(refNumArray) do
+            tes3mp.SetObjectRefNum(refNum)
+            tes3mp.SetObjectMpNum(0)
+            tes3mp.SetObjectRefId("")
+            if action == "disable" then tes3mp.SetObjectState(false) end
+            if action == "unlock" then tes3mp.SetObjectLockLevel(0) end
+            tes3mp.AddObject()
+        end
+
+        if action == "delete" then
+            tes3mp.SendObjectDelete()
+        elseif action == "disable" then
+            tes3mp.SendObjectState()
+        elseif action == "unlock" then
+            tes3mp.SendObjectLock()
+        end
+    end
+end
 
 local BaseCell = class 'BaseCell'
 
@@ -187,7 +216,7 @@ function BaseCell:AddVisitor(pid)
 
         if shouldSendInfo == true then
             -- First, fix whatever quest problems exist in this cell
-            contentFixer.FixCell(pid, self.description)
+            fixCell(pid, self.description)
 
             self:LoadInitialCellData(pid)
         end

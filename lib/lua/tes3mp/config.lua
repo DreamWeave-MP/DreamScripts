@@ -21,6 +21,8 @@ config.customScripts = {
     --- Don't mess with them!
     'defaultValidators',
     'defaultHandlers',
+    --- contentFixer is used to adjust corprus state and world variables in certain circumstances
+    'contentFixer',
     -- 'menu.help',
     -- 'menu.defaultCrafting',
     -- 'menu.advancedExample',
@@ -178,6 +180,25 @@ config.synchronizedClientScriptIds = {
     "SothaLever9", "SothaLever10", "SothaLever11", "SothaOilLever", "LocalState",
     -- quest stages and timers
     "helsethScript", "KarrodMovement"
+}
+
+--- These specific cells are modified by the server core when a player enters them
+--- for safety and compatibility reasons
+---@type ContentFixMap
+config.contentFixesByCell = {
+    -- Delete the chargen boat and associated guards and objects
+    ['-1, -9'] = { disable = { 268178, 297457, 297459, 297460, 299125 } },
+    ['-2, -9'] = { disable = { 172848, 172850, 172852, 289104, 297461, 397559 } },
+    ['-2, -10'] = { disable = { 297463, 297464, 297465, 297466 } },
+    -- Delete the census papers and unlock the doors
+    ['Seyda Neen, Census and Excise Office'] = { disable = { 172859 }, unlock = { 119513, 172860 } },
+}
+
+--- Players will be prevented from equipping any of these items if the contentFixer script is enabled.
+--- If it isn't, this value is unused.
+config.deadlyItems = {
+    'keening',
+    'sunder',
 }
 
 -- Whether the instanced spawn should be used instead of the noninstanced one

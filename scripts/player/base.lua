@@ -1,5 +1,4 @@
 local config = require 'tes3mp.config'
-local contentFixer = require 'contentFixer'
 local enumerations = require 'tes3mp.enumerations'
 local inventoryHelper = require 'tes3mp.util.inventory'
 local logicHandler = require 'tes3mp.logicHandler'
@@ -8,6 +7,34 @@ local packetReader = require 'tes3mp.packet.reader'
 local patterns = require 'patterns'
 local stateHelper = require 'tes3mp.util.state'
 local tableHelper = require 'tes3mp.util.table'
+
+--- Unequip items that damage the player when worn
+---
+--- Note: Items with constant damage effects like Whitewalker and the Mantle of Woe
+---       are already unequipped by default in the TES3MP client, so this only needs
+---       to account for scripted items that are missed there
+---
+--- This function used to exist in contentFixer.lua
+---@param pid PlayerId
+local function unequipDeadlyItems(pid)
+    local itemsFound = 0
+
+    for _, itemRefId in pairs(config.deadlyItems) do
+        if tableHelper.containsKeyValue(Players[pid].data.equipment, "refId", itemRefId, true) then
+            local itemSlot = tableHelper.getIndexByNestedKeyValue(Players[pid].data.equipment, "refId", itemRefId, true)
+
+            if itemSlot then
+                Players[pid].data.equipment[itemSlot] = nil
+                itemsFound = itemsFound + 1
+            end
+        end
+    end
+
+    if itemsFound > 0 then
+        Players[pid]:QuicksaveToDrive()
+        Players[pid]:LoadEquipment()
+    end
+end
 
 ---@class BasePlayer
 local BasePlayer = require('classy')('BasePlayer')
@@ -617,7 +644,7 @@ function BasePlayer:Resurrect()
 
     -- Ensure that we unequip deadly items when applicable, to prevent an
     -- infinite death loop
-    contentFixer.UnequipDeadlyItems(self.pid)
+    unequipDeadlyItems(self.pid)
 
     tes3mp.Resurrect(self.pid, currentResurrectType)
 
