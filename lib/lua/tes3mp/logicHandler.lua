@@ -58,14 +58,14 @@ end
 ---@param pid PlayerId
 ---@return string chatName
 function logicHandler.GetChatName(pid)
-    if pid == nil then
+    if not pid then
         return "Unlogged player (nil)"
     end
 
-    if Players[pid] ~= nil then
-        return Players[pid].name .. " (" .. pid .. ")"
+    if Players[pid] then
+        return ('%s (%s)'):format(Players[pid].name, pid)
     else
-        return "Unlogged player (" .. pid .. ")"
+        return ('Unlogged Player (%s)'):format(pid)
     end
 end
 
