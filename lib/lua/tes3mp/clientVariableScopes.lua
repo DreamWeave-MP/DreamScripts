@@ -803,6 +803,7 @@ if tableHelper.containsCaseInsensitiveString(ClientDataFiles, "Sky_Main.esm") th
         }
     }
 
+    print('Merging bloodmoon vars...')
     tableHelper.merge(ClientVariableScopes, addedVariableScopes, true)
 end
 
