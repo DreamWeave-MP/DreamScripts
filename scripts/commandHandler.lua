@@ -511,7 +511,7 @@ function commandHandler.ProcessCommand(pid, cmd)
                 WorldInstance.data.time.hour = inputValue
                 WorldInstance:QuicksaveToDrive()
                 WorldInstance:LoadTime(pid, true)
-                hourCounter = inputValue
+                HourCounter = inputValue
             else
                 tes3mp.SendMessage(pid, "There aren't that many hours in a day.\n", false)
             end

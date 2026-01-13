@@ -52,13 +52,18 @@ pidsByIpAddress = {}
 ClientDataFiles = dUtil.loadRequiredDataFiles(false)
 
 ---@global
-hourCounter = nil
+HourCounter = nil
 
 ---@global
 updateTimerId = nil
 
 ---@global
 banList = {}
+
+--- If the CustomEventHooks interface is loaded,
+--- Then the OnServerInit event initializes this value
+---@type CustomEventHooks?
+local CustomEventHooks
 
 local miscUtil = require 'tes3mp.util.misc'
 
@@ -169,15 +174,15 @@ do
 
     function UpdateTime()
         if config.passTimeWhenEmpty or tableHelper.getCount(Players) > 0 then
-            hourCounter = hourCounter + (0.0083 * WorldInstance.frametimeMultiplier)
+            HourCounter = HourCounter + (0.0083 * WorldInstance.frametimeMultiplier)
 
-            local hourFloor = math.floor(hourCounter)
+            local hourFloor = math.floor(HourCounter)
 
             if previousHourFloor == nil then
                 previousHourFloor = hourFloor
             elseif hourFloor > previousHourFloor then
                 if hourFloor >= 24 then
-                    hourCounter = hourCounter - hourFloor
+                    HourCounter = HourCounter - hourFloor
                     hourFloor = 0
 
                     tes3mp.LogMessage(enumerations.log.INFO, "The world time day has been incremented")
@@ -185,7 +190,7 @@ do
                 end
 
                 tes3mp.LogMessage(enumerations.log.INFO, "The world time hour is now " .. hourFloor)
-                WorldInstance.data.time.hour = hourCounter
+                WorldInstance.data.time.hour = HourCounter
 
                 WorldInstance:UpdateFrametimeMultiplier()
 
@@ -202,15 +207,18 @@ do
 end
 
 function OnServerInit()
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnServerInit\"")
+    tes3mp.LogMessage(enumerations.log.INFO, 'Called \'OnServerInit\'')
 
-    local expectedVersionPrefix = "0.8.1"
+    local expectedVersionPrefix = '0.8.1'
     local serverVersion = tes3mp.GetServerVersion()
 
-    if string.sub(serverVersion, 1, string.len(expectedVersionPrefix)) ~= expectedVersionPrefix then
-        tes3mp.LogAppend(enumerations.log.ERROR, "- Version mismatch between server and Core scripts!")
-        tes3mp.LogAppend(enumerations.log.ERROR, "- The Core scripts require a server version that starts with " ..
-            expectedVersionPrefix)
+    if serverVersion:sub(1, string.len(expectedVersionPrefix)) ~= expectedVersionPrefix then
+        tes3mp.LogAppend(
+            enumerations.log.ERROR,
+            ([[- Version mismatch between server and Core scripts!
+- The Core scripts require a server version that starts with %s]])
+            :format(expectedVersionPrefix)
+        )
         tes3mp.StopServer(1)
     end
 
@@ -218,9 +226,8 @@ function OnServerInit()
 
     ScriptLoader.loadAllScripts()
     print(ScriptLoader.Interfaces)
-    if not ScriptLoader.Interfaces.customEventHooks then
-        tes3mp.LogAppend(enumerations.log.ERROR, 'Failed to locate customEventHooks Interface! Server refusing to start!')
-        tes3mp.StopServer(16)
+    if ScriptLoader.Interfaces.customEventHooks then
+        CustomEventHooks = ScriptLoader.Interfaces.customEventHooks
     end
 
     -- If the world has a data entry, load it
@@ -232,8 +239,13 @@ function OnServerInit()
         -- Get the current mpNum from the loaded world
         tes3mp.SetCurrentMpNum(WorldInstance:GetCurrentMpNum())
 
-        ScriptLoader.Interfaces.customEventHooks.triggerHandlers("OnWorldReload",
-            ScriptLoader.Interfaces.customEventHooks.makeEventStatus(true, true), {})
+        if CustomEventHooks then
+            CustomEventHooks.triggerHandlers(
+                'OnWorldReload',
+                CustomEventHooks.makeEventStatus(true, true),
+                {}
+            )
+        end
 
         -- Otherwise, create a data file for it
     else
@@ -246,7 +258,7 @@ function OnServerInit()
         end
     end
 
-    hourCounter = WorldInstance.data.time.hour
+    HourCounter = WorldInstance.data.time.hour
     WorldInstance:UpdateFrametimeMultiplier()
 
     updateTimerId = tes3mp.CreateTimer("UpdateTime", time.seconds(1))
@@ -261,86 +273,105 @@ function OnServerInit()
 end
 
 function OnServerPostInit()
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnServerPostInit\"")
+    if not CustomEventHooks then
+        return tes3mp.LogAppend(
+            enumerations.log.WARN,
+            ('CustomEventHooks not loaded. Skipping: eventHandlers for: %s'):format('OnServerPostInit')
+        )
+    end
 
-    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators("OnServerPostInit", {})
+    tes3mp.LogMessage(enumerations.log.INFO, 'Called "OnServerPostInit"')
+
+    local eventStatus
+    eventStatus = CustomEventHooks.triggerValidators('OnServerPostInit', {})
 
     if eventStatus.validDefaultHandler then
         tes3mp.SetGameMode(config.gameMode)
 
-        local consoleRuleString = "allowed"
+        local consoleRuleString = 'allowed'
         if not config.allowConsole then
-            consoleRuleString = "not " .. consoleRuleString
+            consoleRuleString = 'not ' .. consoleRuleString
         end
 
-        local bedRestRuleString = "allowed"
+        local bedRestRuleString = 'allowed'
         if not config.allowBedRest then
-            bedRestRuleString = "not " .. bedRestRuleString
+            bedRestRuleString = 'not ' .. bedRestRuleString
         end
 
-        local wildRestRuleString = "allowed"
+        local wildRestRuleString = 'allowed'
         if not config.allowWildernessRest then
-            wildRestRuleString = "not " .. wildRestRuleString
+            wildRestRuleString = 'not ' .. wildRestRuleString
         end
 
-        local waitRuleString = "allowed"
+        local waitRuleString = 'allowed'
         if not config.allowWait then
-            waitRuleString = "not " .. waitRuleString
+            waitRuleString = 'not ' .. waitRuleString
         end
 
-        tes3mp.SetRuleString("enforceDataFiles", tostring(config.enforceDataFiles))
-        tes3mp.SetRuleString("ignoreScriptErrors", tostring(config.ignoreScriptErrors))
-        tes3mp.SetRuleValue("difficulty", config.difficulty)
-        tes3mp.SetRuleValue("deathPenaltyJailDays", config.deathPenaltyJailDays)
-        tes3mp.SetRuleString("console", consoleRuleString)
-        tes3mp.SetRuleString("bedResting", bedRestRuleString)
-        tes3mp.SetRuleString("wildernessResting", wildRestRuleString)
-        tes3mp.SetRuleString("waiting", waitRuleString)
-        tes3mp.SetRuleValue("enforcedLogLevel", config.enforcedLogLevel)
-        tes3mp.SetRuleValue("physicsFramerate", config.physicsFramerate)
-        tes3mp.SetRuleString("shareJournal", tostring(config.shareJournal))
-        tes3mp.SetRuleString("shareFactionRanks", tostring(config.shareFactionRanks))
-        tes3mp.SetRuleString("shareFactionExpulsion", tostring(config.shareFactionExpulsion))
-        tes3mp.SetRuleString("shareFactionReputation", tostring(config.shareFactionReputation))
-        tes3mp.SetRuleString("shareTopics", tostring(config.shareTopics))
-        tes3mp.SetRuleString("shareBounty", tostring(config.shareBounty))
-        tes3mp.SetRuleString("shareReputation", tostring(config.shareReputation))
-        tes3mp.SetRuleString("shareMapExploration", tostring(config.shareMapExploration))
-        tes3mp.SetRuleString("enablePlacedObjectCollision", tostring(config.enablePlacedObjectCollision))
+        tes3mp.SetRuleString('enforceDataFiles', tostring(config.enforceDataFiles))
+        tes3mp.SetRuleString('ignoreScriptErrors', tostring(config.ignoreScriptErrors))
+        tes3mp.SetRuleValue('difficulty', config.difficulty)
+        tes3mp.SetRuleValue('deathPenaltyJailDays', config.deathPenaltyJailDays)
+        tes3mp.SetRuleString('console', consoleRuleString)
+        tes3mp.SetRuleString('bedResting', bedRestRuleString)
+        tes3mp.SetRuleString('wildernessResting', wildRestRuleString)
+        tes3mp.SetRuleString('waiting', waitRuleString)
+        tes3mp.SetRuleValue('enforcedLogLevel', config.enforcedLogLevel)
+        tes3mp.SetRuleValue('physicsFramerate', config.physicsFramerate)
+        tes3mp.SetRuleString('shareJournal', tostring(config.shareJournal))
+        tes3mp.SetRuleString('shareFactionRanks', tostring(config.shareFactionRanks))
+        tes3mp.SetRuleString('shareFactionExpulsion', tostring(config.shareFactionExpulsion))
+        tes3mp.SetRuleString('shareFactionReputation', tostring(config.shareFactionReputation))
+        tes3mp.SetRuleString('shareTopics', tostring(config.shareTopics))
+        tes3mp.SetRuleString('shareBounty', tostring(config.shareBounty))
+        tes3mp.SetRuleString('shareReputation', tostring(config.shareReputation))
+        tes3mp.SetRuleString('shareMapExploration', tostring(config.shareMapExploration))
+        tes3mp.SetRuleString('enablePlacedObjectCollision', tostring(config.enablePlacedObjectCollision))
 
         local respawnCell
 
         if config.respawnAtImperialShrine == true then
-            respawnCell = "nearest Imperial shrine"
+            respawnCell = 'nearest Imperial shrine'
 
             if config.respawnAtTribunalTemple == true then
-                respawnCell = respawnCell .. " or Tribunal temple"
+                respawnCell = respawnCell .. ' or Tribunal temple'
             end
         elseif config.respawnAtTribunalTemple == true then
-            respawnCell = "nearest Tribunal temple"
+            respawnCell = 'nearest Tribunal temple'
         else
             respawnCell = config.defaultRespawn.cellDescription
         end
 
-        tes3mp.SetRuleString("respawnCell", respawnCell)
+        tes3mp.SetRuleString('respawnCell', respawnCell)
     end
 
-    ScriptLoader.Interfaces.customEventHooks.triggerHandlers("OnServerPostInit", eventStatus, {})
+    CustomEventHooks.triggerHandlers('OnServerPostInit', eventStatus, {})
 end
 
 function OnServerExit(errorState)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnServerExit\"")
-    tes3mp.LogMessage(enumerations.log.ERROR, "Error state: " .. tostring(errorState))
-    ScriptLoader.Interfaces.customEventHooks.triggerHandlers("OnServerExit",
-        ScriptLoader.Interfaces.customEventHooks.makeEventStatus(true, true), { errorState })
+    tes3mp.LogMessage(enumerations.log.INFO, 'Called "OnServerExit"')
+    tes3mp.LogMessage(enumerations.log.ERROR, 'Error state: ' .. tostring(errorState))
+
+    if not CustomEventHooks then return end
+
+    CustomEventHooks.triggerHandlers(
+        'OnServerExit',
+        CustomEventHooks.makeEventStatus(true, true),
+        { errorState }
+    )
 end
 
 function OnServerScriptCrash(errorMessage)
-    tes3mp.LogMessage(enumerations.log.ERROR, "Server crash from script error!")
+    tes3mp.LogMessage(enumerations.log.ERROR, 'Server crash from script error!')
     tes3mp.StopServer(7)
-    if not ScriptLoader.Interfaces.customEventHooks then return end
-    ScriptLoader.Interfaces.customEventHooks.triggerHandlers("OnServerExit",
-        ScriptLoader.Interfaces.customEventHooks.makeEventStatus(true, true), { errorMessage })
+
+    if not CustomEventHooks then return end
+
+    CustomEventHooks.triggerHandlers(
+        'OnServerExit',
+        CustomEventHooks.makeEventStatus(true, true),
+        { errorMessage }
+    )
 end
 
 function OnRequestDataFileList()
@@ -354,6 +385,13 @@ function OnRequestPluginList()
 end
 
 function OnPlayerConnect(pid)
+    if not CustomEventHooks then
+        return tes3mp.LogAppend(
+            enumerations.log.WARN,
+            ('CustomEventHooks not loaded. Skipping: eventHandlers for: %s'):format('OnPlayerConnect')
+        )
+    end
+
     tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnPlayerConnect\" for pid " .. pid)
 
     local playerName = tes3mp.GetName(pid)
@@ -393,7 +431,7 @@ function OnPlayerConnect(pid)
     local player = Players[pid]
     player.name = playerName
 
-    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators('OnPlayerConnect', { pid })
+    local eventStatus = CustomEventHooks.triggerValidators('OnPlayerConnect', { pid })
 
     if eventStatus.validDefaultHandler then
         -- Send instanced spawn cell record now so it has time to arrive
@@ -499,7 +537,7 @@ function OnPlayerConnect(pid)
         tes3mp.StartTimer(Players[pid].loginTimerId)
     end
 
-    ScriptLoader.Interfaces.customEventHooks.triggerHandlers('OnPlayerConnect', eventStatus, { pid })
+    CustomEventHooks.triggerHandlers('OnPlayerConnect', eventStatus, { pid })
 end
 
 function OnPlayerDisconnect(pid)
@@ -512,9 +550,16 @@ function OnPlayerDisconnect(pid)
 end
 
 function OnPlayerResurrect(pid)
-    ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+    if not CustomEventHooks then
+        return tes3mp.LogAppend(
+            enumerations.log.WARN,
+            ('CustomEventHooks not loaded. Skipping: eventHandlers for: %s'):format('OnPlayerResurrect')
+        )
+    end
+
+    CustomEventHooks.triggerHandlers(
         'OnPlayerResurrect',
-        ScriptLoader.Interfaces.customEventHooks.makeEventStatus(true, true),
+        CustomEventHooks.makeEventStatus(true, true),
         { pid }
     )
 end
@@ -816,6 +861,13 @@ end
 ---@param idGui GUIID
 ---@param data string|integer
 function OnGUIAction(pid, idGui, data)
+    if not CustomEventHooks then
+        return tes3mp.LogAppend(
+            enumerations.log.WARN,
+            ('CustomEventHooks not loaded. Skipping: eventHandlers for: %s'):format('OnGUIAction')
+        )
+    end
+
     tes3mp.LogMessage(
         enumerations.log.INFO,
         ('Called "OnGUIAction" for %s'):format(logicHandler.GetChatName(pid))
@@ -826,7 +878,7 @@ function OnGUIAction(pid, idGui, data)
 
     data = tostring(data) -- data can be numeric, but we should convert it to a string
 
-    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
+    local eventStatus = CustomEventHooks.triggerValidators(
         'OnGUIAction',
         { pid, idGui, data }
     )
@@ -954,7 +1006,7 @@ function OnGUIAction(pid, idGui, data)
         end
     end
 
-    ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+    CustomEventHooks.triggerHandlers(
         'OnGUIAction',
         eventStatus,
         { pid, idGui, data }
@@ -972,7 +1024,14 @@ function OnLoginTimeExpiration(pid, accountName)
     local player = Players[pid]
     if not player or player.accountName ~= accountName then return end
 
-    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
+    if not CustomEventHooks then
+        return tes3mp.LogAppend(
+            enumerations.log.WARN,
+            ('CustomEventHooks not loaded. Skipping: eventHandlers for: %s'):format('OnLoginTimeExpiration')
+        )
+    end
+
+    local eventStatus = CustomEventHooks.triggerValidators(
         'OnLoginTimeExpiration',
         { pid }
     )
@@ -981,7 +1040,7 @@ function OnLoginTimeExpiration(pid, accountName)
         logicHandler.AuthCheck(pid)
     end
 
-    ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+    CustomEventHooks.triggerHandlers(
         'OnLoginTimeExpiration',
         eventStatus,
         { pid }
@@ -992,15 +1051,23 @@ function OnDeathTimeExpiration(pid, accountName)
     local player = Players[pid]
     if not player or not player:IsLoggedIn() or player.accountName ~= accountName then return end
 
-    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
+    if not CustomEventHooks then
+        return tes3mp.LogAppend(
+            enumerations.log.WARN,
+            ('CustomEventHooks not loaded. Skipping: eventHandlers for: %s'):format('OnDeathTimeExpiration')
+        )
+    end
+
+    local eventStatus = CustomEventHooks.triggerValidators(
         'OnDeathTimeExpiration',
         { pid }
     )
+
     if eventStatus.validDefaultHandler then
         player:Resurrect()
     end
 
-    ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+    CustomEventHooks.triggerHandlers(
         'OnDeathTimeExpiration',
         eventStatus,
         { pid }
@@ -1009,6 +1076,13 @@ end
 
 ---@param loopIndex integer
 function OnObjectLoopTimeExpiration(loopIndex)
+    if not CustomEventHooks then
+        return tes3mp.LogAppend(
+            enumerations.log.WARN,
+            ('CustomEventHooks not loaded. Skipping: eventHandlers for: %s'):format('OnObjectLoopTimeExpiration')
+        )
+    end
+
     local objectLoop = ObjectLoops[loopIndex]
     if not objectLoop then return end
 
@@ -1018,7 +1092,7 @@ function OnObjectLoopTimeExpiration(loopIndex)
 
     local player = Players[pid]
     if player and player:IsLoggedIn() and player.accountName == loop.targetName then
-        local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
+        local eventStatus = CustomEventHooks.triggerValidators(
             'OnObjectLoopTimeExpiration',
             { pid, loopIndex }
         )
@@ -1040,7 +1114,7 @@ function OnObjectLoopTimeExpiration(loopIndex)
             end
         end
 
-        ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+        CustomEventHooks.triggerHandlers(
             'OnObjectLoopTimeExpiration',
             eventStatus,
             { pid, loopIndex }

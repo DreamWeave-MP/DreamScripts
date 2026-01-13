@@ -104,7 +104,7 @@ function DScriptLoader.getScriptEnv()
     },
     --- TES3MP Globals
     banList = banList,
-    hourCounter = hourCounter,
+    HourCounter = HourCounter,
     pidsByIpAddress = pidsByIpAddress,
     updateTimerId = updateTimerId,
     Cell = Cell,
