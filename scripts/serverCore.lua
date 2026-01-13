@@ -92,14 +92,12 @@ local menuHelper = require 'tes3mp.util.menu'
 local logicHandler = require 'tes3mp.logicHandler'
 
 customEventHooks = require 'customEventHooks'
-customCommandHooks = require 'customCommandHooks'
 commandHandler = require 'commandHandler'
 eventHandler = require 'eventHandler'
 animHelper = require 'animHelper'
 
 ---@type DScriptLoader
 local ScriptLoader = require 'dUtil.scriptLoader' {
-    customCommandHooks = customCommandHooks,
     menuHelper = menuHelper,
 }
 

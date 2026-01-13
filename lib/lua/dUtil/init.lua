@@ -62,6 +62,15 @@ end
 
 ---@type DUtilModule
 local Module = {
+  ---@param validDefaultHandler boolean?
+  ---@param validCustomHandlers boolean?
+  ---@return EventStatusTable
+  makeEventStatus = function(validDefaultHandler, validCustomHandlers)
+    return {
+      validDefaultHandler = validDefaultHandler,
+      validCustomHandlers = validCustomHandlers
+    }
+  end,
   ---@return DataFileRequirements
   getRequiredDataFiles = function()
     return loadDataFileList('requiredDataFiles.json', false)

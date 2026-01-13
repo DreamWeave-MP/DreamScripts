@@ -5,11 +5,11 @@ local customEventHooks = {
 }
 
 ---@class EventStatusTable
----@field validDefaultHandler boolean
----@field validCustomHandlers boolean
+---@field validDefaultHandler boolean?
+---@field validCustomHandlers boolean?
 
----@param validDefaultHandler boolean
----@param validCustomHandlers boolean
+---@param validDefaultHandler boolean?
+---@param validCustomHandlers boolean?
 ---@return EventStatusTable
 function customEventHooks.makeEventStatus(validDefaultHandler, validCustomHandlers)
     return {

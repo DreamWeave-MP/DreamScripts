@@ -165,9 +165,19 @@ end
 ---@param scriptPath string sanitized relative script path for error output
 ---@param scriptRegistration TES3MPScriptRegistration resulting table after invoking a script using dofile
 function DScriptLoader.loadScriptCommands(scriptPath, scriptRegistration)
-  Deps.customCommandHooks:clearCommandsFromScript(scriptPath)
+  if not scriptRegistration.chatCommands or type(scriptRegistration.chatCommands) ~= 'table' then return end
 
-  for commandName, commandRegistration in pairs(scriptRegistration.chatCommands or {}) do
+  if not Interfaces.customCommandHooks then
+    return tes3mp.LogAppend(
+      enumerations.log.ERROR,
+      ('%s attempted to define chat commands, but the customCommandHooks interface has not been loaded yet!\nFix your load order!')
+      :format(scriptPath)
+    )
+  end
+
+  Interfaces.customCommandHooks:clearCommandsFromScript(scriptPath)
+
+  for commandName, commandRegistration in pairs(scriptRegistration.chatCommands) do
     if type(commandName) ~= 'string' or commandName == '' or type(commandRegistration.callback) ~= 'function' then
       tes3mp.LogAppend(
         enumerations.log.ERROR,
@@ -176,7 +186,7 @@ function DScriptLoader.loadScriptCommands(scriptPath, scriptRegistration)
       )
     end
 
-    Deps.customCommandHooks:registerCommand(commandName, {
+    Interfaces.customCommandHooks:registerCommand(commandName, {
       definedBy = scriptPath,
       callback = commandRegistration.callback,
       nameRequirement = commandRegistration.nameRequirement,
@@ -284,23 +294,16 @@ function DScriptLoader.loadAllScripts()
   --- Flush registered menus as well
   menuHelper.Menus = {}
 
-  ---@type CustomCommandHooks
-  local commandHooks = Deps.customCommandHooks
-  --- And commands
-  commandHooks.commands = {}
-
   for _, scriptName in ipairs(config.customScripts) do
     DScriptLoader.loadScript(scriptName)
   end
 end
 
 ---@class DScriptLoaderDeps
----@field customCommandHooks CustomCommandHooks
 ---@field menuHelper MenuHelper
 
 ---@param deps DScriptLoaderDeps
 return function(deps)
-  assert(deps.customCommandHooks)
   assert(deps.menuHelper)
 
   Deps = deps

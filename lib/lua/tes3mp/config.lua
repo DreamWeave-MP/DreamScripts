@@ -8,6 +8,9 @@ config.dataPath = tes3mp.GetDataPath()
 -- Array of script paths used to load handlers, validators, and interfaces from
 -- These directories are always relative to server/scripts/custom
 config.customScripts = {
+    --- The interface defined by customCommandHooks is required for all scripts to
+    --- Define chat commands. Don't remove it or change its order.
+    'customCommandHooks',
     'menu.help',
     'menu.defaultCrafting',
     'menu.advancedExample',

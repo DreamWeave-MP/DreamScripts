@@ -19,6 +19,7 @@
 
 ]]
 
+local dUtil = require 'dUtil.init'
 local enumerations = require 'tes3mp.enumerations'
 local tableHelper = require 'tes3mp.util.table'
 
@@ -160,7 +161,7 @@ end
 ---@param _ table<string, boolean> eventStatus table
 ---@param pid PlayerId
 ---@param message string
----@return boolean? eventStatus if false, breaks the eventValidator chain for this event
+---@return EventStatusTable? eventStatus if false, breaks the eventValidator chain for this event
 function customCommandHooks.validator(_, pid, message)
     if message:sub(1, 1) ~= '/' then return end
 
@@ -179,10 +180,15 @@ function customCommandHooks.validator(_, pid, message)
 
     if commandNotAuthenticated or allowedByName or allowedByRank then
         command.callback(pid, cmd)
-        return customEventHooks.makeEventStatus(false, nil)
+        return dUtil.makeEventStatus(false, nil)
     end
 end
 
-customEventHooks.registerValidator("OnPlayerSendMessage", customCommandHooks.validator)
-
-return customCommandHooks
+---@type TES3MPScriptRegistration
+return {
+    interfaceName = 'customCommandHooks',
+    interface = customCommandHooks,
+    eventValidators = {
+        OnPlayerSendMessage = customCommandHooks.validator,
+    },
+}

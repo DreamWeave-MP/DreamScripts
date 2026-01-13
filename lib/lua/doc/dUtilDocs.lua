@@ -24,7 +24,7 @@
 ---@field eventHandlers table<string, function>? series of eventHandlers for this script to run
 ---@field eventValidators table<string, function>? series of eventValidators for this script to run
 ---@field chatCommands table<string, TES3MPCommandRegistration>? chat commands registered by this script
----@field menus table<string, TES3MPMenu>
+---@field menus table<string, TES3MPMenu>? Menus defined to be consumed by menuHelper
 
 ---@class Vector3: userdata
 ---@field x number
