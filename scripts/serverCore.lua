@@ -107,8 +107,6 @@ local ScriptLoader = require 'dUtil.scriptLoader' {
     menuHelper = menuHelper,
 }
 
-ScriptLoader.loadAllScripts()
-
 function LoadBanList()
     tes3mp.LogMessage(enumerations.log.INFO, "Reading banlist.json")
     banList = jsonInterface.load("banlist.json")
@@ -259,6 +257,8 @@ end
 
 function OnServerPostInit()
     tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnServerPostInit\"")
+
+    ScriptLoader.loadAllScripts()
 
     local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators("OnServerPostInit", {})
 
