@@ -212,7 +212,7 @@ function OnServerInit()
         tes3mp.StopServer(1)
     end
 
-    local eventStatus = customEventHooks.triggerValidators("OnServerInit", {})
+    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators("OnServerInit", {})
 
     if eventStatus.validDefaultHandler then
         logicHandler.InitializeWorld()
@@ -237,7 +237,7 @@ function OnServerInit()
         tes3mp.SetScriptErrorIgnoringState(config.ignoreScriptErrors)
     end
 
-    customEventHooks.triggerHandlers("OnServerInit", eventStatus, {})
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers("OnServerInit", eventStatus, {})
 end
 
 function OnServerPostInit()
@@ -314,7 +314,8 @@ end
 function OnServerExit(errorState)
     tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnServerExit\"")
     tes3mp.LogMessage(enumerations.log.ERROR, "Error state: " .. tostring(errorState))
-    customEventHooks.triggerHandlers("OnServerExit", customEventHooks.makeEventStatus(true, true), { errorState })
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers("OnServerExit",
+        ScriptLoader.Interfaces.customEventHooks.makeEventStatus(true, true), { errorState })
 end
 
 function OnServerScriptCrash(errorMessage)
@@ -363,7 +364,8 @@ function OnPlayerDisconnect(pid)
 end
 
 function OnPlayerResurrect(pid)
-    customEventHooks.triggerHandlers("OnPlayerResurrect", customEventHooks.makeEventStatus(true, true), { pid })
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers("OnPlayerResurrect",
+        ScriptLoader.Interfaces.customEventHooks.makeEventStatus(true, true), { pid })
 end
 
 function OnPlayerSendMessage(pid, message)
