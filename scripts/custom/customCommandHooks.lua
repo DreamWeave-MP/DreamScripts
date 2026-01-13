@@ -171,6 +171,15 @@ function customCommandHooks.validator(_, pid, message)
     local command = customCommandHooks:getCommand(cmd[1])
     if not command then return end
 
+    if not command.callback or type(command.callback) ~= 'function' then
+        tes3mp.LogAppend(
+            enumerations.log.ERROR,
+            ('- CRITICAL ERROR: found a matching command for %s, but its callback was not a function: %s.\n- The server will now terminate.')
+            :format(cmd[1], command.callback)
+        )
+        tes3mp.StopServer(6)
+    end
+
     local commandNotAuthenticated = not command.rankRequirement and not command.nameRequirement
 
     local allowedByName = command.nameRequirement and
