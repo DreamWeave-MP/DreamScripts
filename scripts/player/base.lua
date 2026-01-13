@@ -6,7 +6,7 @@ local logicHandler = require 'tes3mp.logicHandler'
 local packetBuilder = require 'tes3mp.packet.builder'
 local packetReader = require 'tes3mp.packet.reader'
 local patterns = require 'patterns'
-local stateHelper = require 'stateHelper'
+local stateHelper = require 'tes3mp.util.state'
 local tableHelper = require 'tes3mp.util.table'
 
 ---@class BasePlayer
