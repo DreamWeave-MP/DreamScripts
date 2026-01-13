@@ -179,7 +179,7 @@ function DScriptLoader.loadScriptCommands(scriptPath, scriptRegistration)
     )
   end
 
-  Interfaces.customCommandHooks:clearCommandsFromScript(scriptPath)
+  Interfaces.customCommandHooks.clearCommandsFromScript(scriptPath)
 
   for commandName, commandRegistration in pairs(scriptRegistration.chatCommands) do
     if type(commandName) ~= 'string' or commandName == '' or type(commandRegistration.callback) ~= 'function' then
@@ -190,7 +190,7 @@ function DScriptLoader.loadScriptCommands(scriptPath, scriptRegistration)
       )
     end
 
-    Interfaces.customCommandHooks:registerCommand(commandName, {
+    Interfaces.customCommandHooks.registerCommand(commandName, {
       definedBy = scriptPath,
       callback = commandRegistration.callback,
       nameRequirement = commandRegistration.nameRequirement,

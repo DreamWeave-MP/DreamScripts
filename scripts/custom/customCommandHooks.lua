@@ -196,7 +196,51 @@ end
 ---@type TES3MPScriptRegistration
 return {
     interfaceName = 'customCommandHooks',
-    interface = customCommandHooks,
+    interface = {
+        ---@param scriptPath string Name of the new command to register
+        clearCommandsFromScript = function(scriptPath)
+            customCommandHooks:clearCommandsFromScript(scriptPath)
+        end,
+        ---@param commandName string Command to retrieve
+        ---@return TES3MPCommand?
+        getCommand = function(commandName)
+            if not commandName or type(commandName) ~= 'string' then
+                return tes3mp.LogAppend(
+                    enumerations.log.WARN,
+                    ('- customCommandHooks: Tried to find a command %s, but the input was invalid.')
+                    :format(commandName)
+                )
+            end
+
+            return customCommandHooks:getCommand(commandName)
+        end,
+        ---@param scriptPath string Name of the new command to register
+        ---@param commandData TES3MPCommand
+        registerCommand = function(scriptPath, commandData)
+            if not scriptPath or type(scriptPath) ~= 'string' then
+                error(
+                    ('Cannot register command %s since the provided value was not a string!')
+                    :format(scriptPath)
+                )
+            end
+
+            if not commandData or type(commandData) ~= 'table' then
+                error(
+                    ('Cannot register command %s since the provided commandData was not a table: %s!')
+                    :format(scriptPath, commandData)
+                )
+            end
+
+            if not commandData.callback or type(commandData.callback) ~= 'function' then
+                error(
+                    ('Cannot register command %s since the provided callback was not a function: %s!')
+                    :format(scriptPath, commandData.callback)
+                )
+            end
+
+            customCommandHooks:registerCommand(scriptPath, commandData)
+        end,
+    },
     eventValidators = {
         OnPlayerSendMessage = customCommandHooks.validator,
     },
