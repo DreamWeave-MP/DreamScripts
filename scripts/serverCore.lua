@@ -1257,30 +1257,33 @@ function OnLoginTimeExpiration(pid, accountName)
     end
 end
 
+---@param pid PlayerId
+---@param accountName string
 function OnDeathTimeExpiration(pid, accountName)
     local player = Players[pid]
     if not player or not player:IsLoggedIn() or player.accountName ~= accountName then return end
 
-    if noCustomEventHooks('OnDeathTimeExpiration') then
-        return
+    local eventStatus
+    if CustomEventHooks then
+        eventStatus = CustomEventHooks.triggerValidators(
+            'OnDeathTimeExpiration',
+            { pid }
+        )
     else
-        assert(CustomEventHooks)
+        eventStatus = dUtil.makeEventStatus(true, true)
     end
-
-    local eventStatus = CustomEventHooks.triggerValidators(
-        'OnDeathTimeExpiration',
-        { pid }
-    )
 
     if eventStatus.validDefaultHandler then
         player:Resurrect()
     end
 
-    CustomEventHooks.triggerHandlers(
-        'OnDeathTimeExpiration',
-        eventStatus,
-        { pid }
-    )
+    if CustomEventHooks then
+        CustomEventHooks.triggerHandlers(
+            'OnDeathTimeExpiration',
+            eventStatus,
+            { pid }
+        )
+    end
 end
 
 ---@param loopIndex integer
