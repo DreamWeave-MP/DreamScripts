@@ -5,60 +5,59 @@ local tableHelper = require 'tes3mp.util.table'
 ---@class SpeechHelper
 local speechHelper = {}
 
+---@enum SpeechPrefixes
 local speechTypesToFilePrefixes = {
-    attack = "Atk",
-    flee = "Fle",
-    follower = "Flw",
-    hello = "Hlo",
-    hit = "Hit",
-    idle = "Idl",
-    intruder = "int",
-    oppose = "OP",
-    service = "Srv",
-    thief = "Thf",
-    uniform = "uni"
+    attack = 'Atk',
+    flee = 'Fle',
+    follower = 'Flw',
+    hello = 'Hlo',
+    hit = 'Hit',
+    idle = 'Idl',
+    intruder = 'int',
+    oppose = 'OP',
+    service = 'Srv',
+    thief = 'Thf',
+    uniform = 'uni'
 }
 
 function speechHelper.GetSpeechPathFromCollection(speechCollectionTable, speechType, speechIndex, gender)
-    if speechCollectionTable == nil or speechTypesToFilePrefixes[speechType] == nil then
-        return nil
-    end
+    if not speechCollectionTable or not speechTypesToFilePrefixes[speechType] then return end
 
     local genderTableName
 
     if gender == 0 then
-        genderTableName = "femaleFiles"
+        genderTableName = 'femaleFiles'
     else
-        genderTableName = "maleFiles"
+        genderTableName = 'maleFiles'
     end
 
     local speechTypeTable = speechCollectionTable[genderTableName][speechType]
 
-    if speechTypeTable == nil then
-        return nil
-    else
-        if speechIndex > speechTypeTable.count then
-            return nil
-        elseif speechTypeTable.skip ~= nil and tableHelper.containsValue(speechTypeTable.skip, speechIndex) then
-            return nil
-        end
+    if not speechTypeTable then
+        return
     end
 
-    local speechPath = "Vo\\" .. speechCollectionTable.folderPath .. "\\"
+    if speechIndex > speechTypeTable.count then
+        return
+    elseif speechTypeTable.skip and tableHelper.containsValue(speechTypeTable.skip, speechIndex) then
+        return
+    end
+
+    local speechPath = 'Vo\\' .. speechCollectionTable.folderPath .. '\\'
 
     -- Assume there are only going to be subfolders for different genders if there are actually
     -- speech files for both genders
-    if speechCollectionTable.maleFiles ~= nil and speechCollectionTable.femaleFiles ~= nil then
+    if speechCollectionTable.maleFiles and speechCollectionTable.femaleFiles then
         if gender == 0 then
-            speechPath = speechPath .. "f\\"
+            speechPath = speechPath .. 'f\\'
         else
-            speechPath = speechPath .. "m\\"
+            speechPath = speechPath .. 'm\\'
         end
     end
 
     local filePrefix
 
-    if speechTypeTable.filePrefixOverride ~= nil then
+    if speechTypeTable.filePrefixOverride then
         filePrefix = speechTypeTable.filePrefixOverride
     else
         filePrefix = speechTypesToFilePrefixes[speechType]
@@ -66,7 +65,7 @@ function speechHelper.GetSpeechPathFromCollection(speechCollectionTable, speechT
 
     local indexPrefix
 
-    if speechTypeTable.indexPrefixOverride ~= nil then
+    if speechTypeTable.indexPrefixOverride then
         indexPrefix = speechTypeTable.indexPrefixOverride
     elseif gender == 0 then
         indexPrefix = speechCollectionTable.femalePrefix
@@ -74,37 +73,38 @@ function speechHelper.GetSpeechPathFromCollection(speechCollectionTable, speechT
         indexPrefix = speechCollectionTable.malePrefix
     end
 
-    speechPath = speechPath .. filePrefix .. "_" .. indexPrefix .. miscUtil.prefixZeroes(speechIndex, 3) .. ".mp3"
+    speechPath = speechPath .. filePrefix .. '_' .. indexPrefix .. miscUtil.prefixZeroes(speechIndex, 3) .. '.mp3'
 
     return speechPath
 end
 
+---@param pid PlayerId
+---@param speechInput string
+---@param speechIndex integer
 function speechHelper.GetSpeechPath(pid, speechInput, speechIndex)
     local speechCollectionKey
     local speechType
 
     -- Is there a specific folder at the start of the speechInput? If so,
     -- get the speechCollectionKey from it
-    local underscoreIndex = string.find(speechInput, "_")
+    local underscoreIndex = speechInput:find('_')
 
     if underscoreIndex ~= nil and underscoreIndex > 1 then
-        speechCollectionKey = string.sub(speechInput, 1, underscoreIndex - 1)
-        speechType = string.sub(speechInput, underscoreIndex + 1)
+        speechCollectionKey = speechInput:sub(1, underscoreIndex - 1)
+        speechType = speechInput:sub(underscoreIndex + 1)
     else
-        speechCollectionKey = "default"
+        speechCollectionKey = 'default'
         speechType = speechInput
     end
 
-    local race = string.lower(Players[pid].data.character.race)
+    local race = Players[pid].data.character.race:lower()
     local speechCollectionTable = speechCollections[race][speechCollectionKey]
 
-    if speechCollectionTable ~= nil then
-        local gender = Players[pid].data.character.gender
+    if not speechCollectionTable then return end
 
-        return speechHelper.GetSpeechPathFromCollection(speechCollectionTable, speechType, speechIndex, gender)
-    else
-        return nil
-    end
+    local gender = Players[pid].data.character.gender
+
+    return speechHelper.GetSpeechPathFromCollection(speechCollectionTable, speechType, speechIndex, gender)
 end
 
 function speechHelper.GetPrintableValidListForSpeechCollection(speechCollectionTable, gender, collectionPrefix)
@@ -112,24 +112,24 @@ function speechHelper.GetPrintableValidListForSpeechCollection(speechCollectionT
     local genderTableName
 
     if gender == 0 then
-        genderTableName = "femaleFiles"
+        genderTableName = 'femaleFiles'
     else
-        genderTableName = "maleFiles"
+        genderTableName = 'maleFiles'
     end
 
     if speechCollectionTable[genderTableName] ~= nil then
         for speechType, typeDetails in pairs(speechCollectionTable[genderTableName]) do
-            local validInput = ""
+            local validInput = ''
 
             if collectionPrefix then
                 validInput = collectionPrefix
             end
 
-            validInput = validInput .. speechType .. " 1-" .. typeDetails.count
+            validInput = validInput .. speechType .. ' 1-' .. typeDetails.count
 
             if typeDetails.skip ~= nil then
-                validInput = validInput .. " (except "
-                validInput = validInput .. tableHelper.concatenateFromIndex(typeDetails.skip, 1, ", ") .. ")"
+                validInput = validInput .. ' (except '
+                validInput = validInput .. tableHelper.concatenateFromIndex(typeDetails.skip, 1, ', ') .. ')'
             end
 
             table.insert(validList, validInput)
@@ -139,10 +139,11 @@ function speechHelper.GetPrintableValidListForSpeechCollection(speechCollectionT
     return validList
 end
 
+---@param pid PlayerId
 function speechHelper.GetPrintableValidListForPid(pid)
     local validList = {}
 
-    local race = string.lower(Players[pid].data.character.race)
+    local race = Players[pid].data.character.race:lower()
     local gender = Players[pid].data.character.gender
 
     -- Print the default speech options first
@@ -151,25 +152,26 @@ function speechHelper.GetPrintableValidListForPid(pid)
     end
 
     for speechCollectionKey, speechCollectionTable in pairs(speechCollections[race]) do
-        if speechCollectionKey ~= "default" then
+        if speechCollectionKey ~= 'default' then
             tableHelper.insertValues(validList,
                 speechHelper.GetPrintableValidListForSpeechCollection(speechCollectionTable, gender,
-                    speechCollectionKey .. "_"))
+                    speechCollectionKey .. '_'))
         end
     end
 
-    return tableHelper.concatenateFromIndex(validList, 1, ", ")
+    return tableHelper.concatenateFromIndex(validList, 1, ', ')
 end
 
+---@param pid PlayerId
+---@param speechInput string
+---@param speechIndex integer
 function speechHelper.PlaySpeech(pid, speechInput, speechIndex)
     local speechPath = speechHelper.GetSpeechPath(pid, speechInput, speechIndex)
 
-    if speechPath ~= nil then
-        tes3mp.PlaySpeech(pid, speechPath)
-        return true
-    end
+    if not speechPath then return false end
 
-    return false
+    tes3mp.PlaySpeech(pid, speechPath)
+    return true
 end
 
 return speechHelper
