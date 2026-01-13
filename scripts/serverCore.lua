@@ -308,16 +308,14 @@ function OnServerInit()
 end
 
 function OnServerPostInit()
-    if noCustomEventHooks('OnServerPostInit') then
-        return
-    else
-        assert(CustomEventHooks)
-    end
-
     tes3mp.LogMessage(enumerations.log.INFO, 'Called "OnServerPostInit"')
 
     local eventStatus
-    eventStatus = CustomEventHooks.triggerValidators('OnServerPostInit', {})
+    if CustomEventHooks then
+        eventStatus = CustomEventHooks.triggerValidators('OnServerPostInit', {})
+    else
+        eventStatus = dUtil.makeEventStatus(true, true)
+    end
 
     if eventStatus.validDefaultHandler then
         tes3mp.SetGameMode(config.gameMode)
@@ -379,7 +377,9 @@ function OnServerPostInit()
         tes3mp.SetRuleString('respawnCell', respawnCell)
     end
 
-    CustomEventHooks.triggerHandlers('OnServerPostInit', eventStatus, {})
+    if CustomEventHooks then
+        CustomEventHooks.triggerHandlers('OnServerPostInit', eventStatus, {})
+    end
 end
 
 function OnServerExit(errorState)
