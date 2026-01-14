@@ -103,7 +103,6 @@ end
 
 --- MenuHelper is stateful and should load prior to any module which possibly depends on it
 local menuHelper = require 'tes3mp.util.menu'
-local logicHandler = require 'tes3mp.logicHandler'
 
 -- commandHandler = require 'commandHandler'
 
@@ -743,7 +742,7 @@ end
 
 ---@param pid PlayerId
 function OnPlayerDeath(pid)
-    logPlayerEvent('OnPlayerDeath')
+    logPlayerEvent('OnPlayerDeath', pid)
 
     local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
     if not isValid or not targetPid then return end
