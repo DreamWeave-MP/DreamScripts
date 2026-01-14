@@ -1,3 +1,4 @@
+local animHelper = require 'animHelper'
 local color = require 'color'
 local dataTableBuilder = require 'dataTableBuilder'
 local enumerations = require 'tes3mp.enumerations'

@@ -106,8 +106,6 @@ local menuHelper = require 'tes3mp.util.menu'
 
 -- commandHandler = require 'commandHandler'
 
-animHelper = require 'animHelper'
-
 ---@type DScriptLoader
 local ScriptLoader = require 'dUtil.scriptLoader' {
     menuHelper = menuHelper,
