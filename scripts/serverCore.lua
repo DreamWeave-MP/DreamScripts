@@ -1958,7 +1958,60 @@ end
 ---@param pid PlayerId
 function OnVideoPlay(pid)
     logPlayerEvent('OnVideoPlay', pid)
-    eventHandler.OnVideoPlay(pid)
+
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
+    if not isValid or not targetPid then return end
+
+    tes3mp.ReadReceivedObjectList()
+    local packetOrigin = tes3mp.GetObjectListOrigin()
+
+    tes3mp.LogAppend(
+        enumerations.log.INFO,
+        ('- packetOrigin was %s'):format(tableHelper.getIndexByValue(enumerations.packetOrigin, packetOrigin))
+    )
+
+    local player = Players[targetPid]
+    local consoleCommand = tes3mp.GetObjectListConsoleCommand()
+    local hasConsoleVideoQueued = tableHelper.containsValue(player.consoleVideosQueued, consoleCommand)
+
+    if logicHandler.IsPacketFromConsole(packetOrigin) and not logicHandler.IsPlayerAllowedConsole(pid) and not hasConsoleVideoQueued then
+        tes3mp.Kick(pid)
+        return tes3mp.SendMessage(pid, consoleKickMessage:format(logicHandler.GetChatName(pid)), true)
+    end
+
+    if hasConsoleVideoQueued then
+        player.consoleVideosQueued = {}
+    end
+
+    if not config.shareVideos then return end
+
+    tes3mp.LogMessage(enumerations.log.INFO, ('Sharing VideoPlay from %s'):format(logicHandler.GetChatName(pid)))
+
+    local videos = {}
+
+    for i = 0, tes3mp.GetObjectListSize() - 1 do
+        local videoFilename = tes3mp.GetVideoFilename(i)
+        table.insert(videos, videoFilename)
+        tes3mp.LogAppend(enumerations.log.WARN, '- videoFilename ' .. videoFilename)
+    end
+
+    local eventStatus
+    if CustomEventHooks then
+        eventStatus = CustomEventHooks.triggerValidators('OnVideoPlay', { pid, videos })
+    else
+        eventStatus = dUtil.misc.makeEventStatus()
+    end
+
+    if eventStatus.validDefaultHandler then
+        tes3mp.CopyReceivedObjectListToStore()
+        -- Send this VideoPlay packet to other players (sendToOthersPlayers is true),
+        -- but skip sending it to the player we got it from (skipAttachedPlayer is true)
+        tes3mp.SendVideoPlay(true, true)
+    end
+
+    if CustomEventHooks then
+        CustomEventHooks.triggerHandlers('OnVideoPlay', eventStatus, { pid, videos })
+    end
 end
 
 ---@param pid PlayerId

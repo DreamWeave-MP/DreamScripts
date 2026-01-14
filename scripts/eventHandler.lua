@@ -1,49 +1,6 @@
 -- local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
 -- if not isValid or not targetPid then return end
 
-eventHandler.OnVideoPlay = function(pid)
-    assert(Deps)
-    if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
-        tes3mp.ReadReceivedObjectList()
-        local packetOrigin = tes3mp.GetObjectListOrigin()
-        tes3mp.LogAppend(enumerations.log.INFO, '- packetOrigin was ' ..
-            tableHelper.getIndexByValue(enumerations.packetOrigin, packetOrigin))
-
-        local consoleCommand = tes3mp.GetObjectListConsoleCommand()
-        local hasConsoleVideoQueued = tableHelper.containsValue(Players[pid].consoleVideosQueued, consoleCommand)
-
-        if logicHandler.IsPacketFromConsole(packetOrigin) and not logicHandler.IsPlayerAllowedConsole(pid) and not hasConsoleVideoQueued then
-            tes3mp.Kick(pid)
-            tes3mp.SendMessage(pid, logicHandler.GetChatName(pid) .. consoleKickMessage, true)
-            return
-        end
-
-        if hasConsoleVideoQueued then
-            Players[pid].consoleVideosQueued = {}
-        end
-
-        if config.shareVideos == true then
-            tes3mp.LogMessage(enumerations.log.INFO, 'Sharing VideoPlay from ' .. logicHandler.GetChatName(pid))
-
-            local videos = {}
-
-            for i = 0, tes3mp.GetObjectListSize() - 1 do
-                local videoFilename = tes3mp.GetVideoFilename(i)
-                table.insert(videos, videoFilename)
-                tes3mp.LogAppend(enumerations.log.WARN, '- videoFilename ' .. videoFilename)
-            end
-            local eventStatus = CustomEventHooks.triggerValidators('OnVideoPlay', { pid, videos })
-            if eventStatus.validDefaultHandler then
-                tes3mp.CopyReceivedObjectListToStore()
-                -- Send this VideoPlay packet to other players (sendToOthersPlayers is true),
-                -- but skip sending it to the player we got it from (skipAttachedPlayer is true)
-                tes3mp.SendVideoPlay(true, true)
-            end
-            CustomEventHooks.triggerHandlers('OnVideoPlay', eventStatus, { pid, videos })
-        end
-    end
-end
-
 eventHandler.OnRecordDynamic = function(pid)
     assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
