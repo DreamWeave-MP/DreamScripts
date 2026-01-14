@@ -1767,7 +1767,68 @@ end
 ---@param cellDescription CellDescription
 function OnConsoleCommand(pid, cellDescription)
     logPlayerCellEvent('OnConsoleCommand', pid, cellDescription)
-    eventHandler.OnConsoleCommand(pid, cellDescription)
+
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
+    if not isValid or not targetPid then return tes3mp.Kick(pid) end
+
+    tes3mp.ReadReceivedObjectList()
+
+    local packetTables = packetReader.GetObjectPacketTables('ConsoleCommand')
+    local objects = packetTables.objects
+    local targetPlayers = packetTables.players
+    local consoleCommand = tes3mp.GetObjectListConsoleCommand()
+
+    local eventStatus
+    if CustomEventHooks then
+        eventStatus = CustomEventHooks.triggerValidators(
+            'OnConsoleCommand',
+            { pid, cellDescription, consoleCommand, objects, targetPlayers }
+        )
+    else
+        eventStatus = dUtil.misc.makeEventStatus()
+    end
+
+    if eventStatus.validDefaultHandler then
+        local debugMessage =
+            ([[Accepted ConsoleCommand from %s about %s
+consoleCommand: %s]])
+            :format(logicHandler.GetChatName(pid), cellDescription, consoleCommand)
+
+        for uniqueIndex, object in pairs(objects) do
+            debugMessage = ('%s\n- object target: %s %s'):format(debugMessage, object.refId, uniqueIndex)
+        end
+
+        for targetedPid, targetPlayer in pairs(targetPlayers) do
+            debugMessage = ('%s\n- player target: %s'):format(debugMessage, logicHandler.GetChatName(targetedPid))
+        end
+
+        local isQueuedConsoleCommand = false
+
+        local player = Players[targetPid]
+        -- Clear this only once from the console commands queued for this player, if found in that table
+        for arrayIndex, consoleCommandQueued in pairs(player.consoleCommandsQueued) do
+            if consoleCommandQueued == consoleCommand then
+                player.consoleCommandsQueued[arrayIndex] = nil
+                isQueuedConsoleCommand = true
+                debugMessage = ('%s\n- was a console command executed at the server\'s request'):format(debugMessage)
+                break
+            end
+        end
+
+        if not isQueuedConsoleCommand then
+            debugMessage = ('%s\n- was a console command executed unilaterally from the client'):format(debugMessage)
+        end
+
+        tes3mp.LogMessage(enumerations.log.INFO, debugMessage)
+    end
+
+    if CustomEventHooks then
+        CustomEventHooks.triggerHandlers(
+            'OnConsoleCommand',
+            eventStatus,
+            { pid, cellDescription, consoleCommand, objects, targetPlayers }
+        )
+    end
 end
 
 ---@param pid PlayerId
