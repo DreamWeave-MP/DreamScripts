@@ -1,29 +1,6 @@
 -- local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
 -- if not isValid or not targetPid then return end
 
-eventHandler.OnActorCellChange = function(pid, cellDescription)
-    assert(Deps)
-    if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
-        local isCellLoaded = LoadedCells[cellDescription] ~= nil
-
-        if not isCellLoaded then
-            logicHandler.LoadCell(cellDescription)
-        end
-
-        local eventStatus = Deps.customEventHooks.triggerValidators("OnActorCellChange", { pid, cellDescription })
-        if eventStatus.validDefaultHandler then
-            LoadedCells[cellDescription]:SaveActorCellChanges(pid)
-        end
-        Deps.customEventHooks.triggerHandlers("OnActorCellChange", eventStatus, { pid, cellDescription })
-
-        if not isCellLoaded then
-            logicHandler.UnloadCell(cellDescription)
-        end
-    else
-        tes3mp.Kick(pid)
-    end
-end
-
 eventHandler.OnGenericObjectEvent = function(pid, cellDescription, packetType)
     assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then

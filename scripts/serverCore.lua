@@ -1535,7 +1535,34 @@ end
 ---@param cellDescription CellDescription
 function OnActorCellChange(pid, cellDescription)
     logPlayerCellEvent('OnActorCellChange', pid, cellDescription)
-    eventHandler.OnActorCellChange(pid, cellDescription)
+
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
+    if not isValid or not targetPid then return tes3mp.Kick(pid) end
+
+    local loadedCell = LoadedCells[cellDescription]
+
+    if not loadedCell then
+        logicHandler.LoadCell(cellDescription)
+    end
+
+    local eventStatus
+    if CustomEventHooks then
+        eventStatus = CustomEventHooks.triggerValidators("OnActorCellChange", { pid, cellDescription })
+    else
+        eventStatus = dUtil.misc.makeEventStatus()
+    end
+
+    if eventStatus.validDefaultHandler then
+        LoadedCells[cellDescription]:SaveActorCellChanges(pid)
+    end
+
+    if CustomEventHooks then
+        CustomEventHooks.triggerHandlers("OnActorCellChange", eventStatus, { pid, cellDescription })
+    end
+
+    if not loadedCell then
+        logicHandler.UnloadCell(cellDescription)
+    end
 end
 
 ---@param pid PlayerId
