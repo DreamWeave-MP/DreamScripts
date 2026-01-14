@@ -1300,7 +1300,28 @@ end
 ---@param cellDescription CellDescription
 function OnCellUnload(pid, cellDescription)
     logPlayerCellEvent('OnCellUnload', pid, cellDescription)
-    eventHandler.OnCellUnload(pid, cellDescription)
+
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cellDescription)
+    if not isValid or not targetPid then return end
+
+    local eventStatus
+    if CustomEventHooks then
+        eventStatus = CustomEventHooks.triggerValidators('OnCellUnload', { pid, cellDescription })
+    else
+        eventStatus = dUtil.misc.makeEventStatus()
+    end
+
+    if eventStatus.validDefaultHandler then
+        logicHandler.UnloadCellForPlayer(pid, cellDescription)
+    end
+
+    if CustomEventHooks then
+        CustomEventHooks.triggerHandlers(
+            'OnCellUnload',
+            eventStatus,
+            { pid, cellDescription }
+        )
+    end
 end
 
 ---@param cellDescription CellDescription

@@ -5,17 +5,6 @@ local eventHandler = {}
 -- local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
 -- if not isValid or not targetPid then return end
 
-eventHandler.OnCellUnload = function(pid, cellDescription)
-    assert(Deps)
-    if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
-        local eventStatus = Deps.customEventHooks.triggerValidators("OnCellUnload", { pid, cellDescription })
-        if eventStatus.validDefaultHandler then
-            logicHandler.UnloadCellForPlayer(pid, cellDescription)
-        end
-        Deps.customEventHooks.triggerHandlers("OnCellUnload", eventStatus, { pid, cellDescription })
-    end
-end
-
 eventHandler.OnCellDeletion = function(cellDescription)
     assert(Deps)
     local eventStatus = Deps.customEventHooks.triggerValidators("OnCellDeletion", { cellDescription })
