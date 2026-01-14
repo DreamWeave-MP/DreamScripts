@@ -2186,7 +2186,29 @@ end
 ---@param pid PlayerId
 function OnWorldKillCount(pid)
     logPlayerEvent('OnWorldKillCount', pid)
-    eventHandler.OnWorldKillCount(pid)
+
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
+    if not isValid or not targetPid then return end
+
+    local eventStatus
+    if CustomEventHooks then
+        eventStatus = CustomEventHooks.triggerValidators('OnWorldKillCount', { pid })
+    else
+        eventStatus = dUtil.misc.makeEventStatus()
+    end
+
+    if eventStatus.validDefaultHandler then
+        WorldInstance:SaveKills(pid)
+        tes3mp.CopyReceivedWorldstateToStore()
+
+        -- Send this WorldKillCount packet to other players (sendToOthersPlayers is true),
+        -- but skip sending it to the player we got it from (skipAttachedPlayer is true)
+        tes3mp.SendWorldKillCount(pid, true, true)
+    end
+
+    if CustomEventHooks then
+        CustomEventHooks.triggerHandlers('OnWorldKillCount', eventStatus, { pid })
+    end
 end
 
 ---@param pid PlayerId

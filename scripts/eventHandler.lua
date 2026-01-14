@@ -1,22 +1,6 @@
 -- local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
 -- if not isValid or not targetPid then return end
 
-eventHandler.OnWorldKillCount = function(pid)
-    assert(Deps)
-    if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
-        local eventStatus = CustomEventHooks.triggerValidators('OnWorldKillCount', { pid })
-        if eventStatus.validDefaultHandler then
-            WorldInstance:SaveKills(pid)
-            tes3mp.CopyReceivedWorldstateToStore()
-
-            -- Send this WorldKillCount packet to other players (sendToOthersPlayers is true),
-            -- but skip sending it to the player we got it from (skipAttachedPlayer is true)
-            tes3mp.SendWorldKillCount(pid, true, true)
-        end
-        CustomEventHooks.triggerHandlers('OnWorldKillCount', eventStatus, { pid })
-    end
-end
-
 eventHandler.OnWorldMap = function(pid)
     assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
