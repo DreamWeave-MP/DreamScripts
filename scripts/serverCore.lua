@@ -106,13 +106,6 @@ local menuHelper = require 'tes3mp.util.menu'
 
 -- commandHandler = require 'commandHandler'
 
---- The eventHandler uses customEventHooks as a dependency due to registering many built-in eventHandlers/Validators itself
---- We probably should change this so that all the built-in validators and handlers are loaded naturally as a consequence of the server's
---- Initialization instead of making onServerPostInit subject to it
---- *possibly*, we should delete eventHandler altogether
---- and merge its validators/handlers into builtin scripts that load after customEventHooks
-local eventHandler = require 'eventHandler'
-
 animHelper = require 'animHelper'
 
 ---@type DScriptLoader
@@ -1731,7 +1724,6 @@ end
 ---@param cellDescription CellDescription
 function OnObjectTrap(pid, cellDescription)
     logPlayerCellEvent('OnObjectTrap', pid, cellDescription)
-    eventHandler.OnObjectTrap(pid, cellDescription)
     onGenericObjectEvent(pid, cellDescription, 'ObjectTrap')
 end
 
@@ -2214,13 +2206,82 @@ end
 ---@param pid PlayerId
 function OnWorldMap(pid)
     logPlayerEvent('OnWorldMap', pid)
-    eventHandler.OnWorldMap(pid)
+
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
+    if not isValid or not targetPid then return end
+
+    tes3mp.ReadReceivedWorldstate()
+    local mapTileArray = packetReader.GetWorldMapTileArray()
+
+    local eventStatus
+    if CustomEventHooks then
+        eventStatus = CustomEventHooks.triggerValidators('OnWorldMap', { pid, mapTileArray })
+    else
+        eventStatus = dUtil.misc.makeEventStatus()
+    end
+
+    if eventStatus.validDefaultHandler then
+        WorldInstance:SaveMapTiles(mapTileArray)
+
+        if config.shareMapExploration then
+            tes3mp.CopyReceivedWorldstateToStore()
+
+            -- Send this WorldMap packet to other players (sendToOthersPlayers is true),
+            -- but skip sending it to the player we got it from (skipAttachedPlayer is true)
+            tes3mp.SendWorldMap(pid, true, true)
+        end
+    end
+
+    if CustomEventHooks then
+        CustomEventHooks.triggerHandlers('OnWorldMap', eventStatus, { pid, mapTileArray })
+    end
 end
 
 ---@param pid PlayerId
 function OnWorldWeather(pid)
     logPlayerEvent('OnWorldWeather', pid)
-    eventHandler.OnWorldWeather(pid)
+
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
+    if not isValid or not targetPid then return end
+
+    local eventStatus
+    if CustomEventHooks then
+        eventStatus = CustomEventHooks.triggerValidators('OnWorldWeather', { pid })
+    else
+        eventStatus = dUtil.misc.makeEventStatus()
+    end
+
+    if eventStatus.validDefaultHandler then
+        tes3mp.ReadReceivedWorldstate()
+
+        local regionName = tes3mp.GetWeatherRegion():lower()
+
+        -- Track current weather in each region
+        if WorldInstance.storedRegions[regionName] then
+            WorldInstance:SaveRegionWeather(regionName)
+        end
+
+        -- Go through the other players on the server and send them this weather update
+        for _, otherPlayer in pairs(Players) do
+            local otherPid = otherPlayer.pid
+
+            -- Ignore the player we got the weather from
+            if otherPid ~= pid then
+                -- If this player has been marked as requiring a force weather update for
+                -- this region, provide them with one
+                if WorldInstance:IsForcedWeatherUpdatePid(otherPid, regionName) then
+                    WorldInstance:LoadRegionWeather(regionName, otherPid, false, true)
+                    WorldInstance:RemoveForcedWeatherUpdatePid(otherPid, regionName)
+                else
+                    WorldInstance:LoadRegionWeather(regionName, otherPid, false, false)
+                end
+            end
+        end
+    end
+
+    if CustomEventHooks then
+        CustomEventHooks.triggerHandlers('OnWorldWeather', eventStatus, { pid })
+    end
 end
 
 ---@param pid PlayerId
