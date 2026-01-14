@@ -5,27 +5,6 @@ local eventHandler = {}
 -- local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
 -- if not isValid or not targetPid then return end
 
-eventHandler.OnPlayerMiscellaneous = function(pid)
-    assert(Deps)
-    if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
-        local changeType = tes3mp.GetMiscellaneousChangeType(pid)
-
-        if changeType == enumerations.miscellaneous.MARK_LOCATION then
-            local eventStatus = Deps.customEventHooks.triggerValidators("OnPlayerMarkLocation", { pid })
-            if eventStatus.validDefaultHandler then
-                Players[pid]:SaveMarkLocation()
-            end
-            Deps.customEventHooks.triggerHandlers("OnPlayerMarkLocation", eventStatus, { pid })
-        elseif changeType == enumerations.miscellaneous.SELECTED_SPELL then
-            local eventStatus = Deps.customEventHooks.triggerValidators("OnPlayerSelectedSpell", { pid })
-            if eventStatus.validDefaultHandler then
-                Players[pid]:SaveSelectedSpell()
-            end
-            Deps.customEventHooks.triggerHandlers("OnPlayerSelectedSpell", eventStatus, { pid })
-        end
-    end
-end
-
 eventHandler.OnCellLoad = function(pid, cellDescription)
     assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then

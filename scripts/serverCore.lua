@@ -1197,7 +1197,44 @@ end
 ---@param pid PlayerId
 function OnPlayerMiscellaneous(pid)
     logPlayerEvent('OnPlayerMiscellaneous', pid)
-    eventHandler.OnPlayerMiscellaneous(pid)
+
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
+    if not isValid or not targetPid then return end
+
+    local player = Players[targetPid]
+    local changeType = tes3mp.GetMiscellaneousChangeType(targetPid)
+
+    if changeType == enumerations.miscellaneous.MARK_LOCATION then
+        local eventStatus
+        if CustomEventHooks then
+            eventStatus = CustomEventHooks.triggerValidators("OnPlayerMarkLocation", { targetPid })
+        else
+            eventStatus = dUtil.misc.makeEventStatus()
+        end
+
+        if eventStatus.validDefaultHandler then
+            player:SaveMarkLocation()
+        end
+
+        if CustomEventHooks then
+            CustomEventHooks.triggerHandlers("OnPlayerMarkLocation", eventStatus, { targetPid })
+        end
+    elseif changeType == enumerations.miscellaneous.SELECTED_SPELL then
+        local eventStatus
+        if CustomEventHooks then
+            eventStatus = CustomEventHooks.triggerValidators("OnPlayerSelectedSpell", { targetPid })
+        else
+            eventStatus = dUtil.misc.makeEventStatus()
+        end
+
+        if eventStatus.validDefaultHandler then
+            player:SaveSelectedSpell()
+        end
+
+        if CustomEventHooks then
+            CustomEventHooks.triggerHandlers("OnPlayerSelectedSpell", eventStatus, { targetPid })
+        end
+    end
 end
 
 ---@param pid PlayerId
