@@ -1010,9 +1010,34 @@ function OnPlayerFaction(pid)
     end
 end
 
+---@param pid PlayerId
 function OnPlayerTopic(pid)
     tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnPlayerTopic\" for " .. logicHandler.GetChatName(pid))
-    eventHandler.OnPlayerTopic(pid)
+
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
+    if not isValid or not targetPid then return end
+
+    local eventStatus
+    if CustomEventHooks then
+        eventStatus = CustomEventHooks.triggerValidators('OnPlayerTopic', { pid })
+    else
+        eventStatus = dUtil.misc.makeEventStatus()
+    end
+
+    if eventStatus.validDefaultHandler then
+        if config.shareTopics then
+            WorldInstance:SaveTopics(targetPid)
+            -- Send this PlayerTopic packet to other players (sendToOthersPlayers is true),
+            -- but skip sending it to the player we got it from (skipAttachedPlayer is true)
+            tes3mp.SendTopicChanges(targetPid, true, true)
+        else
+            Players[targetPid]:SaveTopics()
+        end
+    end
+
+    if CustomEventHooks then
+        CustomEventHooks.triggerHandlers('OnPlayerTopic', eventStatus, { pid })
+    end
 end
 
 function OnPlayerBounty(pid)

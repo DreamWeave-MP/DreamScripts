@@ -2,28 +2,8 @@ local config = require 'tes3mp.config'
 ---@class EventHandler
 local eventHandler = {}
 
-eventHandler.OnPlayerFaction = function(pid)
-end
-
-eventHandler.OnPlayerTopic = function(pid)
-    assert(Deps)
-    if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
-        local eventStatus = Deps.customEventHooks.triggerValidators("OnPlayerTopic", { pid })
-
-        if eventStatus.validDefaultHandler then
-            if config.shareTopics == true then
-                WorldInstance:SaveTopics(pid)
-                -- Send this PlayerTopic packet to other players (sendToOthersPlayers is true),
-                -- but skip sending it to the player we got it from (skipAttachedPlayer is true)
-                tes3mp.SendTopicChanges(pid, true, true)
-            else
-                Players[pid]:SaveTopics()
-            end
-        end
-
-        Deps.customEventHooks.triggerHandlers("OnPlayerTopic", eventStatus, { pid })
-    end
-end
+-- local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
+-- if not isValid or not targetPid then return end
 
 eventHandler.OnPlayerBounty = function(pid)
     assert(Deps)
