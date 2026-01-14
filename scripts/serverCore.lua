@@ -1042,14 +1042,14 @@ end
 
 ---@param pid PlayerId
 function OnPlayerBounty(pid)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnPlayerBounty\" for " .. logicHandler.GetChatName(pid))
+    tes3mp.LogMessage(enumerations.log.INFO, 'Called \'OnPlayerBounty\' for ' .. logicHandler.GetChatName(pid))
 
     local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
     if not isValid or not targetPid then return end
 
     local eventStatus
     if CustomEventHooks then
-        eventStatus = CustomEventHooks.triggerValidators("OnPlayerBounty", { pid })
+        eventStatus = CustomEventHooks.triggerValidators('OnPlayerBounty', { pid })
     else
         eventStatus = dUtil.misc.makeEventStatus()
     end
@@ -1079,13 +1079,41 @@ function OnPlayerBounty(pid)
     end
 
     if CustomEventHooks then
-        CustomEventHooks.triggerHandlers("OnPlayerBounty", eventStatus, { pid })
+        CustomEventHooks.triggerHandlers('OnPlayerBounty', eventStatus, { pid })
     end
 end
 
+---@param pid PlayerId
 function OnPlayerReputation(pid)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnPlayerReputation\" for " .. logicHandler.GetChatName(pid))
-    eventHandler.OnPlayerReputation(pid)
+    tes3mp.LogMessage(
+        enumerations.log.INFO,
+        ('Called "OnPlayerReputation" for '):format(logicHandler.GetChatName(pid))
+    )
+
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
+    if not isValid or not targetPid then return end
+
+    local eventStatus
+    if CustomEventHooks then
+        eventStatus = CustomEventHooks.triggerValidators('OnPlayerReputation', { targetPid })
+    else
+        eventStatus = dUtil.misc.makeEventStatus()
+    end
+
+    if eventStatus.validDefaultHandler then
+        if config.shareReputation then
+            WorldInstance:SaveReputation(targetPid)
+            -- Send this PlayerReputation packet to other players (sendToOthersPlayers is true),
+            -- but skip sending it to the player we got it from (skipAttachedPlayer is true)
+            tes3mp.SendReputation(targetPid, true, true)
+        else
+            Players[targetPid]:SaveReputation()
+        end
+    end
+
+    if CustomEventHooks then
+        CustomEventHooks.triggerHandlers('OnPlayerReputation', eventStatus, { targetPid })
+    end
 end
 
 function OnPlayerBook(pid)

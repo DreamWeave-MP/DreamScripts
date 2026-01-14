@@ -5,25 +5,6 @@ local eventHandler = {}
 -- local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
 -- if not isValid or not targetPid then return end
 
-eventHandler.OnPlayerReputation = function(pid)
-    assert(Deps)
-    if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
-        local eventStatus = Deps.customEventHooks.triggerValidators("OnPlayerReputation", { pid })
-
-        if eventStatus.validDefaultHandler then
-            if config.shareReputation == true then
-                WorldInstance:SaveReputation(pid)
-                -- Send this PlayerReputation packet to other players (sendToOthersPlayers is true),
-                -- but skip sending it to the player we got it from (skipAttachedPlayer is true)
-                tes3mp.SendReputation(pid, true, true)
-            else
-                Players[pid]:SaveReputation()
-            end
-        end
-        Deps.customEventHooks.triggerHandlers("OnPlayerReputation", eventStatus, { pid })
-    end
-end
-
 eventHandler.OnPlayerBook = function(pid)
     assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
