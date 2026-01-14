@@ -1327,7 +1327,24 @@ end
 ---@param cellDescription CellDescription
 function OnCellDeletion(cellDescription)
     logCellEvent('OnCellDeletion', cellDescription)
-    eventHandler.OnCellDeletion(cellDescription)
+
+    local eventStatus
+    if CustomEventHooks then
+        eventStatus = CustomEventHooks.triggerValidators(
+            "OnCellDeletion",
+            { cellDescription }
+        )
+    else
+        eventStatus = dUtil.misc.makeEventStatus()
+    end
+
+    if eventStatus.validDefaultHandler then
+        logicHandler.UnloadCell(cellDescription)
+    end
+
+    if CustomEventHooks then
+        CustomEventHooks.triggerHandlers("OnCellDeletion", eventStatus, { cellDescription })
+    end
 end
 
 ---@param pid PlayerId

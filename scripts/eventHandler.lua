@@ -5,15 +5,6 @@ local eventHandler = {}
 -- local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
 -- if not isValid or not targetPid then return end
 
-eventHandler.OnCellDeletion = function(cellDescription)
-    assert(Deps)
-    local eventStatus = Deps.customEventHooks.triggerValidators("OnCellDeletion", { cellDescription })
-    if eventStatus.validDefaultHandler then
-        logicHandler.UnloadCell(cellDescription)
-    end
-    Deps.customEventHooks.triggerHandlers("OnCellDeletion", eventStatus, { cellDescription })
-end
-
 eventHandler.OnGenericActorEvent = function(pid, cellDescription, packetType)
     assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
