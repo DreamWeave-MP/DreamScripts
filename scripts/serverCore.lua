@@ -2017,7 +2017,170 @@ end
 ---@param pid PlayerId
 function OnRecordDynamic(pid)
     logPlayerEvent('OnRecordDynamic', pid)
-    eventHandler.OnRecordDynamic(pid)
+
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
+    if not isValid or not targetPid then return end
+    local player = Players[pid]
+
+    tes3mp.ReadReceivedWorldstate()
+
+    local recordNumericalType = tes3mp.GetRecordType(pid)
+
+    -- Iterate through the records in the RecordDynamic packet and only sync and save them
+    -- if all their names are allowed
+    local isAllowed = true
+    local rejectedRecords = {}
+
+    local recordArray = packetReader.GetRecordDynamicArray(pid)
+    local recordTable = {}
+
+    if recordNumericalType ~= enumerations.recordType.ENCHANTMENT then
+        for _, record in pairs(recordArray) do
+            if not logicHandler.IsNameAllowed(record.name) then
+                isAllowed = false
+
+                player:Message(
+                    ('You are not allowed to create a record called %s\n'):format(record.name)
+                )
+            end
+        end
+    end
+
+    if not isAllowed then
+        return tes3mp.LogMessage(
+            enumerations.log.INFO,
+            ('Rejected RecordDynamic from %s about %s')
+            :format(logicHandler.GetChatName(pid), tableHelper.concatenateArrayValues(rejectedRecords, 1, ', '))
+        )
+    end
+
+    local storeType = tableHelper.getIndexByValue(enumerations.recordType, recordNumericalType):lower()
+    local recordStore = RecordStores[storeType]
+
+    if not recordStore then
+        return tes3mp.LogMessage(
+            enumerations.log.WARN,
+            ('Rejected RecordDynamic for invalid record store of type %s'):format(recordNumericalType)
+        )
+    end
+
+    local eventStatus
+    if CustomEventHooks then
+        eventStatus = CustomEventHooks.triggerValidators('OnRecordDynamic', { pid, recordArray, storeType })
+    else
+        eventStatus = dUtil.misc.makeEventStatus()
+    end
+
+    local isEnchantable = tableHelper.containsValue(config.enchantableRecordTypes, storeType)
+
+    if eventStatus.validDefaultHandler then
+        for _, record in ipairs(recordArray) do
+            local recordId
+
+            -- Is there already a record exactly like this one, icon and model aside?
+            -- If so, we'll just reuse it the way OpenMW would
+            if storeType == 'potion' then
+                recordId = recordStore:GetMatchingRecordId(
+                    record,
+                    recordStore.data.generatedRecords,
+                    player.data.recordLinks[storeType],
+                    { 'icon', 'model', 'quantity' },
+                    true,
+                    25
+                )
+            end
+
+            if not recordId then
+                recordId = recordStore:GenerateRecordId()
+            end
+
+            if storeType == 'enchantment' then
+                -- We need to store this enchantment's original client-generated id
+                -- on this player so we can match it with its server-generated correct
+                -- id once the player sends the record of the enchanted item they've
+                -- used it on
+                player.unresolvedEnchantments[record.clientsideEnchantmentId] = recordId
+                record.clientsideEnchantmentId = nil
+            end
+
+            recordTable[recordId] = record
+        end
+
+        recordStore:SaveGeneratedRecords(recordTable)
+        recordStore:LoadGeneratedRecords(pid, recordTable, tableHelper.getArrayFromIndices(recordTable), true)
+
+        for _, targetPlayer in pairs(Players) do
+            for recordId in pairs(recordTable) do
+                table.insert(targetPlayer.generatedRecordsReceived, recordId)
+            end
+        end
+
+        -- Add the final spell to the player's spellbook
+        if storeType == 'spell' then
+            tes3mp.ClearSpellbookChanges(pid)
+            tes3mp.SetSpellbookChangesAction(pid, enumerations.spellbook.ADD)
+
+            for recordId in pairs(recordTable) do
+                table.insert(player.data.spellbook, recordId)
+                tes3mp.AddSpell(pid, recordId)
+
+                player:AddLinkToRecord(storeType, recordId)
+            end
+
+            recordStore:QuicksaveToDrive()
+            player:QuicksaveToDrive()
+            tes3mp.SendSpellbookChanges(pid)
+
+            -- Add the final items to the player's inventory
+        elseif storeType == 'potion' or isEnchantable then
+            local enchantmentStore
+
+            if isEnchantable then enchantmentStore = RecordStores['enchantment'] end
+
+            local itemArray = {}
+
+            for recordId, record in pairs(recordTable) do
+                local item = {
+                    refId = recordId,
+                    count = record.quantity,
+                    charge = -1,
+                    enchantmentCharge = -1,
+                    soul =
+                    ''
+                }
+
+                inventoryHelper.addItem(
+                    player.data.inventory,
+                    item.refId,
+                    item.count,
+                    item.charge,
+                    item.enchantmentCharge,
+                    item.soul
+                )
+
+                table.insert(itemArray, item)
+
+                player:AddLinkToRecord(storeType, recordId)
+
+                -- If this is an enchantable item record, add a link to it from its associated
+                -- enchantment record
+                if isEnchantable then
+                    enchantmentStore:AddLinkToRecord(record.enchantmentId,
+                        recordId, storeType)
+                end
+            end
+
+            if isEnchantable then enchantmentStore:QuicksaveToDrive() end
+
+            recordStore:QuicksaveToDrive()
+            player:QuicksaveToDrive()
+            player:LoadItemChanges(itemArray, enumerations.inventory.ADD)
+        end
+    end
+
+    if CustomEventHooks then
+        CustomEventHooks.triggerHandlers('OnRecordDynamic', eventStatus, { pid, recordTable, storeType })
+    end
 end
 
 ---@param pid PlayerId
