@@ -3,44 +3,6 @@ local config = require 'tes3mp.config'
 local eventHandler = {}
 
 eventHandler.OnPlayerFaction = function(pid)
-    assert(Deps)
-    if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
-        local action = tes3mp.GetFactionChangesAction(pid)
-
-        local eventStatus = Deps.customEventHooks.triggerValidators("OnPlayerFaction", { pid, action })
-
-        if eventStatus.validDefaultHandler then
-            if action == enumerations.faction.RANK then
-                if config.shareFactionRanks == true then
-                    WorldInstance:SaveFactionRanks(pid)
-                    -- Send this PlayerFaction packet to other players (sendToOthersPlayers is true),
-                    -- but skip sending it to the player we got it from (skipAttachedPlayer is true)
-                    tes3mp.SendFactionChanges(pid, true, true)
-                else
-                    Players[pid]:SaveFactionRanks()
-                end
-            elseif action == enumerations.faction.EXPULSION then
-                if config.shareFactionExpulsion == true then
-                    WorldInstance:SaveFactionExpulsion(pid)
-                    -- As above, send this to everyone other than the original sender
-                    tes3mp.SendFactionChanges(pid, true, true)
-                else
-                    Players[pid]:SaveFactionExpulsion()
-                end
-            elseif action == enumerations.faction.REPUTATION then
-                if config.shareFactionReputation == true then
-                    WorldInstance:SaveFactionReputation(pid)
-
-                    -- As above, send this to everyone other than the original sender
-                    tes3mp.SendFactionChanges(pid, true, true)
-                else
-                    Players[pid]:SaveFactionReputation()
-                end
-            end
-        end
-
-        Deps.customEventHooks.triggerHandlers("OnPlayerFaction", eventStatus, { pid, action })
-    end
 end
 
 eventHandler.OnPlayerTopic = function(pid)

@@ -955,9 +955,59 @@ function OnPlayerJournal(pid)
     end
 end
 
+---@param pid PlayerId
 function OnPlayerFaction(pid)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnPlayerFaction\" for " .. logicHandler.GetChatName(pid))
-    eventHandler.OnPlayerFaction(pid)
+    tes3mp.LogMessage(
+        enumerations.log.INFO,
+        ('Called "OnPlayerFaction" for %s'):format(logicHandler.GetChatName(pid))
+    )
+
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
+    if not isValid or not targetPid then return end
+
+    local action = tes3mp.GetFactionChangesAction(targetPid)
+
+    local eventStatus
+    if CustomEventHooks then
+        eventStatus = CustomEventHooks.triggerValidators('OnPlayerFaction', { targetPid, action })
+    else
+        eventStatus = dUtil.misc.makeEventStatus()
+    end
+
+    local player = Players[targetPid]
+    if eventStatus.validDefaultHandler then
+        if action == enumerations.faction.RANK then
+            if config.shareFactionRanks then
+                WorldInstance:SaveFactionRanks(targetPid)
+                -- Send this PlayerFaction packet to other players (sendToOthersPlayers is true),
+                -- but skip sending it to the player we got it from (skipAttachedPlayer is true)
+                tes3mp.SendFactionChanges(targetPid, true, true)
+            else
+                player:SaveFactionRanks()
+            end
+        elseif action == enumerations.faction.EXPULSION then
+            if config.shareFactionExpulsion then
+                WorldInstance:SaveFactionExpulsion(targetPid)
+                -- As above, send this to everyone other than the original sender
+                tes3mp.SendFactionChanges(targetPid, true, true)
+            else
+                player:SaveFactionExpulsion()
+            end
+        elseif action == enumerations.faction.REPUTATION then
+            if config.shareFactionReputation then
+                WorldInstance:SaveFactionReputation(targetPid)
+
+                -- As above, send this to everyone other than the original sender
+                tes3mp.SendFactionChanges(targetPid, true, true)
+            else
+                player:SaveFactionReputation()
+            end
+        end
+    end
+
+    if CustomEventHooks then
+        CustomEventHooks.triggerHandlers("OnPlayerFaction", eventStatus, { targetPid, action })
+    end
 end
 
 function OnPlayerTopic(pid)
