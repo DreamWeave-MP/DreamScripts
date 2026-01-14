@@ -1474,7 +1474,54 @@ end
 ---@param cellDescription CellDescription
 function OnActorDeath(pid, cellDescription)
     logPlayerCellEvent('OnActorDeath', pid, cellDescription)
-    eventHandler.OnActorDeath(pid, cellDescription)
+
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
+    if not isValid or not targetPid then return end
+
+    local cell = LoadedCells[cellDescription]
+    if not cell then
+        return logUndefinedBehavior(pid, 'ActorDeath', cellDescription)
+    end
+
+    tes3mp.ReadReceivedActorList()
+    local actors = packetReader.GetActorPacketTables('ActorDeath').actors
+
+    local eventStatus
+    if CustomEventHooks then
+        eventStatus = CustomEventHooks.triggerValidators('OnActorDeath', { pid, cellDescription, actors })
+    else
+        eventStatus = dUtil.misc.makeEventStatus()
+    end
+
+    if eventStatus.validDefaultHandler then
+        tes3mp.LogMessage(
+            enumerations.log.INFO,
+            ('Saving ActorDeath from %s about %s')
+            :format(logicHandler.GetChatName(pid), cellDescription)
+        )
+
+        for uniqueIndex, actor in pairs(actors) do
+            local debugMessage
+
+            if actor.killer.pid then
+                debugMessage = ('- %s, deathReason: killed by player %s')
+                    :format(uniqueIndex, logicHandler.GetChatName(actor.killer.pid))
+            elseif actor.killer.name ~= '' then
+                debugMessage = ('- %s, deathReason: killed by actor %s %s')
+                    :format(uniqueIndex, actor.killer.refId, actor.killer.uniqueIndex)
+            else
+                debugMessage = ('- %s, deathReason: committed suicide'):format(uniqueIndex)
+            end
+
+            tes3mp.LogAppend(enumerations.log.INFO, debugMessage .. deathReason)
+        end
+
+        cell:SaveActorsByPacketType('ActorDeath', actors)
+    end
+
+    if CustomEventHooks then
+        CustomEventHooks.triggerHandlers('OnActorDeath', eventStatus, { pid, cellDescription, actors })
+    end
 end
 
 ---@param pid PlayerId
