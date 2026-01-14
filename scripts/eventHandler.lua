@@ -5,45 +5,6 @@ local eventHandler = {}
 -- local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
 -- if not isValid or not targetPid then return end
 
-eventHandler.OnGenericActorEvent = function(pid, cellDescription, packetType)
-    assert(Deps)
-    if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
-        if LoadedCells[cellDescription] ~= nil then
-            tes3mp.ReadReceivedActorList()
-            local actors = packetReader.GetActorPacketTables(packetType).actors
-
-            local eventStatus = Deps.customEventHooks.triggerValidators("On" .. packetType,
-                { pid, cellDescription, actors })
-
-            if eventStatus.validDefaultHandler then
-                tes3mp.LogMessage(enumerations.log.INFO, "Saving " .. packetType ..
-                    " from " .. logicHandler.GetChatName(pid) .. " about " .. cellDescription)
-
-                LoadedCells[cellDescription]:SaveActorsByPacketType(packetType, actors)
-            end
-            Deps.customEventHooks.triggerHandlers("On" .. packetType, eventStatus,
-                { pid, cellDescription, actors })
-        else
-            tes3mp.LogMessage(enumerations.log.WARN, "Undefined behavior: " .. logicHandler.GetChatName(pid) ..
-                " sent " .. packetType .. " for unloaded " .. cellDescription)
-        end
-    else
-        tes3mp.Kick(pid)
-    end
-end
-
-eventHandler.OnActorList = function(pid, cellDescription)
-    eventHandler.OnGenericActorEvent(pid, cellDescription, "ActorList")
-end
-
-eventHandler.OnActorEquipment = function(pid, cellDescription)
-    eventHandler.OnGenericActorEvent(pid, cellDescription, "ActorEquipment")
-end
-
-eventHandler.OnActorSpellsActive = function(pid, cellDescription)
-    eventHandler.OnGenericActorEvent(pid, cellDescription, "ActorSpellsActive")
-end
-
 eventHandler.OnActorAI = function(pid, cellDescription)
     assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then

@@ -148,6 +148,8 @@ local function logPlayerEvent(eventName, pid)
     )
 end
 
+---@param pid PlayerId
+---@param packetType string
 local function onGenericPlayerEvent(pid, packetType)
     local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
     if not isValid or not targetPid then return end
@@ -159,12 +161,74 @@ local function onGenericPlayerEvent(pid, packetType)
         return player:SaveDataByPacketType(packetType, playerPacket)
     end
 
-    local eventStatus = CustomEventHooks.triggerValidators("On" .. packetType, { pid, playerPacket })
+    local eventName, eventStatus = ('On'):format(packetType)
+    if CustomEventHooks then
+        eventStatus = CustomEventHooks.triggerValidators(eventName, { pid, playerPacket })
+    else
+        eventStatus = dUtil.misc.makeEventStatus()
+    end
+
     if eventStatus.validDefaultHandler then
         player:SaveDataByPacketType(packetType, playerPacket)
     end
 
-    CustomEventHooks.triggerHandlers("On" .. packetType, eventStatus, { pid, playerPacket })
+    if CustomEventHooks then
+        CustomEventHooks.triggerHandlers(eventName,
+            eventStatus,
+            { pid, playerPacket }
+        )
+    end
+end
+
+---@param pid PlayerId
+---@param cellDescription CellDescription
+---@param packetType string Make this an enum later!!!!!
+local function onGenericActorEvent(pid, cellDescription, packetType)
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
+    if not isValid or not targetPid then
+        return tes3mp.Kick(pid)
+    end
+
+    local cell = LoadedCells[cellDescription]
+
+    if not cell then
+        return tes3mp.LogMessage(
+            enumerations.log.WARN,
+            ('Undefined behavior: %s sent %s for unloaded %s')
+            :format(logicHandler.getChatName(pid), packetType, cellDescription)
+        )
+    end
+
+    tes3mp.ReadReceivedActorList()
+    local actors = packetReader.GetActorPacketTables(packetType).actors
+
+    local eventName, eventStatus = ('On'):format(packetType)
+    if CustomEventHooks then
+        eventStatus = CustomEventHooks.triggerValidators(
+            eventName,
+            { pid, cellDescription, actors }
+        )
+    else
+        eventStatus = dUtil.misc.makeEventStatus()
+    end
+
+    if eventStatus.validDefaultHandler then
+        tes3mp.LogMessage(
+            enumerations.log.INFO,
+            ('Saving %s from %s about %s')
+            :format(packetType, logicHandler.getChatName(pid), cellDescription)
+        )
+
+        cell:SaveActorsByPacketType(packetType, actors)
+    end
+
+    if CustomEventHooks then
+        CustomEventHooks.triggerHandlers(
+            eventName,
+            eventStatus,
+            { pid, cellDescription, actors }
+        )
+    end
 end
 
 function LoadBanList()
@@ -1351,14 +1415,14 @@ end
 ---@param cellDescription CellDescription
 function OnActorList(pid, cellDescription)
     logPlayerCellEvent('OnActorList', pid, cellDescription)
-    eventHandler.OnActorList(pid, cellDescription)
+    onGenericActorEvent(pid, cellDescription, 'ActorList')
 end
 
 ---@param pid PlayerId
 ---@param cellDescription CellDescription
 function OnActorEquipment(pid, cellDescription)
     logPlayerCellEvent('OnActorEquipment', pid, cellDescription)
-    eventHandler.OnActorEquipment(pid, cellDescription)
+    onGenericActorEvent(pid, cellDescription, 'ActorEquipment')
 end
 
 ---@param pid PlayerId
@@ -1379,7 +1443,7 @@ end
 ---@param cellDescription CellDescription
 function OnActorSpellsActive(pid, cellDescription)
     logPlayerCellEvent('OnActorSpellsActive', pid, cellDescription)
-    eventHandler.OnActorSpellsActive(pid, cellDescription)
+    onGenericActorEvent(pid, cellDescription, 'ActorSpellsActive')
 end
 
 ---@param pid PlayerId
