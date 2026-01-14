@@ -1142,9 +1142,41 @@ function OnPlayerBook(pid)
     end
 end
 
+---@param pid PlayerId
 function OnPlayerItemUse(pid)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnPlayerItemUse\" for " .. logicHandler.GetChatName(pid))
-    eventHandler.OnPlayerItemUse(pid)
+    tes3mp.LogMessage(
+        enumerations.log.INFO,
+        ('Called "OnPlayerItemUse" for '):format(logicHandler.GetChatName(pid))
+    )
+
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
+    if not isValid or not targetPid then return end
+
+    local itemRefId = tes3mp.GetUsedItemRefId(targetPid)
+    local eventStatus
+    if CustomEventHooks then
+        eventStatus = CustomEventHooks.triggerValidators('OnPlayerItemUse', { targetPid, itemRefId })
+    else
+        eventStatus = dUtil.misc.makeEventStatus()
+    end
+
+    if eventStatus.validDefaultHandler then
+        tes3mp.LogMessage(enumerations.log.INFO,
+            ('%s used inventory item %s'):format(logicHandler.GetChatName(targetPid), itemRefId)
+        )
+
+        -- Unilateral use of items is disabled on clients, so we need to send
+        -- this packet back to the player before they can use the item
+        tes3mp.SendItemUse(targetPid)
+    end
+
+    if CustomEventHooks then
+        CustomEventHooks.triggerHandlers(
+            'OnPlayerItemUse',
+            eventStatus,
+            { targetPid, itemRefId }
+        )
+    end
 end
 
 function OnPlayerMiscellaneous(pid)

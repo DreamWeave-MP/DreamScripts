@@ -5,24 +5,6 @@ local eventHandler = {}
 -- local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
 -- if not isValid or not targetPid then return end
 
-eventHandler.OnPlayerItemUse = function(pid)
-    assert(Deps)
-    if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
-        local itemRefId = tes3mp.GetUsedItemRefId(pid)
-        local eventStatus = Deps.customEventHooks.triggerValidators("OnPlayerItemUse", { pid, itemRefId })
-
-        if eventStatus.validDefaultHandler then
-            tes3mp.LogMessage(enumerations.log.INFO,
-                logicHandler.GetChatName(pid) .. " used inventory item " .. itemRefId)
-
-            -- Unilateral use of items is disabled on clients, so we need to send
-            -- this packet back to the player before they can use the item
-            tes3mp.SendItemUse(pid)
-        end
-        Deps.customEventHooks.triggerHandlers("OnPlayerItemUse", eventStatus, { pid, itemRefId })
-    end
-end
-
 eventHandler.OnPlayerMiscellaneous = function(pid)
     assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
