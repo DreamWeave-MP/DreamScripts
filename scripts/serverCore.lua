@@ -121,6 +121,34 @@ local ScriptLoader = require 'dUtil.scriptLoader' {
     menuHelper = menuHelper,
 }
 
+---@param eventName string
+---@param cellDescription CellDescription
+local function logCellEvent(eventName, cellDescription)
+    tes3mp.LogMessage(
+        enumerations.log.INFO,
+        ('Called "%s" for cell %s'):format(eventName, logicHandler.GetChatName(pid))
+    )
+end
+
+---@param eventName string
+---@param pid PlayerId
+---@param cellDescription CellDescription
+local function logPlayerCellEvent(eventName, pid, cellDescription)
+    tes3mp.LogMessage(
+        enumerations.log.INFO,
+        ('Called "%s" for %s and cell %s'):format(eventName, logicHandler.GetChatName(pid), cellDescription)
+    )
+end
+
+---@param eventName string
+---@param pid PlayerId
+local function logPlayerEvent(eventName, pid)
+    tes3mp.LogMessage(
+        enumerations.log.INFO,
+        ('Called "%s" for %s'):format(eventName, logicHandler.GetChatName(pid))
+    )
+end
+
 local function onGenericPlayerEvent(pid, packetType)
     local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
     if not isValid or not targetPid then return end
@@ -231,7 +259,7 @@ do
 end
 
 function OnServerInit()
-    tes3mp.LogMessage(enumerations.log.INFO, 'Called \'OnServerInit\'')
+    tes3mp.LogMessage(enumerations.log.INFO, 'Called "OnServerInit"')
 
     local expectedVersionPrefix = '0.8.1'
     local serverVersion = tes3mp.GetServerVersion()
@@ -375,13 +403,13 @@ function OnServerExit(errorState)
     tes3mp.LogMessage(enumerations.log.INFO, 'Called "OnServerExit"')
     tes3mp.LogMessage(enumerations.log.ERROR, 'Error state: ' .. tostring(errorState))
 
-    if not CustomEventHooks then return end
-
-    CustomEventHooks.triggerHandlers(
-        'OnServerExit',
-        dUtil.misc.makeEventStatus(),
-        { errorState }
-    )
+    if CustomEventHooks then
+        CustomEventHooks.triggerHandlers(
+            'OnServerExit',
+            dUtil.misc.makeEventStatus(),
+            { errorState }
+        )
+    end
 end
 
 function OnServerScriptCrash(errorMessage)
@@ -395,7 +423,7 @@ function OnServerScriptCrash(errorMessage)
         )
     end
 
-    tes3mp.StopServer(7)
+    -- tes3mp.StopServer(7)
 end
 
 function OnRequestDataFileList()
@@ -409,7 +437,7 @@ function OnRequestPluginList()
 end
 
 function OnPlayerConnect(pid)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnPlayerConnect\" for pid " .. pid)
+    tes3mp.LogMessage(enumerations.log.INFO, ('Called "OnPlayerConnect" for pid %d'):format(pid))
 
     local playerName = tes3mp.GetName(pid)
 
@@ -565,13 +593,13 @@ function OnPlayerConnect(pid)
 end
 
 function OnPlayerDisconnect(pid)
-    tes3mp.LogMessage(
-        enumerations.log.INFO,
-        ('Called "OnPlayerDisconnect" for '):format(logicHandler.GetChatName(pid))
-    )
+    logPlayerEvent('OnPlayerDisconnect', pid)
 
-    local message = ('%s has left the server.\n'):format(logicHandler.GetChatName(pid))
-    tes3mp.SendMessage(pid, message, true)
+    tes3mp.SendMessage(
+        pid,
+        ('%s has left the server.\n'):format(logicHandler.GetChatName(pid)),
+        true
+    )
 
     -- If this player has disconnected before properly logging in, remove their pid
     -- from the table tracking IP addresses
@@ -682,8 +710,8 @@ function OnPlayerSendMessage(pid, message)
     local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
     if not isValid or not targetPid then return end
 
-    local chatMessage = ('%s: %s'):format(logicHandler.GetChatName(pid), message)
-    tes3mp.LogMessage(enumerations.log.INFO, chatMessage)
+    local logMessage = ('%s: %s'):format(logicHandler.GetChatName(pid), message)
+    tes3mp.LogMessage(enumerations.log.INFO, logMessage)
 
     local eventStatus
     if CustomEventHooks then
@@ -693,7 +721,7 @@ function OnPlayerSendMessage(pid, message)
     end
 
     if eventStatus.validDefaultHandler and message:sub(1, 1) ~= '/' then
-        chatMessage = ('%s%s\n'):format(color.White, chatMessage)
+        local chatMessage = ('%s%s\n'):format(color.White, logMessage)
         local isModerator, isAdmin, isOwner = dUtil.misc.getRanks(targetPid)
 
         -- Check for chat overrides that add extra text
@@ -715,11 +743,7 @@ end
 
 ---@param pid PlayerId
 function OnPlayerDeath(pid)
-    tes3mp.LogMessage(
-        enumerations.log.INFO,
-        ('Called "OnPlayerDeath" for %s')
-        :format(logicHandler.GetChatName(pid))
-    )
+    logPlayerEvent('OnPlayerDeath')
 
     local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
     if not isValid or not targetPid then return end
@@ -736,56 +760,67 @@ function OnPlayerDeath(pid)
     end
 
     if CustomEventHooks then
-        CustomEventHooks.triggerHandlers("OnPlayerDeath", eventStatus, { pid })
+        CustomEventHooks.triggerHandlers('OnPlayerDeath', eventStatus, { pid })
     end
 end
 
+---@param pid PlayerId
 function OnPlayerAttribute(pid)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnPlayerAttribute\" for " .. logicHandler.GetChatName(pid))
-    onGenericPlayerEvent(pid, "PlayerAttribute")
+    logPlayerEvent('OnPlayerAttribute', pid)
+    onGenericPlayerEvent(pid, 'PlayerAttribute')
 end
 
+---@param pid PlayerId
 function OnPlayerSkill(pid)
-    onGenericPlayerEvent(pid, "PlayerSkill")
+    logPlayerEvent('OnPlayerSkill', pid)
+    onGenericPlayerEvent(pid, 'PlayerSkill')
 end
 
+---@param pid PlayerId
 function OnPlayerLevel(pid)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnPlayerLevel\" for " .. logicHandler.GetChatName(pid))
-    onGenericPlayerEvent(pid, "PlayerLevel")
+    logPlayerEvent('OnPlayerLevel', pid)
+    onGenericPlayerEvent(pid, 'PlayerLevel')
 end
 
+---@param pid PlayerId
 function OnPlayerShapeshift(pid)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnPlayerShapeshift\" for " .. logicHandler.GetChatName(pid))
+    logPlayerEvent('OnPlayerShapeshift', pid)
     onGenericPlayerEvent(pid, "PlayerShapeshift")
 end
 
+---@param pid PlayerId
 function OnPlayerEquipment(pid)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnPlayerEquipment\" for " .. logicHandler.GetChatName(pid))
+    logPlayerEvent('OnPlayerEquipment', pid)
     onGenericPlayerEvent(pid, "PlayerEquipment")
 end
 
+---@param pid PlayerId
 function OnPlayerInventory(pid)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnPlayerInventory\" for " .. logicHandler.GetChatName(pid))
+    logPlayerEvent('OnPlayerInventory', pid)
     onGenericPlayerEvent(pid, "PlayerInventory")
 end
 
+---@param pid PlayerId
 function OnPlayerSpellbook(pid)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnPlayerSpellbook\" for " .. logicHandler.GetChatName(pid))
+    logPlayerEvent('OnPlayerSpellbook', pid)
     onGenericPlayerEvent(pid, "PlayerSpellbook")
 end
 
+---@param pid PlayerId
 function OnPlayerCooldowns(pid)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnPlayerCooldowns\" for " .. logicHandler.GetChatName(pid))
+    logPlayerEvent('OnPlayerCooldowns', pid)
     onGenericPlayerEvent(pid, "PlayerCooldowns")
 end
 
+---@param pid PlayerId
 function OnPlayerQuickKeys(pid)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnPlayerQuickKeys\" for " .. logicHandler.GetChatName(pid))
+    logPlayerEvent('OnPlayerQuickKeys', pid)
     onGenericPlayerEvent(pid, "PlayerQuickKeys")
 end
 
+---@param pid PlayerId
 function OnPlayerCellChange(pid)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnPlayerCellChange\" for " .. logicHandler.GetChatName(pid))
+    logPlayerEvent('OnPlayerCellChange', pid)
 
     local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
     if not isValid or not targetPid then return end
@@ -888,11 +923,7 @@ end
 
 ---@param pid PlayerId
 function OnPlayerSpellsActive(pid)
-    tes3mp.LogMessage(
-        enumerations.log.INFO,
-        ('Called "OnPlayerSpellsActive" for ')
-        :format(logicHandler.GetChatName(pid))
-    )
+    logPlayerEvent('OnPlayerSpellsActive', pid)
 
     local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
     if not isValid or not targetPid then return end
@@ -919,12 +950,9 @@ function OnPlayerSpellsActive(pid)
     end
 end
 
+---@param pid PlayerId
 function OnPlayerJournal(pid)
-    tes3mp.LogMessage(
-        enumerations.log.INFO,
-        ('Called "OnPlayerJournal" for %s')
-        :format(logicHandler.GetChatName(pid))
-    )
+    logPlayerEvent('OnPlayerJournal', pid)
 
     local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
     if not isValid or not targetPid then return end
@@ -957,10 +985,7 @@ end
 
 ---@param pid PlayerId
 function OnPlayerFaction(pid)
-    tes3mp.LogMessage(
-        enumerations.log.INFO,
-        ('Called "OnPlayerFaction" for %s'):format(logicHandler.GetChatName(pid))
-    )
+    logPlayerEvent('OnPlayerFaction', pid)
 
     local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
     if not isValid or not targetPid then return end
@@ -1012,7 +1037,7 @@ end
 
 ---@param pid PlayerId
 function OnPlayerTopic(pid)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnPlayerTopic\" for " .. logicHandler.GetChatName(pid))
+    logPlayerEvent('OnPlayerTopic', pid)
 
     local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
     if not isValid or not targetPid then return end
@@ -1042,7 +1067,7 @@ end
 
 ---@param pid PlayerId
 function OnPlayerBounty(pid)
-    tes3mp.LogMessage(enumerations.log.INFO, 'Called \'OnPlayerBounty\' for ' .. logicHandler.GetChatName(pid))
+    logPlayerEvent('OnPlayerBounty', pid)
 
     local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
     if not isValid or not targetPid then return end
@@ -1085,10 +1110,7 @@ end
 
 ---@param pid PlayerId
 function OnPlayerReputation(pid)
-    tes3mp.LogMessage(
-        enumerations.log.INFO,
-        ('Called "OnPlayerReputation" for '):format(logicHandler.GetChatName(pid))
-    )
+    logPlayerEvent('OnPlayerReputation', pid)
 
     local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
     if not isValid or not targetPid then return end
@@ -1118,10 +1140,7 @@ end
 
 ---@param pid PlayerId
 function OnPlayerBook(pid)
-    tes3mp.LogMessage(
-        enumerations.log.INFO,
-        ('Called "OnPlayerBook" for '):format(logicHandler.GetChatName(pid))
-    )
+    logPlayerEvent('OnPlayerBook', pid)
 
     local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
     if not isValid or not targetPid then return end
@@ -1144,10 +1163,7 @@ end
 
 ---@param pid PlayerId
 function OnPlayerItemUse(pid)
-    tes3mp.LogMessage(
-        enumerations.log.INFO,
-        ('Called "OnPlayerItemUse" for '):format(logicHandler.GetChatName(pid))
-    )
+    logPlayerEvent('OnPlayerItemUse', pid)
 
     local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
     if not isValid or not targetPid then return end
@@ -1179,17 +1195,15 @@ function OnPlayerItemUse(pid)
     end
 end
 
+---@param pid PlayerId
 function OnPlayerMiscellaneous(pid)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnPlayerMiscellaneous\" for " .. logicHandler.GetChatName(pid))
+    logPlayerEvent('OnPlayerMiscellaneous', pid)
     eventHandler.OnPlayerMiscellaneous(pid)
 end
 
+---@param pid PlayerId
 function OnPlayerEndCharGen(pid)
-    tes3mp.LogMessage(
-        enumerations.log.INFO,
-        ('Called "OnPlayerEndCharGen" for %s')
-        :format(logicHandler.GetChatName(pid))
-    )
+    logPlayerEvent('OnPlayerEndCharGen', pid)
 
     local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
     if not isValid or not targetPid then return end
@@ -1213,192 +1227,220 @@ function OnPlayerEndCharGen(pid)
     end
 end
 
+---@param pid PlayerId
+---@param cellDescription CellDescription
 function OnCellLoad(pid, cellDescription)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnCellLoad\" for " .. logicHandler.GetChatName(pid) ..
-        " and cell " .. cellDescription)
+    logPlayerCellEvent('OnCellLoad', pid, cellDescription)
     eventHandler.OnCellLoad(pid, cellDescription)
 end
 
+---@param pid PlayerId
+---@param cellDescription CellDescription
 function OnCellUnload(pid, cellDescription)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnCellUnload\" for " .. logicHandler.GetChatName(pid) ..
-        " and cell " .. cellDescription)
+    logPlayerCellEvent('OnCellUnload', pid, cellDescription)
     eventHandler.OnCellUnload(pid, cellDescription)
 end
 
+---@param cellDescription CellDescription
 function OnCellDeletion(cellDescription)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnCellDeletion\" for cell " .. cellDescription)
+    logCellEvent('OnCellDeletion', cellDescription)
     eventHandler.OnCellDeletion(cellDescription)
 end
 
+---@param pid PlayerId
+---@param cellDescription CellDescription
 function OnActorList(pid, cellDescription)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnActorList\" for " .. logicHandler.GetChatName(pid) ..
-        " and cell " .. cellDescription)
+    logPlayerCellEvent('OnActorList', pid, cellDescription)
     eventHandler.OnActorList(pid, cellDescription)
 end
 
+---@param pid PlayerId
+---@param cellDescription CellDescription
 function OnActorEquipment(pid, cellDescription)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnActorEquipment\" for " .. logicHandler.GetChatName(pid) ..
-        " and cell " .. cellDescription)
+    logPlayerCellEvent('OnActorEquipment', pid, cellDescription)
     eventHandler.OnActorEquipment(pid, cellDescription)
 end
 
+---@param pid PlayerId
+---@param cellDescription CellDescription
 function OnActorAI(pid, cellDescription)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnActorAI\" for " .. logicHandler.GetChatName(pid) ..
-        " and cell " .. cellDescription)
+    logPlayerCellEvent('OnActorAI', pid, cellDescription)
     eventHandler.OnActorAI(pid, cellDescription)
 end
 
+---@param pid PlayerId
+---@param cellDescription CellDescription
 function OnActorDeath(pid, cellDescription)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnActorDeath\" for " .. logicHandler.GetChatName(pid) ..
-        " and cell " .. cellDescription)
+    logPlayerCellEvent('OnActorDeath', pid, cellDescription)
     eventHandler.OnActorDeath(pid, cellDescription)
 end
 
+---@param pid PlayerId
+---@param cellDescription CellDescription
 function OnActorSpellsActive(pid, cellDescription)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnActorSpellsActive\" for " .. logicHandler.GetChatName(pid) ..
-        " and cell " .. cellDescription)
+    logPlayerCellEvent('OnActorSpellsActive', pid, cellDescription)
     eventHandler.OnActorSpellsActive(pid, cellDescription)
 end
 
+---@param pid PlayerId
+---@param cellDescription CellDescription
 function OnActorCellChange(pid, cellDescription)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnActorCellChange\" for " .. logicHandler.GetChatName(pid) ..
-        " and cell " .. cellDescription)
+    logPlayerCellEvent('OnActorCellChange', pid, cellDescription)
     eventHandler.OnActorCellChange(pid, cellDescription)
 end
 
+---@param pid PlayerId
+---@param cellDescription CellDescription
 function OnObjectActivate(pid, cellDescription)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnObjectActivate\" for " .. logicHandler.GetChatName(pid) ..
-        " and cell " .. cellDescription)
+    logPlayerCellEvent('OnObjectActivate', pid, cellDescription)
     eventHandler.OnObjectActivate(pid, cellDescription)
 end
 
+---@param pid PlayerId
+---@param cellDescription CellDescription
 function OnObjectHit(pid, cellDescription)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnObjectHit\" for " .. logicHandler.GetChatName(pid) ..
-        " and cell " .. cellDescription)
+    logPlayerCellEvent('OnObjectHit', pid, cellDescription)
     eventHandler.OnObjectHit(pid, cellDescription)
 end
 
+---@param pid PlayerId
+---@param cellDescription CellDescription
 function OnObjectPlace(pid, cellDescription)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnObjectPlace\" for " .. logicHandler.GetChatName(pid) ..
-        " and cell " .. cellDescription)
+    logPlayerCellEvent('OnObjectPlace', pid, cellDescription)
     eventHandler.OnObjectPlace(pid, cellDescription)
 end
 
+---@param pid PlayerId
+---@param cellDescription CellDescription
 function OnObjectSpawn(pid, cellDescription)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnObjectSpawn\" for " .. logicHandler.GetChatName(pid) ..
-        " and cell " .. cellDescription)
+    logPlayerCellEvent('OnObjectSpawn', pid, cellDescription)
     eventHandler.OnObjectSpawn(pid, cellDescription)
 end
 
+---@param pid PlayerId
+---@param cellDescription CellDescription
 function OnObjectDelete(pid, cellDescription)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnObjectDelete\" for " .. logicHandler.GetChatName(pid) ..
-        " and cell " .. cellDescription)
+    logPlayerCellEvent('OnObjectDelete', pid, cellDescription)
     eventHandler.OnObjectDelete(pid, cellDescription)
 end
 
+---@param pid PlayerId
+---@param cellDescription CellDescription
 function OnObjectLock(pid, cellDescription)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnObjectLock\" for " .. logicHandler.GetChatName(pid) ..
-        " and cell " .. cellDescription)
+    logPlayerCellEvent('OnObjectLock', pid, cellDescription)
     eventHandler.OnObjectLock(pid, cellDescription)
 end
 
+---@param pid PlayerId
+---@param cellDescription CellDescription
 function OnObjectDialogueChoice(pid, cellDescription)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnObjectDialogueChoice\" for " .. logicHandler.GetChatName(pid) ..
-        " and cell " .. cellDescription)
+    logPlayerCellEvent('OnObjectDialogueChoice', pid, cellDescription)
     eventHandler.OnObjectDialogueChoice(pid, cellDescription)
 end
 
+---@param pid PlayerId
+---@param cellDescription CellDescription
 function OnObjectMiscellaneous(pid, cellDescription)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnObjectMiscellaneous\" for " .. logicHandler.GetChatName(pid) ..
-        " and cell " .. cellDescription)
+    logPlayerCellEvent('OnObjectMiscellaneous', pid, cellDescription)
     eventHandler.OnObjectMiscellaneous(pid, cellDescription)
 end
 
+---@param pid PlayerId
+---@param cellDescription CellDescription
 function OnObjectRestock(pid, cellDescription)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnObjectRestock\" for " .. logicHandler.GetChatName(pid) ..
-        " and cell " .. cellDescription)
+    logPlayerCellEvent('OnObjectRestock', pid, cellDescription)
     eventHandler.OnObjectRestock(pid, cellDescription)
 end
 
+---@param pid PlayerId
+---@param cellDescription CellDescription
 function OnObjectTrap(pid, cellDescription)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnObjectTrap\" for " .. logicHandler.GetChatName(pid) ..
-        " and cell " .. cellDescription)
+    logPlayerCellEvent('OnObjectTrap', pid, cellDescription)
     eventHandler.OnObjectTrap(pid, cellDescription)
 end
 
+---@param pid PlayerId
+---@param cellDescription CellDescription
 function OnObjectScale(pid, cellDescription)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnObjectScale\" for " .. logicHandler.GetChatName(pid) ..
-        " and cell " .. cellDescription)
+    logPlayerCellEvent('OnObjectScale', pid, cellDescription)
     eventHandler.OnObjectScale(pid, cellDescription)
 end
 
+---@param pid PlayerId
+---@param cellDescription CellDescription
 function OnObjectSound(pid, cellDescription)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnObjectSound\" for " .. logicHandler.GetChatName(pid) ..
-        " and cell " .. cellDescription)
+    logPlayerCellEvent('OnObjectSound', pid, cellDescription)
     eventHandler.OnObjectSound(pid, cellDescription)
 end
 
+---@param pid PlayerId
+---@param cellDescription CellDescription
 function OnObjectState(pid, cellDescription)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnObjectState\" for " .. logicHandler.GetChatName(pid) ..
-        " and cell " .. cellDescription)
+    logPlayerCellEvent('OnObjectState', pid, cellDescription)
     eventHandler.OnObjectState(pid, cellDescription)
 end
 
+---@param pid PlayerId
+---@param cellDescription CellDescription
 function OnDoorState(pid, cellDescription)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnDoorState\" for " .. logicHandler.GetChatName(pid) ..
-        " and cell " .. cellDescription)
+    logPlayerCellEvent('OnDoorState', pid, cellDescription)
     eventHandler.OnDoorState(pid, cellDescription)
 end
 
+---@param pid PlayerId
+---@param cellDescription CellDescription
 function OnConsoleCommand(pid, cellDescription)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnConsoleCommand\" for " .. logicHandler.GetChatName(pid) ..
-        " and cell " .. cellDescription)
+    logPlayerCellEvent('OnConsoleCommand', pid, cellDescription)
     eventHandler.OnConsoleCommand(pid, cellDescription)
 end
 
+---@param pid PlayerId
+---@param cellDescription CellDescription
 function OnContainer(pid, cellDescription)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnContainer\" for " .. logicHandler.GetChatName(pid) ..
-        " and cell " .. cellDescription)
+    logPlayerCellEvent('OnContainer', pid, cellDescription)
     eventHandler.OnContainer(pid, cellDescription)
 end
 
+---@param pid PlayerId
 function OnVideoPlay(pid)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnVideoPlay\" for " .. logicHandler.GetChatName(pid))
+    logPlayerEvent('OnVideoPlay', pid)
     eventHandler.OnVideoPlay(pid)
 end
 
+---@param pid PlayerId
 function OnRecordDynamic(pid)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnRecordDynamic\" for " .. logicHandler.GetChatName(pid))
+    logPlayerEvent('OnRecordDynamic', pid)
     eventHandler.OnRecordDynamic(pid)
 end
 
+---@param pid PlayerId
 function OnWorldKillCount(pid)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnWorldKillCount\" for " .. logicHandler.GetChatName(pid))
+    logPlayerEvent('OnWorldKillCount', pid)
     eventHandler.OnWorldKillCount(pid)
 end
 
+---@param pid PlayerId
 function OnWorldMap(pid)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnWorldMap\" for " .. logicHandler.GetChatName(pid))
+    logPlayerEvent('OnWorldMap', pid)
     eventHandler.OnWorldMap(pid)
 end
 
+---@param pid PlayerId
 function OnWorldWeather(pid)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnWorldWeather\" for " .. logicHandler.GetChatName(pid))
+    logPlayerEvent('OnWorldWeather', pid)
     eventHandler.OnWorldWeather(pid)
 end
 
+---@param pid PlayerId
+---@param cellDescription CellDescription
 function OnClientScriptLocal(pid, cellDescription)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnClientScriptLocal\" for " .. logicHandler.GetChatName(pid) ..
-        " and cell " .. cellDescription)
+    logPlayerCellEvent('OnClientScriptLocal', pid, cellDescription)
     eventHandler.OnClientScriptLocal(pid, cellDescription)
 end
 
+---@param pid PlayerId
 function OnClientScriptGlobal(pid)
-    tes3mp.LogMessage(
-        enumerations.log.INFO,
-        ('Called "OnClientScriptGlobal" for ')
-        :format(logicHandler.GetChatName(pid))
-    )
+    logPlayerEvent('OnClientScriptGlobal', pid)
 
     local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
     if not isValid or not targetPid then
@@ -1476,10 +1518,7 @@ end
 ---@param idGui GUIID
 ---@param data string|integer
 function OnGUIAction(pid, idGui, data)
-    tes3mp.LogMessage(
-        enumerations.log.INFO,
-        ('Called "OnGUIAction" for %s'):format(logicHandler.GetChatName(pid))
-    )
+    logPlayerEvent('OnGUIAction', pid)
 
     local player = Players[pid]
     if not player then return end
