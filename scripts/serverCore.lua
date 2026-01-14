@@ -1040,9 +1040,47 @@ function OnPlayerTopic(pid)
     end
 end
 
+---@param pid PlayerId
 function OnPlayerBounty(pid)
     tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnPlayerBounty\" for " .. logicHandler.GetChatName(pid))
-    eventHandler.OnPlayerBounty(pid)
+
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
+    if not isValid or not targetPid then return end
+
+    local eventStatus
+    if CustomEventHooks then
+        eventStatus = CustomEventHooks.triggerValidators("OnPlayerBounty", { pid })
+    else
+        eventStatus = dUtil.misc.makeEventStatus()
+    end
+
+    if eventStatus.validDefaultHandler then
+        if config.shareBounty then
+            WorldInstance:SaveBounty(targetPid)
+
+            -- Bounty packets are special in that they are always sent
+            -- to all players, but only affect their target player on
+            -- any given client
+            --
+            -- To set the same bounty for each LocalPlayer, we need
+            -- to separately set each player as the target and
+            -- send the packet
+            local bountyValue = tes3mp.GetBounty(targetPid)
+
+            for _, player in pairs(Players) do
+                if player.pid ~= targetPid then
+                    tes3mp.SetBounty(player.pid, bountyValue)
+                    tes3mp.SendBounty(player.pid)
+                end
+            end
+        else
+            Players[targetPid]:SaveBounty()
+        end
+    end
+
+    if CustomEventHooks then
+        CustomEventHooks.triggerHandlers("OnPlayerBounty", eventStatus, { pid })
+    end
 end
 
 function OnPlayerReputation(pid)

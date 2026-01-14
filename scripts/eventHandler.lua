@@ -5,39 +5,6 @@ local eventHandler = {}
 -- local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
 -- if not isValid or not targetPid then return end
 
-eventHandler.OnPlayerBounty = function(pid)
-    assert(Deps)
-    if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
-        local eventStatus = Deps.customEventHooks.triggerValidators("OnPlayerBounty", { pid })
-
-        if eventStatus.validDefaultHandler then
-            if config.shareBounty == true then
-                WorldInstance:SaveBounty(pid)
-
-                -- Bounty packets are special in that they are always sent
-                -- to all players, but only affect their target player on
-                -- any given client
-                --
-                -- To set the same bounty for each LocalPlayer, we need
-                -- to separately set each player as the target and
-                -- send the packet
-                local bountyValue = tes3mp.GetBounty(pid)
-
-                for playerIndex, player in pairs(Players) do
-                    if player.pid ~= pid then
-                        tes3mp.SetBounty(player.pid, bountyValue)
-                        tes3mp.SendBounty(player.pid)
-                    end
-                end
-            else
-                Players[pid]:SaveBounty()
-            end
-        end
-
-        Deps.customEventHooks.triggerHandlers("OnPlayerBounty", eventStatus, { pid })
-    end
-end
-
 eventHandler.OnPlayerReputation = function(pid)
     assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
