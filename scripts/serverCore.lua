@@ -1835,7 +1835,124 @@ end
 ---@param cellDescription CellDescription
 function OnContainer(pid, cellDescription)
     logPlayerCellEvent('OnContainer', pid, cellDescription)
-    eventHandler.OnContainer(pid, cellDescription)
+
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
+    if not isValid or not targetPid then return tes3mp.Kick(pid) end
+
+    tes3mp.ReadReceivedObjectList()
+    local packetOrigin = tes3mp.GetObjectListOrigin()
+
+    tes3mp.LogAppend(
+        enumerations.log.INFO,
+        ('- packetOrigin was %s'):format(tableHelper.getIndexByValue(enumerations.packetOrigin, packetOrigin))
+    )
+
+    if logicHandler.IsPacketFromConsole(packetOrigin) and not logicHandler.IsPlayerAllowedConsole(pid) then
+        tes3mp.Kick(pid)
+        return tes3mp.SendMessage(
+            pid,
+            consoleKickMessage:format(logicHandler.GetChatName(pid)),
+            true
+        )
+    end
+
+    local cell = LoadedCells[cellDescription]
+
+    if not config.allowOnContainerForUnloadedCells and not cell and logicHandler.DoesPacketOriginRequireLoadedCell(packetOrigin) then
+        tes3mp.LogMessage(
+            enumerations.log.WARN,
+            ('Invalid Container: %s used impossible packetOrigin for unloaded %s')
+            :format(logicHandler.GetChatName(pid), cellDescription)
+        )
+        return
+    end
+
+    -- Iterate through the objects in the Container packet and only sync and save the
+    -- ones whose refIds are valid
+    --local objects = packetReader.GetObjectPacketTables('container').objects
+    --local acceptedObjects, rejectedObjects = {}, {}
+    local isAllowed = true
+    local rejectedObjects = {}
+
+    -- Don't allow container changes in currently dying actors
+    local unusableContainerUniqueIndexes = {}
+
+    if cell then
+        unusableContainerUniqueIndexes = cell.unusableContainerUniqueIndexes
+    end
+
+    local subAction = tes3mp.GetObjectListContainerSubAction()
+
+    local objects = {}
+
+    for index = 0, tes3mp.GetObjectListSize() - 1 do
+        local object = {}
+        object.refId = tes3mp.GetObjectRefId(index)
+        object.uniqueIndex = tes3mp.GetObjectRefNum(index) .. '-' .. tes3mp.GetObjectMpNum(index)
+
+        if tableHelper.containsValue(unusableContainerUniqueIndexes, object.uniqueIndex) then
+            if subAction == enumerations.containerSub.REPLY_TO_REQUEST then
+                tableHelper.removeValue(unusableContainerUniqueIndexes, object.uniqueIndex)
+
+                tes3mp.LogMessage(
+                    enumerations.log.INFO,
+                    ('Making container %s usable as a result of request reply'):format(object.uniqueIndex)
+                )
+
+                table.insert(objects, object)
+            else
+                table.insert(rejectedObjects, object.refId .. ' ' .. object.uniqueIndex)
+                isAllowed = false
+
+                Players[pid]:Message('That container is currently unusable for synchronization reasons.\n')
+            end
+        else
+            table.insert(objects, object)
+        end
+    end
+
+    if isAllowed then
+        local eventStatus
+        if CustomEventHooks then
+            eventStatus = CustomEventHooks.triggerValidators(
+                'OnContainer',
+                { pid, cellDescription, objects }
+            )
+        else
+            eventStatus = dUtil.misc.makeEventStatus()
+        end
+
+        if eventStatus.validDefaultHandler then
+            local useTemporaryLoad = false
+
+            if not cell then
+                logicHandler.LoadCell(cellDescription)
+                useTemporaryLoad = true
+            end
+
+            -- Don't sync this packet here; BaseCell():SaveContainers will have to
+            -- deal with it
+            LoadedCells[cellDescription]:SaveContainers(pid)
+
+            if useTemporaryLoad then
+                logicHandler.UnloadCell(cellDescription)
+            end
+        end
+
+        if CustomEventHooks then
+            CustomEventHooks.triggerHandlers(
+                'OnContainer',
+                eventStatus,
+                { pid, cellDescription, objects }
+            )
+        end
+    else
+        tes3mp.LogMessage(
+            enumerations.log.INFO,
+            ('Rejected Container from %s about %s')
+            :format(logicHandler.GetChatName(pid), tableHelper.concatenateArrayValues(rejectedObjects, 1, ', '))
+        )
+    end
 end
 
 ---@param pid PlayerId

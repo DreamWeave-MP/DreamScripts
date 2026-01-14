@@ -1,102 +1,12 @@
 -- local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
 -- if not isValid or not targetPid then return end
 
-eventHandler.OnContainer = function(pid, cellDescription)
-    assert(Deps)
-    if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
-        tes3mp.ReadReceivedObjectList()
-        local packetOrigin = tes3mp.GetObjectListOrigin()
-        tes3mp.LogAppend(enumerations.log.INFO, "- packetOrigin was " ..
-            tableHelper.getIndexByValue(enumerations.packetOrigin, packetOrigin))
-
-        if logicHandler.IsPacketFromConsole(packetOrigin) and not logicHandler.IsPlayerAllowedConsole(pid) then
-            tes3mp.Kick(pid)
-            tes3mp.SendMessage(pid, logicHandler.GetChatName(pid) .. consoleKickMessage, true)
-            return
-        end
-
-        local isCellLoaded = LoadedCells[cellDescription] ~= nil
-
-        if not config.allowOnContainerForUnloadedCells and not isCellLoaded and logicHandler.DoesPacketOriginRequireLoadedCell(packetOrigin) then
-            tes3mp.LogMessage(enumerations.log.WARN, "Invalid Container: " .. logicHandler.GetChatName(pid) ..
-                " used impossible packetOrigin for unloaded " .. cellDescription)
-            return
-        end
-
-        -- Iterate through the objects in the Container packet and only sync and save the
-        -- ones whose refIds are valid
-        --local objects = packetReader.GetObjectPacketTables("container").objects
-        --local acceptedObjects, rejectedObjects = {}, {}
-        local isAllowed = true
-        local rejectedObjects = {}
-
-        -- Don't allow container changes in currently dying actors
-        local unusableContainerUniqueIndexes = {}
-
-        if isCellLoaded then
-            unusableContainerUniqueIndexes = LoadedCells[cellDescription].unusableContainerUniqueIndexes
-        end
-
-        local subAction = tes3mp.GetObjectListContainerSubAction()
-
-        local objects = {}
-
-        for index = 0, tes3mp.GetObjectListSize() - 1 do
-            local object = {}
-            object.refId = tes3mp.GetObjectRefId(index)
-            object.uniqueIndex = tes3mp.GetObjectRefNum(index) .. "-" .. tes3mp.GetObjectMpNum(index)
-
-            if tableHelper.containsValue(unusableContainerUniqueIndexes, object.uniqueIndex) then
-                if subAction == enumerations.containerSub.REPLY_TO_REQUEST then
-                    tableHelper.removeValue(unusableContainerUniqueIndexes, object.uniqueIndex)
-                    tes3mp.LogMessage(enumerations.log.INFO, "Making container " .. object.uniqueIndex ..
-                        " usable as a result of request reply")
-                    table.insert(objects, object)
-                else
-                    table.insert(rejectedObjects, object.refId .. " " .. object.uniqueIndex)
-                    isAllowed = false
-
-                    Players[pid]:Message("That container is currently unusable for synchronization reasons.\n")
-                end
-            else
-                table.insert(objects, object)
-            end
-        end
-
-        if isAllowed then
-            local eventStatus = Deps.customEventHooks.triggerValidators("OnContainer", { pid, cellDescription, objects })
-            if eventStatus.validDefaultHandler then
-                local useTemporaryLoad = false
-
-                if not isCellLoaded then
-                    logicHandler.LoadCell(cellDescription)
-                    useTemporaryLoad = true
-                end
-
-                -- Don't sync this packet here; BaseCell():SaveContainers will have to
-                -- deal with it
-                LoadedCells[cellDescription]:SaveContainers(pid)
-
-                if useTemporaryLoad then
-                    logicHandler.UnloadCell(cellDescription)
-                end
-            end
-            Deps.customEventHooks.triggerHandlers("OnContainer", eventStatus, { pid, cellDescription, objects })
-        else
-            tes3mp.LogMessage(enumerations.log.INFO, "Rejected Container from " .. logicHandler.GetChatName(pid) ..
-                " about " .. tableHelper.concatenateArrayValues(rejectedObjects, 1, ", "))
-        end
-    else
-        tes3mp.Kick(pid)
-    end
-end
-
 eventHandler.OnVideoPlay = function(pid)
     assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
         tes3mp.ReadReceivedObjectList()
         local packetOrigin = tes3mp.GetObjectListOrigin()
-        tes3mp.LogAppend(enumerations.log.INFO, "- packetOrigin was " ..
+        tes3mp.LogAppend(enumerations.log.INFO, '- packetOrigin was ' ..
             tableHelper.getIndexByValue(enumerations.packetOrigin, packetOrigin))
 
         local consoleCommand = tes3mp.GetObjectListConsoleCommand()
@@ -113,23 +23,23 @@ eventHandler.OnVideoPlay = function(pid)
         end
 
         if config.shareVideos == true then
-            tes3mp.LogMessage(enumerations.log.INFO, "Sharing VideoPlay from " .. logicHandler.GetChatName(pid))
+            tes3mp.LogMessage(enumerations.log.INFO, 'Sharing VideoPlay from ' .. logicHandler.GetChatName(pid))
 
             local videos = {}
 
             for i = 0, tes3mp.GetObjectListSize() - 1 do
                 local videoFilename = tes3mp.GetVideoFilename(i)
                 table.insert(videos, videoFilename)
-                tes3mp.LogAppend(enumerations.log.WARN, "- videoFilename " .. videoFilename)
+                tes3mp.LogAppend(enumerations.log.WARN, '- videoFilename ' .. videoFilename)
             end
-            local eventStatus = Deps.customEventHooks.triggerValidators("OnVideoPlay", { pid, videos })
+            local eventStatus = CustomEventHooks.triggerValidators('OnVideoPlay', { pid, videos })
             if eventStatus.validDefaultHandler then
                 tes3mp.CopyReceivedObjectListToStore()
                 -- Send this VideoPlay packet to other players (sendToOthersPlayers is true),
                 -- but skip sending it to the player we got it from (skipAttachedPlayer is true)
                 tes3mp.SendVideoPlay(true, true)
             end
-            Deps.customEventHooks.triggerHandlers("OnVideoPlay", eventStatus, { pid, videos })
+            CustomEventHooks.triggerHandlers('OnVideoPlay', eventStatus, { pid, videos })
         end
     end
 end
@@ -154,14 +64,14 @@ eventHandler.OnRecordDynamic = function(pid)
                 if not logicHandler.IsNameAllowed(record.name) then
                     isAllowed = false
 
-                    Players[pid]:Message("You are not allowed to create a record called " .. record.name .. "\n")
+                    Players[pid]:Message('You are not allowed to create a record called ' .. record.name .. '\n')
                 end
             end
         end
 
         if not isAllowed then
-            tes3mp.LogMessage(enumerations.log.INFO, "Rejected RecordDynamic from " .. logicHandler.GetChatName(pid) ..
-                " about " .. tableHelper.concatenateArrayValues(rejectedRecords, 1, ", "))
+            tes3mp.LogMessage(enumerations.log.INFO, 'Rejected RecordDynamic from ' .. logicHandler.GetChatName(pid) ..
+                ' about ' .. tableHelper.concatenateArrayValues(rejectedRecords, 1, ', '))
             return
         end
 
@@ -170,14 +80,14 @@ eventHandler.OnRecordDynamic = function(pid)
         local isEnchantable
 
         if recordStore == nil then
-            tes3mp.LogMessage(enumerations.log.WARN, "Rejected RecordDynamic for invalid record store of type " ..
+            tes3mp.LogMessage(enumerations.log.WARN, 'Rejected RecordDynamic for invalid record store of type ' ..
                 recordNumericalType)
             return
         else
             isEnchantable = tableHelper.containsValue(config.enchantableRecordTypes, storeType)
         end
 
-        local eventStatus = Deps.customEventHooks.triggerValidators("OnRecordDynamic", { pid, recordArray, storeType })
+        local eventStatus = CustomEventHooks.triggerValidators('OnRecordDynamic', { pid, recordArray, storeType })
 
         if eventStatus.validDefaultHandler then
             for _, record in ipairs(recordArray) do
@@ -185,16 +95,16 @@ eventHandler.OnRecordDynamic = function(pid)
 
                 -- Is there already a record exactly like this one, icon and model aside?
                 -- If so, we'll just reuse it the way OpenMW would
-                if storeType == "potion" then
+                if storeType == 'potion' then
                     recordId = recordStore:GetMatchingRecordId(record, recordStore.data.generatedRecords,
-                        Players[pid].data.recordLinks[storeType], { "icon", "model", "quantity" }, true, 25)
+                        Players[pid].data.recordLinks[storeType], { 'icon', 'model', 'quantity' }, true, 25)
                 end
 
                 if recordId == nil then
                     recordId = recordStore:GenerateRecordId()
                 end
 
-                if storeType == "enchantment" then
+                if storeType == 'enchantment' then
                     -- We need to store this enchantment's original client-generated id
                     -- on this player so we can match it with its server-generated correct
                     -- id once the player sends the record of the enchanted item they've
@@ -216,7 +126,7 @@ eventHandler.OnRecordDynamic = function(pid)
             end
 
             -- Add the final spell to the player's spellbook
-            if storeType == "spell" then
+            if storeType == 'spell' then
                 tes3mp.ClearSpellbookChanges(pid)
                 tes3mp.SetSpellbookChangesAction(pid, enumerations.spellbook.ADD)
 
@@ -232,10 +142,10 @@ eventHandler.OnRecordDynamic = function(pid)
                 tes3mp.SendSpellbookChanges(pid)
 
                 -- Add the final items to the player's inventory
-            elseif storeType == "potion" or isEnchantable then
+            elseif storeType == 'potion' or isEnchantable then
                 local enchantmentStore
 
-                if isEnchantable then enchantmentStore = RecordStores["enchantment"] end
+                if isEnchantable then enchantmentStore = RecordStores['enchantment'] end
 
                 local itemArray = {}
 
@@ -246,7 +156,7 @@ eventHandler.OnRecordDynamic = function(pid)
                         charge = -1,
                         enchantmentCharge = -1,
                         soul =
-                        ""
+                        ''
                     }
                     inventoryHelper.addItem(Players[pid].data.inventory, item.refId, item.count, item.charge,
                         item.enchantmentCharge, item.soul)
@@ -269,14 +179,14 @@ eventHandler.OnRecordDynamic = function(pid)
                 Players[pid]:LoadItemChanges(itemArray, enumerations.inventory.ADD)
             end
         end
-        Deps.customEventHooks.triggerHandlers("OnRecordDynamic", eventStatus, { pid, recordTable, storeType })
+        CustomEventHooks.triggerHandlers('OnRecordDynamic', eventStatus, { pid, recordTable, storeType })
     end
 end
 
 eventHandler.OnWorldKillCount = function(pid)
     assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
-        local eventStatus = Deps.customEventHooks.triggerValidators("OnWorldKillCount", { pid })
+        local eventStatus = CustomEventHooks.triggerValidators('OnWorldKillCount', { pid })
         if eventStatus.validDefaultHandler then
             WorldInstance:SaveKills(pid)
             tes3mp.CopyReceivedWorldstateToStore()
@@ -285,7 +195,7 @@ eventHandler.OnWorldKillCount = function(pid)
             -- but skip sending it to the player we got it from (skipAttachedPlayer is true)
             tes3mp.SendWorldKillCount(pid, true, true)
         end
-        Deps.customEventHooks.triggerHandlers("OnWorldKillCount", eventStatus, { pid })
+        CustomEventHooks.triggerHandlers('OnWorldKillCount', eventStatus, { pid })
     end
 end
 
@@ -295,7 +205,7 @@ eventHandler.OnWorldMap = function(pid)
         tes3mp.ReadReceivedWorldstate()
         local mapTileArray = packetReader.GetWorldMapTileArray()
 
-        local eventStatus = Deps.customEventHooks.triggerValidators("OnWorldMap", { pid, mapTileArray })
+        local eventStatus = CustomEventHooks.triggerValidators('OnWorldMap', { pid, mapTileArray })
         if eventStatus.validDefaultHandler then
             WorldInstance:SaveMapTiles(mapTileArray)
 
@@ -307,14 +217,14 @@ eventHandler.OnWorldMap = function(pid)
                 tes3mp.SendWorldMap(pid, true, true)
             end
         end
-        Deps.customEventHooks.triggerHandlers("OnWorldMap", eventStatus, { pid, mapTileArray })
+        CustomEventHooks.triggerHandlers('OnWorldMap', eventStatus, { pid, mapTileArray })
     end
 end
 
 eventHandler.OnWorldWeather = function(pid)
     assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
-        local eventStatus = Deps.customEventHooks.triggerValidators("OnWorldWeather", { pid })
+        local eventStatus = CustomEventHooks.triggerValidators('OnWorldWeather', { pid })
         if eventStatus.validDefaultHandler then
             tes3mp.ReadReceivedWorldstate()
 
@@ -342,7 +252,7 @@ eventHandler.OnWorldWeather = function(pid)
                 end
             end
         end
-        Deps.customEventHooks.triggerHandlers("OnWorldWeather", eventStatus, { pid })
+        CustomEventHooks.triggerHandlers('OnWorldWeather', eventStatus, { pid })
     end
 end
 
