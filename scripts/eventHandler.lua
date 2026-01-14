@@ -5,20 +5,6 @@ local eventHandler = {}
 -- local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
 -- if not isValid or not targetPid then return end
 
-eventHandler.OnCellLoad = function(pid, cellDescription)
-    assert(Deps)
-    if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
-        local eventStatus = Deps.customEventHooks.triggerValidators("OnCellLoad", { pid, cellDescription })
-        if eventStatus.validDefaultHandler then
-            logicHandler.LoadCellForPlayer(pid, cellDescription)
-        end
-        Deps.customEventHooks.triggerHandlers("OnCellLoad", eventStatus, { pid, cellDescription })
-    else
-        tes3mp.LogMessage(enumerations.log.WARN, "Undefined behavior: invalid player " .. pid ..
-            " loaded cell " .. cellDescription)
-    end
-end
-
 eventHandler.OnCellUnload = function(pid, cellDescription)
     assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then

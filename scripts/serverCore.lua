@@ -1267,7 +1267,33 @@ end
 ---@param cellDescription CellDescription
 function OnCellLoad(pid, cellDescription)
     logPlayerCellEvent('OnCellLoad', pid, cellDescription)
-    eventHandler.OnCellLoad(pid, cellDescription)
+
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
+
+    if not isValid or not targetPid then
+        return tes3mp.LogMessage(
+            enumerations.log.WARN,
+            ('Undefined behavior: invalid player %s loaded cell %s'):format(pid, cellDescription)
+        )
+    end
+
+    local eventStatus
+    if CustomEventHooks then
+        eventStatus = CustomEventHooks.triggerValidators(
+            'OnCellLoad',
+            { pid, cellDescription }
+        )
+    else
+        eventStatus = dUtil.misc.makeEventStatus()
+    end
+
+    if eventStatus.validDefaultHandler then
+        logicHandler.LoadCellForPlayer(pid, cellDescription)
+    end
+
+    if CustomEventHooks then
+        CustomEventHooks.triggerHandlers('OnCellLoad', eventStatus, { pid, cellDescription })
+    end
 end
 
 ---@param pid PlayerId
