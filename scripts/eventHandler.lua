@@ -5,17 +5,6 @@ local eventHandler = {}
 -- local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
 -- if not isValid or not targetPid then return end
 
-eventHandler.OnPlayerBook = function(pid)
-    assert(Deps)
-    if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
-        local eventStatus = Deps.customEventHooks.triggerValidators("OnPlayerBook", { pid })
-        if eventStatus.validDefaultHandler then
-            Players[pid]:AddBooks()
-        end
-        Deps.customEventHooks.triggerHandlers("OnPlayerBook", eventStatus, { pid })
-    end
-end
-
 eventHandler.OnPlayerItemUse = function(pid)
     assert(Deps)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then

@@ -1116,9 +1116,30 @@ function OnPlayerReputation(pid)
     end
 end
 
+---@param pid PlayerId
 function OnPlayerBook(pid)
-    tes3mp.LogMessage(enumerations.log.INFO, "Called \"OnPlayerBook\" for " .. logicHandler.GetChatName(pid))
-    eventHandler.OnPlayerBook(pid)
+    tes3mp.LogMessage(
+        enumerations.log.INFO,
+        ('Called "OnPlayerBook" for '):format(logicHandler.GetChatName(pid))
+    )
+
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
+    if not isValid or not targetPid then return end
+
+    local eventStatus
+    if CustomEventHooks then
+        eventStatus = CustomEventHooks.triggerValidators('OnPlayerBook', { targetPid })
+    else
+        eventStatus = dUtil.misc.makeEventStatus()
+    end
+
+    if eventStatus.validDefaultHandler then
+        Players[targetPid]:AddBooks()
+    end
+
+    if CustomEventHooks then
+        CustomEventHooks.triggerHandlers('OnPlayerBook', eventStatus, { targetPid })
+    end
 end
 
 function OnPlayerItemUse(pid)
