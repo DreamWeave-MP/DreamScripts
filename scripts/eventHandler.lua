@@ -6,27 +6,36 @@ local eventHandler = {}
 -- if not isValid or not targetPid then return end
 
 eventHandler.OnActorAI = function(pid, cellDescription)
-    assert(Deps)
-    if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
-        if LoadedCells[cellDescription] ~= nil then
-            local eventStatus = Deps.customEventHooks.triggerValidators("OnActorAI", { pid, cellDescription })
-            if eventStatus.validDefaultHandler then
-                tes3mp.ReadReceivedActorList()
-                tes3mp.CopyReceivedActorListToStore()
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
+    if not isValid or not targetPid then return tes3mp.Kick(pid) end
 
-                -- Actor AI packages are currently enabled unilaterally on the client
-                -- that has sent them, so we only need to send them to other players,
-                -- and can skip the original sender
-                -- i.e. sendToOtherVisitors is true and skipAttachedPlayer is true
-                tes3mp.SendActorAI(true, true)
-            end
-            Deps.customEventHooks.triggerHandlers("OnActorAI", eventStatus, { pid, cellDescription })
-        else
-            tes3mp.LogMessage(enumerations.log.WARN, "Undefined behavior: " .. logicHandler.GetChatName(pid) ..
-                " sent ActorAI for unloaded " .. cellDescription)
-        end
+    local cell = LoadedCells[cellDescription]
+    if not cell then return logUndefinedBehavior(pid, 'ActorAI', cellDescription) end
+
+    local eventStatus
+    if CustomEventHooks then
+        eventStatus = CustomEventHooks.triggerValidators('OnActorAI', { pid, cellDescription })
     else
-        tes3mp.Kick(pid)
+        eventStatus = dUtil.misc.makeEventStatus()
+    end
+
+    if eventStatus.validDefaultHandler then
+        tes3mp.ReadReceivedActorList()
+        tes3mp.CopyReceivedActorListToStore()
+
+        -- Actor AI packages are currently enabled unilaterally on the client
+        -- that has sent them, so we only need to send them to other players,
+        -- and can skip the original sender
+        -- i.e. sendToOtherVisitors is true and skipAttachedPlayer is true
+        tes3mp.SendActorAI(true, true)
+    end
+
+    if CustomEventHooks then
+        CustomEventHooks.triggerHandlers(
+            'OnActorAI',
+            eventStatus,
+            { pid, cellDescription }
+        )
     end
 end
 
