@@ -73,7 +73,7 @@ banList = {}
 ---@type CustomEventHooks?
 local CustomEventHooks
 
-local consoleKickMessage = " has been kicked for using the console despite not having the permission to do so.\n"
+local consoleKickMessage = '%s has been kicked for using the console despite not having the permission to do so.\n'
 
 if (config.databaseType ~= nil and config.databaseType ~= "json") and miscUtil.doesModuleExist("luasql." .. config.databaseType) then
     Database = require("database")
@@ -157,6 +157,105 @@ local function logPlayerEvent(eventName, pid)
         enumerations.log.INFO,
         ('Called "%s" for %s'):format(eventName, logicHandler.GetChatName(pid))
     )
+end
+
+---@param pid PlayerId
+---@param cellDescription CellDescription
+---@param packetType string
+local function onGenericObjectEvent(pid, cellDescription, packetType)
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
+    if not isValid or not targetPid then return tes3mp.Kick(pid) end
+
+    tes3mp.ReadReceivedObjectList()
+    local packetOrigin = tes3mp.GetObjectListOrigin()
+    local clientScript
+    tes3mp.LogAppend(
+        enumerations.log.INFO,
+        ('- packetOrigin was %s')
+        :format(tableHelper.getIndexByValue(enumerations.packetOrigin, packetOrigin))
+    )
+
+    if logicHandler.IsPacketFromConsole(packetOrigin) and not logicHandler.IsPlayerAllowedConsole(pid) then
+        tes3mp.Kick(pid)
+        return tes3mp.SendMessage(pid, consoleKickMessage:format(logicHandler.GetChatName(pid)), true)
+    elseif logicHandler.IsPacketFromClientScript(packetOrigin) then
+        clientScript = tes3mp.GetObjectListClientScript()
+        tes3mp.LogAppend(enumerations.log.INFO, ('- clientScript was %s'):format(clientScript))
+    end
+
+    local cell = LoadedCells[cellDescription]
+
+    if not cell and logicHandler.DoesPacketOriginRequireLoadedCell(packetOrigin) then
+        return tes3mp.LogMessage(
+            enumerations.log.WARN,
+            ('Invalid %s%s used impossible packetOrigin for unloaded %s')
+            :format(packetType, logicHandler.GetChatName(pid), cellDescription)
+        )
+    end
+
+    local packetTables = packetReader.GetObjectPacketTables(packetType)
+    local objects = packetTables.objects
+    local targetPlayers = packetTables.players
+
+    if tableHelper.isEmpty(objects) or tableHelper.isEmpty(targetPlayers) then return end
+
+    if not cell then
+        logicHandler.LoadCell(cellDescription)
+    end
+
+    local eventName, eventStatus = ('On%s'):format(packetType)
+    if CustomEventHooks then
+        eventStatus = CustomEventHooks.triggerValidators(
+            eventName,
+            { pid, cellDescription, objects, targetPlayers }
+        )
+    else
+        eventStatus = dUtil.misc.makeEventStatus()
+    end
+
+    if eventStatus.validDefaultHandler then
+        local debugMessage = ('Accepted %s from %s about %s for ')
+            :format(packetType, logicHandler.GetChatName(pid), cellDescription)
+
+        if next(objects) ~= nil then
+            debugMessage = debugMessage .. 'objects: '
+            local includeComma = false
+
+            for uniqueIndex, object in pairs(objects) do
+                if includeComma then
+                    debugMessage = ('%s, %s %s'):format(debugMessage, object.refId, uniqueIndex)
+                else
+                    debugMessage = ('%s%s %s'):format(debugMessage, object.refId, uniqueIndex)
+                end
+
+                includeComma = true
+            end
+        end
+
+        if next(targetPlayers) ~= nil then
+            local chatNames = logicHandler.GetChatNames(tableHelper.getArrayFromIndices(targetPlayers))
+            debugMessage = ('%splayers: %s')
+                :format(debugMessage, tableHelper.concatenateArrayValues(chatNames, 1, ', '))
+        end
+
+        tes3mp.LogMessage(enumerations.log.INFO, debugMessage)
+
+        local loadedCell = LoadedCells[cellDescription]
+        loadedCell:SaveObjectsByPacketType(packetType, objects)
+        loadedCell:LoadObjectsByPacketType(packetType, pid, objects, tableHelper.getArrayFromIndices(objects), true)
+    end
+
+    if CustomEventHooks then
+        CustomEventHooks.triggerHandlers(
+            eventName,
+            eventStatus,
+            { pid, cellDescription, objects, targetPlayers }
+        )
+    end
+
+    if not cell then
+        logicHandler.UnloadCell(cellDescription)
+    end
 end
 
 ---@param pid PlayerId
@@ -1569,63 +1668,63 @@ end
 ---@param cellDescription CellDescription
 function OnObjectActivate(pid, cellDescription)
     logPlayerCellEvent('OnObjectActivate', pid, cellDescription)
-    eventHandler.OnObjectActivate(pid, cellDescription)
+    onGenericObjectEvent(pid, cellDescription, 'ObjectActivate')
 end
 
 ---@param pid PlayerId
 ---@param cellDescription CellDescription
 function OnObjectHit(pid, cellDescription)
     logPlayerCellEvent('OnObjectHit', pid, cellDescription)
-    eventHandler.OnObjectHit(pid, cellDescription)
+    onGenericObjectEvent(pid, cellDescription, 'ObjectHit')
 end
 
 ---@param pid PlayerId
 ---@param cellDescription CellDescription
 function OnObjectPlace(pid, cellDescription)
     logPlayerCellEvent('OnObjectPlace', pid, cellDescription)
-    eventHandler.OnObjectPlace(pid, cellDescription)
+    onGenericObjectEvent(pid, cellDescription, 'ObjectPlace')
 end
 
 ---@param pid PlayerId
 ---@param cellDescription CellDescription
 function OnObjectSpawn(pid, cellDescription)
     logPlayerCellEvent('OnObjectSpawn', pid, cellDescription)
-    eventHandler.OnObjectSpawn(pid, cellDescription)
+    onGenericObjectEvent(pid, cellDescription, 'ObjectSpawn')
 end
 
 ---@param pid PlayerId
 ---@param cellDescription CellDescription
 function OnObjectDelete(pid, cellDescription)
     logPlayerCellEvent('OnObjectDelete', pid, cellDescription)
-    eventHandler.OnObjectDelete(pid, cellDescription)
+    onGenericObjectEvent(pid, cellDescription, 'ObjectDelete')
 end
 
 ---@param pid PlayerId
 ---@param cellDescription CellDescription
 function OnObjectLock(pid, cellDescription)
     logPlayerCellEvent('OnObjectLock', pid, cellDescription)
-    eventHandler.OnObjectLock(pid, cellDescription)
+    onGenericObjectEvent(pid, cellDescription, 'ObjectLock')
 end
 
 ---@param pid PlayerId
 ---@param cellDescription CellDescription
 function OnObjectDialogueChoice(pid, cellDescription)
     logPlayerCellEvent('OnObjectDialogueChoice', pid, cellDescription)
-    eventHandler.OnObjectDialogueChoice(pid, cellDescription)
+    onGenericObjectEvent(pid, cellDescription, 'ObjectDialogueChoice')
 end
 
 ---@param pid PlayerId
 ---@param cellDescription CellDescription
 function OnObjectMiscellaneous(pid, cellDescription)
     logPlayerCellEvent('OnObjectMiscellaneous', pid, cellDescription)
-    eventHandler.OnObjectMiscellaneous(pid, cellDescription)
+    onGenericObjectEvent(pid, cellDescription, 'ObjectMiscellaneous')
 end
 
 ---@param pid PlayerId
 ---@param cellDescription CellDescription
 function OnObjectRestock(pid, cellDescription)
     logPlayerCellEvent('OnObjectRestock', pid, cellDescription)
-    eventHandler.OnObjectRestock(pid, cellDescription)
+    onGenericObjectEvent(pid, cellDescription, 'ObjectRestock')
 end
 
 ---@param pid PlayerId
@@ -1633,34 +1732,35 @@ end
 function OnObjectTrap(pid, cellDescription)
     logPlayerCellEvent('OnObjectTrap', pid, cellDescription)
     eventHandler.OnObjectTrap(pid, cellDescription)
+    onGenericObjectEvent(pid, cellDescription, 'ObjectTrap')
 end
 
 ---@param pid PlayerId
 ---@param cellDescription CellDescription
 function OnObjectScale(pid, cellDescription)
     logPlayerCellEvent('OnObjectScale', pid, cellDescription)
-    eventHandler.OnObjectScale(pid, cellDescription)
+    onGenericObjectEvent(pid, cellDescription, 'ObjectScale')
 end
 
 ---@param pid PlayerId
 ---@param cellDescription CellDescription
 function OnObjectSound(pid, cellDescription)
     logPlayerCellEvent('OnObjectSound', pid, cellDescription)
-    eventHandler.OnObjectSound(pid, cellDescription)
+    onGenericObjectEvent(pid, cellDescription, 'ObjectSound')
 end
 
 ---@param pid PlayerId
 ---@param cellDescription CellDescription
 function OnObjectState(pid, cellDescription)
     logPlayerCellEvent('OnObjectState', pid, cellDescription)
-    eventHandler.OnObjectState(pid, cellDescription)
+    onGenericObjectEvent(pid, cellDescription, 'ObjectState')
 end
 
 ---@param pid PlayerId
 ---@param cellDescription CellDescription
 function OnDoorState(pid, cellDescription)
     logPlayerCellEvent('OnDoorState', pid, cellDescription)
-    eventHandler.OnDoorState(pid, cellDescription)
+    onGenericObjectEvent(pid, cellDescription, 'DoorState')
 end
 
 ---@param pid PlayerId
@@ -1711,7 +1811,7 @@ end
 ---@param cellDescription CellDescription
 function OnClientScriptLocal(pid, cellDescription)
     logPlayerCellEvent('OnClientScriptLocal', pid, cellDescription)
-    eventHandler.OnClientScriptLocal(pid, cellDescription)
+    onGenericObjectEvent(pid, cellDescription, "ClientScriptLocal")
 end
 
 ---@param pid PlayerId

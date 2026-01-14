@@ -1,141 +1,84 @@
 -- local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
 -- if not isValid or not targetPid then return end
 
-eventHandler.OnGenericObjectEvent = function(pid, cellDescription, packetType)
-    assert(Deps)
-    if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
-        tes3mp.ReadReceivedObjectList()
-        local packetOrigin = tes3mp.GetObjectListOrigin()
-        local clientScript
-        tes3mp.LogAppend(enumerations.log.INFO, "- packetOrigin was " ..
-            tableHelper.getIndexByValue(enumerations.packetOrigin, packetOrigin))
+---@param pid PlayerId
+---@param cellDescription CellDescription
+---@param packetType string
+local function onGenericObjectEvent(pid, cellDescription, packetType)
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
+    if not isValid or not targetPid then return tes3mp.Kick(pid) end
 
-        if logicHandler.IsPacketFromConsole(packetOrigin) and not logicHandler.IsPlayerAllowedConsole(pid) then
-            tes3mp.Kick(pid)
-            tes3mp.SendMessage(pid, logicHandler.GetChatName(pid) .. consoleKickMessage, true)
-            return
-        elseif logicHandler.IsPacketFromClientScript(packetOrigin) then
-            clientScript = tes3mp.GetObjectListClientScript()
-            tes3mp.LogAppend(enumerations.log.INFO, "- clientScript was " .. clientScript)
-        end
+    tes3mp.ReadReceivedObjectList()
+    local packetOrigin = tes3mp.GetObjectListOrigin()
+    local clientScript
+    tes3mp.LogAppend(enumerations.log.INFO, '- packetOrigin was ' ..
+        tableHelper.getIndexByValue(enumerations.packetOrigin, packetOrigin))
 
-        local isCellLoaded = LoadedCells[cellDescription] ~= nil
-
-        if not isCellLoaded and logicHandler.DoesPacketOriginRequireLoadedCell(packetOrigin) then
-            tes3mp.LogMessage(enumerations.log.WARN, "Invalid " .. packetType ..
-                logicHandler.GetChatName(pid) .. " used impossible packetOrigin for unloaded " .. cellDescription)
-            return
-        end
-
-        local packetTables = packetReader.GetObjectPacketTables(packetType)
-        local objects = packetTables.objects
-        local targetPlayers = packetTables.players
-
-        if not tableHelper.isEmpty(objects) or not tableHelper.isEmpty(targetPlayers) then
-            if not isCellLoaded then
-                logicHandler.LoadCell(cellDescription)
-            end
-
-            local eventStatus = Deps.customEventHooks.triggerValidators("On" .. packetType,
-                { pid, cellDescription, objects, targetPlayers })
-
-            if eventStatus.validDefaultHandler then
-                local debugMessage = "Accepted " .. packetType .. " from " .. logicHandler.GetChatName(pid) ..
-                    " about " .. cellDescription .. " for "
-
-                if not tableHelper.isEmpty(objects) then
-                    debugMessage = debugMessage .. "objects: "
-                    local includeComma = false
-
-                    for uniqueIndex, object in pairs(objects) do
-                        if includeComma then debugMessage = debugMessage .. ", " end
-                        debugMessage = debugMessage .. object.refId .. " " .. uniqueIndex
-                        includeComma = true
-                    end
-                end
-
-                if not tableHelper.isEmpty(targetPlayers) then
-                    local chatNames = logicHandler.GetChatNames(tableHelper.getArrayFromIndices(targetPlayers))
-                    debugMessage = debugMessage .. "players: " .. tableHelper.concatenateArrayValues(chatNames, 1, ", ")
-                end
-
-                tes3mp.LogMessage(enumerations.log.INFO, debugMessage)
-
-                LoadedCells[cellDescription]:SaveObjectsByPacketType(packetType, objects)
-                LoadedCells[cellDescription]:LoadObjectsByPacketType(packetType, pid, objects,
-                    tableHelper.getArrayFromIndices(objects), true)
-            end
-
-            Deps.customEventHooks.triggerHandlers("On" .. packetType, eventStatus,
-                { pid, cellDescription, objects, targetPlayers })
-
-            if not isCellLoaded then
-                logicHandler.UnloadCell(cellDescription)
-            end
-        end
-    else
+    if logicHandler.IsPacketFromConsole(packetOrigin) and not logicHandler.IsPlayerAllowedConsole(pid) then
         tes3mp.Kick(pid)
+        tes3mp.SendMessage(pid, logicHandler.GetChatName(pid) .. consoleKickMessage, true)
+        return
+    elseif logicHandler.IsPacketFromClientScript(packetOrigin) then
+        clientScript = tes3mp.GetObjectListClientScript()
+        tes3mp.LogAppend(enumerations.log.INFO, '- clientScript was ' .. clientScript)
     end
-end
 
-eventHandler.OnObjectActivate = function(pid, cellDescription)
-    eventHandler.OnGenericObjectEvent(pid, cellDescription, "ObjectActivate")
-end
+    local isCellLoaded = LoadedCells[cellDescription] ~= nil
 
-eventHandler.OnObjectHit = function(pid, cellDescription)
-    eventHandler.OnGenericObjectEvent(pid, cellDescription, "ObjectHit")
-end
+    if not isCellLoaded and logicHandler.DoesPacketOriginRequireLoadedCell(packetOrigin) then
+        tes3mp.LogMessage(enumerations.log.WARN, 'Invalid ' .. packetType ..
+            logicHandler.GetChatName(pid) .. ' used impossible packetOrigin for unloaded ' .. cellDescription)
+        return
+    end
 
-eventHandler.OnObjectSound = function(pid, cellDescription)
-    eventHandler.OnGenericObjectEvent(pid, cellDescription, "ObjectSound")
-end
+    local packetTables = packetReader.GetObjectPacketTables(packetType)
+    local objects = packetTables.objects
+    local targetPlayers = packetTables.players
 
-eventHandler.OnObjectPlace = function(pid, cellDescription)
-    eventHandler.OnGenericObjectEvent(pid, cellDescription, "ObjectPlace")
-end
+    if tableHelper.isEmpty(objects) or tableHelper.isEmpty(targetPlayers) then return end
 
-eventHandler.OnObjectSpawn = function(pid, cellDescription)
-    eventHandler.OnGenericObjectEvent(pid, cellDescription, "ObjectSpawn")
-end
+    if not isCellLoaded then
+        logicHandler.LoadCell(cellDescription)
+    end
 
-eventHandler.OnObjectDelete = function(pid, cellDescription)
-    eventHandler.OnGenericObjectEvent(pid, cellDescription, "ObjectDelete")
-end
+    local eventStatus = CustomEventHooks.triggerValidators('On' .. packetType,
+        { pid, cellDescription, objects, targetPlayers })
 
-eventHandler.OnObjectLock = function(pid, cellDescription)
-    eventHandler.OnGenericObjectEvent(pid, cellDescription, "ObjectLock")
-end
+    if eventStatus.validDefaultHandler then
+        local debugMessage = 'Accepted ' .. packetType .. ' from ' .. logicHandler.GetChatName(pid) ..
+            ' about ' .. cellDescription .. ' for '
 
-eventHandler.OnObjectDialogueChoice = function(pid, cellDescription)
-    eventHandler.OnGenericObjectEvent(pid, cellDescription, "ObjectDialogueChoice")
-end
+        if not tableHelper.isEmpty(objects) then
+            debugMessage = debugMessage .. 'objects: '
+            local includeComma = false
 
-eventHandler.OnObjectMiscellaneous = function(pid, cellDescription)
-    eventHandler.OnGenericObjectEvent(pid, cellDescription, "ObjectMiscellaneous")
-end
+            for uniqueIndex, object in pairs(objects) do
+                if includeComma then debugMessage = debugMessage .. ', ' end
+                debugMessage = debugMessage .. object.refId .. ' ' .. uniqueIndex
+                includeComma = true
+            end
+        end
 
-eventHandler.OnObjectRestock = function(pid, cellDescription)
-    eventHandler.OnGenericObjectEvent(pid, cellDescription, "ObjectRestock")
-end
+        if not tableHelper.isEmpty(targetPlayers) then
+            local chatNames = logicHandler.GetChatNames(tableHelper.getArrayFromIndices(targetPlayers))
+            debugMessage = debugMessage .. 'players: ' .. tableHelper.concatenateArrayValues(chatNames, 1, ', ')
+        end
 
-eventHandler.OnObjectTrap = function(pid, cellDescription)
-    eventHandler.OnGenericObjectEvent(pid, cellDescription, "ObjectTrap")
-end
+        tes3mp.LogMessage(enumerations.log.INFO, debugMessage)
 
-eventHandler.OnObjectScale = function(pid, cellDescription)
-    eventHandler.OnGenericObjectEvent(pid, cellDescription, "ObjectScale")
-end
+        LoadedCells[cellDescription]:SaveObjectsByPacketType(packetType, objects)
+        LoadedCells[cellDescription]:LoadObjectsByPacketType(packetType, pid, objects,
+            tableHelper.getArrayFromIndices(objects), true)
+    end
 
-eventHandler.OnObjectState = function(pid, cellDescription)
-    eventHandler.OnGenericObjectEvent(pid, cellDescription, "ObjectState")
-end
+    if CustomEventHooks then
+        CustomEventHooks.triggerHandlers('On' .. packetType, eventStatus,
+            { pid, cellDescription, objects, targetPlayers })
+    end
 
-eventHandler.OnDoorState = function(pid, cellDescription)
-    eventHandler.OnGenericObjectEvent(pid, cellDescription, "DoorState")
-end
-
-eventHandler.OnClientScriptLocal = function(pid, cellDescription)
-    eventHandler.OnGenericObjectEvent(pid, cellDescription, "ClientScriptLocal")
+    if not isCellLoaded then
+        logicHandler.UnloadCell(cellDescription)
+    end
 end
 
 eventHandler.OnConsoleCommand = function(pid, cellDescription)
