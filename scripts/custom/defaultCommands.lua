@@ -24,6 +24,42 @@ local function invalidCommand(pid)
 end
 
 ---@type CommandHandler
+local function addAdmin(pid, cmd)
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+    if not isValid or not targetPid then return end
+
+    local targetPlayer = Players[targetPid]
+    local targetName = targetPlayer.name
+
+    if targetPlayer:IsAdmin() then
+        return tes3mp.SendMessage(pid, ('%s is already an Admin.\n'):format(targetName), false)
+    end
+
+    tes3mp.SendMessage(pid, ('%s was promoted to Admin!\n'):format(targetName), true)
+    targetPlayer.data.settings.staffRank = 2
+    targetPlayer:QuicksaveToDrive()
+end
+
+---@type CommandHandler
+local function addModerator(pid, cmd)
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+    if not isValid or not targetPid then return end
+
+    local isMod, isAdmin = dUtil.misc.getRanks(targetPid)
+    local targetPlayer = Players[targetPid]
+
+    if isAdmin then
+        return tes3mp.SendMessage(pid, ('%s is already an Admin.\n'):format(targetPlayer.name), false)
+    elseif isMod then
+        return tes3mp.SendMessage(pid, ('%s is already a Moderator.\n'):format(targetPlayer.name), false)
+    end
+
+    tes3mp.SendMessage(pid, ('%s was promoted to Moderator!\n'):format(targetPlayer.name), true)
+    targetPlayer.data.settings.staffRank = 1
+    targetPlayer:QuicksaveToDrive()
+end
+
+---@type CommandHandler
 local function ban(pid, cmd)
     if not dUtil.misc.getRanks(pid) then
         return invalidCommand(pid)
@@ -370,6 +406,54 @@ local function regions(pid, _)
 end
 
 ---@type CommandHandler
+local function removeAdmin(pid, cmd)
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+    if not isValid or not targetPid then return end
+
+    local targetPlayer = Players[targetPid]
+    local targetName = targetPlayer.name
+    local isMod, isAdmin, isOwner = dUtil.misc.getRanks(targetPid)
+
+    if not isMod then
+        return tes3mp.SendMessage(pid, ('%s is not an Admin.\n'):format(targetName), false)
+    end
+
+    if isOwner then
+        tes3mp.SendMessage(pid, ('Cannot demote %s because they are a Server Owner.\n'):format(targetName), false)
+    elseif isAdmin then
+        tes3mp.SendMessage(pid, ('%s was demoted from Admin to Moderator!\n'):format(targetName), true)
+        targetPlayer.data.settings.staffRank = 1
+        targetPlayer:QuicksaveToDrive()
+    end
+end
+
+---@type CommandHandler
+local function removeModerator(pid, cmd)
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+    if not isValid or not targetPid then return end
+
+    local targetPlayer = Players[targetPid]
+    local targetName = targetPlayer.name
+    local isMod, isAdmin, isOwner = dUtil.misc.getRanks(targetPid)
+
+    if not isMod then
+        return tes3mp.SendMessage(pid, ('%s is not a moderator.\n'):format(targetName), false)
+    end
+
+    if isAdmin then
+        return tes3mp.SendMessage(
+            pid,
+            ('Cannot demote %s because they are a a Server Administrator.\n'):format(targetName),
+            false
+        )
+    end
+
+    tes3mp.SendMessage(pid, ('%s was demoted from Moderator!\n'):format(targetName), true)
+    targetPlayer.data.settings.staffRank = 1
+    targetPlayer:QuicksaveToDrive()
+end
+
+---@type CommandHandler
 local function resetCell(pid, cmd)
     if not dUtil.misc.getRanks(pid) then
         return tes3mp.SendMessage(pid, "You need to be a moderator to run this command\n")
@@ -568,6 +652,39 @@ local function teleportTo(pid, cmd)
     logicHandler.TeleportToPlayer(pid, pid, cmd[2])
 end
 
+---@type CommandHandler
+local function kick(pid, cmd)
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+    if not isValid or not targetPid then return end
+
+    local targetPlayer = Players[targetPid]
+    local targetIsMod, targetIsAdmin = dUtil.misc.getRanks(targetPid)
+    local _, callerIsAdmin = dUtil.misc.getRanks(targetPid)
+
+    if targetIsAdmin then
+        return tes3mp.SendMessage(
+            pid,
+            ('You cannot kick (%s): %s from the server as they are a server administrator.\n')
+            :format(targetPid, targetPlayer.accountName),
+            false
+        )
+    elseif targetIsMod and not callerIsAdmin then
+        return tes3mp.SendMessage(
+            pid,
+            ('You cannot kick (%s): %s from the server as they are a fellow moderator.\n')
+            :format(targetPid, targetPlayer.accountName),
+            false
+        )
+    end
+
+    targetPlayer:Kick()
+    tes3mp.SendMessage(
+        pid,
+        ('%s was kicked from the server by %s.\n'):format(targetPlayer.accountName, Players[pid].accountName),
+        true
+    )
+end
+
 ---@type TES3MPScriptRegistration
 return {
     chatCommands = {
@@ -581,6 +698,8 @@ return {
         tpto = { callback = teleportTo, rankRequirement = enumerations.staffRank.MODERATOR, },
 
         -- Long commands
+        addAdmin = { callback = addAdmin, rankRequirement = enumerations.staffRank.ADMIN, },
+        addModerator = { callback = addModerator, rankRequirement = enumerations.staffRank.ADMIN, },
         ban = { callback = ban, },
         banlist = { callback = banlist, },
         cells = { callback = cells, },
@@ -589,6 +708,7 @@ return {
         ipaddresses = { callback = ipaddresses, },
         localMessage = { callback = localMessage, },
         join = { callback = joinTeam, },
+        kick = { callback = kick, rankRequirement = enumerations.staffRank.MODERATOR, },
         leave = { callback = leaveTeam, },
         list = { callback = players, },
         me = { callback = me, },
@@ -597,6 +717,8 @@ return {
         players = { callback = players, },
         regions = { callback = regions, },
         resetcell = { callback = resetCell, },
+        removeAdmin = { callback = removeAdmin, rankRequirement = enumerations.staffRank.OWNER, },
+        removeModerator = { callback = removeModerator, rankRequirement = enumerations.staffRank.ADMIN, },
         runstartup = { callback = runStartup, },
         setauthority = { callback = setAuthority, rankRequirement = enumerations.staffRank.MODERATOR, },
         setday = { callback = setDay, rankRequirement = enumerations.staffRank.MODERATOR, },
