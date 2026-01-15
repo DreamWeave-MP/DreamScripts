@@ -110,7 +110,7 @@ local function logUndefinedBehavior(pid, packetType, cellDescription)
     tes3mp.LogMessage(
         enumerations.log.WARN,
         ('Undefined behavior: %s sent %s for unloaded %s')
-        :format(logicHandler.getChatName(pid), packetType, cellDescription)
+        :format(logicHandler.GetChatName(pid), packetType, cellDescription)
     )
 end
 
@@ -119,7 +119,7 @@ end
 local function logCellEvent(eventName, cellDescription)
     tes3mp.LogMessage(
         enumerations.log.INFO,
-        ('Called "%s" for cell %s'):format(eventName, logicHandler.GetChatName(pid))
+        ('Called "%s" for cell %s'):format(eventName, cellDescription)
     )
 end
 
@@ -305,7 +305,7 @@ local function onGenericActorEvent(pid, cellDescription, packetType)
         tes3mp.LogMessage(
             enumerations.log.INFO,
             ('Saving %s from %s about %s')
-            :format(packetType, logicHandler.getChatName(pid), cellDescription)
+            :format(packetType, logicHandler.GetChatName(pid), cellDescription)
         )
 
         cell:SaveActorsByPacketType(packetType, actors)

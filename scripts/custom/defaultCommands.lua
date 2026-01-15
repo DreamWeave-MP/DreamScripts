@@ -294,7 +294,7 @@ local function inviteAlly(pid, cmd)
     if not isValid or not targetPid then return end
 
     local callingPlayer, targetPlayer, senderMessage = Players[pid], Players[targetPid], nil
-    local targetName = logicHandler.getChatName(targetPid)
+    local targetName = logicHandler.GetChatName(targetPid)
 
     if not callingPlayer.allyInvitesSent then callingPlayer.allyInvitesSent = {} end
     if not targetPlayer.allyInvitesReceived then targetPlayer.allyInvitesReceived = {} end
@@ -373,7 +373,7 @@ local function joinTeam(pid, cmd)
     if not isValid or not targetPid then return end
 
     local callingPlayer, targetPlayer, senderMessage = Players[pid], Players[targetPid], nil
-    local targetName = logicHandler.getChatName(targetPid)
+    local targetName = logicHandler.GetChatName(targetPid)
 
     if not callingPlayer.allyInvitesReceived then callingPlayer.allyInvitesReceived = {} end
 
