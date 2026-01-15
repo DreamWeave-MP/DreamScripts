@@ -75,7 +75,7 @@ local CustomEventHooks
 local clientVariableScopes = require 'tes3mp.clientVariableScopes'
 local consoleKickMessage = '%s has been kicked for using the console despite not having the permission to do so.\n'
 
-if (config.databaseType ~= nil and config.databaseType ~= "json") and miscUtil.doesModuleExist("luasql." .. config.databaseType) then
+if (config.databaseType ~= nil and config.databaseType ~= 'json') and pcall(require, 'luasql.' .. config.databaseType) then
     Database = require("database")
     Database:LoadDriver(config.databaseType)
 
