@@ -15,7 +15,7 @@
 ---| 'wood elf'
 
 ---@alias CellDescription string Name of a cell as defined by content files
----@alias CommandTokens string[] pre-tokenized command string provided to all commandHandlers. The first value is always the name of the command entered, including the leading slash.
+---@alias CommandTokens string[] pre-tokenized command string provided to all commandHandlers. The first value is always the name of the command entered, excluding the leading slash, and will always be lowercase.
 ---@alias CommandHandler fun(pid: PlayerId, cmd: CommandTokens) Special function type for handling chat commands
 ---@alias ContentFixMap table<CellDescription, ContentFixType>
 ---@alias DataFileRequirements table<string, string[]>
