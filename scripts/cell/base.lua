@@ -7,10 +7,16 @@ local packetBuilder = require 'tes3mp.packet.builder'
 local patterns = require 'patterns'
 local tableHelper = require 'tes3mp.util.table'
 
+local contentFixesByCell = {}
+
+for cellName, fixes in pairs(config.contentFixesByCell) do
+    contentFixesByCell[cellName:lower()] = fixes
+end
+
 ---@param pid PlayerId
 ---@param cellDescription CellDescription
 local function fixCell(pid, cellDescription)
-    local cellFixes = config.contentFixesByCell[cellDescription]
+    local cellFixes = contentFixesByCell[cellDescription:lower()]
     if not cellFixes then return end
 
     for action, refNumArray in pairs(cellFixes) do
