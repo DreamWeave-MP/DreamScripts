@@ -2473,11 +2473,29 @@ function OnGUIAction(pid, idGui, data)
                     player:Message(('%s is banned from this server.\n'):format(player.accountName))
                     tes3mp.BanAddress(tes3mp.GetIP(pid))
                 else
-                    player:FinishLogin()
-                    player:Message(('You have successfully logged in.\n%s'):format(config.chatWindowInstructions))
+                    if player:FinishLogin() then
+                        if CustomEventHooks then
+                            CustomEventHooks.triggerHandlers(
+                                'OnPlayerFinishLogin',
+                                dUtil.misc.makeEventStatus(),
+                                { player.pid }
+                            )
 
-                    if not WorldInstance:HasRunStartupScripts() then
-                        player:Message(config.startupScriptsInstructions)
+                            CustomEventHooks.triggerHandlers(
+                                'OnPlayerAuthentified',
+                                dUtil.misc.makeEventStatus(),
+                                { player.pid }
+                            )
+                        end
+
+                        player:Message(('You have successfully logged in.\n%s'):format(config.chatWindowInstructions))
+
+                        if not WorldInstance:HasRunStartupScripts() then
+                            player:Message(config.startupScriptsInstructions)
+                        end
+                    else
+                        tes3mp.LogAppend(enumerations.log.WARN, ('Login failed for playerId: %s'):format(pid))
+                        tes3mp.Kick(pid)
                     end
                 end
             elseif idGui == guiHelper.ID.REGISTER then

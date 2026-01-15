@@ -214,153 +214,151 @@ function BasePlayer:Register(clientPasswordHash)
     end
 end
 
+---@return boolean loggedIn Whether or not the player successfully logged in
 function BasePlayer:FinishLogin()
-    if self.hasAccount then
-        self:SaveIpAddress()
+    if not self.hasAccount then return false end
 
-        if self.data.timestamps == nil then
-            self.data.timestamps = {
-                creation = os.time(),
-                lastDisconnect = 0,
-                lastFixMe = 0,
-                lastSessionDuration = 0
-            }
-        end
+    self:SaveIpAddress()
 
-        self.data.timestamps.lastLogin = os.time()
+    if self.data.timestamps == nil then
+        self.data.timestamps = {
+            creation = os.time(),
+            lastDisconnect = 0,
+            lastFixMe = 0,
+            lastSessionDuration = 0
+        }
+    end
 
-        self:LoadSettings()
-        self:LoadCharacter()
-        self:LoadClass()
-        self:LoadLevel()
-        self:LoadAttributes()
-        self:LoadSkills()
-        self:LoadStatsDynamic()
+    self.data.timestamps.lastLogin = os.time()
 
-        WorldInstance:LoadTime(self.pid, false)
-        WorldInstance:LoadWeather(self.pid, false)
+    self:LoadSettings()
+    self:LoadCharacter()
+    self:LoadClass()
+    self:LoadLevel()
+    self:LoadAttributes()
+    self:LoadSkills()
+    self:LoadStatsDynamic()
 
-        if self.data.recordLinks == nil then self.data.recordLinks = {} end
+    WorldInstance:LoadTime(self.pid, false)
+    WorldInstance:LoadWeather(self.pid, false)
 
-        -- Load high priority records linked to us, then load lower priority permanent
-        -- records and lower priority records linked to this player
-        for priorityLevel, recordStoreTypes in ipairs(config.recordStoreLoadOrder) do
-            for _, storeType in ipairs(recordStoreTypes) do
-                local recordStore = RecordStores[storeType]
+    if self.data.recordLinks == nil then self.data.recordLinks = {} end
 
-                if recordStore ~= nil then
-                    -- Skip permanent records from high priority stores here because those
-                    -- were already loaded upon first connecting to the server
-                    if priorityLevel > 1 then
-                        recordStore:LoadRecords(self.pid, recordStore.data.permanentRecords,
-                            tableHelper.getArrayFromIndices(recordStore.data.permanentRecords))
-                    end
+    -- Load high priority records linked to us, then load lower priority permanent
+    -- records and lower priority records linked to this player
+    for priorityLevel, recordStoreTypes in ipairs(config.recordStoreLoadOrder) do
+        for _, storeType in ipairs(recordStoreTypes) do
+            local recordStore = RecordStores[storeType]
 
-                    -- Load the generated records linked to us in this record store
-                    if self.data.recordLinks[storeType] ~= nil then
-                        recordStore:LoadGeneratedRecords(self.pid, recordStore.data.generatedRecords,
-                            self.data.recordLinks[storeType])
-                    end
+            if recordStore ~= nil then
+                -- Skip permanent records from high priority stores here because those
+                -- were already loaded upon first connecting to the server
+                if priorityLevel > 1 then
+                    recordStore:LoadRecords(self.pid, recordStore.data.permanentRecords,
+                        tableHelper.getArrayFromIndices(recordStore.data.permanentRecords))
+                end
+
+                -- Load the generated records linked to us in this record store
+                if self.data.recordLinks[storeType] ~= nil then
+                    recordStore:LoadGeneratedRecords(self.pid, recordStore.data.generatedRecords,
+                        self.data.recordLinks[storeType])
                 end
             end
         end
-
-        self:CleanInventory()
-        self:LoadInventory()
-        self:LoadEquipment()
-        self:CleanSpellbook()
-        self:LoadSpellbook()
-        self:LoadSpellsActive()
-        self:LoadCooldowns()
-        self:LoadQuickKeys()
-        self:LoadBooks()
-        self:LoadShapeshift()
-        self:LoadMarkLocation()
-        self:LoadSelectedSpell()
-
-        if config.shareJournal == true then
-            WorldInstance:LoadJournal(self.pid)
-        else
-            self:LoadJournal()
-        end
-
-        if config.shareFactionRanks == true then
-            WorldInstance:LoadFactionRanks(self.pid)
-        else
-            self:LoadFactionRanks()
-        end
-
-        if config.shareFactionExpulsion == true then
-            WorldInstance:LoadFactionExpulsion(self.pid)
-        else
-            self:LoadFactionExpulsion()
-        end
-
-        if config.shareFactionReputation == true then
-            WorldInstance:LoadFactionReputation(self.pid)
-        else
-            self:LoadFactionReputation()
-        end
-
-        if config.shareTopics == true then
-            WorldInstance:LoadTopics(self.pid)
-        else
-            self:LoadTopics()
-        end
-
-        if config.shareBounty == true then
-            WorldInstance:LoadBounty(self.pid)
-        else
-            self:LoadBounty()
-        end
-
-        if config.shareReputation == true then
-            WorldInstance:LoadReputation(self.pid)
-        else
-            self:LoadReputation()
-        end
-
-        if config.shareKills == true then
-            WorldInstance:LoadKills(self.pid)
-        else
-            self:LoadKills(self.pid, false)
-        end
-
-        self:LoadSpecialStates()
-
-        if config.shareMapExploration == true then
-            WorldInstance:LoadMap(self.pid)
-        else
-            self:LoadMap()
-        end
-
-        self:LoadClientScriptVariables()
-        WorldInstance:LoadClientScriptVariables(self.pid)
-
-        self:LoadDestinationOverrides()
-        WorldInstance:LoadDestinationOverrides(self.pid)
-
-        self:LoadAllies()
-        self:LoadCell()
-
-        self.loggedIn = true
-
-        if self.data.alliedPlayers == nil then self.data.alliedPlayers = {} end
-
-        for _, otherAccountName in ipairs(self.data.alliedPlayers) do
-            if logicHandler.IsPlayerNameLoggedIn(otherAccountName) then
-                local otherPlayer = logicHandler.GetPlayerByName(otherAccountName)
-                otherPlayer:LoadAllies()
-            end
-        end
-
-        self:RunPlayerSpecificStartupScripts()
-
-        customEventHooks.triggerHandlers("OnPlayerFinishLogin", customEventHooks.makeEventStatus(true, true),
-            { self.pid })
-        customEventHooks.triggerHandlers("OnPlayerAuthentified", customEventHooks.makeEventStatus(true, true), { self
-            .pid })
     end
+
+    self:CleanInventory()
+    self:LoadInventory()
+    self:LoadEquipment()
+    self:CleanSpellbook()
+    self:LoadSpellbook()
+    self:LoadSpellsActive()
+    self:LoadCooldowns()
+    self:LoadQuickKeys()
+    self:LoadBooks()
+    self:LoadShapeshift()
+    self:LoadMarkLocation()
+    self:LoadSelectedSpell()
+
+    if config.shareJournal == true then
+        WorldInstance:LoadJournal(self.pid)
+    else
+        self:LoadJournal()
+    end
+
+    if config.shareFactionRanks == true then
+        WorldInstance:LoadFactionRanks(self.pid)
+    else
+        self:LoadFactionRanks()
+    end
+
+    if config.shareFactionExpulsion == true then
+        WorldInstance:LoadFactionExpulsion(self.pid)
+    else
+        self:LoadFactionExpulsion()
+    end
+
+    if config.shareFactionReputation == true then
+        WorldInstance:LoadFactionReputation(self.pid)
+    else
+        self:LoadFactionReputation()
+    end
+
+    if config.shareTopics == true then
+        WorldInstance:LoadTopics(self.pid)
+    else
+        self:LoadTopics()
+    end
+
+    if config.shareBounty == true then
+        WorldInstance:LoadBounty(self.pid)
+    else
+        self:LoadBounty()
+    end
+
+    if config.shareReputation == true then
+        WorldInstance:LoadReputation(self.pid)
+    else
+        self:LoadReputation()
+    end
+
+    if config.shareKills == true then
+        WorldInstance:LoadKills(self.pid)
+    else
+        self:LoadKills(self.pid, false)
+    end
+
+    self:LoadSpecialStates()
+
+    if config.shareMapExploration == true then
+        WorldInstance:LoadMap(self.pid)
+    else
+        self:LoadMap()
+    end
+
+    self:LoadClientScriptVariables()
+    WorldInstance:LoadClientScriptVariables(self.pid)
+
+    self:LoadDestinationOverrides()
+    WorldInstance:LoadDestinationOverrides(self.pid)
+
+    self:LoadAllies()
+    self:LoadCell()
+
+    self.loggedIn = true
+
+    if self.data.alliedPlayers == nil then self.data.alliedPlayers = {} end
+
+    for _, otherAccountName in ipairs(self.data.alliedPlayers) do
+        if logicHandler.IsPlayerNameLoggedIn(otherAccountName) then
+            local otherPlayer = logicHandler.GetPlayerByName(otherAccountName)
+            otherPlayer:LoadAllies()
+        end
+    end
+
+    self:RunPlayerSpecificStartupScripts()
+
+    return true
 end
 
 function BasePlayer:EndCharGen()
