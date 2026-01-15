@@ -19,7 +19,6 @@
 
 ]]
 
-local dUtil = require 'dUtil.init'
 local enumerations = require 'tes3mp.enumerations'
 local tableHelper = require 'tes3mp.util.table'
 
