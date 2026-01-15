@@ -96,7 +96,9 @@ function DScriptLoader.getScriptEnv()
   --- Each instance is mutable, although it is unique, so that scripts are completely sandboxed in every instance
   ---@class DreamWeaveScriptEnv
   local ScriptEnv = {
+    assert = assert,
     debug = debug,
+    error = error,
     math = math,
     require = DScriptLoader.requireShim,
     print = print,
