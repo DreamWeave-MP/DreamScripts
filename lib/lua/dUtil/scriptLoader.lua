@@ -121,7 +121,8 @@ function DScriptLoader.requireShim(scriptName)
     end
 
     tes3mp.LogAppend(enumerations.log.WARN, ('Setting env for %s'):format(scriptName))
-    setfenv(chunk, getfenv(2))
+    setfenv(chunk, DScriptLoader.getScriptEnv())
+    -- setfenv(chunk, getfenv(2))
 
     tes3mp.LogAppend(enumerations.log.WARN, ('Executing chunk for %s'):format(scriptName))
     local result = chunk()
