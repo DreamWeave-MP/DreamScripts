@@ -2,43 +2,7 @@
 local commandHandler = {}
 
 function commandHandler.ProcessCommand(pid, cmd)
-    if cmd[1] == 'setcollision' and admin then
-        local collisionState
-
-        if cmd[2] ~= nil and cmd[3] == 'on' then
-            collisionState = true
-        elseif cmd[2] ~= nil and cmd[3] == 'off' then
-            collisionState = false
-        else
-            tes3mp.SendMessage(pid, 'Not a valid argument. Use /setcollision <category> on/off\n', false)
-            return false
-        end
-
-        local categoryInput = string.upper(cmd[2])
-        local categoryValue = enumerations.objectCategories[categoryInput]
-
-        if categoryValue == enumerations.objectCategories.PLAYER then
-            tes3mp.SetPlayerCollisionState(collisionState)
-        elseif categoryValue == enumerations.objectCategories.ACTOR then
-            tes3mp.SetActorCollisionState(collisionState)
-        elseif categoryValue == enumerations.objectCategories.PLACED_OBJECT then
-            tes3mp.SetPlacedObjectCollisionState(collisionState)
-
-            if cmd[4] == 'on' then
-                tes3mp.UseActorCollisionForPlacedObjects(true)
-            elseif cmd[4] == 'off' then
-                tes3mp.UseActorCollisionForPlacedObjects(false)
-            end
-        else
-            tes3mp.SendMessage(pid, categoryInput .. ' is not a valid object category. Valid choices are ' ..
-                tableHelper.concatenateTableIndices(enumerations.objectCategories, ', ') .. '\n', false)
-            return false
-        end
-
-        tes3mp.SendWorldCollisionOverride(pid, true)
-        tes3mp.SendMessage(pid, 'Collision for ' .. categoryInput .. ' is now ' .. cmd[3] ..
-            ' for all newly loaded cells.\n', false)
-    elseif cmd[1] == 'overridecollision' and admin then
+    if cmd[1] == 'overridecollision' and admin then
         local collisionState
         local refId = cmd[2]
 

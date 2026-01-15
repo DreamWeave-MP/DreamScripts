@@ -721,6 +721,46 @@ local function setBedRest(pid, cmd)
 end
 
 ---@type CommandHandler
+local function setCollision(pid, cmd)
+    if not cmd[2] or (cmd[3] ~= 'on' and cmd[3] ~= 'off') then
+        return tes3mp.SendMessage(pid, 'Not a valid argument. Use /setcollision <category> on/off\n', false)
+    end
+
+    local collisionState, categoryInput = cmd[3] == 'on', cmd[2]:upper()
+    local categoryValue = enumerations.objectCategories[categoryInput]
+
+    if not categoryValue then
+        return tes3mp.SendMessage(
+            pid,
+            ('%s is not a valid object category. Valid choices are %s\n')
+            :format(categoryInput, tableHelper.concatenateTableIndices(enumerations.objectCategories, ', ')),
+            false
+        )
+    end
+
+    if categoryValue == enumerations.objectCategories.PLAYER then
+        tes3mp.SetPlayerCollisionState(collisionState)
+    elseif categoryValue == enumerations.objectCategories.ACTOR then
+        tes3mp.SetActorCollisionState(collisionState)
+    elseif categoryValue == enumerations.objectCategories.PLACED_OBJECT then
+        tes3mp.SetPlacedObjectCollisionState(collisionState)
+
+        if cmd[4] == 'on' then
+            tes3mp.UseActorCollisionForPlacedObjects(true)
+        elseif cmd[4] == 'off' then
+            tes3mp.UseActorCollisionForPlacedObjects(false)
+        end
+    end
+
+    tes3mp.SendWorldCollisionOverride(pid, true)
+    tes3mp.SendMessage(
+        pid,
+        ('Collision for %s is now %s for all newly loaded cells.\n'):format(categoryInput, cmd[3]),
+        false
+    )
+end
+
+---@type CommandHandler
 local function setConsole(pid, cmd)
     local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
     if not isValid or not targetPid then return end
@@ -1249,6 +1289,7 @@ return {
         setAttribute = { callback = setAttribute, rankRequirement = enumerations.staffRank.MODERATOR, },
         setauthority = { callback = setAuthority, rankRequirement = enumerations.staffRank.MODERATOR, },
         setBedRest = { callback = setBedRest, rankRequirement = enumerations.staffRank.ADMIN, },
+        setCollision = { callback = setCollision, rankRequirement = enumerations.staffRank.ADMIN, },
         setConsole = { callback = setConsole, rankRequirement = enumerations.staffRank.ADMIN, },
         setday = { callback = setDay, rankRequirement = enumerations.staffRank.MODERATOR, },
         setDifficulty = { callback = setDifficulty, rankRequirement = enumerations.staffRank.ADMIN, },
