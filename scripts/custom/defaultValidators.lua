@@ -33,14 +33,14 @@ return {
     -- to run the console commands by the server itself; kick them instead
     OnConsoleCommand = function(_, pid, cellDescription, consoleCommand, _, _)
       print('Number of Players: ', tableHelper.getCount(Players))
-      tableHelper.print(Players)
+      -- tableHelper.print(Players)
       print(
         'WTF:\n\n\n',
         pid,
         cellDescription,
         consoleCommand,
         Players[pid] or 'FUCKED',
-        Players[pid].consoleCommandsQueued or 'NO COMMANDS',
+        -- Players[pid].consoleCommandsQueued or 'NO COMMANDS',
         '\n\n\n-----WTF-----\n\n\n'
       )
 
