@@ -157,7 +157,7 @@ end
 local function rollOne(faces)
     assert(faces, RollOneNoFacesError)
     for i = 1, ITERATIONS_PER_DICE do
-        local sideRoll = rand(1, faces)
+        local sideRoll = math.random(1, faces)
         if i == ITERATIONS_PER_DICE then return sideRoll end
         ---@diagnostic disable-next-line: missing-return
     end
@@ -243,7 +243,7 @@ end
 function Roll.getNumDice(input)
     if not isValidString(input) then return 1 end
 
-    local before_d = match(input, RollNumDiceMatchString)
+    local before_d = input:match(RollNumDiceMatchString)
     if not before_d or before_d == '' then return 1 end
 
     local number = tonumber(before_d)
