@@ -94,8 +94,10 @@ function DScriptLoader.requireShim(scriptName)
   if scriptName == 'interfaces' then
     return DScriptLoader.Interfaces
   elseif sandboxLoaded[scriptName] then
+    print('Returning cached script ' .. scriptName)
     return sandboxLoaded[scriptName]()
   else
+    print('Loading fresh script ' .. scriptName)
     local chunk, err = loadfile(scriptName)
     if not chunk then return nil, err end
 
