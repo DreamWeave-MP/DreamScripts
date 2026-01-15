@@ -100,6 +100,9 @@ function DScriptLoader.requireShim(scriptName)
     print('Loading fresh script ' .. scriptName)
     local ok, chunk, err = false, nil, nil
 
+    ok, chunk = pcall(require, scriptName)
+    if ok then return chunk end
+
     for _, prefix in ipairs { 'scripts/', 'lib/', 'lib/lua/', } do
       local checkPath = ('server/%s%s.lua'):format(prefix, scriptName:gsub('%.', PathSeparator))
 
