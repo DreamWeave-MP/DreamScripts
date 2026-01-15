@@ -102,7 +102,8 @@ function DScriptLoader.getScriptEnv()
     string = string,
     table = table,
     tes3mp = tes3mp,
-    debug = {
+    ---@class DScriptLoaderHidden
+    scriptLoader = {
       loadScript = DScriptLoader.loadScript,
       loadAllScripts = DScriptLoader.loadAllScripts,
     },
