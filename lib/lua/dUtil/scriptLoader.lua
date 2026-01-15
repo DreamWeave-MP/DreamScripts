@@ -107,7 +107,7 @@ function DScriptLoader.getScriptEnv()
     error = error,
     ipairs = ipairs,
     math = math,
-    -- require = DScriptLoader.requireShim,
+    require = DScriptLoader.requireShim,
     pairs = pairs,
     print = print,
     string = string,
