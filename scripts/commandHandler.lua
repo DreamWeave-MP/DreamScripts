@@ -2,30 +2,6 @@
 local commandHandler = {}
 
 function commandHandler.ProcessCommand(pid, cmd)
-    if cmd[1] == nil then
-        local message = 'Please use a command after the / symbol.\n'
-        tes3mp.SendMessage(pid, color.Error .. message .. color.Default, false)
-        return false
-    else
-        -- The command itself should always be lowercase
-        cmd[1] = string.lower(cmd[1])
-    end
-
-    local serverOwner = false
-    local admin = false
-    local moderator = false
-
-    if Players[pid]:IsServerOwner() then
-        serverOwner = true
-        admin = true
-        moderator = true
-    elseif Players[pid]:IsAdmin() then
-        admin = true
-        moderator = true
-    elseif Players[pid]:IsModerator() then
-        moderator = true
-    end
-
     if cmd[1] == 'setattr' and moderator then
         if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
             local targetPid = tonumber(cmd[2])
@@ -239,68 +215,6 @@ function commandHandler.ProcessCommand(pid, cmd)
             else
                 tes3mp.SendMessage(pid, 'Not a valid argument. Use /setphysicsfps <pid> <value>\n', false)
                 return false
-            end
-        end
-    elseif (cmd[1] == 'setloglevel' or cmd[1] == 'setenforcedloglevel') and admin then
-        if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-            local targetPid = tonumber(cmd[2])
-            local logLevel = cmd[3]
-
-            if type(tonumber(logLevel)) == 'number' then
-                logLevel = tonumber(logLevel)
-            end
-
-            if logLevel == 'default' or type(logLevel) == 'number' then
-                Players[targetPid]:SetEnforcedLogLevel(logLevel)
-                Players[targetPid]:LoadSettings()
-                tes3mp.SendMessage(pid, 'Enforced log level for ' .. Players[targetPid].name
-                    .. ' is now ' .. logLevel .. '\n', true)
-            else
-                tes3mp.SendMessage(pid, 'Not a valid argument. Use /setloglevel <pid> <value>\n', false)
-                return false
-            end
-        end
-    elseif cmd[1] == 'setscale' and admin then
-        if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-            local targetPid = tonumber(cmd[2])
-            local targetName = ''
-            local scale = cmd[3]
-
-            if type(tonumber(scale)) == 'number' then
-                scale = tonumber(scale)
-            else
-                tes3mp.SendMessage(pid, 'Not a valid argument. Use /setscale <pid> <value>.\n', false)
-                return false
-            end
-
-            Players[targetPid]:SetScale(scale)
-            Players[targetPid]:LoadShapeshift()
-            tes3mp.SendMessage(pid, 'Scale for ' .. Players[targetPid].name .. ' is now ' .. scale .. '\n', false)
-            if targetPid ~= pid then
-                tes3mp.SendMessage(targetPid, 'Your scale is now ' .. scale .. '\n', false)
-            end
-        end
-    elseif cmd[1] == 'setwerewolf' and admin then
-        if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-            local targetPid = tonumber(cmd[2])
-            local targetName = ''
-            local state = ''
-
-            if cmd[3] == 'on' then
-                Players[targetPid]:SetWerewolfState(true)
-                state = ' enabled.\n'
-            elseif cmd[3] == 'off' then
-                Players[targetPid]:SetWerewolfState(false)
-                state = ' disabled.\n'
-            else
-                tes3mp.SendMessage(pid, 'Not a valid argument. Use /setwerewolf <pid> on/off.\n', false)
-                return false
-            end
-
-            Players[targetPid]:LoadShapeshift()
-            tes3mp.SendMessage(pid, 'Werewolf state for ' .. Players[targetPid].name .. state, false)
-            if targetPid ~= pid then
-                tes3mp.SendMessage(targetPid, 'Werewolf state' .. state, false)
             end
         end
     elseif cmd[1] == 'disguise' and admin then
@@ -738,18 +652,6 @@ function commandHandler.ProcessCommand(pid, cmd)
                 end
             end
         end
-    elseif cmd[1] == 'help' then
-        -- Check 'scripts/menu/help.lua' if you want to change the contents of the help menus
-        Players[pid].currentCustomMenu = 'help player'
-        menuHelper.DisplayMenu(pid, Players[pid].currentCustomMenu)
-    elseif cmd[1] == 'craft' then
-        -- Check 'scripts/menu/defaultCrafting.lua' if you want to change the example craft menu
-        Players[pid].currentCustomMenu = 'default crafting origin'
-        menuHelper.DisplayMenu(pid, Players[pid].currentCustomMenu)
-    elseif (cmd[1] == 'advancedexample' or cmd[1] == 'advex') and moderator then
-        -- Check 'scripts/menu/advancedExample.lua' if you want to change the advanced menu example
-        Players[pid].currentCustomMenu = 'advanced example origin'
-        menuHelper.DisplayMenu(pid, Players[pid].currentCustomMenu)
     end
 end
 

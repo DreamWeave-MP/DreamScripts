@@ -540,6 +540,33 @@ local function runStartup(pid, _)
 end
 
 ---@type CommandHandler
+local function setLogLevel(pid, cmd)
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+    if not isValid or not targetPid then return end
+
+    ---@type string|integer
+    local logLevel = cmd[3]
+
+    local logLevNum = tonumber(logLevel)
+    if type(logLevNum) == 'number' then
+        logLevel = math.floor(logLevNum)
+    end
+
+    if logLevel ~= 'default' and type(logLevel) ~= 'number' then
+        return tes3mp.SendMessage(pid, 'Not a valid argument. Use /setloglevel <pid> <value>\n', false)
+    end
+
+    local player = Players[targetPid]
+    player:SetEnforcedLogLevel(logLevel)
+    player:LoadSettings()
+    tes3mp.SendMessage(
+        pid,
+        ('Enforced log level for %s is now %s\n'):format(player.name, logLevel),
+        true
+    )
+end
+
+---@type CommandHandler
 local function setPlayerModel(pid, cmd)
     local _, isAdmin = dUtil.misc.getRanks(pid)
 
@@ -566,6 +593,32 @@ end
 local function storeRecord(pid, cmd)
     if not cmd[2] or not cmd[3] then return end
     recordHelper.storeRecord(pid, cmd)
+end
+
+---@type CommandHandler
+local function setScale(pid, cmd)
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+    if not isValid or not targetPid then return end
+
+    local scale = tonumber(cmd[3])
+
+    if type(scale) ~= 'number' then
+        return tes3mp.SendMessage(pid, 'Not a valid argument. Use /setscale <pid> <value>.\n', false)
+    end
+
+    local player = Players[targetPid]
+    player:SetScale(scale)
+    player:LoadShapeshift()
+
+    tes3mp.SendMessage(
+        pid,
+        ('Scale for %s is now %s\n'):format(player.name, scale),
+        false
+    )
+
+    if targetPid ~= pid then
+        tes3mp.SendMessage(targetPid, ('Your scale is now %s\n'):format(scale), false)
+    end
 end
 
 ---@type CommandHandler
@@ -690,6 +743,29 @@ local function setRace(pid, cmd)
 end
 
 ---@type CommandHandler
+local function setWerewolf(pid, cmd)
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+    if not isValid or not targetPid then return end
+
+    local player = Players[targetPid]
+    local message
+
+    if cmd[3] == 'on' then
+        player:SetWerewolfState(true)
+        message = ('Werewolf state for %s enabled\n'):format(player.name)
+    elseif cmd[3] == 'off' then
+        player:SetWerewolfState(false)
+        message = ('Werewolf state for %s disabled\n'):format(player.name)
+    else
+        return tes3mp.SendMessage(pid, 'Not a valid argument. Use /setwerewolf <pid> on/off.\n', false)
+    end
+
+    player:LoadShapeshift()
+
+    tes3mp.SendMessage(pid, message)
+end
+
+---@type CommandHandler
 local function teleport(pid, cmd)
     if cmd[2] == "all" then
         for iteratorPid, player in pairs(Players) do
@@ -784,11 +860,15 @@ return {
         runstartup = { callback = runStartup, },
         setauthority = { callback = setAuthority, rankRequirement = enumerations.staffRank.MODERATOR, },
         setday = { callback = setDay, rankRequirement = enumerations.staffRank.MODERATOR, },
+        setEnforcedLogLevel = { callback = setLogLevel, rankRequirement = enumerations.staffRank.ADMIN, },
         sethair = { callback = setHair, rankRequirement = enumerations.staffRank.ADMIN, },
         sethead = { callback = setHead, rankRequirement = enumerations.staffRank.ADMIN, },
+        setLogLevel = { callback = setLogLevel, rankRequirement = enumerations.staffRank.ADMIN, },
         setmodel = { callback = setPlayerModel, },
         setmonth = { callback = setMonth, rankRequirement = enumerations.staffRank.MODERATOR, },
         setrace = { callback = setRace, rankRequirement = enumerations.staffRank.ADMIN, },
+        setScale = { callback = setScale, rankRequirement = enumerations.staffRank.ADMIN, },
+        setWerewolf = { callback = setWerewolf, rankRequirement = enumerations.staffRank.ADMIN, },
         storeRecord = { callback = storeRecord, rankRequirement = enumerations.staffRank.ADMIN, },
         teleport = { callback = teleport, rankRequirement = enumerations.staffRank.MODERATOR, },
         teleportto = { callback = teleportTo, rankRequirement = enumerations.staffRank.MODERATOR, },
