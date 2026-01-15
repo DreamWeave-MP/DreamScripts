@@ -196,6 +196,29 @@ local function createRecord(pid, cmd)
 end
 
 ---@type CommandHandler
+local function disguise(pid, cmd)
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+    if not isValid or not targetPid then return invalidCommand(pid) end
+
+    local creatureRefId = tableHelper.concatenateFromIndex(cmd, 3)
+
+    local player = Players[targetPid]
+    player.data.shapeshift.creatureRefId = creatureRefId
+    tes3mp.SetCreatureRefId(targetPid, creatureRefId)
+    tes3mp.SendShapeshift(targetPid)
+
+    if creatureRefId == '' then
+        creatureRefId = 'nothing'
+    end
+
+    tes3mp.SendMessage(pid, ('%s is now disguised as %s.\n'):format(player.accountName, creatureRefId), false)
+
+    if targetPid ~= pid then
+        tes3mp.SendMessage(targetPid, 'You are now disguised as ' .. creatureRefId .. '\n', false)
+    end
+end
+
+---@type CommandHandler
 local function getPos(pid, cmd)
     local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
     if not isValid or not targetPid then return invalidCommand(pid) end
@@ -812,6 +835,24 @@ local function setHead(pid, cmd)
 end
 
 ---@type CommandHandler
+local function setHour(pid, cmd)
+    local inputValue = tonumber(cmd[2])
+    if not inputValue then return end
+
+    if inputValue == 24 then
+        inputValue = 0
+    elseif inputValue < 0 or inputValue >= 24 then
+        return tes3mp.SendMessage(pid, 'There aren\'t that many hours in a day.\n', false)
+    end
+
+
+    WorldInstance.data.time.hour = inputValue
+    WorldInstance:QuicksaveToDrive()
+    WorldInstance:LoadTime(pid, true)
+    HourCounter = inputValue
+end
+
+---@type CommandHandler
 local function setLogLevel(pid, cmd)
     local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
     if not isValid or not targetPid then return end
@@ -836,6 +877,27 @@ local function setLogLevel(pid, cmd)
         ('Enforced log level for %s is now %s\n'):format(player.name, logLevel),
         true
     )
+end
+
+---@type CommandHandler
+local function setPhysicsFPS(pid, cmd)
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+    if not isValid or not targetPid or #cmd < 3 then return end
+
+    ---@type number|string|nil
+    local physicsFramerate = tonumber(cmd[3])
+    if not physicsFramerate then
+        if cmd[3] ~= 'default' then
+            return tes3mp.SendMessage(pid, 'Not a valid argument. Use /setphysicsfps <pid> <value>\n', false)
+        end
+
+        physicsFramerate = cmd[3]
+    end
+
+    local player = Players[targetPid]
+    player:SetPhysicsFramerate(physicsFramerate)
+    player:LoadSettings()
+    tes3mp.SendMessage(pid, ('Physics framerate for %s is now %s.\n'):format(player.name, physicsFramerate), true)
 end
 
 ---@type CommandHandler
@@ -952,6 +1014,35 @@ local function setSkill(pid, cmd)
 
     local skillName = tes3mp.GetSkillName(skillId)
     Players[targetPid].data.skills[skillName].base = skillValue
+end
+
+local ValidTimeInputs = {
+    both = true,
+    day = true,
+    night = true,
+}
+
+---@type CommandHandler
+local function setTimescale(pid, cmd)
+    local inputPeriod = cmd[2]:lower()
+    local inputValue = tonumber(cmd[3])
+
+    if inputValue or not ValidTimeInputs[inputPeriod] then
+        return tes3mp.SendMessage(pid, 'Invalid input! Please use /settimescale day/night/both <value>\n', false)
+    end
+
+
+    if inputPeriod == 'day' or inputPeriod == 'both' then
+        WorldInstance.data.time.dayTimeScale = inputValue
+    end
+
+    if inputPeriod == 'night' or inputPeriod == 'both' then
+        WorldInstance.data.time.nightTimeScale = inputValue
+    end
+
+    WorldInstance:QuicksaveToDrive()
+    WorldInstance:UpdateFrametimeMultiplier()
+    WorldInstance:LoadTime(pid, true)
 end
 
 ---@type CommandHandler
@@ -1096,6 +1187,20 @@ local function unban(pid, cmd)
     end
 end
 
+---@type CommandHandler
+local function useCreatureName(pid, cmd)
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+    if not isValid or not targetPid or #cmd < 3 then return end
+
+    if cmd[3] ~= 'on' and cmd[3] ~= 'off' then
+        return tes3mp.SendMessage(pid, 'Not a valid argument. Use /usecreaturename <pid> on/off\n', false)
+    end
+
+    local nameState = cmd[3] == 'on'
+    Players[targetPid].data.shapeshift.displayCreatureName = nameState
+    tes3mp.SetCreatureNameDisplayState(targetPid, nameState)
+    tes3mp.SendShapeshift(targetPid)
+end
 
 ---@type TES3MPScriptRegistration
 return {
@@ -1119,6 +1224,7 @@ return {
         cells = { callback = cells, },
         craft = { callback = craft, },
         createRecord = { callback = createRecord, rankRequirement = enumerations.staffRank.ADMIN, },
+        disguise = { callback = disguise, enumerations.staffRank.ADMIN, },
         getPos = { callback = getPos, rankRequirement = enumerations.staffRank.MODERATOR, },
         greentext = { callback = greenText, },
         invite = { callback = inviteAlly, },
@@ -1151,13 +1257,16 @@ return {
         setExterior = { callback = setExterior, rankRequirement = enumerations.staffRank.ADMIN, },
         sethair = { callback = setHair, rankRequirement = enumerations.staffRank.ADMIN, },
         sethead = { callback = setHead, rankRequirement = enumerations.staffRank.ADMIN, },
+        setHour = { callback = setHour, rankRequirement = enumerations.staffRank.MODERATOR, },
         setLogLevel = { callback = setLogLevel, rankRequirement = enumerations.staffRank.ADMIN, },
         setmodel = { callback = setPlayerModel, },
         setMomentum = { callback = setMomentum, rankRequirement = enumerations.staffRank.MODERATOR, },
         setmonth = { callback = setMonth, rankRequirement = enumerations.staffRank.MODERATOR, },
+        setPhysicsFPS = { callback = setPhysicsFPS, rankRequirement = enumerations.staffRank.ADMIN, },
         setrace = { callback = setRace, rankRequirement = enumerations.staffRank.ADMIN, },
         setScale = { callback = setScale, rankRequirement = enumerations.staffRank.ADMIN, },
         setSkill = { callback = setSkill, rankRequirement = enumerations.staffRank.MODERATOR, },
+        setTimescale = { callback = setTimescale, rankRequirement = enumerations.staffRank.MODERATOR, },
         setWait = { callback = setWait, rankRequirement = enumerations.staffRank.ADMIN, },
         setWerewolf = { callback = setWerewolf, rankRequirement = enumerations.staffRank.ADMIN, },
         setWildRest = { callback = setWildernessRest, rankRequirement = enumerations.staffRank.ADMIN, },
@@ -1165,5 +1274,6 @@ return {
         teleport = { callback = teleport, rankRequirement = enumerations.staffRank.MODERATOR, },
         teleportto = { callback = teleportTo, rankRequirement = enumerations.staffRank.MODERATOR, },
         unban = { callback = unban, },
+        useCreatureName = { callback = useCreatureName, rankRequirement = enumerations.staffRank.ADMIN, },
     },
 }
