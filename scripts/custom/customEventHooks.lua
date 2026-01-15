@@ -85,7 +85,7 @@ function customEventHooks.registerValidator(event, validator)
         if eventValidators[i].definedBy == validator.definedBy then eventValidators[i] = nil end
     end
 
-    customEventHooks.validators[#customEventHooks.validators + 1] = validator
+    customEventHooks.validators[event][#customEventHooks.validators + 1] = validator
 end
 
 ---@param event string
@@ -101,7 +101,7 @@ function customEventHooks.registerHandler(event, handler)
         if eventHandlers[i].definedBy == handler.definedBy then eventHandlers[i] = nil end
     end
 
-    customEventHooks.handlers[#customEventHooks.handlers + 1] = handler
+    customEventHooks.handlers[event][#customEventHooks.handlers + 1] = handler
 end
 
 ---@param event string
