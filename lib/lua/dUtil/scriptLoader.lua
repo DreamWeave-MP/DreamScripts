@@ -94,7 +94,7 @@ function DScriptLoader.requireShim(scriptName)
   if scriptName == 'interfaces' then
     return DScriptLoader.Interfaces
   elseif sandboxLoaded[scriptName] then
-    return sandboxLoaded[scriptName]
+    return sandboxLoaded[scriptName]()
   else
     local chunk, err = loadfile(scriptName)
     if not chunk then return nil, err end
@@ -104,7 +104,7 @@ function DScriptLoader.requireShim(scriptName)
 
     tes3mp.LogAppend(enumerations.log.WARN, ('Executing chunk for %s'):format(scriptName))
     local result = chunk()
-    sandboxLoaded[scriptName] = result
+    sandboxLoaded[scriptName] = chunk
 
     tes3mp.LogAppend(enumerations.log.WARN,
       ('%s chunk successfully loaded and cached. Returning %s'):format(scriptName, scriptName))
