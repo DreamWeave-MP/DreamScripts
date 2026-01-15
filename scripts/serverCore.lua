@@ -482,8 +482,10 @@ function OnServerPostInit()
 
     local eventStatus
     if CustomEventHooks then
+        tes3mp.LogMessage(enumerations.log.WARN, 'Found customEventHooks')
         eventStatus = CustomEventHooks.triggerValidators('OnServerPostInit', {})
     else
+        tes3mp.LogMessage(enumerations.log.WARN, 'Did NOT find customEventHooks')
         eventStatus = dUtil.misc.makeEventStatus()
     end
 
