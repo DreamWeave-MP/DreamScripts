@@ -274,6 +274,9 @@ enumerations.resurrect = { REGULAR = 0, IMPERIAL_SHRINE = 1, TRIBUNAL_TEMPLE = 2
 ---@enum SpellbookAction
 enumerations.spellbook = { SET = 0, ADD = 1, REMOVE = 2 }
 
+---@enum StaffRank
+enumerations.staffRank = { NONE = 0, MODERATIOR = 1, ADMIN = 2, OWNER = 3, }
+
 ---@enum MWScriptVarType
 enumerations.variableType = { SHORT = 0, LONG = 1, FLOAT = 2, INT = 3, STRING = 4 }
 
