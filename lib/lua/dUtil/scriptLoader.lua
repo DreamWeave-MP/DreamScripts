@@ -147,6 +147,7 @@ function DScriptLoader.getScriptEnv()
     math = math,
     require = DScriptLoader.requireShim,
     pairs = pairs,
+    pcall = pcall,
     print = print,
     string = string,
     table = table,
