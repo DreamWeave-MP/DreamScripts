@@ -72,7 +72,9 @@ end
 ---@param event string
 ---@param validator EventHandler
 function customEventHooks.registerValidator(event, validator)
+    event = event:lower()
     validator.definedBy = validator.definedBy:lower()
+
     customEventHooks.validators[event] = customEventHooks.validators[event] or {}
     local eventValidators = customEventHooks.validators[event]
 
@@ -86,6 +88,7 @@ end
 ---@param event string
 ---@param handler EventHandler
 function customEventHooks.registerHandler(event, handler)
+    event = event:lower()
     handler.definedBy = handler.definedBy:lower()
 
     customEventHooks.handlers[event] = customEventHooks.handlers[event] or {}
@@ -102,6 +105,8 @@ end
 ---@param args any[]
 ---@return EventStatusTable
 function customEventHooks.triggerValidators(event, args)
+    event = event:lower()
+
     local eventStatus = customEventHooks.makeEventStatus(true, true)
     local eventValidators = customEventHooks.validators[event]
 
@@ -121,8 +126,10 @@ end
 ---@param eventStatus EventStatusTable
 ---@param args any[]
 function customEventHooks.triggerHandlers(event, eventStatus, args)
+    event = event:lower()
     local eventHandlers = customEventHooks.handlers[event]
     if not eventHandlers then return end
+
 
     for _, eventHandlerData in ipairs(eventHandlers) do
         eventStatus = customEventHooks.updateEventStatus(
