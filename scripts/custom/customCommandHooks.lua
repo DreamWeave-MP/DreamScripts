@@ -19,6 +19,7 @@
 
 ]]
 
+local color = require 'color'
 local enumerations = require 'tes3mp.enumerations'
 local tableHelper = require 'tes3mp.util.table'
 
@@ -182,7 +183,14 @@ function customCommandHooks.validator(eventStatus, pid, message)
     local cmd = (message:sub(2, #message)):split(" ")
 
     local command = customCommandHooks:getCommand(cmd[1])
-    if not command then return eventStatus end
+    if not command then
+        tes3mp.SendMessage(
+            pid,
+            ('%sNot a valid command. Type /help for more info.%s\n'):format(color.Error, color.Default),
+            false
+        )
+        return eventStatus
+    end
 
     if not command.callback or type(command.callback) ~= 'function' then
         tes3mp.LogAppend(
