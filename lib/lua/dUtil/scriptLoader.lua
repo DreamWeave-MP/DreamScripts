@@ -96,12 +96,14 @@ function DScriptLoader.getScriptEnv()
   --- Each instance is mutable, although it is unique, so that scripts are completely sandboxed in every instance
   ---@class DreamWeaveScriptEnv
   local ScriptEnv = {
+    debug = debug,
     math = math,
     require = DScriptLoader.requireShim,
     print = print,
     string = string,
     table = table,
     tes3mp = tes3mp,
+    type = type,
     ---@class DScriptLoaderHidden
     scriptLoader = {
       loadScript = DScriptLoader.loadScript,
