@@ -237,31 +237,31 @@ return {
 
             return customCommandHooks:getCommand(commandName)
         end,
-        ---@param scriptPath string Name of the new command to register
+        ---@param commandName string Name of the new command to register
         ---@param commandData TES3MPCommand
-        registerCommand = function(scriptPath, commandData)
-            if not scriptPath or type(scriptPath) ~= 'string' then
+        registerCommand = function(commandName, commandData)
+            if not commandName or type(commandName) ~= 'string' then
                 error(
                     ('Cannot register command %s since the provided value was not a string!')
-                    :format(scriptPath)
+                    :format(commandName)
                 )
             end
 
             if not commandData or type(commandData) ~= 'table' then
                 error(
                     ('Cannot register command %s since the provided commandData was not a table: %s!')
-                    :format(scriptPath, commandData)
+                    :format(commandName, commandData)
                 )
             end
 
             if not commandData.callback or type(commandData.callback) ~= 'function' then
                 error(
                     ('Cannot register command %s since the provided callback was not a function: %s!')
-                    :format(scriptPath, commandData.callback)
+                    :format(commandName, commandData.callback)
                 )
             end
 
-            customCommandHooks:registerCommand(scriptPath, commandData)
+            customCommandHooks:registerCommand(commandName, commandData)
         end,
     },
     eventValidators = {
