@@ -1,4 +1,4 @@
-local Roll = require 'custom.dreamDice.roll'
+local I = require 'interfaces'
 
 ---Only meant to be ran for performance reasons under luaJIT.
 ---Do not deploy this under tes3mp directly!
@@ -21,10 +21,9 @@ return function(testIterations)
   for dice, faces in pairs(testPairs) do
     local thisRoll = ('%sd%s+%s'):format(dice, faces, math.random(-100, 100))
     for _ = 1, testIterations do
-      local rollObject = Roll(thisRoll)
+      local rollObject = I.dreamDice.roll(thisRoll)
       rollObject:resolve()
-      error()
-      -- print(rollObject, rollObject:resolve())
+      print(rollObject, rollObject:resolve())
     end
   end
 end

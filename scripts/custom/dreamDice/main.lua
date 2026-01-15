@@ -76,7 +76,13 @@ end
 ---@type TES3MPScriptRegistration
 return {
   interfaceName = 'dreamDice',
-  interface = Roll,
+  interface = {
+    ---@param rollInput string A formatted string, like 2d6, to generate a roll from
+    roll = function(rollInput)
+      assert(rollInput and type(rollInput) == 'string', 'Invalid roll input! No dice for you!')
+      return Roll(rollInput)
+    end
+  },
   eventHandlers = {
     OnServerPostInit = function()
       require 'custom.dreamDice.test_rolls' ()
