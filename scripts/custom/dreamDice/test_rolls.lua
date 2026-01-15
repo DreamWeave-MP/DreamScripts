@@ -1,5 +1,3 @@
-local I = require 'interfaces'
-
 ---Only meant to be ran for performance reasons under luaJIT.
 ---Do not deploy this under tes3mp directly!
 local testPairs = {
