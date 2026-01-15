@@ -74,7 +74,7 @@ DScriptLoader.Interfaces = setmetatable({},
   }
 )
 
----@type table<string, true>
+---@type table<string, any>
 local sandboxLoaded = {}
 
 --- Small shim for overriding require statements in curated script environment
@@ -96,7 +96,7 @@ function DScriptLoader.requireShim(scriptName)
   elseif sandboxLoaded[scriptName] then
     return sandboxLoaded[scriptName]
   else
-    local chunk, err = loadfile()
+    local chunk, err = loadfile(scriptName)
     if not chunk then return nil, err end
 
     tes3mp.LogAppend(enumerations.log.WARN, ('Setting env for %s'):format(scriptName))
