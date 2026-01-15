@@ -34,8 +34,16 @@ return {
     OnConsoleCommand = function(_, pid, cellDescription, consoleCommand, _, _)
       print('Number of Players: ', tableHelper.getCount(Players))
       tableHelper.print(Players)
-      print(pid, cellDescription, consoleCommand, Players[pid] or 'FUCKED',
-        Players[pid].consoleCommandsQueued or 'NO COMMANDS')
+      print(
+        'WTF:\n\n\n',
+        pid,
+        cellDescription,
+        consoleCommand,
+        Players[pid] or 'FUCKED',
+        Players[pid].consoleCommandsQueued or 'NO COMMANDS',
+        '\n\n\n-----WTF-----\n\n\n'
+      )
+
       print(Players[pid].consoleCommandsQueued)
       local hasConsoleCommandQueued = tableHelper.containsValue(Players[pid].consoleCommandsQueued, consoleCommand)
 
