@@ -1,5 +1,5 @@
+local config = require 'tes3mp.config'
 local enumerations = require 'tes3mp.enumerations'
-local tableHelper = require 'tes3mp.util.table'
 
 ---@class EventHandler
 ---@field definedBy string Path of the script which defined this particular event
@@ -104,6 +104,24 @@ function customEventHooks.registerHandler(event, handler)
     customEventHooks.handlers[event][#customEventHooks.handlers + 1] = handler
 end
 
+---@param fn function
+---@param ... any[]
+function customEventHooks.safeCall(fn, ...)
+    local function wrapped(...)
+        return fn(...)
+    end
+
+    local success, result = xpcall(
+        wrapped,
+        function(err)
+            return ('%s\n%s'):format(err, debug.traceback())
+        end,
+        ...
+    )
+
+    return success, result
+end
+
 ---@param event string
 ---@param args any[]
 ---@return EventStatusTable
@@ -122,10 +140,29 @@ function customEventHooks.triggerValidators(event, args)
                 ('Triggering validator %d for event %s from script %s')
                 :format(i, event, eventHandlerData.definedBy)
             )
-            eventStatus = customEventHooks.updateEventStatus(
-                eventStatus,
-                eventHandlerData.callback(eventStatus, unpack(args))
-            )
+
+            local success, result = customEventHooks.safeCall(eventHandlerData.callback, unpack(args))
+            if not success then
+                tes3mp.LogAppend(
+                    enumerations.log.WARN,
+                    ('Validator callback %s for event %s from script %s failed!')
+                    :format(eventHandlerData.callback, event, eventHandlerData.definedBy)
+                )
+
+                if not config.ignoreScriptErrors then
+                    tes3mp.LogAppend(
+                        enumerations.log.FATAL,
+                        'The server will now terminate.'
+                    )
+                    tes3mp.StopServer(13)
+                    break
+                end
+            else
+                eventStatus = customEventHooks.updateEventStatus(
+                    eventStatus,
+                    result
+                )
+            end
         end
     end
 
@@ -148,10 +185,29 @@ function customEventHooks.triggerHandlers(event, eventStatus, args)
             ('Triggering handler %d for event %s from script %s')
             :format(i, event, eventHandlerData.definedBy)
         )
-        eventStatus = customEventHooks.updateEventStatus(
-            eventStatus,
-            eventHandlerData.callback(eventStatus, unpack(args))
-        )
+
+        local success, result = customEventHooks.safeCall(eventHandlerData.callback, unpack(args))
+        if not success then
+            tes3mp.LogAppend(
+                enumerations.log.WARN,
+                ('Handler callback %s for event %s from script %s failed!')
+                :format(eventHandlerData.callback, event, eventHandlerData.definedBy)
+            )
+
+            if not config.ignoreScriptErrors then
+                tes3mp.LogAppend(
+                    enumerations.log.FATAL,
+                    'The server will now terminate.'
+                )
+                tes3mp.StopServer(13)
+                break
+            end
+        else
+            eventStatus = customEventHooks.updateEventStatus(
+                eventStatus,
+                result
+            )
+        end
     end
 end
 
