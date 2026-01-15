@@ -83,6 +83,15 @@ local function advancedExample(pid, cmd)
 end
 
 ---@type CommandHandler
+local function anim(pid, cmd)
+    if not animHelper.PlayAnimation(pid, cmd[2]) then
+        Players[pid]:Message(
+            ('That is not a valid animation. Try one of the following:\n%s\n'):format(animHelper.GetValidList(pid))
+        )
+    end
+end
+
+---@type CommandHandler
 local function ban(pid, cmd)
     if not dUtil.misc.getRanks(pid) then
         return invalidCommand(pid)
@@ -177,6 +186,26 @@ local function cells(pid, _)
     guiHelper.ShowCellList(pid)
 end
 
+---@type CommandHandler
+local function confiscate(pid, cmd)
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+    if not isValid or not targetPid then return end
+    local callingPlayer, targetPlayer = Players[pid], Players[targetPid]
+
+    if targetPid == pid then
+        callingPlayer:Message('You can\'t confiscate from yourself!\n')
+    elseif targetPlayer.data.customVariables.isConfiscationTarget then
+        callingPlayer:Message('Someone is already confiscating from that player\n')
+    else
+        callingPlayer.confiscationTargetName = targetPlayer.accountName
+
+        targetPlayer:SetConfiscationState(true)
+
+        tableHelper.cleanNils(targetPlayer.data.inventory)
+        guiHelper.ShowInventoryList(config.customMenuIds.confiscate, pid, targetPid)
+    end
+end
+
 --- Check 'scripts/menu/defaultCrafting.lua' if you want to change the example craft menu
 ---@type CommandHandler
 local function craft(pid, cmd)
@@ -215,6 +244,34 @@ local function disguise(pid, cmd)
 
     if targetPid ~= pid then
         tes3mp.SendMessage(targetPid, 'You are now disguised as ' .. creatureRefId .. '\n', false)
+    end
+end
+
+---@type CommandHandler
+local function fixMe(pid, _)
+    local player = Players[pid]
+    if not config.allowFixmeCommand then
+        return player:Message('That command is disabled on this server.\n')
+    end
+
+    local currentTime, timestamps = os.time(), player.data.timestamps
+
+    if not tes3mp.IsInExterior(pid) then
+        player:Message(('Sorry! You can only use %s/fixme%s in exteriors.\n'):format(color.Yellow, color.White))
+    elseif not timestamps.lastFixMe or
+        currentTime >= timestamps.lastFixMe + config.fixmeInterval then
+        logicHandler.RunConsoleCommandOnPlayer(pid, 'fixme')
+        timestamps.lastFixMe = currentTime
+        tes3mp.SendMessage(pid, 'You have fixed your position!\n', false)
+    else
+        local remainingSeconds = (timestamps.lastFixMe + config.fixmeInterval) - currentTime
+
+        if remainingSeconds > 1 then
+            player:Message(('Sorry! You can\'t use %s/fixme%s for another %s seconds.\n'):format(color.Yellow,
+                color.White, remainingSeconds))
+        else
+            player:Message(('Sorry! You can\'t use %s/fixme%s for another second.\n'):format(color.Yellow, color.White))
+        end
     end
 end
 
@@ -411,6 +468,17 @@ local function leaveTeam(pid, cmd)
 end
 
 ---@type CommandHandler
+local function loadScript(pid, cmd)
+    local scriptName, player = cmd[2], Players[pid]
+
+    if not scriptName then
+        return player:Message('Use /load <scriptName>\n')
+    end
+
+    scriptLoader.loadScript(scriptName)
+end
+
+---@type CommandHandler
 local function localMessage(pid, cmd)
     local player = Players[pid]
     local cellDescription = player.data.location.cell
@@ -453,6 +521,38 @@ local function msg(pid, cmd)
 
     tes3mp.SendMessage(pid, message, false)
     tes3mp.SendMessage(targetPid, message, false)
+end
+
+---@type CommandHandler
+local function overrideCollision(pid, cmd)
+    local refId, state = cmd[2], cmd[3]
+    local player = Players[pid]
+    if not refId or (state ~= 'on' and state ~= 'off') then
+        return player:Message('Not a valid argument. Use /overridecollision <refId> on/off\n')
+    end
+
+    local collisionState = state == 'on'
+
+    local message
+
+    if tableHelper.containsValue(config.enforcedCollisionRefIds, refId) then
+        if collisionState then
+            message = 'A collision-enabling override is already on'
+        else
+            tableHelper.removeValue(config.enforcedCollisionRefIds, refId)
+            message = 'A collision-enabling override is now off'
+        end
+    else
+        if collisionState then
+            table.insert(config.enforcedCollisionRefIds, refId)
+            message = 'A collision-enabling override is now on'
+        else
+            message = 'A collision-enabling override is already off'
+        end
+    end
+
+    logicHandler.SendConfigCollisionOverrides(pid, true)
+    player:Message(('%s for %s in newly loaded cells.\n'):format(message, refId))
 end
 
 ---@type CommandHandler
@@ -503,6 +603,22 @@ local function overrideDestination(pid, cmd)
 
     tes3mp.SendMessage(pid, "Doors and clientside commands leading to " .. cellDescriptions[1] .. " now lead to " ..
         cellDescriptions[2] .. " instead.\n")
+end
+
+---@type CommandHandler
+local function placeAt(pid, cmd)
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+    if not isValid or not targetPid or #cmd < 3 then return end
+
+    local refId, packetType = tableHelper.concatenateFromIndex(cmd, 3)
+
+    if cmd[1] == 'placeat' then
+        packetType = 'place'
+    else
+        packetType = 'spawn'
+    end
+
+    logicHandler.CreateObjectAtPlayer(targetPid, dataTableBuilder.BuildObjectData(refId), packetType)
 end
 
 ---@type CommandHandler
@@ -615,6 +731,48 @@ local function resetKillsUnshared(pid, _)
 end
 
 ---@type CommandHandler
+local function runConsole(pid, cmd)
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+    if not isValid then return end
+
+    local callingPlayer, targetPlayer = Players[pid], Players[targetPid]
+
+    if not targetPlayer.storedConsoleCommand then
+        return callingPlayer:Message(
+            ('There is no console command stored for player %s. Please run /storeconsole on them first.\n')
+            :format(targetPid)
+        )
+    end
+
+    local consoleCommand = targetPlayer.storedConsoleCommand
+
+    local count = tonumber(cmd[3])
+    if not count or count <= 1 then return end
+
+    count = count - 1
+    local interval, newInterval = 1, tonumber(cmd[4])
+
+    if newInterval ~= nil and newInterval > 1 then
+        interval = newInterval
+    end
+
+    local loopIndex = tableHelper.getUnusedNumericalIndex(ObjectLoops)
+    local timerId = tes3mp.CreateTimerEx('OnObjectLoopTimeExpiration', interval, 'i', loopIndex)
+
+    ObjectLoops[loopIndex] = {
+        packetType = 'console',
+        timerId = timerId,
+        interval = interval,
+        count = count,
+        targetPid = targetPid,
+        targetName = targetPlayer.accountName,
+        consoleCommand = consoleCommand
+    }
+
+    tes3mp.StartTimer(timerId)
+end
+
+---@type CommandHandler
 local function runStartup(pid, _)
     local _, isAdmin = dUtil.misc.getRanks(pid)
 
@@ -662,6 +820,111 @@ local function setAttribute(pid, cmd)
 
     local attributeName = tes3mp.GetAttributeName(attributeId)
     Players[targetPid].data.attributes[attributeName].base = attributeValue
+end
+
+---@type CommandHandler
+local function setAI(pid, cmd)
+    local player = Players[pid]
+    if #cmd < 3 then return player:Message('Invalid input to /setai') end
+
+    local actionInput = tonumber(cmd[3])
+    local actionNumericalId
+
+    -- Allow both numerical and string input for actions (i.e. 1 or COMBAT), but
+    -- convert the latter into the former
+    if actionInput then
+        actionNumericalId = actionInput
+    else
+        actionNumericalId = enumerations.ai[cmd[3]:upper()]
+    end
+
+    if not actionNumericalId then
+        return player:Message(
+            ('%s is not a valid AI action. Valid choices are %s\n')
+            :format(actionInput, tableHelper.concatenateTableIndices(enumerations.ai, ', '))
+        )
+    end
+
+    local uniqueIndex = cmd[2]
+    local cell = logicHandler.GetCellContainingActor(uniqueIndex)
+
+    if not cell then
+        return player:Message(
+            ('Could not find actor %s in any loaded cell.\n'):format(uniqueIndex)
+        )
+    end
+
+    local actionName = tableHelper.getIndexByValue(enumerations.ai, actionNumericalId)
+    local messageAction = enumerations.aiPrintableAction[actionName]
+
+    if actionNumericalId == enumerations.ai.CANCEL then
+        logicHandler.SetAIForActor(cell, uniqueIndex, actionNumericalId)
+        player:Message(
+            ('%s is now %s\n'):format(uniqueIndex, messageAction)
+        )
+    elseif actionNumericalId == enumerations.ai.TRAVEL then
+        local posX, posY, posZ = tonumber(cmd[4]), tonumber(cmd[5]), tonumber(cmd[6])
+        if not posX or not posY or not posZ then
+            return player:Message('Invalid travel coordinates! Use /setai <uniqueIndex> travel <x> <y> <z>\n')
+        end
+
+        logicHandler.SetAIForActor(cell, uniqueIndex, actionNumericalId, nil, nil, posX, posY, posZ)
+        player:Message(
+            ('%s is now %s %s %s %s\n'):format(uniqueIndex, messageAction, posX, posY, posZ)
+        )
+    elseif actionNumericalId == enumerations.ai.WANDER then
+        local distance, duration = tonumber(cmd[4]), tonumber(cmd[5])
+        if not distance or not duration then
+            return player:Message(
+                'Invalid wander parameters! Use /setai <uniqueIndex> wander <distance> <duration> true/false\n')
+        end
+
+        local shouldRepeat = cmd[6] == true
+
+        logicHandler.SetAIForActor(
+            cell,
+            uniqueIndex,
+            actionNumericalId,
+            nil,
+            nil,
+            nil,
+            nil,
+            nil,
+            distance,
+            duration,
+            shouldRepeat
+        )
+
+        player:Message(
+            ('%s is now %s a distance of %s for a duration of %s.\n')
+            :format(uniqueIndex, messageAction, distance, duration)
+        )
+    elseif cmd[4] then
+        ---@type number|string
+        local target = cmd[4]
+        local numericalTarget, hasPlayerTarget = tonumber(cmd[4]), false
+
+        if numericalTarget and logicHandler.CheckPlayerValidity(pid, target) then
+            target = numericalTarget
+            hasPlayerTarget = true
+        end
+
+        if hasPlayerTarget then
+            logicHandler.SetAIForActor(cell, uniqueIndex, actionNumericalId, target)
+            player:Message(
+                ('%s is now %s player %s\n')
+                :format(uniqueIndex, messageAction, Players[target].name)
+            )
+        else
+            logicHandler.SetAIForActor(cell, uniqueIndex, actionNumericalId, nil, target)
+            player:Message(
+                ('%s is now %s object %s\n')
+                :format(uniqueIndex, messageAction, Players[target].name)
+            )
+        end
+    else
+        player:Message('Invalid AI action!\n')
+    end
 end
 
 ---@type CommandHandler
@@ -1171,9 +1434,42 @@ local function setWildernessRest(pid, cmd)
 end
 
 ---@type CommandHandler
+local function speech(pid, cmd)
+    local speechNum = tonumber(cmd[3])
+
+    if #cmd < 3 or not speechNum or not speechHelper.PlaySpeech(pid, cmd[2], speechNum) then
+        return Players[pid]:Message(
+            ('That is not a valid speech. Try one of the following:\n%s\n')
+            :format(speechHelper.GetPrintableValidListForPid(pid))
+        )
+    end
+end
+
+---@type CommandHandler
+local function storeConsole(pid, cmd)
+    if not cmd[2] or not cmd[3] then return end
+
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+    if not isValid then return end
+
+    Players[targetPid].storedConsoleCommand = tableHelper.concatenateFromIndex(cmd, 3)
+    Players[pid]:Message(('That console command is now stored for player %s\n'):format(targetPid))
+end
+
+---@type CommandHandler
 local function storeRecord(pid, cmd)
     if not cmd[2] or not cmd[3] then return end
     recordHelper.storeRecord(pid, cmd)
+end
+
+---@type CommandHandler
+local function suicide(pid, _)
+    if config.allowSuicideCommand then
+        tes3mp.SetHealthCurrent(pid, 0)
+        tes3mp.SendStatsDynamic(pid)
+    else
+        tes3mp.SendMessage(pid, 'That command is disabled on this server.\n', false)
+    end
 end
 
 ---@type CommandHandler
@@ -1246,11 +1542,13 @@ end
 return {
     chatCommands = {
         -- Short commands
+        a = { callback = anim, },
         gt = { callback = greenText },
         ips = { callback = ipaddresses, },
         l = { callback = localMessage, },
         lm = { callback = localMessage, },
         msg = { callback = msg, },
+        s = { callback = speech, },
         tp = { callback = teleport, rankRequirement = enumerations.staffRank.MODERATOR, },
         tpto = { callback = teleportTo, rankRequirement = enumerations.staffRank.MODERATOR, },
 
@@ -1259,12 +1557,15 @@ return {
         addModerator = { callback = addModerator, rankRequirement = enumerations.staffRank.ADMIN, },
         advex = { callback = advancedExample, },
         advancedExample = { callback = advancedExample, },
+        anim = { callback = anim, },
         ban = { callback = ban, },
         banlist = { callback = banlist, },
         cells = { callback = cells, },
+        confiscate = { callback = confiscate, rankRequirement = enumerations.staffRank.MODERATOR, },
         craft = { callback = craft, },
         createRecord = { callback = createRecord, rankRequirement = enumerations.staffRank.ADMIN, },
         disguise = { callback = disguise, enumerations.staffRank.ADMIN, },
+        fixMe = { callback = fixMe, },
         getPos = { callback = getPos, rankRequirement = enumerations.staffRank.MODERATOR, },
         greentext = { callback = greenText, },
         invite = { callback = inviteAlly, },
@@ -1275,9 +1576,12 @@ return {
         kick = { callback = kick, rankRequirement = enumerations.staffRank.MODERATOR, },
         leave = { callback = leaveTeam, },
         list = { callback = players, },
+        loadScript = { callback = loadScript, rankRequirement = enumerations.staffRank.ADMIN, },
         me = { callback = me, },
         message = { callback = msg, },
+        overideCollision = { callback = overrideCollision, rankRequirement = enumerations.staffRank.ADMIN, },
         overridedestination = { callback = overrideDestination, },
+        placeAt = { callback = placeAt, rankRequirement = enumerations.staffRank.ADMIN, },
         players = { callback = players, },
         regions = { callback = regions, },
         resetcell = { callback = resetCell, },
@@ -1285,7 +1589,9 @@ return {
         resetKills = { callback = resetKillsShared, rankRequirement = enumerations.staffRank.MODERATOR, },
         removeModerator = { callback = removeModerator, rankRequirement = enumerations.staffRank.ADMIN, },
         resetMyKills = { callback = resetKillsUnshared, rankRequirement = enumerations.staffRank.MODERATOR, },
+        runConsole = { callback = runConsole, rankRequirement = enumerations.staffRank.ADMIN, },
         runstartup = { callback = runStartup, },
+        setAI = { callback = setAI, rankRequirement = enumerations.staffRank.ADMIN, },
         setAttribute = { callback = setAttribute, rankRequirement = enumerations.staffRank.MODERATOR, },
         setauthority = { callback = setAuthority, rankRequirement = enumerations.staffRank.MODERATOR, },
         setBedRest = { callback = setBedRest, rankRequirement = enumerations.staffRank.ADMIN, },
@@ -1311,7 +1617,11 @@ return {
         setWait = { callback = setWait, rankRequirement = enumerations.staffRank.ADMIN, },
         setWerewolf = { callback = setWerewolf, rankRequirement = enumerations.staffRank.ADMIN, },
         setWildRest = { callback = setWildernessRest, rankRequirement = enumerations.staffRank.ADMIN, },
+        spawnAt = { callback = placeAt, rankRequirement = enumerations.staffRank.ADMIN, },
+        speech = { callback = speech, },
+        storeConsole = { callback = storeConsole, rankRequirement = enumerations.staffRank.ADMIN, },
         storeRecord = { callback = storeRecord, rankRequirement = enumerations.staffRank.ADMIN, },
+        suicide = { callback = suicide, },
         teleport = { callback = teleport, rankRequirement = enumerations.staffRank.MODERATOR, },
         teleportto = { callback = teleportTo, rankRequirement = enumerations.staffRank.MODERATOR, },
         unban = { callback = unban, },

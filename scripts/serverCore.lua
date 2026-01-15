@@ -101,8 +101,6 @@ else
     Player = require("player.json")
 end
 
--- commandHandler = require 'commandHandler'
-
 ---@type DScriptLoader
 local ScriptLoader = require 'dUtil.scriptLoader'
 
