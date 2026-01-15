@@ -111,6 +111,9 @@ function customEventHooks.triggerValidators(event, args)
 
     local eventStatus = customEventHooks.makeEventStatus(true, true)
     local eventValidators = customEventHooks.validators[event]
+    if not eventValidators then
+        return tableHelper.print(customEventHooks.validators)
+    end
 
     if eventValidators then
         for i, eventHandlerData in ipairs(eventValidators) do
@@ -134,7 +137,9 @@ end
 function customEventHooks.triggerHandlers(event, eventStatus, args)
     event = event:lower()
     local eventHandlers = customEventHooks.handlers[event]
-    if not eventHandlers then return end
+    if not eventHandlers then
+        return tableHelper.print(customEventHooks.handlers)
+    end
 
 
     for i, eventHandlerData in ipairs(eventHandlers) do
