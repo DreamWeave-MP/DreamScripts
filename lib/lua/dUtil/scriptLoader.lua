@@ -83,21 +83,13 @@ local PathSeparator = tes3mp.GetOperatingSystemType() == 'Windows' and '\\' or '
 function DScriptLoader.requireShim(scriptName)
   assert(scriptName and type(scriptName) == 'string')
 
-  tes3mp.LogAppend(
-    enumerations.log.WARN,
-    ('Hi! I\'m the require shim! Someone is importing: %s')
-    :format(scriptName)
-  )
-
   scriptName = scriptName:gsub('[\\/]', '.')
 
   if scriptName == 'interfaces' then
     return DScriptLoader.Interfaces
   elseif sandboxLoaded[scriptName] then
-    print('Returning cached script ' .. scriptName)
     return sandboxLoaded[scriptName]()
   else
-    print('Loading fresh script ' .. scriptName)
     local ok, chunk, err = false, nil, nil
 
     ok, chunk = pcall(require, scriptName)
@@ -122,16 +114,12 @@ function DScriptLoader.requireShim(scriptName)
       return tes3mp.StopServer(18)
     end
 
-    tes3mp.LogAppend(enumerations.log.WARN, ('Setting env for %s'):format(scriptName))
     setfenv(chunk, DScriptLoader.getScriptEnv())
     -- setfenv(chunk, getfenv(2))
 
-    tes3mp.LogAppend(enumerations.log.WARN, ('Executing chunk for %s'):format(scriptName))
     local result = chunk()
     sandboxLoaded[scriptName] = chunk
 
-    tes3mp.LogAppend(enumerations.log.WARN,
-      ('%s chunk successfully loaded and cached. Returning %s'):format(scriptName, scriptName))
     return result
   end
 end
@@ -167,7 +155,6 @@ function DScriptLoader.getScriptEnv()
       loadScript = DScriptLoader.loadScript,
       loadAllScripts = DScriptLoader.loadAllScripts,
     },
-    I = DScriptLoader.Interfaces,
     --- TES3MP Globals
     banList = banList,
     HourCounter = HourCounter,
