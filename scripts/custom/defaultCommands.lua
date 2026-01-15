@@ -17,6 +17,7 @@ local I = require 'interfaces'
 
 ---@type MenuHelper
 local menuHelper = I.menuHelper
+---@type SpeechHelper
 local speechHelper = I.speechHelper
 
 ---@type DUtilModule
@@ -561,7 +562,7 @@ end
 
 --- Set all currently recorded kills to 0 for connected players
 ---@type CommandHandler
-local function resetKillsShared(pid, cmd)
+local function resetKillsShared(pid, _)
     if not config.shareKills then return end
 
     for refId in pairs(WorldInstance.data.kills) do
@@ -575,7 +576,7 @@ end
 
 --- Set all currently recorded kills to 0 for the caller only
 ---@type CommandHandler
-local function resetKillsUnshared(pid, cmd)
+local function resetKillsUnshared(pid, _)
     if config.shareKills then return end
     local player = Players[pid]
     player.data.kills = player.data.kills or {}
@@ -657,6 +658,74 @@ local function setAuthority(pid, cmd)
     end
 
     logicHandler.SetCellAuthority(targetPid, cellDescription)
+end
+
+local ValidStates = {
+    disabled = true,
+    on = true,
+    off = true,
+}
+
+---@type CommandHandler
+local function setBedRest(pid, cmd)
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+    if not isValid or not targetPid then return end
+
+    local mode, state = (cmd[3] or ''):lower(), ''
+
+    if not ValidStates[mode] then
+        return tes3mp.SendMessage(pid, 'Not a valid argument. Use /setbedrest <pid> on/off/default\n', false)
+    end
+
+    local player = Players[targetPid]
+    if mode == 'on' then
+        player:SetBedRestAllowed(true)
+        state = 'enabled'
+    elseif mode == 'off' then
+        player:SetBedRestAllowed(false)
+        state = 'disabled'
+    elseif mode == 'default' then
+        player:SetBedRestAllowed('default')
+        state = 'reset to default'
+    end
+
+    player:LoadSettings()
+    tes3mp.SendMessage(pid, ('Bed resting for %s %s.\n'):format(player.name, state), false)
+
+    if targetPid ~= pid then
+        tes3mp.SendMessage(targetPid, ('Bed resting %s.\n'):format(state), false)
+    end
+end
+
+---@type CommandHandler
+local function setConsole(pid, cmd)
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+    if not isValid or not targetPid then return end
+
+    local mode, state = (cmd[3] or ''):lower(), ''
+
+    if not ValidStates[mode] then
+        return tes3mp.SendMessage(pid, 'Not a valid argument. Use /setconsole <pid> on/off/default\n', false)
+    end
+
+    local player = Players[targetPid]
+    if mode == 'on' then
+        player:SetConsoleAllowed(true)
+        state = 'enabled'
+    elseif mode == 'off' then
+        player:SetConsoleAllowed(false)
+        state = 'disabled'
+    elseif mode == 'default' then
+        player:SetConsoleAllowed('default')
+        state = 'reset to default'
+    end
+
+    player:LoadSettings()
+    tes3mp.SendMessage(pid, ('Console for %s %s\n'):format(player.name, state), false)
+
+    if targetPid ~= pid then
+        tes3mp.SendMessage(targetPid, ('Console %s.\n'):format(state), false)
+    end
 end
 
 ---@type CommandHandler
@@ -886,6 +955,37 @@ local function setSkill(pid, cmd)
 end
 
 ---@type CommandHandler
+local function setWait(pid, cmd)
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+    if not isValid or not targetPid then return end
+
+    local mode, state = (cmd[3] or ''):lower(), ''
+
+    if not ValidStates[mode] then
+        return tes3mp.SendMessage(pid, 'Not a valid argument. Use /setwait <pid> on/off/default\n', false)
+    end
+
+    local player = Players[targetPid]
+    if mode == 'on' then
+        player:SetWaitAllowed(true)
+        state = 'enabled'
+    elseif mode == 'off' then
+        player:SetWaitAllowed(false)
+        state = 'disabled'
+    elseif mode == 'default' then
+        player:SetWaitAllowed('default')
+        state = 'reset to default'
+    end
+
+    player:LoadSettings()
+    tes3mp.SendMessage(pid, ('Waiting for %s %s\n'):format(player.name, state), false)
+
+    if targetPid ~= pid then
+        tes3mp.SendMessage(targetPid, ('Waiting %s.\n'):format(state), false)
+    end
+end
+
+---@type CommandHandler
 local function setWerewolf(pid, cmd)
     local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
     if not isValid or not targetPid then return end
@@ -906,6 +1006,37 @@ local function setWerewolf(pid, cmd)
     player:LoadShapeshift()
 
     tes3mp.SendMessage(pid, message)
+end
+
+---@type CommandHandler
+local function setWildernessRest(pid, cmd)
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+    if not isValid or not targetPid then return end
+
+    local mode, state = (cmd[3] or ''):lower(), ''
+
+    if not ValidStates[mode] then
+        return tes3mp.SendMessage(pid, 'Not a valid argument. Use /setwildrest <pid> on/off/default\n', false)
+    end
+
+    local player = Players[targetPid]
+    if mode == 'on' then
+        player:SetWildernessRestAllowed(true)
+        state = 'enabled'
+    elseif mode == 'off' then
+        player:SetWildernessRestAllowed(false)
+        state = 'disabled'
+    elseif mode == 'default' then
+        player:SetWildernessRestAllowed('default')
+        state = 'reset to default'
+    end
+
+    player:LoadSettings()
+    tes3mp.SendMessage(pid, ('Wilderness resting for %s %s\n'):format(player.name, state), false)
+
+    if targetPid ~= pid then
+        tes3mp.SendMessage(targetPid, ('Wilderness resting %s.\n'):format(state), false)
+    end
 end
 
 ---@type CommandHandler
@@ -1011,6 +1142,8 @@ return {
         runstartup = { callback = runStartup, },
         setAttribute = { callback = setAttribute, rankRequirement = enumerations.staffRank.MODERATOR, },
         setauthority = { callback = setAuthority, rankRequirement = enumerations.staffRank.MODERATOR, },
+        setBedRest = { callback = setBedRest, rankRequirement = enumerations.staffRank.ADMIN, },
+        setConsole = { callback = setConsole, rankRequirement = enumerations.staffRank.ADMIN, },
         setday = { callback = setDay, rankRequirement = enumerations.staffRank.MODERATOR, },
         setDifficulty = { callback = setDifficulty, rankRequirement = enumerations.staffRank.ADMIN, },
         setEnforcedLogLevel = { callback = setLogLevel, rankRequirement = enumerations.staffRank.ADMIN, },
@@ -1025,7 +1158,9 @@ return {
         setrace = { callback = setRace, rankRequirement = enumerations.staffRank.ADMIN, },
         setScale = { callback = setScale, rankRequirement = enumerations.staffRank.ADMIN, },
         setSkill = { callback = setSkill, rankRequirement = enumerations.staffRank.MODERATOR, },
+        setWait = { callback = setWait, rankRequirement = enumerations.staffRank.ADMIN, },
         setWerewolf = { callback = setWerewolf, rankRequirement = enumerations.staffRank.ADMIN, },
+        setWildRest = { callback = setWildernessRest, rankRequirement = enumerations.staffRank.ADMIN, },
         storeRecord = { callback = storeRecord, rankRequirement = enumerations.staffRank.ADMIN, },
         teleport = { callback = teleport, rankRequirement = enumerations.staffRank.MODERATOR, },
         teleportto = { callback = teleportTo, rankRequirement = enumerations.staffRank.MODERATOR, },

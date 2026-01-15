@@ -2,111 +2,7 @@
 local commandHandler = {}
 
 function commandHandler.ProcessCommand(pid, cmd)
-    if cmd[1] == 'setconsole' and admin then
-        if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-            local targetPid = tonumber(cmd[2])
-            local targetName = ''
-            local state = ''
-
-            if cmd[3] == 'on' then
-                Players[targetPid]:SetConsoleAllowed(true)
-                state = ' enabled.\n'
-            elseif cmd[3] == 'off' then
-                Players[targetPid]:SetConsoleAllowed(false)
-                state = ' disabled.\n'
-            elseif cmd[3] == 'default' then
-                Players[targetPid]:SetConsoleAllowed('default')
-                state = ' reset to default.\n'
-            else
-                tes3mp.SendMessage(pid, 'Not a valid argument. Use /setconsole <pid> on/off/default\n', false)
-                return false
-            end
-
-            Players[targetPid]:LoadSettings()
-            tes3mp.SendMessage(pid, 'Console for ' .. Players[targetPid].name .. state, false)
-            if targetPid ~= pid then
-                tes3mp.SendMessage(targetPid, 'Console' .. state, false)
-            end
-        end
-    elseif cmd[1] == 'setbedrest' and admin then
-        if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-            local targetPid = tonumber(cmd[2])
-            local targetName = ''
-            local state = ''
-
-            if cmd[3] == 'on' then
-                Players[targetPid]:SetBedRestAllowed(true)
-                state = ' enabled.\n'
-            elseif cmd[3] == 'off' then
-                Players[targetPid]:SetBedRestAllowed(false)
-                state = ' disabled.\n'
-            elseif cmd[3] == 'default' then
-                Players[targetPid]:SetBedRestAllowed('default')
-                state = ' reset to default.\n'
-            else
-                tes3mp.SendMessage(pid, 'Not a valid argument. Use /setbedrest <pid> on/off/default\n', false)
-                return false
-            end
-
-            Players[targetPid]:LoadSettings()
-            tes3mp.SendMessage(pid, 'Bed resting for ' .. Players[targetPid].name .. state, false)
-            if targetPid ~= pid then
-                tes3mp.SendMessage(targetPid, 'Bed resting' .. state, false)
-            end
-        end
-    elseif (cmd[1] == 'setwildernessrest' or cmd[1] == 'setwildrest') and admin then
-        if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-            local targetPid = tonumber(cmd[2])
-            local targetName = ''
-            local state = ''
-
-            if cmd[3] == 'on' then
-                Players[targetPid]:SetWildernessRestAllowed(true)
-                state = ' enabled.\n'
-            elseif cmd[3] == 'off' then
-                Players[targetPid]:SetWildernessRestAllowed(false)
-                state = ' disabled.\n'
-            elseif cmd[3] == 'default' then
-                Players[targetPid]:SetWildernessRestAllowed('default')
-                state = ' reset to default.\n'
-            else
-                tes3mp.SendMessage(pid, 'Not a valid argument. Use /setwildrest <pid> on/off/default\n', false)
-                return false
-            end
-
-            Players[targetPid]:LoadSettings()
-            tes3mp.SendMessage(pid, 'Wilderness resting for ' .. Players[targetPid].name .. state, false)
-            if targetPid ~= pid then
-                tes3mp.SendMessage(targetPid, 'Wilderness resting' .. state, false)
-            end
-        end
-    elseif cmd[1] == 'setwait' and admin then
-        if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-            local targetPid = tonumber(cmd[2])
-            local targetName = ''
-            local state = ''
-
-            if cmd[3] == 'on' then
-                Players[targetPid]:SetWaitAllowed(true)
-                state = ' enabled.\n'
-            elseif cmd[3] == 'off' then
-                Players[targetPid]:SetWaitAllowed(false)
-                state = ' disabled.\n'
-            elseif cmd[3] == 'default' then
-                Players[targetPid]:SetWaitAllowed('default')
-                state = ' reset to default.\n'
-            else
-                tes3mp.SendMessage(pid, 'Not a valid argument. Use /setwait <pid> on/off/default\n', false)
-                return false
-            end
-
-            Players[targetPid]:LoadSettings()
-            tes3mp.SendMessage(pid, 'Waiting for ' .. Players[targetPid].name .. state, false)
-            if targetPid ~= pid then
-                tes3mp.SendMessage(targetPid, 'Waiting' .. state, false)
-            end
-        end
-    elseif (cmd[1] == 'setphysicsfps' or cmd[1] == 'setphysicsframerate') and admin then
+    if (cmd[1] == 'setphysicsfps' or cmd[1] == 'setphysicsframerate') and admin then
         if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
             local targetPid = tonumber(cmd[2])
             local physicsFramerate = cmd[3]
@@ -323,7 +219,7 @@ function commandHandler.ProcessCommand(pid, cmd)
             end
         end
     elseif cmd[1] == 'suicide' then
-        if config.allowSuicideCommand == true then
+        if config.allowSuicideCommand then
             tes3mp.SetHealthCurrent(pid, 0)
             tes3mp.SendStatsDynamic(pid)
         else
