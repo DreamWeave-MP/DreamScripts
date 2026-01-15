@@ -1,4 +1,5 @@
 local enumerations = require 'tes3mp.enumerations'
+local tableHelper = require 'tes3mp.util.table'
 
 ---@class EventHandler
 ---@field definedBy string Path of the script which defined this particular event
