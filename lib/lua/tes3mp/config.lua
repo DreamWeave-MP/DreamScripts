@@ -12,6 +12,9 @@ config.customScripts = {
     --- The menu interface is what used to be menuHelper, and many builtins rely on it
     --- Don't disable or screw with this, or many things will break
     'menuInterface',
+    --- speechHelper is exposed as a public interface here.
+    --- For load order reasons, it should be defined before defaultCommands
+    'speechHelper',
     --- customEventHooks is the most important module!
     --- Its load order must never be changed and everything else, even all the chat commands,
     --- depend upon it.
