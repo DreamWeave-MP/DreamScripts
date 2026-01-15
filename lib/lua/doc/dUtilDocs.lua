@@ -1,8 +1,13 @@
 ---@meta
 
+---@class DreamWeaveMenuModule
+---@field display function(pid: PlayerId, menuName: string)
+
 ---@class DreamWeaveScriptEnv
 ---@field print fun(...) Standard lua print
----@field tableHelper table<string, function> tes3mp's built in tableHelper module
+---@field string stringlib
+---@field math mathlib
+---@field menu DreamWeaveMenuModule
 ---@field tes3mp TES3MPModule global tes3mp namespace functions
 ---@field I table<string, table<any, any>> Global script interfaces to be accessed by other mods
 

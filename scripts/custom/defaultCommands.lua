@@ -1,3 +1,6 @@
+---@type DreamWeaveScriptEnv
+_ENV = _ENV
+
 local color = require 'color'
 local config = require 'tes3mp.config'
 local enumerations = require 'tes3mp.enumerations'
@@ -456,6 +459,25 @@ local function unban(pid, cmd)
 end
 
 ---@type CommandHandler
+local function setAuthority(pid, cmd)
+    if #cmd < 3 then return end
+
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+    if not isValid or not targetPid then return end
+
+    local cellDescription = tableHelper.concatenateFromIndex(cmd, 3)
+
+    -- Get rid of quotation marks
+    cellDescription = cellDescription:gsub('"', '')
+
+    if not logicHandler.IsCellLoaded(cellDescription) then
+        return tes3mp.SendMessage(pid, 'Cell "' .. cellDescription .. '" isn\'t loaded!\n', false)
+    end
+
+    logicHandler.SetCellAuthority(targetPid, cellDescription)
+end
+
+---@type CommandHandler
 local function setDay(pid, cmd)
     local inputValue = tonumber(cmd[2])
 
@@ -476,6 +498,31 @@ local function setDay(pid, cmd)
     WorldInstance:QuicksaveToDrive()
     WorldInstance:LoadTime(pid, true)
 end
+---@type CommandHandler
+local function setHair(pid, cmd)
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+    if not isValid or not targetPid then return end
+
+    local newHair = tableHelper.concatenateFromIndex(cmd, 3)
+
+    Players[targetPid].data.character.hair = newHair
+    tes3mp.SetHair(targetPid, newHair)
+    tes3mp.SetResetStats(targetPid, false)
+    tes3mp.SendBaseInfo(targetPid)
+end
+
+---@type CommandHandler
+local function setHead(pid, cmd)
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+    if not isValid or not targetPid then return end
+
+    local newHead = tableHelper.concatenateFromIndex(cmd, 3)
+
+    Players[targetPid].data.character.head = newHead
+    tes3mp.SetHead(targetPid, newHead)
+    tes3mp.SetResetStats(targetPid, false)
+    tes3mp.SendBaseInfo(targetPid)
+end
 
 ---@type CommandHandler
 local function setMonth(pid, cmd)
@@ -486,6 +533,19 @@ local function setMonth(pid, cmd)
     WorldInstance.data.time.month = inputValue
     WorldInstance:QuicksaveToDrive()
     WorldInstance:LoadTime(pid, true)
+end
+
+---@type CommandHandler
+local function setRace(pid, cmd)
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+    if not isValid or not targetPid then return end
+
+    local newRace = tableHelper.concatenateFromIndex(cmd, 3)
+
+    Players[targetPid].data.character.race = newRace
+    tes3mp.SetRace(targetPid, newRace)
+    tes3mp.SetResetStats(targetPid, false)
+    tes3mp.SendBaseInfo(targetPid)
 end
 
 ---@type CommandHandler
@@ -538,9 +598,13 @@ return {
         regions = { callback = regions, },
         resetcell = { callback = resetCell, },
         runstartup = { callback = runStartup, },
+        setauthority = { callback = setAuthority, rankRequirement = enumerations.staffRank.MODERATOR, },
         setday = { callback = setDay, rankRequirement = enumerations.staffRank.MODERATOR, },
+        sethair = { callback = setHair, rankRequirement = enumerations.staffRank.ADMIN, },
+        sethead = { callback = setHead, rankRequirement = enumerations.staffRank.ADMIN, },
         setmodel = { callback = setPlayerModel, },
         setmonth = { callback = setMonth, rankRequirement = enumerations.staffRank.MODERATOR, },
+        setrace = { callback = setRace, rankRequirement = enumerations.staffRank.ADMIN, },
         teleport = { callback = teleport, rankRequirement = enumerations.staffRank.MODERATOR, },
         teleportto = { callback = teleportTo, rankRequirement = enumerations.staffRank.MODERATOR, },
         unban = { callback = unban, },
