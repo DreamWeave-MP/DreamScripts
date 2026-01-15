@@ -31,10 +31,10 @@ return {
     end,
     -- Don't allow console commands from players who lack the permissions for them and haven't been asked
     -- to run the console commands by the server itself; kick them instead
-    OnConsoleCommand = function(...)
+    OnConsoleCommand = function(_, pid, cellDescription, consoleCommand, _, _)
       print('Number of Players: ', tableHelper.getCount(Players))
       tableHelper.print(Players)
-      tableHelper.print({ ... })
+      print(pid, cellDescription, consoleCommand)
       print(Players[pid].consoleCommandsQueued)
       local hasConsoleCommandQueued = tableHelper.containsValue(Players[pid].consoleCommandsQueued, consoleCommand)
 
