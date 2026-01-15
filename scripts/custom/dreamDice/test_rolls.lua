@@ -1,6 +1,4 @@
-local RollDep
-
-RollDep = Roll or require('roll')
+local Roll = require 'custom.dreamDice.roll'
 
 ---Only meant to be ran for performance reasons under luaJIT.
 ---Do not deploy this under tes3mp directly!
@@ -12,17 +10,20 @@ local testPairs = {
   [4] = 8,
   [7] = 6,
 }
-local testIterations = 10
+local DefaultTestIterations = 1000
 
-(function()
-    local rand = math.random
-    local format = string.format
+---@param testIterations integer?
+return function(testIterations)
+  if not testIterations or type(testIterations) ~= 'number' then
+    testIterations = DefaultTestIterations
+  end
+
   for dice, faces in pairs(testPairs) do
-    local thisRoll = format('%sd%s+%s', dice, faces, rand(-100, 100))
+    local thisRoll = ('%sd%s+%s'):format(dice, faces, math.random(-100, 100))
     for _ = 1, testIterations do
-      local rollObject = RollDep(thisRoll)
+      local rollObject = Roll(thisRoll)
       rollObject:resolve()
       print(rollObject, rollObject:resolve())
     end
   end
-end)()
+end

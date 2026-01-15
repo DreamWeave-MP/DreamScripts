@@ -3,35 +3,12 @@
 ---@alias RollNum integer positive number of dice to roll. Minimum of 1, but any positive bounds
 ---@alias RollFaces integer positive number of faces to roll for each die. Minimum of 1, but any positive bounds
 
+local color = require 'color'
+
 math.randomseed(os.time())
-local abs = math.abs
-local find = string.find
-local floor = math.floor
-local format = string.format
-local HUGE = math.huge
-local lower = string.lower
-local match = string.match
-local rand = math.random
-local sub = string.sub
-
-local Players = Players
-
-local blueViolet
-local defaultColor
-local green
-local lightBlue
-local yellow
-
-if color then
-    blueViolet = color.BlueViolet
-    defaultColor = color.Default
-    green = color.Green
-    lightBlue = color.LightBlue
-    yellow = color.Yellow
-end
 
 local DICE_MIN_FACES = 3
-local DICE_TYPES = {4, 6, 8, 10, 12, 20, 100}
+local DICE_TYPES = { 4, 6, 8, 10, 12, 20, 100 }
 local ITERATIONS_PER_DICE = 25
 local MAX_FACES_OR_DICE = 10000
 
@@ -45,7 +22,8 @@ local RollModifierMatchString = '([+-])()'
 local RollNewIndexError = 'Cannot modify field %s of immutable Roll!'
 local RollNumDiceMatchString = '^(.-)d'
 local RollNumFacesMatchString = '[+-]'
-local RollResultMessageFormatString = '%s%s%s rolled %s%s %s%s-sided %s with a modifier of %s%s for a total of %s%s%s%s.\n%s'
+local RollResultMessageFormatString =
+'%s%s%s rolled %s%s %s%s-sided %s with a modifier of %s%s for a total of %s%s%s%s.\n%s'
 local RollToStringString = 'Roll( Modifier: %s, Dice: %s, Faces: %s )'
 
 ---@alias Attribute
@@ -143,29 +121,30 @@ local function getResultMessage(self, rollData)
     local player = Players[rollData.playerId]
     if not player or not player:IsLoggedIn() then return end
 
-    local forStat = (rollData.forStat and string.format(RollForStatFormatString, green, rollData.forStat)) or ''
+    local forStat = (rollData.forStat and RollForStatFormatString:format(color.green, rollData.forStat)) or ''
     local rollResult = rollData.result or self:resolve()
 
     local diceNum = self.diceCount
     local dieOrDice = 'dice'
     if diceNum == 1 then dieOrDice = 'die' end
 
-    return string.format(RollResultMessageFormatString,
-                          lightBlue,
-                          player.accountName,
-                          blueViolet,
-                          green,
-                          diceNum,
-                          blueViolet,
-                          self.faceCount,
-                          dieOrDice,
-                          green,
-                          self.modifier,
-                          yellow,
-                          rollResult,
-                          forStat,
-                          blueViolet,
-                          defaultColor)
+    return RollResultMessageFormatString:format(
+        color.lightBlue,
+        player.accountName,
+        color.blueViolet,
+        color.green,
+        diceNum,
+        color.blueViolet,
+        self.faceCount,
+        dieOrDice,
+        color.green,
+        self.modifier,
+        color.yellow,
+        rollResult,
+        forStat,
+        color.blueViolet,
+        color.defaultColor
+    )
 end
 
 ---@param input string
@@ -196,10 +175,13 @@ local function resolve(self)
     return sum + self.modifier
 end
 
+---@param playerId PlayerId
 local function log(self, playerId)
     local player = Players[playerId]
     assert(self and player and player:IsLoggedIn(), LogLoggedPlayerError)
-    print(format(RollFormatStr, Players[playerId].accountName, self))
+    print(
+        RollFormatStr:format(player.accountName, self)
+    )
 end
 
 ---@class RollObject
@@ -228,11 +210,10 @@ function Roll:__call(rollString)
     return setmetatable({}, {
         __index = private,
         __newindex = function(_, key, _)
-            error(format(RollNewIndexError, key), 2)
+            error(RollNewIndexError:format(key), 2)
         end,
         __tostring = function(roll)
-            return string.format(RollToStringString
-                                 , roll.modifier, roll.diceCount, roll.faceCount)
+            return RollToStringString:format(roll.modifier, roll.diceCount, roll.faceCount)
         end
     })
 end
@@ -242,11 +223,11 @@ end
 function Roll.getModifier(input)
     if not isValidString(input) then return 0 end
 
-    local sign, pos = match(input, RollModifierMatchString)
+    local sign, pos = input:match(RollModifierMatchString)
 
     if not sign then return 0 end
 
-    local number_str = sub(input, pos)
+    local number_str = input:sub(pos)
 
     local number = tonumber(number_str)
 
@@ -267,8 +248,11 @@ function Roll.getNumDice(input)
 
     local number = tonumber(before_d)
 
-    if not number or number <= 0 then return 1
-    elseif MAX_FACES_OR_DICE <= number then return MAX_FACES_OR_DICE end
+    if not number or number <= 0 then
+        return 1
+    elseif MAX_FACES_OR_DICE <= number then
+        return MAX_FACES_OR_DICE
+    end
 
     return number
 end
@@ -278,24 +262,27 @@ end
 function Roll.getNumFaces(input)
     if not isValidString(input) then return DICE_MIN_FACES end
 
-    local start_pos = find(lower(input), 'd')
+    local start_pos = input:lower():find('d')
     if not start_pos then
         local numFaces = tonumber(input)
         if numFaces then return numFaces end
         return DICE_MIN_FACES
     end
 
-    local substring = sub(input, start_pos + 1)
+    local substring = input:sub(start_pos + 1)
 
-    local end_pos = find(substring, RollNumFacesMatchString)
+    local end_pos, number = substring:find(RollNumFacesMatchString)
     if end_pos then
-        substring = sub(substring, 1, end_pos - 1)
+        number = tonumber(substring:find(1, end_pos - 1))
+    else
+        number = tonumber(substring)
     end
 
-    local number = tonumber(substring)
-
-    if not number or number <= DICE_MIN_FACES then return DICE_MIN_FACES
-    elseif MAX_FACES_OR_DICE <= number then return MAX_FACES_OR_DICE end
+    if not number or number <= DICE_MIN_FACES then
+        return DICE_MIN_FACES
+    elseif MAX_FACES_OR_DICE <= number then
+        return MAX_FACES_OR_DICE
+    end
 
     return number
 end
@@ -303,27 +290,27 @@ end
 ---@param targetValue integer number to generate a roll string for
 ---@return string roll string that can be used in a Roll constructor
 function Roll.fromNumber(targetValue)
-    local bestRoll = {dice = 1, sides = targetValue, modifier = 0}
-    local bestDifference = HUGE
+    local bestRoll = { dice = 1, sides = targetValue, modifier = 0 }
+    local bestDifference = math.huge
 
     for _, sides in ipairs(DICE_TYPES) do
-        local dice = floor(targetValue / sides)
+        local dice = math.floor(targetValue / sides)
         if dice > 0 then
             local remainder = targetValue % sides
-            local difference = abs(targetValue - (dice * sides))
+            local difference = math.abs(targetValue - (dice * sides))
 
             if difference < bestDifference then
-                bestRoll = {dice = dice, sides = sides, modifier = remainder}
+                bestRoll = { dice = dice, sides = sides, modifier = remainder }
                 bestDifference = difference
             end
         end
     end
 
     if bestRoll.modifier > 0 then
-        return format(RollFromNumberHasModifierString, bestRoll.dice, bestRoll.sides, bestRoll.modifier)
+        return RollFromNumberHasModifierString:format(bestRoll.dice, bestRoll.sides, bestRoll.modifier)
     end
 
-    return format(RollFromNumberNoModifierString, bestRoll.dice, bestRoll.sides)
+    return RollFromNumberNoModifierString:format(bestRoll.dice, bestRoll.sides)
 end
 
 ---@param playerId integer
