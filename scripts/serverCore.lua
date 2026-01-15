@@ -625,6 +625,7 @@ function OnPlayerConnect(pid)
     )
 
     Players[pid] = Player(pid, playerName)
+    tableHelper.print(Players)
     local player = Players[pid]
     player.name = playerName
 
