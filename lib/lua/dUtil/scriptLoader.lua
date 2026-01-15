@@ -103,6 +103,8 @@ function DScriptLoader.getScriptEnv()
     string = string,
     table = table,
     tes3mp = tes3mp,
+    tonumber = tonumber,
+    tostring = tostring,
     type = type,
     ---@class DScriptLoaderHidden
     scriptLoader = {
