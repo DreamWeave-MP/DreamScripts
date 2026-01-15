@@ -9,6 +9,9 @@ config.dataPath = tes3mp.GetDataPath()
 --- Array of script paths used to load handlers, validators, and interfaces from
 --- These directories are always relative to server/scripts/custom
 config.customScripts = {
+    --- The menu interface is what used to be menuHelper, and many builtins rely on it
+    --- Don't disable or screw with this, or many things will break
+    'menuInterface',
     --- customEventHooks is the most important module!
     --- Its load order must never be changed and everything else, even all the chat commands,
     --- depend upon it.
@@ -399,6 +402,10 @@ config.carriableRecordTypes = { 'spell', 'potion', 'armor', 'book', 'clothing', 
 config.cellPacketTypes = { 'delete', 'place', 'spawn', 'lock', 'trap', 'scale', 'state', 'miscellaneous',
     'doorState', 'clientScriptLocal', 'container', 'equipment', 'ai', 'death', 'actorList', 'position',
     'statsDynamic', 'spellsActive', 'cellChangeTo', 'cellChangeFrom' }
+
+--- Whether the server should log all script outputs from each loaded customScript.
+--- This setting can be useful, but, extremely verbose.
+config.debugScriptRegistrations = true
 
 --- Whether the server should enforce that all clients connect with a specific list of data files
 --- defined in data/requiredDataFiles.json

@@ -1,15 +1,17 @@
 local config = require 'tes3mp.config'
+local enumerations = require 'tes3mp.enumerations'
 local patterns = require 'patterns'
 local inventoryHelper = require 'tes3mp.util.inventory'
 local tableHelper = require 'tes3mp.util.table'
 
 require 'doc.menuHelper'
 
+local Menus = {}
+
 --- Stateful helper module for building interfaces.
 --- Must only be `require`'d once by serverCore.lua!
 ---@class MenuHelper
 local menuHelper = {
-    Menus = {},
     conditions = {
         --- Helper function to require a specific value of a specific attribute
         --- to display an interface element
@@ -576,11 +578,11 @@ end
 --- Return the displayed buttons for a given menu element,
 --- For a particular player
 ---@param pid PlayerId
----@param menuIndex integer
+---@param menuName string
 ---@return Button[]
-function menuHelper.GetDisplayedButtons(pid, menuIndex)
-    if not menuIndex or not menuHelper.Menus[menuIndex] then return {} end
-    local targetMenu = menuHelper.Menus[menuIndex]
+function menuHelper.GetDisplayedButtons(pid, menuName)
+    if not menuName or not Menus[menuName] then return {} end
+    local targetMenu = Menus[menuName]
 
     local displayedButtons = {}
 
@@ -603,11 +605,11 @@ end
 
 --- Displays a particular menu to a player given the unique indices of both
 ---@param pid PlayerId
----@param menuIndex integer
-function menuHelper.DisplayMenu(pid, menuIndex)
-    if not menuIndex or menuHelper.Menus[menuIndex] then return end
+---@param menuName string
+function menuHelper.DisplayMenu(pid, menuName)
+    if not menuName or Menus[menuName] then return end
 
-    local text = menuHelper.Menus[menuIndex].text
+    local text = Menus[menuName].text
 
     -- Is this a table? If so, process the variables in it and then concatenate them
     if not text then
@@ -617,7 +619,7 @@ function menuHelper.DisplayMenu(pid, menuIndex)
         text = tableHelper.concatenateArrayValues(processedTextVariables, 1, '')
     end
 
-    local displayedButtons = menuHelper.GetDisplayedButtons(pid, menuIndex)
+    local displayedButtons = menuHelper.GetDisplayedButtons(pid, menuName)
     local buttonCount = tableHelper.getCount(displayedButtons)
     local buttonList = ""
 
@@ -642,4 +644,25 @@ function menuHelper.DisplayMenu(pid, menuIndex)
     tes3mp.CustomMessageBox(pid, config.customMenuIds.menuHelper, text, buttonList)
 end
 
-return menuHelper
+--- Adds a menu to be loaded by later scripts
+---@param menuName string
+---@param menuContent table
+function menuHelper.registerMenu(menuName, menuContent)
+    if not menuName or type(menuName) ~= 'string' then
+        tes3mp.LogAppend(enumerations.log.ERROR,
+            ('Invalid menuName parameter passed to menuHelper.registerMenu: %s'):format(menuName))
+        tes3mp.StopServer(5)
+    elseif not menuContent or type(menuContent) ~= 'table' then
+        tes3mp.LogAppend(enumerations.log.ERROR,
+            ('Invalid menuContent parameter passed to menuHelper.registerMenu: %s'):format(menuContent))
+        tes3mp.StopServer(4)
+    end
+
+    Menus[menuName] = menuContent
+end
+
+---@type TES3MPScriptRegistration
+return {
+    interfaceName = 'menuHelper',
+    interface = menuHelper,
+}

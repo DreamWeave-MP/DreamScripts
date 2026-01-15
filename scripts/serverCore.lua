@@ -101,15 +101,10 @@ else
     Player = require("player.json")
 end
 
---- MenuHelper is stateful and should load prior to any module which possibly depends on it
-local menuHelper = require 'tes3mp.util.menu'
-
 -- commandHandler = require 'commandHandler'
 
 ---@type DScriptLoader
-local ScriptLoader = require 'dUtil.scriptLoader' {
-    menuHelper = menuHelper,
-}
+local ScriptLoader = require 'dUtil.scriptLoader'
 
 ---@param pid PlayerId
 ---@param packetType string
@@ -2438,14 +2433,22 @@ function OnGUIAction(pid, idGui, data)
                 local buttonIndex = tonumber(data) + 1
                 local buttonPressed = player.displayedMenuButtons[buttonIndex]
 
-                local destination = menuHelper.GetButtonDestination(pid, buttonPressed)
+                local menuHelper = ScriptLoader.Interfaces.menuHelper
 
-                player.previousCustomMenu = player.currentCustomMenu
-                menuHelper.ProcessEffects(pid, destination.effects)
+                if not menuHelper then
+                    Players[pid]:Message(
+                        'The menuHelper interface does not exist, so this interface cannot be loaded!'
+                    )
+                else
+                    local destination = ScriptLoader.Interfaces.menuHelper.GetButtonDestination(pid, buttonPressed)
 
-                if destination.targetMenu then
-                    menuHelper.DisplayMenu(pid, destination.targetMenu)
-                    player.currentCustomMenu = destination.targetMenu
+                    player.previousCustomMenu = player.currentCustomMenu
+                    menuHelper.ProcessEffects(pid, destination.effects)
+
+                    if destination.targetMenu then
+                        menuHelper.DisplayMenu(pid, destination.targetMenu)
+                        player.currentCustomMenu = destination.targetMenu
+                    end
                 end
             end
         else

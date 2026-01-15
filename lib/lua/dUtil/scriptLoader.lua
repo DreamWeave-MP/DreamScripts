@@ -102,9 +102,6 @@ function DScriptLoader.getScriptEnv()
       loadScript = DScriptLoader.loadScript,
       loadAllScripts = DScriptLoader.loadAllScripts,
     },
-    menu = {
-      display = Deps.menuHelper.DisplayMenu,
-    },
     --- TES3MP Globals
     banList = banList,
     HourCounter = HourCounter,
@@ -215,10 +212,16 @@ function DScriptLoader.loadScriptMenus(scriptPath, scriptRegistration)
       ('Failed to load the script %s as it attempt to define menus which were not a table: %s')
       :format(scriptPath, scriptMenus)
     )
+    tes3mp.StopServer(5)
+  elseif not DScriptLoader.Interfaces.menuHelper then
+    return tes3mp.LogAppend(
+      enumerations.log.WARN,
+      ('Failed to load the script %s\'s menus as the menuHelper interface has not been defined.'):format(scriptPath)
+    )
   end
 
   for menuName, menuContent in pairs(scriptMenus) do
-    Deps.menuHelper.Menus[menuName] = menuContent
+    DScriptLoader.Interfaces.menuHelper.registerMenu(menuName, menuContent)
   end
 end
 
@@ -359,7 +362,10 @@ function DScriptLoader.loadScript(scriptName, callerPid)
     end
   end
 
-  tableHelper.print(result)
+  if config.debugScriptRegistrations then
+    tableHelper.print(result)
+  end
+
   DScriptLoader.loadScriptInterface(scriptPath, result)
   DScriptLoader.loadScriptCommands(scriptPath, result)
   DScriptLoader.loadScriptMenus(scriptPath, result)
@@ -373,24 +379,9 @@ function DScriptLoader.loadAllScripts()
   --- Reinitialize all interfaces when reloading all scripts
   Interfaces = {}
 
-  ---@type MenuHelper
-  local menuHelper = Deps.menuHelper
-  --- Flush registered menus as well
-  menuHelper.Menus = {}
-
   for _, scriptName in ipairs(config.customScripts) do
     DScriptLoader.loadScript(scriptName)
   end
 end
 
----@class DScriptLoaderDeps
----@field menuHelper MenuHelper
-
----@param deps DScriptLoaderDeps
-return function(deps)
-  assert(deps.menuHelper)
-
-  Deps = deps
-
-  return DScriptLoader
-end
+return DScriptLoader

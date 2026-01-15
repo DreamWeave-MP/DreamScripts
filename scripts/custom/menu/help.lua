@@ -1,7 +1,10 @@
 local color = require 'color'
 local config = require 'tes3mp.config'
-local menuHelper = require 'tes3mp.util.menu'
 local tableHelper = require 'tes3mp.util.table'
+
+local I = require 'interfaces'
+---@type MenuHelper
+local menuHelper = I.menuHelper
 
 local Menus = {}
 
