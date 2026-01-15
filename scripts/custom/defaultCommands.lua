@@ -1,7 +1,7 @@
 ---@type DreamWeaveScriptEnv
 _ENV = _ENV
 
-local animHelper = require 'animHelper'
+local animHelper = require 'tes3mp.util.anim'
 local color = require 'color'
 local config = require 'tes3mp.config'
 local dataTableBuilder = require 'dataTableBuilder'
@@ -770,20 +770,6 @@ local function setLogLevel(pid, cmd)
 end
 
 ---@type CommandHandler
-local function setMomentum(pid, cmd)
-    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
-    if not isValid or not targetPid then return end
-
-    local xValue, yValue, zValue = tonumber(cmd[3]), tonumber(cmd[4]), tonumber(cmd[5])
-    if not xValue or not yValue or not zValue then
-        return tes3mp.SendMessage(pid, 'Not a valid argument. Use /setmomentum <pid> <x> <y> <z>\n', false)
-    end
-
-    tes3mp.SetMomentum(targetPid, xValue, yValue, zValue)
-    tes3mp.SendMomentum(targetPid)
-end
-
----@type CommandHandler
 local function setPlayerModel(pid, cmd)
     local _, isAdmin = dUtil.misc.getRanks(pid)
 
@@ -804,6 +790,20 @@ local function setPlayerModel(pid, cmd)
     targetPlayer.data.character.modelOverride = modelName
     targetPlayer:LoadCharacter()
     targetPlayer:Message("Your model has been changed.\n")
+end
+
+---@type CommandHandler
+local function setMomentum(pid, cmd)
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+    if not isValid or not targetPid then return end
+
+    local xValue, yValue, zValue = tonumber(cmd[3]), tonumber(cmd[4]), tonumber(cmd[5])
+    if not xValue or not yValue or not zValue then
+        return tes3mp.SendMessage(pid, 'Not a valid argument. Use /setmomentum <pid> <x> <y> <z>\n', false)
+    end
+
+    tes3mp.SetMomentum(targetPid, xValue, yValue, zValue)
+    tes3mp.SendMomentum(targetPid)
 end
 
 ---@type CommandHandler
