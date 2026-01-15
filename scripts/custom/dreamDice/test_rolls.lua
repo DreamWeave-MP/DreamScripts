@@ -23,7 +23,8 @@ return function(testIterations)
     for _ = 1, testIterations do
       local rollObject = Roll(thisRoll)
       rollObject:resolve()
-      print(rollObject, rollObject:resolve())
+      error()
+      -- print(rollObject, rollObject:resolve())
     end
   end
 end
