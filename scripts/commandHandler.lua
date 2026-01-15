@@ -2,61 +2,7 @@
 local commandHandler = {}
 
 function commandHandler.ProcessCommand(pid, cmd)
-    if cmd[1] == 'setattr' and moderator then
-        if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-            local targetPid = tonumber(cmd[2])
-            local targetName = Players[targetPid].name
-
-            if cmd[3] ~= nil and cmd[4] ~= nil and tonumber(cmd[4]) ~= nil then
-                local attrId
-                local value = tonumber(cmd[4])
-
-                if tonumber(cmd[3]) ~= nil then
-                    attrId = tonumber(cmd[3])
-                else
-                    attrId = tes3mp.GetAttributeId(cmd[3])
-                end
-
-                if attrId ~= -1 and attrId < tes3mp.GetAttributeCount() then
-                    tes3mp.SetAttributeBase(targetPid, attrId, value)
-                    tes3mp.SendAttributes(targetPid)
-
-                    local message = targetName .. '\'s ' .. tes3mp.GetAttributeName(attrId) ..
-                        ' is now ' .. value .. '\n'
-                    tes3mp.SendMessage(pid, message, true)
-                    local attributeName = tes3mp.GetAttributeName(attrId)
-                    Players[targetPid].data.attributes[attributeName].base = value
-                end
-            end
-        end
-    elseif cmd[1] == 'setskill' and moderator then
-        if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-            local targetPid = tonumber(cmd[2])
-            local targetName = Players[targetPid].name
-
-            if cmd[3] ~= nil and cmd[4] ~= nil and tonumber(cmd[4]) ~= nil then
-                local skillId
-                local value = tonumber(cmd[4])
-
-                if tonumber(cmd[3]) ~= nil then
-                    skillId = tonumber(cmd[3])
-                else
-                    skillId = tes3mp.GetSkillId(cmd[3])
-                end
-
-                if skillId ~= -1 and skillId < tes3mp.GetSkillCount() then
-                    tes3mp.SetSkillBase(targetPid, skillId, value)
-                    tes3mp.SendSkills(targetPid)
-
-                    local message = targetName .. '\'s ' .. tes3mp.GetSkillName(skillId) ..
-                        ' is now ' .. value .. '\n'
-                    tes3mp.SendMessage(pid, message, true)
-                    local skillName = tes3mp.GetSkillName(skillId)
-                    Players[targetPid].data.skills[skillName].base = value
-                end
-            end
-        end
-    elseif cmd[1] == 'setmomentum' and moderator then
+    if cmd[1] == 'setmomentum' and moderator then
         if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
             local targetPid = tonumber(cmd[2])
             local xValue = tonumber(cmd[3])

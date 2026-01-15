@@ -684,6 +684,35 @@ local function unban(pid, cmd)
 end
 
 ---@type CommandHandler
+local function setAttribute(pid, cmd)
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+    if not isValid or not targetPid or #cmd < 4 then return end
+
+    local attributeId, attributeValue = tonumber(cmd[3]), tonumber(cmd[4])
+
+    if not attributeId then
+        attributeId = tes3mp.GetAttributeId(cmd[3])
+    end
+
+    if attributeId == -1 or attributeId >= tes3mp.GetAttributeCount() then
+        return
+    end
+
+    tes3mp.SetAttributeBase(targetPid, attributeId, attributeValue)
+    tes3mp.SendAttributes(targetPid)
+
+    tes3mp.SendMessage(
+        pid,
+        ('%s\'s %s is now %s.\n')
+        :format(Players[targetPid].name, tes3mp.GetAttributeName(attributeId), attributeValue),
+        true
+    )
+
+    local attributeName = tes3mp.GetAttributeName(attributeId)
+    Players[targetPid].data.attributes[attributeName].base = attributeValue
+end
+
+---@type CommandHandler
 local function setAuthority(pid, cmd)
     if #cmd < 3 then return end
 
@@ -771,6 +800,35 @@ local function setRace(pid, cmd)
     tes3mp.SetRace(targetPid, newRace)
     tes3mp.SetResetStats(targetPid, false)
     tes3mp.SendBaseInfo(targetPid)
+end
+
+---@type CommandHandler
+local function setSkill(pid, cmd)
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+    if not isValid or not targetPid or #cmd < 4 then return end
+
+    local skillId, skillValue = tonumber(cmd[3]), tonumber(cmd[4])
+
+    if not skillId then
+        skillId = tes3mp.GetSkillId(cmd[3])
+    end
+
+    if skillId == -1 or skillId >= tes3mp.GetSkillCount() then
+        return
+    end
+
+    tes3mp.SetSkillBase(targetPid, skillId, skillValue)
+    tes3mp.SendSkills(targetPid)
+
+    tes3mp.SendMessage(
+        pid,
+        ('%s\'s %s is now %s.\n')
+        :format(Players[targetPid].name, tes3mp.GetSkillName(skillId), skillValue),
+        true
+    )
+
+    local skillName = tes3mp.GetSkillName(skillId)
+    Players[targetPid].data.skills[skillName].base = skillValue
 end
 
 ---@type CommandHandler
@@ -891,6 +949,7 @@ return {
         removeModerator = { callback = removeModerator, rankRequirement = enumerations.staffRank.ADMIN, },
         resetMyKills = { callback = resetKillsUnshared, rankRequirement = enumerations.staffRank.MODERATOR, },
         runstartup = { callback = runStartup, },
+        setAttribute = { callback = setAttribute, rankRequirement = enumerations.staffRank.MODERATOR, },
         setauthority = { callback = setAuthority, rankRequirement = enumerations.staffRank.MODERATOR, },
         setday = { callback = setDay, rankRequirement = enumerations.staffRank.MODERATOR, },
         setEnforcedLogLevel = { callback = setLogLevel, rankRequirement = enumerations.staffRank.ADMIN, },
@@ -901,6 +960,7 @@ return {
         setmonth = { callback = setMonth, rankRequirement = enumerations.staffRank.MODERATOR, },
         setrace = { callback = setRace, rankRequirement = enumerations.staffRank.ADMIN, },
         setScale = { callback = setScale, rankRequirement = enumerations.staffRank.ADMIN, },
+        setSkill = { callback = setSkill, rankRequirement = enumerations.staffRank.MODERATOR, },
         setWerewolf = { callback = setWerewolf, rankRequirement = enumerations.staffRank.ADMIN, },
         storeRecord = { callback = storeRecord, rankRequirement = enumerations.staffRank.ADMIN, },
         teleport = { callback = teleport, rankRequirement = enumerations.staffRank.MODERATOR, },
