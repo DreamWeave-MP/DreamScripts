@@ -37,21 +37,7 @@ function commandHandler.ProcessCommand(pid, cmd)
         moderator = true
     end
 
-    if (cmd[1] == "teleport" or cmd[1] == "tp") and moderator then
-        if cmd[2] ~= "all" then
-            logicHandler.TeleportToPlayer(pid, cmd[2], pid)
-        else
-            for iteratorPid, player in pairs(Players) do
-                if iteratorPid ~= pid then
-                    if player:IsLoggedIn() then
-                        logicHandler.TeleportToPlayer(pid, iteratorPid, pid)
-                    end
-                end
-            end
-        end
-    elseif (cmd[1] == "teleportto" or cmd[1] == "tpto") and moderator then
-        logicHandler.TeleportToPlayer(pid, pid, cmd[2])
-    elseif (cmd[1] == "setauthority" or cmd[1] == "setauth") and moderator and #cmd > 2 then
+    if (cmd[1] == "setauthority" or cmd[1] == "setauth") and moderator and #cmd > 2 then
         if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
             local cellDescription = tableHelper.concatenateFromIndex(cmd, 3)
 
@@ -516,28 +502,6 @@ function commandHandler.ProcessCommand(pid, cmd)
             else
                 tes3mp.SendMessage(pid, "There aren't that many hours in a day.\n", false)
             end
-        end
-    elseif cmd[1] == "setday" and moderator then
-        local inputValue = tonumber(cmd[2])
-
-        if type(inputValue) == "number" then
-            local daysInMonth = WorldInstance.monthLengths[WorldInstance.data.time.month]
-
-            if inputValue <= daysInMonth then
-                WorldInstance.data.time.day = inputValue
-                WorldInstance:QuicksaveToDrive()
-                WorldInstance:LoadTime(pid, true)
-            else
-                tes3mp.SendMessage(pid, "There are only " .. daysInMonth .. " days in the current month.\n", false)
-            end
-        end
-    elseif cmd[1] == "setmonth" and moderator then
-        local inputValue = tonumber(cmd[2])
-
-        if type(inputValue) == "number" then
-            WorldInstance.data.time.month = inputValue
-            WorldInstance:QuicksaveToDrive()
-            WorldInstance:LoadTime(pid, true)
         end
     elseif cmd[1] == "settimescale" and moderator then
         local inputPeriod = string.lower(tostring(cmd[2]))

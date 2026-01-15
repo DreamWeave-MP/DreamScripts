@@ -1,5 +1,6 @@
 local color = require 'color'
 local config = require 'tes3mp.config'
+local enumerations = require 'tes3mp.enumerations'
 local guiHelper = require 'tes3mp.util.gui'
 local logicHandler = require 'tes3mp.logicHandler'
 local patterns = require 'patterns'
@@ -454,6 +455,59 @@ local function unban(pid, cmd)
     end
 end
 
+---@type CommandHandler
+local function setDay(pid, cmd)
+    local inputValue = tonumber(cmd[2])
+
+    if type(inputValue) ~= "number" then return end
+
+    local daysInMonth = WorldInstance.monthLengths[WorldInstance.data.time.month]
+
+    if inputValue > daysInMonth then
+        return tes3mp.SendMessage(
+            pid,
+            ('There are only %s days in the current month.\n')
+            :format(daysInMonth),
+            false
+        )
+    end
+
+    WorldInstance.data.time.day = inputValue
+    WorldInstance:QuicksaveToDrive()
+    WorldInstance:LoadTime(pid, true)
+end
+
+---@type CommandHandler
+local function setMonth(pid, cmd)
+    local inputValue = tonumber(cmd[2])
+
+    if type(inputValue) ~= "number" then return end
+
+    WorldInstance.data.time.month = inputValue
+    WorldInstance:QuicksaveToDrive()
+    WorldInstance:LoadTime(pid, true)
+end
+
+---@type CommandHandler
+local function teleport(pid, cmd)
+    if cmd[2] == "all" then
+        for iteratorPid, player in pairs(Players) do
+            if iteratorPid ~= pid then
+                if player:IsLoggedIn() then
+                    logicHandler.TeleportToPlayer(pid, iteratorPid, pid)
+                end
+            end
+        end
+    else
+        logicHandler.TeleportToPlayer(pid, cmd[2], pid)
+    end
+end
+
+---@type CommandHandler
+local function teleportTo(pid, cmd)
+    logicHandler.TeleportToPlayer(pid, pid, cmd[2])
+end
+
 ---@type TES3MPScriptRegistration
 return {
     chatCommands = {
@@ -463,6 +517,8 @@ return {
         l = { callback = localMessage, },
         lm = { callback = localMessage, },
         msg = { callback = msg, },
+        tp = { callback = teleport, rankRequirement = enumerations.staffRank.MODERATOR, },
+        tpto = { callback = teleportTo, rankRequirement = enumerations.staffRank.MODERATOR, },
 
         -- Long commands
         ban = { callback = ban, },
@@ -482,7 +538,11 @@ return {
         regions = { callback = regions, },
         resetcell = { callback = resetCell, },
         runstartup = { callback = runStartup, },
+        setday = { callback = setDay, rankRequirement = enumerations.staffRank.MODERATOR, },
         setmodel = { callback = setPlayerModel, },
+        setmonth = { callback = setMonth, rankRequirement = enumerations.staffRank.MODERATOR, },
+        teleport = { callback = teleport, rankRequirement = enumerations.staffRank.MODERATOR, },
+        teleportto = { callback = teleportTo, rankRequirement = enumerations.staffRank.MODERATOR, },
         unban = { callback = unban, },
     },
 }
