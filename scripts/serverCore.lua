@@ -187,6 +187,10 @@ local function onGenericObjectEvent(pid, cellDescription, packetType)
     end
 
     local eventName, eventStatus = ('On%s'):format(packetType)
+    tes3mp.LogAppend(
+        enumerations.log.WARN,
+        ('Triggering Generic Object event: On%s'):format(packetType)
+    )
     if CustomEventHooks then
         eventStatus = CustomEventHooks.triggerValidators(
             eventName,
