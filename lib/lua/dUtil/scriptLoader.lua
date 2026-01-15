@@ -293,6 +293,9 @@ local AllowedFields = {
   menus = true,
 }
 
+local dUtil = require 'dUtil.init'
+local ScriptFailedMessage = 'Attempted to load the script at %s, but failed, because it doesn\'t exist.'
+
 --- Given a script name, attempt to load it into the tes3mp environment like an OpenMW Lua script.
 --- Can be called from the chat window by passing the second optional parameter, callerPid.
 ---@param scriptName string name of a script, relative to server/scripts/custom, to attempt to load
@@ -305,7 +308,16 @@ function DScriptLoader.loadScript(scriptName, callerPid)
     )
   end
 
-  local scriptPath       = DScriptLoader.sanitizePath(ScriptPathFormatter:format(scriptName))
+  local scriptPath = DScriptLoader.sanitizePath(ScriptPathFormatter:format(scriptName))
+
+  if not dUtil.io.fileExists(scriptPath) then
+    if callerPid then
+      return Players[callerPid]:Message(ScriptFailedMessage:format(scriptPath))
+    else
+      tes3mp.LogAppend(enumerations.log.ERROR, ScriptFailedMessage:format(scriptPath))
+      tes3mp.StopServer(4)
+    end
+  end
 
   local customEventHooks = Interfaces.customEventHooks
   if customEventHooks then
