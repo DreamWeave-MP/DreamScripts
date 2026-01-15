@@ -78,6 +78,10 @@ DScriptLoader.Interfaces = setmetatable({},
 ---@param scriptName string
 ---@return any
 function DScriptLoader.requireShim(scriptName)
+  assert(scriptName and type(scriptName) == 'string')
+
+  scriptName = DScriptLoader.sanitizePath(scriptName)
+
   if scriptName == 'interfaces' then
     return DScriptLoader.Interfaces
   else
