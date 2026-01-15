@@ -98,9 +98,25 @@ function DScriptLoader.requireShim(scriptName)
     return sandboxLoaded[scriptName]()
   else
     print('Loading fresh script ' .. scriptName)
-    local chunk, err = loadfile(scriptName)
+    local ok, chunk, err = false, nil, nil
 
-    if not chunk then
+    for _, prefix in ipairs { 'server/scripts', 'lib/', 'lib/lua', } do
+      local checkPath = ('%s%s.lua'):format(prefix, scriptName)
+      if tes3mp.GetOperatingSystemType() == 'Windows' then
+        checkPath = checkPath:gsub('.', '\\')
+      else
+        checkPath = checkPath:gsub('.', '/')
+      end
+
+      chunk, err = loadfile(checkPath)
+
+      if chunk then
+        ok = true
+        break
+      end
+    end
+
+    if not ok or not chunk then
       tes3mp.LogAppend(
         enumerations.log.FATAL,
         ('Failed to load script %s due to error %s. Aborting!'):format(scriptName, err)
