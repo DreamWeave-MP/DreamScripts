@@ -114,7 +114,10 @@ function customEventHooks.safeCall(fn, ...)
     local success, result = xpcall(
         wrapped,
         function(err)
-            tes3mp.LogAppend(enumerations.log.WARN, '%s\n%s'):format(err, debug.traceback())
+            tes3mp.LogAppend(
+                enumerations.log.WARN,
+                ('%s\n%s'):format(err, debug.traceback())
+            )
         end,
         ...
     )
