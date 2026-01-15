@@ -36,7 +36,7 @@ return {
       -- tableHelper.print(Players)
       print(
         'WTF:\n\n\n',
-        pid,
+        pid or 'NO PID',
         cellDescription,
         consoleCommand,
         Players[pid] or 'FUCKED',
