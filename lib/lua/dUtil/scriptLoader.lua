@@ -398,7 +398,7 @@ function DScriptLoader.loadScript(scriptName, callerPid)
   DScriptLoader.loadScriptInterface(scriptPath, result)
   DScriptLoader.loadScriptCommands(scriptPath, result)
   DScriptLoader.loadScriptMenus(scriptPath, result)
-  DScriptLoader.loadScriptHandlers(ScriptPathFormatter, result)
+  DScriptLoader.loadScriptHandlers(scriptPath, result)
 end
 
 --- Load all scripts defined by config.customScripts
