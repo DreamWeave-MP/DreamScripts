@@ -31,14 +31,14 @@ local customCommandHooks = {
 ---@param cmd string Name of the new command to register
 ---@param commandData TES3MPCommand
 function customCommandHooks:registerCommand(cmd, commandData)
-    self.commands[cmd] = commandData
+    self.commands[cmd:lower()] = commandData
 end
 
 --- Searched for a given command by name
 ---@param cmd string Name of the command to look up
 ---@return TES3MPCommand? resulting command data, if found.
 function customCommandHooks:getCommand(cmd)
-    return self.commands[cmd]
+    return self.commands[cmd:lower()]
 end
 
 --- Removes all commands registered by a particular script path.
@@ -56,6 +56,8 @@ end
 
 ---@param cmd string Name of the command to remove
 function customCommandHooks:removeCommand(cmd)
+    cmd = cmd:lower()
+
     if not self:getCommand(cmd) then
         return tes3mp.LogAppend(
             enumerations.log.WARN,
@@ -69,6 +71,8 @@ end
 ---@param cmd string Name of the command whose callback you want to retrieve
 ---@return function?
 function customCommandHooks:getCallback(cmd)
+    cmd = cmd:lower()
+
     local command = self:getCommand(cmd)
 
     if not command then return end
@@ -79,6 +83,8 @@ end
 ---@param cmd string name of the command to set a rank requirement for
 ---@param rank number server rank requirement in order to use this particular command
 function customCommandHooks:setRankRequirement(cmd, rank)
+    cmd = cmd:lower()
+
     local command = self.commands[cmd]
 
     if not command then return end
@@ -88,6 +94,8 @@ end
 
 ---@param cmd string name of the command to strip a rank requirement from
 function customCommandHooks:removeRankRequirement(cmd)
+    cmd = cmd:lower()
+
     local command = self:getCommand(cmd)
 
     if not command then
@@ -103,6 +111,8 @@ end
 
 ---@param cmd string name of the command to set a name requirement for
 function customCommandHooks:setNameRequirement(cmd, names)
+    cmd = cmd:lower()
+
     local command = self:getCommand(cmd)
 
     if not command then
@@ -119,6 +129,8 @@ end
 ---@param cmd string name of the command to add a name requirement to
 ---@param name string name to add to the rank requirement list
 function customCommandHooks:addNameRequirement(cmd, name)
+    cmd = cmd:lower()
+
     local command = self:getCommand(cmd)
 
     if not command then
@@ -144,6 +156,8 @@ end
 
 ---@param cmd string name of the command whose name requirement is to be removed
 function customCommandHooks:removeNameRequirement(cmd)
+    cmd = cmd:lower()
+
     local command = self:getCommand(cmd)
 
     if not command then
