@@ -116,7 +116,7 @@ function customEventHooks.safeCall(fn, ...)
         function(err)
             tes3mp.LogAppend(
                 enumerations.log.WARN,
-                ('%s\n%s'):format(err, debug.traceback())
+                ('%s\n%s'):format(err, debug.traceback('', 1))
             )
         end,
         ...
