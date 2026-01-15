@@ -14,7 +14,6 @@ local logicHandler = require 'tes3mp.logicHandler'
 local tableHelper = require 'tes3mp.util.table'
 
 local ScriptPathFormatter = 'server/scripts/custom/%s'
-local Deps
 
 --- OpenMW-Style Script loader module for TES3MP.
 --- This is a stateful module which should only ever be `require`'d once by serverCore.lua

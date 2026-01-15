@@ -1,4 +1,3 @@
-local miscUtil = require 'tes3mp.util.misc'
 local tableHelper = require 'tes3mp.util.table'
 
 ---@alias SpeechSubfolder 'default'|string
@@ -503,7 +502,7 @@ function speechHelper.GetSpeechPathFromCollection(speechCollectionTable, speechT
         indexPrefix = speechCollectionTable.malePrefix
     end
 
-    speechPath = speechPath .. filePrefix .. '_' .. indexPrefix .. miscUtil.prefixZeroes(speechIndex, 3) .. '.mp3'
+    speechPath = speechPath .. filePrefix .. '_' .. indexPrefix .. speechIndex:prefixZeroes(3) .. '.mp3'
 
     return speechPath
 end

@@ -41,6 +41,13 @@
 ---@field count integer Number of items in a particular item stack. Must be at least 1.
 ---@field charge integer -1 if not enchanted.
 
+---@class stringlib
+---@field split fun(self: string, separator: string): string[] Splits a string by a separator and returns an array of matching substrings
+---@field trim fun(self: string): string Removes whitespace from the beginning and end of a string
+---@field capitalizeFirstLetter fun(self: string): string
+---@field ciEqual fun(self: string, otherString: string): boolean case-insensitive equality comparison
+---@field prefixZeroes fun(self: string, desiredLength: integer): string Given a number of zeroes to prefix, returns the original string with N zeroes prepended
+
 ---@class TES3MPCommand
 ---@field definedBy string path of the script which defined this command. The name of the script which defines a command it kept so that old references to it may be removed.
 ---@field callback CommandHandler handler function for whenever this command is invoked

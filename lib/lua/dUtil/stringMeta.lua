@@ -1,9 +1,3 @@
----@class stringlib
----@field split fun(self: string, separator: string): string[] Splits a string by a separator and returns an array of matching substrings
----@field trim fun(self: string): string Removes whitespace from the beginning and end of a string
----@field capitalizeFirstLetter fun(self: string): string
----@field ciEqual fun(self: string, otherString: string): boolean case-insensitive equality comparison
-
 local StringMeta = getmetatable('').__index
 
 function StringMeta:trim()
@@ -25,4 +19,15 @@ function StringMeta:ciEqual(otherString)
   if type(otherString) ~= "string" then return false end
 
   return self:lower() == otherString:lower()
+end
+
+function StringMeta:prefixZeroes(desiredLength)
+  local length, newString = self:len(), self
+
+  while length < desiredLength do
+    newString = "0" .. newString
+    length = length + 1
+  end
+
+  return newString
 end
