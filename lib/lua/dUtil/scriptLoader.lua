@@ -76,6 +76,7 @@ DScriptLoader.Interfaces = setmetatable({},
 
 ---@type table<string, function>
 local sandboxLoaded = {}
+local PathSeparator = tes3mp.GetOperatingSystemType() == 'Windows' and '\\' or '/'
 
 --- Small shim for overriding require statements in curated script environment
 ---@param scriptName string
@@ -101,12 +102,7 @@ function DScriptLoader.requireShim(scriptName)
     local ok, chunk, err = false, nil, nil
 
     for _, prefix in ipairs { 'server/scripts', 'lib/', 'lib/lua', } do
-      local checkPath = ('%s%s.lua'):format(prefix, scriptName)
-      if tes3mp.GetOperatingSystemType() == 'Windows' then
-        checkPath = checkPath:gsub('.', '\\')
-      else
-        checkPath = checkPath:gsub('.', '/')
-      end
+      local checkPath = ('%s%s.lua'):format(prefix, scriptName:gsub('%.', PathSeparator))
 
       chunk, err = loadfile(checkPath)
 
