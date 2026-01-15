@@ -11,12 +11,13 @@ local logicHandler = require 'tes3mp.logicHandler'
 local miscUtil = require 'tes3mp.util.misc'
 local patterns = require 'patterns'
 local recordHelper = require 'tes3mp.util.record'
-local speechHelper = require 'tes3mp.util.speech'
 local tableHelper = require 'tes3mp.util.table'
 
 local I = require 'interfaces'
+
 ---@type MenuHelper
 local menuHelper = I.menuHelper
+local speechHelper = I.speechHelper
 
 ---@type DUtilModule
 local dUtil = require 'dUtil.init'
@@ -194,6 +195,13 @@ local function createRecord(pid, cmd)
 end
 
 ---@type CommandHandler
+local function getPos(pid, cmd)
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+    if not isValid or not targetPid then return invalidCommand(pid) end
+    logicHandler.PrintPlayerPosition(pid, targetPid)
+end
+
+---@type CommandHandler
 local function greenText(pid, cmd)
     local message = logicHandler.GetChatName(pid) .. ": " .. color.GreenText ..
         ">" .. tableHelper.concatenateFromIndex(cmd, 2) .. "\n"
@@ -312,6 +320,39 @@ local function joinTeam(pid, cmd)
     end
 
     tes3mp.SendMessage(pid, senderMessage, false)
+end
+
+---@type CommandHandler
+local function kick(pid, cmd)
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+    if not isValid or not targetPid then return end
+
+    local targetPlayer = Players[targetPid]
+    local targetIsMod, targetIsAdmin = dUtil.misc.getRanks(targetPid)
+    local _, callerIsAdmin = dUtil.misc.getRanks(targetPid)
+
+    if targetIsAdmin then
+        return tes3mp.SendMessage(
+            pid,
+            ('You cannot kick (%s): %s from the server as they are a server administrator.\n')
+            :format(targetPid, targetPlayer.accountName),
+            false
+        )
+    elseif targetIsMod and not callerIsAdmin then
+        return tes3mp.SendMessage(
+            pid,
+            ('You cannot kick (%s): %s from the server as they are a fellow moderator.\n')
+            :format(targetPid, targetPlayer.accountName),
+            false
+        )
+    end
+
+    targetPlayer:Kick()
+    tes3mp.SendMessage(
+        pid,
+        ('%s was kicked from the server by %s.\n'):format(targetPlayer.accountName, Players[pid].accountName),
+        true
+    )
 end
 
 ---@type CommandHandler
@@ -571,119 +612,6 @@ local function runStartup(pid, _)
 end
 
 ---@type CommandHandler
-local function setLogLevel(pid, cmd)
-    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
-    if not isValid or not targetPid then return end
-
-    ---@type string|integer
-    local logLevel = cmd[3]
-
-    local logLevNum = tonumber(logLevel)
-    if type(logLevNum) == 'number' then
-        logLevel = math.floor(logLevNum)
-    end
-
-    if logLevel ~= 'default' and type(logLevel) ~= 'number' then
-        return tes3mp.SendMessage(pid, 'Not a valid argument. Use /setloglevel <pid> <value>\n', false)
-    end
-
-    local player = Players[targetPid]
-    player:SetEnforcedLogLevel(logLevel)
-    player:LoadSettings()
-    tes3mp.SendMessage(
-        pid,
-        ('Enforced log level for %s is now %s\n'):format(player.name, logLevel),
-        true
-    )
-end
-
----@type CommandHandler
-local function setPlayerModel(pid, cmd)
-    local _, isAdmin = dUtil.misc.getRanks(pid)
-
-    if not isAdmin then
-        return tes3mp.SendMessage(pid, "You need to be an admin to run this command\n")
-    elseif not cmd[3] then
-        return tes3mp.SendMessage(pid, 'Invalid inputs! Use /setmodel <pid> "Model name"\n')
-    end
-
-    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
-    if not isValid then return end
-
-    local targetPlayer = Players[targetPid]
-
-    local inputConcatenation = tableHelper.concatenateFromIndex(cmd, 3)
-    local modelName = string.gsub(inputConcatenation, '"', '')
-
-    targetPlayer.data.character.modelOverride = modelName
-    targetPlayer:LoadCharacter()
-    targetPlayer:Message("Your model has been changed.\n")
-end
-
----@type CommandHandler
-local function storeRecord(pid, cmd)
-    if not cmd[2] or not cmd[3] then return end
-    recordHelper.storeRecord(pid, cmd)
-end
-
----@type CommandHandler
-local function setScale(pid, cmd)
-    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
-    if not isValid or not targetPid then return end
-
-    local scale = tonumber(cmd[3])
-
-    if type(scale) ~= 'number' then
-        return tes3mp.SendMessage(pid, 'Not a valid argument. Use /setscale <pid> <value>.\n', false)
-    end
-
-    local player = Players[targetPid]
-    player:SetScale(scale)
-    player:LoadShapeshift()
-
-    tes3mp.SendMessage(
-        pid,
-        ('Scale for %s is now %s\n'):format(player.name, scale),
-        false
-    )
-
-    if targetPid ~= pid then
-        tes3mp.SendMessage(targetPid, ('Your scale is now %s\n'):format(scale), false)
-    end
-end
-
----@type CommandHandler
-local function unban(pid, cmd)
-    if not dUtil.misc.getRanks(pid) or #cmd < 3 then
-        return invalidCommand(pid)
-    end
-
-    if cmd[2] == "ip" then
-        local ipAddress = cmd[3]
-
-        if tableHelper.containsValue(banList.ipAddresses, ipAddress) then
-            tableHelper.removeValue(banList.ipAddresses, ipAddress)
-            SaveBanList()
-
-            tes3mp.SendMessage(pid, ('%s is now unbanned.\n'):format(ipAddress), false)
-
-            if dUtil.misc.isValidIP(ipAddress) then
-                tes3mp.UnbanAddress(ipAddress)
-            else
-                tes3mp.SendMessage(pid, ('%s is not a valid IP Address! Cannot unban it!'):format(ipAddress))
-            end
-        else
-            tes3mp.SendMessage(pid, ('%s is not banned.\n'):format(ipAddress), false)
-        end
-    elseif cmd[2] == "name" or cmd[2] == "player" then
-        local targetName = tableHelper.concatenateFromIndex(cmd, 3)
-        logicHandler.UnbanPlayer(pid, targetName)
-    else
-        tes3mp.SendMessage(pid, 'Invalid input for unban.\n', false)
-    end
-end
-
----@type CommandHandler
 local function setAttribute(pid, cmd)
     local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
     if not isValid or not targetPid or #cmd < 4 then return end
@@ -752,6 +680,42 @@ local function setDay(pid, cmd)
     WorldInstance:QuicksaveToDrive()
     WorldInstance:LoadTime(pid, true)
 end
+
+---@type CommandHandler
+local function setDifficulty(pid, cmd)
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+    if not isValid or not targetPid or #cmd < 3 then return end
+
+    ---@type number|string|nil
+    local difficulty = tonumber(cmd[3])
+    if not difficulty then
+        if cmd[3] ~= 'default' then
+            return tes3mp.SendMessage(pid, 'Not a valid argument. Use /setdifficulty <pid> <value>\n', false)
+        end
+
+        difficulty = cmd[3]
+    end
+
+    local player = Players[targetPid]
+    player:SetDifficulty(difficulty)
+    player:LoadSettings()
+    tes3mp.SendMessage(
+        pid,
+        ('Difficulty for %s is now %s.\n'):format(player.name, difficulty),
+        true)
+end
+
+---@type CommandHandler
+local function setExterior(pid, cmd)
+    local xCoord, yCoord = tonumber(cmd[2]), tonumber(cmd[3])
+
+    if not xCoord or not yCoord then
+        return tes3mp.SendMessage(pid, 'Invalid input to setExt command! Usage: /setext <X> <Y>')
+    end
+
+    tes3mp.SetExteriorCell(pid, xCoord, yCoord)
+end
+
 ---@type CommandHandler
 local function setHair(pid, cmd)
     local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
@@ -779,6 +743,70 @@ local function setHead(pid, cmd)
 end
 
 ---@type CommandHandler
+local function setLogLevel(pid, cmd)
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+    if not isValid or not targetPid then return end
+
+    ---@type string|integer
+    local logLevel = cmd[3]
+
+    local logLevNum = tonumber(logLevel)
+    if type(logLevNum) == 'number' then
+        logLevel = math.floor(logLevNum)
+    end
+
+    if logLevel ~= 'default' and type(logLevel) ~= 'number' then
+        return tes3mp.SendMessage(pid, 'Not a valid argument. Use /setloglevel <pid> <value>\n', false)
+    end
+
+    local player = Players[targetPid]
+    player:SetEnforcedLogLevel(logLevel)
+    player:LoadSettings()
+    tes3mp.SendMessage(
+        pid,
+        ('Enforced log level for %s is now %s\n'):format(player.name, logLevel),
+        true
+    )
+end
+
+---@type CommandHandler
+local function setMomentum(pid, cmd)
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+    if not isValid or not targetPid then return end
+
+    local xValue, yValue, zValue = tonumber(cmd[3]), tonumber(cmd[4]), tonumber(cmd[5])
+    if not xValue or not yValue or not zValue then
+        return tes3mp.SendMessage(pid, 'Not a valid argument. Use /setmomentum <pid> <x> <y> <z>\n', false)
+    end
+
+    tes3mp.SetMomentum(targetPid, xValue, yValue, zValue)
+    tes3mp.SendMomentum(targetPid)
+end
+
+---@type CommandHandler
+local function setPlayerModel(pid, cmd)
+    local _, isAdmin = dUtil.misc.getRanks(pid)
+
+    if not isAdmin then
+        return tes3mp.SendMessage(pid, "You need to be an admin to run this command\n")
+    elseif not cmd[3] then
+        return tes3mp.SendMessage(pid, 'Invalid inputs! Use /setmodel <pid> "Model name"\n')
+    end
+
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+    if not isValid then return end
+
+    local targetPlayer = Players[targetPid]
+
+    local inputConcatenation = tableHelper.concatenateFromIndex(cmd, 3)
+    local modelName = string.gsub(inputConcatenation, '"', '')
+
+    targetPlayer.data.character.modelOverride = modelName
+    targetPlayer:LoadCharacter()
+    targetPlayer:Message("Your model has been changed.\n")
+end
+
+---@type CommandHandler
 local function setMonth(pid, cmd)
     local inputValue = tonumber(cmd[2])
 
@@ -800,6 +828,32 @@ local function setRace(pid, cmd)
     tes3mp.SetRace(targetPid, newRace)
     tes3mp.SetResetStats(targetPid, false)
     tes3mp.SendBaseInfo(targetPid)
+end
+
+---@type CommandHandler
+local function setScale(pid, cmd)
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+    if not isValid or not targetPid then return end
+
+    local scale = tonumber(cmd[3])
+
+    if type(scale) ~= 'number' then
+        return tes3mp.SendMessage(pid, 'Not a valid argument. Use /setscale <pid> <value>.\n', false)
+    end
+
+    local player = Players[targetPid]
+    player:SetScale(scale)
+    player:LoadShapeshift()
+
+    tes3mp.SendMessage(
+        pid,
+        ('Scale for %s is now %s\n'):format(player.name, scale),
+        false
+    )
+
+    if targetPid ~= pid then
+        tes3mp.SendMessage(targetPid, ('Your scale is now %s\n'):format(scale), false)
+    end
 end
 
 ---@type CommandHandler
@@ -855,6 +909,12 @@ local function setWerewolf(pid, cmd)
 end
 
 ---@type CommandHandler
+local function storeRecord(pid, cmd)
+    if not cmd[2] or not cmd[3] then return end
+    recordHelper.storeRecord(pid, cmd)
+end
+
+---@type CommandHandler
 local function teleport(pid, cmd)
     if cmd[2] == "all" then
         for iteratorPid, player in pairs(Players) do
@@ -875,37 +935,36 @@ local function teleportTo(pid, cmd)
 end
 
 ---@type CommandHandler
-local function kick(pid, cmd)
-    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
-    if not isValid or not targetPid then return end
-
-    local targetPlayer = Players[targetPid]
-    local targetIsMod, targetIsAdmin = dUtil.misc.getRanks(targetPid)
-    local _, callerIsAdmin = dUtil.misc.getRanks(targetPid)
-
-    if targetIsAdmin then
-        return tes3mp.SendMessage(
-            pid,
-            ('You cannot kick (%s): %s from the server as they are a server administrator.\n')
-            :format(targetPid, targetPlayer.accountName),
-            false
-        )
-    elseif targetIsMod and not callerIsAdmin then
-        return tes3mp.SendMessage(
-            pid,
-            ('You cannot kick (%s): %s from the server as they are a fellow moderator.\n')
-            :format(targetPid, targetPlayer.accountName),
-            false
-        )
+local function unban(pid, cmd)
+    if not dUtil.misc.getRanks(pid) or #cmd < 3 then
+        return invalidCommand(pid)
     end
 
-    targetPlayer:Kick()
-    tes3mp.SendMessage(
-        pid,
-        ('%s was kicked from the server by %s.\n'):format(targetPlayer.accountName, Players[pid].accountName),
-        true
-    )
+    if cmd[2] == "ip" then
+        local ipAddress = cmd[3]
+
+        if tableHelper.containsValue(banList.ipAddresses, ipAddress) then
+            tableHelper.removeValue(banList.ipAddresses, ipAddress)
+            SaveBanList()
+
+            tes3mp.SendMessage(pid, ('%s is now unbanned.\n'):format(ipAddress), false)
+
+            if dUtil.misc.isValidIP(ipAddress) then
+                tes3mp.UnbanAddress(ipAddress)
+            else
+                tes3mp.SendMessage(pid, ('%s is not a valid IP Address! Cannot unban it!'):format(ipAddress))
+            end
+        else
+            tes3mp.SendMessage(pid, ('%s is not banned.\n'):format(ipAddress), false)
+        end
+    elseif cmd[2] == "name" or cmd[2] == "player" then
+        local targetName = tableHelper.concatenateFromIndex(cmd, 3)
+        logicHandler.UnbanPlayer(pid, targetName)
+    else
+        tes3mp.SendMessage(pid, 'Invalid input for unban.\n', false)
+    end
 end
+
 
 ---@type TES3MPScriptRegistration
 return {
@@ -929,6 +988,7 @@ return {
         cells = { callback = cells, },
         craft = { callback = craft, },
         createRecord = { callback = createRecord, rankRequirement = enumerations.staffRank.ADMIN, },
+        getPos = { callback = getPos, rankRequirement = enumerations.staffRank.MODERATOR, },
         greentext = { callback = greenText, },
         invite = { callback = inviteAlly, },
         ipaddresses = { callback = ipaddresses, },
@@ -952,11 +1012,15 @@ return {
         setAttribute = { callback = setAttribute, rankRequirement = enumerations.staffRank.MODERATOR, },
         setauthority = { callback = setAuthority, rankRequirement = enumerations.staffRank.MODERATOR, },
         setday = { callback = setDay, rankRequirement = enumerations.staffRank.MODERATOR, },
+        setDifficulty = { callback = setDifficulty, rankRequirement = enumerations.staffRank.ADMIN, },
         setEnforcedLogLevel = { callback = setLogLevel, rankRequirement = enumerations.staffRank.ADMIN, },
+        setExt = { callback = setExterior, rankRequirement = enumerations.staffRank.ADMIN, },
+        setExterior = { callback = setExterior, rankRequirement = enumerations.staffRank.ADMIN, },
         sethair = { callback = setHair, rankRequirement = enumerations.staffRank.ADMIN, },
         sethead = { callback = setHead, rankRequirement = enumerations.staffRank.ADMIN, },
         setLogLevel = { callback = setLogLevel, rankRequirement = enumerations.staffRank.ADMIN, },
         setmodel = { callback = setPlayerModel, },
+        setMomentum = { callback = setMomentum, rankRequirement = enumerations.staffRank.MODERATOR, },
         setmonth = { callback = setMonth, rankRequirement = enumerations.staffRank.MODERATOR, },
         setrace = { callback = setRace, rankRequirement = enumerations.staffRank.ADMIN, },
         setScale = { callback = setScale, rankRequirement = enumerations.staffRank.ADMIN, },

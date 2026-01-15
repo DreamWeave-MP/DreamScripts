@@ -2,45 +2,7 @@
 local commandHandler = {}
 
 function commandHandler.ProcessCommand(pid, cmd)
-    if cmd[1] == 'setmomentum' and moderator then
-        if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-            local targetPid = tonumber(cmd[2])
-            local xValue = tonumber(cmd[3])
-            local yValue = tonumber(cmd[4])
-            local zValue = tonumber(cmd[5])
-
-            if type(xValue) == 'number' and type(yValue) == 'number' and
-                type(zValue) == 'number' then
-                tes3mp.SetMomentum(targetPid, xValue, yValue, zValue)
-                tes3mp.SendMomentum(targetPid)
-            else
-                tes3mp.SendMessage(pid, 'Not a valid argument. Use /setmomentum <pid> <x> <y> <z>\n', false)
-            end
-        end
-    elseif cmd[1] == 'setext' and admin then
-        tes3mp.SetExterior(pid, cmd[2], cmd[3])
-    elseif cmd[1] == 'getpos' and moderator then
-        logicHandler.PrintPlayerPosition(pid, cmd[2])
-    elseif (cmd[1] == 'setdifficulty' or cmd[1] == 'setdiff') and admin then
-        if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
-            local targetPid = tonumber(cmd[2])
-            local difficulty = cmd[3]
-
-            if type(tonumber(difficulty)) == 'number' then
-                difficulty = tonumber(difficulty)
-            end
-
-            if difficulty == 'default' or type(difficulty) == 'number' then
-                Players[targetPid]:SetDifficulty(difficulty)
-                Players[targetPid]:LoadSettings()
-                tes3mp.SendMessage(pid, 'Difficulty for ' .. Players[targetPid].name .. ' is now ' ..
-                    difficulty .. '\n', true)
-            else
-                tes3mp.SendMessage(pid, 'Not a valid argument. Use /setdifficulty <pid> <value>\n', false)
-                return false
-            end
-        end
-    elseif cmd[1] == 'setconsole' and admin then
+    if cmd[1] == 'setconsole' and admin then
         if logicHandler.CheckPlayerValidity(pid, cmd[2]) then
             local targetPid = tonumber(cmd[2])
             local targetName = ''
