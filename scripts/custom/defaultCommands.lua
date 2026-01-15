@@ -518,6 +518,37 @@ local function resetCell(pid, cmd)
     logicHandler.ResetCell(pid, cellDescription)
 end
 
+--- Set all currently recorded kills to 0 for connected players
+---@type CommandHandler
+local function resetKillsShared(pid, cmd)
+    if not config.shareKills then return end
+
+    for refId in pairs(WorldInstance.data.kills) do
+        WorldInstance.data.kills[refId] = 0
+    end
+
+    WorldInstance:QuicksaveToDrive()
+    WorldInstance:LoadKills(pid, true)
+    tes3mp.SendMessage(pid, 'All the kill counts for creatures and NPCs have been reset.\n', true)
+end
+
+--- Set all currently recorded kills to 0 for the caller only
+---@type CommandHandler
+local function resetKillsUnshared(pid, cmd)
+    if config.shareKills then return end
+    local player = Players[pid]
+    player.data.kills = player.data.kills or {}
+
+    -- Set all currently recorded kills to 0 for the called
+    for refId in pairs(player.data.kills) do
+        player.data.kills[refId] = 0
+    end
+
+    player:QuicksaveToDrive()
+    player:LoadKills(pid, false)
+    tes3mp.SendMessage(pid, 'All the kill counts for creatures and NPCs have been reset.\n', false)
+end
+
 ---@type CommandHandler
 local function runStartup(pid, _)
     local _, isAdmin = dUtil.misc.getRanks(pid)
@@ -856,7 +887,9 @@ return {
         regions = { callback = regions, },
         resetcell = { callback = resetCell, },
         removeAdmin = { callback = removeAdmin, rankRequirement = enumerations.staffRank.OWNER, },
+        resetKills = { callback = resetKillsShared, rankRequirement = enumerations.staffRank.MODERATOR, },
         removeModerator = { callback = removeModerator, rankRequirement = enumerations.staffRank.ADMIN, },
+        resetMyKills = { callback = resetKillsUnshared, rankRequirement = enumerations.staffRank.MODERATOR, },
         runstartup = { callback = runStartup, },
         setauthority = { callback = setAuthority, rankRequirement = enumerations.staffRank.MODERATOR, },
         setday = { callback = setDay, rankRequirement = enumerations.staffRank.MODERATOR, },
