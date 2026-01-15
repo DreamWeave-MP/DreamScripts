@@ -80,7 +80,7 @@ DScriptLoader.Interfaces = setmetatable({},
 function DScriptLoader.requireShim(scriptName)
   assert(scriptName and type(scriptName) == 'string')
 
-  scriptName = DScriptLoader.sanitizePath(scriptName):gsub('[\\/', '.')
+  scriptName = DScriptLoader.sanitizePath(scriptName):gsub('[\\/]', '.')
 
   if scriptName == 'interfaces' then
     return DScriptLoader.Interfaces
