@@ -80,6 +80,12 @@ DScriptLoader.Interfaces = setmetatable({},
 function DScriptLoader.requireShim(scriptName)
   assert(scriptName and type(scriptName) == 'string')
 
+  tes3mp.LogAppend(
+    enumerations.log.WARN,
+    ('Hi! I\'m the require shim! Someone is importing: %s')
+    :format(scriptName)
+  )
+
   scriptName = scriptName:gsub('[\\/]', '.')
 
   if scriptName == 'interfaces' then
