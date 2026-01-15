@@ -1,8 +1,8 @@
 local config = require 'tes3mp.config'
 local dkjson = require 'dkjson'
 local enumerations = require 'tes3mp.enumerations'
-local miscUtil = require 'tes3mp.util.misc'
-local cjsonExists, cjson = miscUtil.doesModuleExist 'cjson'
+
+local cjsonExists, cjson = pcall(require, 'cjson')
 
 local LocalDataPath = tes3mp.GetDataPath()
 
