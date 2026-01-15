@@ -158,18 +158,18 @@ function customCommandHooks:removeNameRequirement(cmd)
     command.nameRequirement = nil
 end
 
----@param _ table<string, boolean> eventStatus table
+---@param eventStatus EventStatusTable
 ---@param pid PlayerId
 ---@param message string
----@return EventStatusTable? eventStatus if false, breaks the eventValidator chain for this event
-function customCommandHooks.validator(_, pid, message)
-    if message:sub(1, 1) ~= '/' then return end
+---@return EventStatusTable eventStatus if false, breaks the eventValidator chain for this event
+function customCommandHooks.validator(eventStatus, pid, message)
+    if message:sub(1, 1) ~= '/' then return eventStatus end
 
     ---@type CommandTokens
     local cmd = (message:sub(2, #message)):split(" ")
 
     local command = customCommandHooks:getCommand(cmd[1])
-    if not command then return end
+    if not command then return eventStatus end
 
     if not command.callback or type(command.callback) ~= 'function' then
         tes3mp.LogAppend(
@@ -189,8 +189,10 @@ function customCommandHooks.validator(_, pid, message)
 
     if commandNotAuthenticated or allowedByName or allowedByRank then
         command.callback(pid, cmd)
-        return dUtil.misc.makeEventStatus(false, false)
+        eventStatus.validDefaultHandler = false
     end
+
+    return eventStatus
 end
 
 ---@type TES3MPScriptRegistration
