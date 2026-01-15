@@ -122,6 +122,7 @@ function DScriptLoader.getScriptEnv()
       loadScript = DScriptLoader.loadScript,
       loadAllScripts = DScriptLoader.loadAllScripts,
     },
+    I = DScriptLoader.Interfaces,
     --- TES3MP Globals
     banList = banList,
     HourCounter = HourCounter,
