@@ -110,6 +110,7 @@ function DScriptLoader.getScriptEnv()
     tonumber = tonumber,
     tostring = tostring,
     type = type,
+    unpack = unpack,
     ---@class DScriptLoaderHidden
     scriptLoader = {
       loadScript = DScriptLoader.loadScript,
