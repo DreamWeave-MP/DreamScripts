@@ -105,7 +105,7 @@ function DScriptLoader.requireShim(scriptName)
         enumerations.log.FATAL,
         ('Failed to load script %s due to error %s. Aborting!'):format(scriptName, err)
       )
-      tes3mp.StopServer(18)
+      return tes3mp.StopServer(18)
     end
 
     tes3mp.LogAppend(enumerations.log.WARN, ('Setting env for %s'):format(scriptName))
