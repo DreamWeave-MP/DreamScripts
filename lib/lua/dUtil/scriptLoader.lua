@@ -253,8 +253,6 @@ function DScriptLoader.loadScriptHandlers(scriptPath, scriptRegistration)
     )
   end
 
-  customEventHooks.clearEventsFromScript(scriptPath)
-
   if scriptRegistration.eventHandlers and type(scriptRegistration.eventHandlers) ~= 'table' then
     tes3mp.LogAppend(
       enumerations.log.ERROR,
@@ -327,23 +325,8 @@ function DScriptLoader.loadScript(scriptName, callerPid)
     end
   end
 
-  local customEventHooks = Interfaces.customEventHooks
-  if customEventHooks then
-    if customEventHooks.validators then
-      for _, eventValidatorsArray in pairs(customEventHooks.validators) do
-        for i = #eventValidatorsArray, 1, -1 do
-          if customEventHooks.validators[i].definedBy == scriptPath then customEventHooks.validators[i] = nil end
-        end
-      end
-    end
-
-    if customEventHooks.handlers then
-      for _, eventHandlersArray in pairs(customEventHooks.handlers) do
-        for i = #eventHandlersArray, 1, -1 do
-          if customEventHooks.handlers[i].definedBy == scriptPath then customEventHooks.handlers[i] = nil end
-        end
-      end
-    end
+  if Interfaces.customEventHooks then
+    Interfaces.customEventHooks.clearEventsFromScript(scriptPath)
   end
 
   tes3mp.LogAppend(enumerations.log.INFO, ('Attempting to load custom script from path: %s'):format(scriptPath))
