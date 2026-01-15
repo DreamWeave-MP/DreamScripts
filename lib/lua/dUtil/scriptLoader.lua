@@ -97,7 +97,11 @@ function DScriptLoader.requireShim(scriptName)
     return sandboxLoaded[scriptName]
   else
     local chunk, err = loadfile()
-    if not chunk then return nil, err end
+    if not chunk then
+      tes3mp.LogAppend(enumerations.log.FATAL, 'OHHHHH SHIT FUCK NOOOO')
+      tes3mp.StopServer(42)
+      -- return nil, err
+    end
 
     setfenv(chunk, getfenv(2))
 
