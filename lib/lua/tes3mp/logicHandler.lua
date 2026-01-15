@@ -1,5 +1,5 @@
-assert(LoadedCells ~= nil, 'logicHandler does not have LoadedCells table in scope!')
-assert(Players ~= nil, 'logicHandler does not have Players table in scope!')
+-- assert(LoadedCells ~= nil, 'logicHandler does not have LoadedCells table in scope!')
+-- assert(Players ~= nil, 'logicHandler does not have Players table in scope!')
 
 local clientVariableScopes = require 'tes3mp.clientVariableScopes'
 local config = require 'tes3mp.config'
@@ -375,7 +375,6 @@ logicHandler.SendClientScriptSettings = function(pid, forEveryone)
 
     tes3mp.ClearSynchronizedClientGlobalIds()
 
-    tableHelper.print(clientVariableScopes)
     for _, variableCategory in pairs({ "personal", "quest", "kills", "factionRanks",
         "factionExpulsion", "worldwide" }) do
         for _, globalId in pairs(clientVariableScopes.globals[variableCategory]) do
