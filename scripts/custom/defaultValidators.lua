@@ -35,6 +35,7 @@ return {
       print('Number of Players: ', tableHelper.getCount(Players))
       tableHelper.print(Players)
       tableHelper.print({ ... })
+      print(Players[pid].consoleCommandsQueued)
       local hasConsoleCommandQueued = tableHelper.containsValue(Players[pid].consoleCommandsQueued, consoleCommand)
 
       if not logicHandler.IsPlayerAllowedConsole(pid) and not hasConsoleCommandQueued then
