@@ -1,3 +1,5 @@
+local enumerations = require 'tes3mp.enumerations'
+
 ---@class EventHandler
 ---@field definedBy string Path of the script which defined this particular event
 ---@field callback function
@@ -111,7 +113,11 @@ function customEventHooks.triggerValidators(event, args)
     local eventValidators = customEventHooks.validators[event]
 
     if eventValidators then
-        for _, eventHandlerData in ipairs(eventValidators) do
+        for i, eventHandlerData in ipairs(eventValidators) do
+            tes3mp.LogAppend(enumerations.log.WARN,
+                ('Triggering validator %d for event %s from script %s')
+                :format(i, event, eventHandlerData.definedBy)
+            )
             eventStatus = customEventHooks.updateEventStatus(
                 eventStatus,
                 eventHandlerData.callback(eventStatus, unpack(args))
@@ -131,7 +137,11 @@ function customEventHooks.triggerHandlers(event, eventStatus, args)
     if not eventHandlers then return end
 
 
-    for _, eventHandlerData in ipairs(eventHandlers) do
+    for i, eventHandlerData in ipairs(eventHandlers) do
+        tes3mp.LogAppend(enumerations.log.WARN,
+            ('Triggering handler %d for event %s from script %s')
+            :format(i, event, eventHandlerData.definedBy)
+        )
         eventStatus = customEventHooks.updateEventStatus(
             eventStatus,
             eventHandlerData.callback(eventStatus, unpack(args))
