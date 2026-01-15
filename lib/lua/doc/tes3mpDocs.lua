@@ -1,5 +1,19 @@
 ---@meta
 
+---@alias MWGender 0|1 0 indicates female, 1 is male
+
+---@alias MWRace
+---| 'argonian'
+---| 'breton'
+---| 'dark elf'
+---| 'high elf'
+---| 'imperial'
+---| 'khajiit'
+---| 'nord'
+---| 'orc'
+---| 'redguard'
+---| 'wood elf'
+
 ---@alias CellDescription string Name of a cell as defined by content files
 ---@alias CommandTokens string[] pre-tokenized command string provided to all commandHandlers. The first value is always the name of the command entered, including the leading slash.
 ---@alias CommandHandler fun(pid: PlayerId, cmd: CommandTokens) Special function type for handling chat commands
