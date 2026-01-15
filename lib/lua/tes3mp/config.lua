@@ -35,8 +35,8 @@ config.customScripts = {
     -- 'menu.defaultCrafting',
     -- 'menu.advancedExample',
     --- Custom scripts may be added here
-    'dreamDice/main',
     'customMerchantRestock',
+    'dreamDice/main',
 }
 
 --- The game mode displayed for this server in the server browser

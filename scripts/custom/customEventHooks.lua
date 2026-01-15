@@ -64,7 +64,7 @@ function customEventHooks.clearEventsFromScript(scriptPath)
     for _, handlersTable in ipairs { customEventHooks.handlers, customEventHooks.validators, } do
         for _, eventRegistrations in pairs(handlersTable) do
             for eventIndex = #eventRegistrations, 1, -1 do
-                if eventRegistrations[eventIndex].definedBy:lower() == lowercasePath then
+                if eventRegistrations[eventIndex].definedBy == lowercasePath then
                     eventRegistrations[eventIndex] = nil
                 end
             end
@@ -85,7 +85,7 @@ function customEventHooks.registerValidator(event, validator)
         if eventValidators[i].definedBy == validator.definedBy then eventValidators[i] = nil end
     end
 
-    customEventHooks.validators[event][#customEventHooks.validators + 1] = validator
+    eventValidators[#eventValidators + 1] = validator
 end
 
 ---@param event string
@@ -101,7 +101,7 @@ function customEventHooks.registerHandler(event, handler)
         if eventHandlers[i].definedBy == handler.definedBy then eventHandlers[i] = nil end
     end
 
-    customEventHooks.handlers[event][#customEventHooks.handlers + 1] = handler
+    eventHandlers[#eventHandlers + 1] = handler
 end
 
 ---@param fn function
