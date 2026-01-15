@@ -2453,8 +2453,7 @@ function OnGUIAction(pid, idGui, data)
             if idGui == guiHelper.ID.LOGIN then
                 if not data then
                     player:Message("Incorrect password!\n")
-                    guiHelper.ShowLogin(pid)
-                    return
+                    return guiHelper.ShowLogin(pid)
                 end
 
                 player:LoadFromDrive()
@@ -2462,8 +2461,7 @@ function OnGUIAction(pid, idGui, data)
 
                 if player.data.login.passwordHash ~= tes3mp.GetSHA256Hash(data .. passwordSalt) then
                     player:Message('Incorrect password!\n')
-                    guiHelper.ShowLogin(pid)
-                    return
+                    return guiHelper.ShowLogin(pid)
                 end
 
                 -- Is this player on the banlist? If so, store their new IP and ban them
@@ -2472,31 +2470,29 @@ function OnGUIAction(pid, idGui, data)
 
                     player:Message(('%s is banned from this server.\n'):format(player.accountName))
                     tes3mp.BanAddress(tes3mp.GetIP(pid))
-                else
-                    if player:FinishLogin() then
-                        if CustomEventHooks then
-                            CustomEventHooks.triggerHandlers(
-                                'OnPlayerFinishLogin',
-                                dUtil.misc.makeEventStatus(),
-                                { player.pid }
-                            )
+                elseif player:FinishLogin() then
+                    if CustomEventHooks then
+                        CustomEventHooks.triggerHandlers(
+                            'OnPlayerFinishLogin',
+                            dUtil.misc.makeEventStatus(),
+                            { player.pid }
+                        )
 
-                            CustomEventHooks.triggerHandlers(
-                                'OnPlayerAuthentified',
-                                dUtil.misc.makeEventStatus(),
-                                { player.pid }
-                            )
-                        end
-
-                        player:Message(('You have successfully logged in.\n%s'):format(config.chatWindowInstructions))
-
-                        if not WorldInstance:HasRunStartupScripts() then
-                            player:Message(config.startupScriptsInstructions)
-                        end
-                    else
-                        tes3mp.LogAppend(enumerations.log.WARN, ('Login failed for playerId: %s'):format(pid))
-                        tes3mp.Kick(pid)
+                        CustomEventHooks.triggerHandlers(
+                            'OnPlayerAuthentified',
+                            dUtil.misc.makeEventStatus(),
+                            { player.pid }
+                        )
                     end
+
+                    player:Message(('You have successfully logged in.\n%s'):format(config.chatWindowInstructions))
+
+                    if not WorldInstance:HasRunStartupScripts() then
+                        player:Message(config.startupScriptsInstructions)
+                    end
+                else
+                    tes3mp.LogAppend(enumerations.log.WARN, ('Login failed for playerId: %s'):format(pid))
+                    tes3mp.Kick(pid)
                 end
             elseif idGui == guiHelper.ID.REGISTER then
                 if player:HasAccount() then
