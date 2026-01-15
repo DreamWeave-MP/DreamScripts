@@ -150,6 +150,7 @@ function DScriptLoader.getScriptEnv()
     tostring = tostring,
     type = type,
     unpack = unpack,
+    xpcall = xpcall,
     ---@class DScriptLoaderHidden
     scriptLoader = {
       loadScript = DScriptLoader.loadScript,
