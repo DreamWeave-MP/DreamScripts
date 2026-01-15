@@ -209,6 +209,7 @@ function customCommandHooks.validator(eventStatus, pid, message)
     local allowedByRank = command.rankRequirement and Players[pid].data.settings.staffRank >= command.rankRequirement
 
     if commandNotAuthenticated or allowedByName or allowedByRank then
+        cmd[1] = cmd[1]:lower()
         command.callback(pid, cmd)
         eventStatus.validDefaultHandler = false
     end
