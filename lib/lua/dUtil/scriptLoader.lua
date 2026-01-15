@@ -102,6 +102,9 @@ function DScriptLoader.getScriptEnv()
       loadScript = DScriptLoader.loadScript,
       loadAllScripts = DScriptLoader.loadAllScripts,
     },
+    menu = {
+      display = Deps.menuHelper.DisplayMenu,
+    },
     --- TES3MP Globals
     banList = banList,
     HourCounter = HourCounter,
@@ -295,7 +298,7 @@ function DScriptLoader.loadScript(scriptName, callerPid)
   local customEventHooks = Interfaces.customEventHooks
   if customEventHooks then
     if customEventHooks.validators then
-      for eventName, eventValidatorsArray in pairs(customEventHooks.validators) do
+      for _, eventValidatorsArray in pairs(customEventHooks.validators) do
         for i = #eventValidatorsArray, 1, -1 do
           if customEventHooks.validators[i].definedBy == scriptPath then customEventHooks.validators[i] = nil end
         end
@@ -303,7 +306,7 @@ function DScriptLoader.loadScript(scriptName, callerPid)
     end
 
     if customEventHooks.handlers then
-      for eventName, eventHandlersArray in pairs(customEventHooks.handlers) do
+      for _, eventHandlersArray in pairs(customEventHooks.handlers) do
         for i = #eventHandlersArray, 1, -1 do
           if customEventHooks.handlers[i].definedBy == scriptPath then customEventHooks.handlers[i] = nil end
         end
