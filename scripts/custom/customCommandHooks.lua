@@ -130,9 +130,9 @@ function customCommandHooks:addNameRequirement(cmd, name)
         )
     end
 
-    if not command.nameRequirement then command.nameRequirement = {} end
+    command.nameRequirement = command.nameRequirement or {}
 
-    if tableHelper.containsValue(name) then
+    if tableHelper.containsValue(command.nameRequirement, name) then
         return tes3mp.LogAppend(
             enumerations.log.WARN,
             ('%s is already on the name requirements list for the command %s!')
