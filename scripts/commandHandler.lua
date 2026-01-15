@@ -1,14 +1,3 @@
-local animHelper = require 'animHelper'
-local color = require 'color'
-local dataTableBuilder = require 'dataTableBuilder'
-local enumerations = require 'tes3mp.enumerations'
-local guiHelper = require 'tes3mp.util.gui'
-local logicHandler = require 'tes3mp.logicHandler'
-local miscUtil = require 'tes3mp.util.misc'
-local recordHelper = require 'tes3mp.util.record'
-local speechHelper = require 'tes3mp.util.speech'
-local tableHelper = require 'tes3mp.util.table'
-
 ---@class CommandHandler
 local commandHandler = {}
 
@@ -749,10 +738,6 @@ function commandHandler.ProcessCommand(pid, cmd)
                 end
             end
         end
-    elseif cmd[1] == 'storerecord' and cmd[2] ~= nil and cmd[3] ~= nil and admin then
-        recordHelper.storeRecord(pid, cmd)
-    elseif cmd[1] == 'createrecord' and cmd[2] ~= nil and admin then
-        recordHelper.createRecord(pid, cmd)
     elseif cmd[1] == 'help' then
         -- Check 'scripts/menu/help.lua' if you want to change the contents of the help menus
         Players[pid].currentCustomMenu = 'help player'
@@ -765,9 +750,6 @@ function commandHandler.ProcessCommand(pid, cmd)
         -- Check 'scripts/menu/advancedExample.lua' if you want to change the advanced menu example
         Players[pid].currentCustomMenu = 'advanced example origin'
         menuHelper.DisplayMenu(pid, Players[pid].currentCustomMenu)
-    else
-        local message = 'Not a valid command. Type /help for more info.\n'
-        tes3mp.SendMessage(pid, color.Error .. message .. color.Default, false)
     end
 end
 

@@ -1,13 +1,22 @@
 ---@type DreamWeaveScriptEnv
 _ENV = _ENV
 
+local animHelper = require 'animHelper'
 local color = require 'color'
 local config = require 'tes3mp.config'
+local dataTableBuilder = require 'dataTableBuilder'
 local enumerations = require 'tes3mp.enumerations'
 local guiHelper = require 'tes3mp.util.gui'
 local logicHandler = require 'tes3mp.logicHandler'
+local miscUtil = require 'tes3mp.util.misc'
 local patterns = require 'patterns'
+local recordHelper = require 'tes3mp.util.record'
+local speechHelper = require 'tes3mp.util.speech'
 local tableHelper = require 'tes3mp.util.table'
+
+local I = require 'interfaces'
+---@type MenuHelper
+local menuHelper = I.menuHelper
 
 ---@type DUtilModule
 local dUtil = require 'dUtil.init'
@@ -57,6 +66,18 @@ local function addModerator(pid, cmd)
     tes3mp.SendMessage(pid, ('%s was promoted to Moderator!\n'):format(targetPlayer.name), true)
     targetPlayer.data.settings.staffRank = 1
     targetPlayer:QuicksaveToDrive()
+end
+
+--- Check 'scripts/menu/advancedExample.lua' if you want to change the advanced menu example
+---@type CommandHandler
+local function advancedExample(pid, cmd)
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+    if not isValid or not targetPid then return end
+
+    local player = Players[targetPid]
+
+    player.currentCustomMenu = 'advanced example origin'
+    menuHelper.DisplayMenu(pid, player.currentCustomMenu)
 end
 
 ---@type CommandHandler
@@ -154,6 +175,24 @@ local function cells(pid, _)
     guiHelper.ShowCellList(pid)
 end
 
+--- Check 'scripts/menu/defaultCrafting.lua' if you want to change the example craft menu
+---@type CommandHandler
+local function craft(pid, cmd)
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cmd[2])
+    if not isValid or not targetPid then return end
+
+    local player = Players[targetPid]
+
+    player.currentCustomMenu = 'default crafting origin'
+    menuHelper.DisplayMenu(pid, player.currentCustomMenu)
+end
+
+---@type CommandHandler
+local function createRecord(pid, cmd)
+    if not cmd[2] then return end
+    recordHelper.createRecord(pid, cmd)
+end
+
 ---@type CommandHandler
 local function greenText(pid, cmd)
     local message = logicHandler.GetChatName(pid) .. ": " .. color.GreenText ..
@@ -191,6 +230,18 @@ local function inviteAlly(pid, cmd)
     end
 
     tes3mp.SendMessage(pid, senderMessage, false)
+end
+
+--- Check 'scripts/menu/help.lua' if you want to change the contents of the help menus
+---@type CommandHandler
+local function help(pid, cmd)
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
+    if not isValid or not targetPid then return end
+
+    local player = Players[pid]
+
+    player.currentCustomMenu = 'help player'
+    menuHelper.DisplayMenu(pid, player.currentCustomMenu)
 end
 
 ---@type CommandHandler
@@ -512,6 +563,12 @@ local function setPlayerModel(pid, cmd)
 end
 
 ---@type CommandHandler
+local function storeRecord(pid, cmd)
+    if not cmd[2] or not cmd[3] then return end
+    recordHelper.storeRecord(pid, cmd)
+end
+
+---@type CommandHandler
 local function unban(pid, cmd)
     if not dUtil.misc.getRanks(pid) or #cmd < 3 then
         return invalidCommand(pid)
@@ -700,13 +757,18 @@ return {
         -- Long commands
         addAdmin = { callback = addAdmin, rankRequirement = enumerations.staffRank.ADMIN, },
         addModerator = { callback = addModerator, rankRequirement = enumerations.staffRank.ADMIN, },
+        advex = { callback = advancedExample, },
+        advancedExample = { callback = advancedExample, },
         ban = { callback = ban, },
         banlist = { callback = banlist, },
         cells = { callback = cells, },
+        craft = { callback = craft, },
+        createRecord = { callback = createRecord, rankRequirement = enumerations.staffRank.ADMIN, },
         greentext = { callback = greenText, },
         invite = { callback = inviteAlly, },
         ipaddresses = { callback = ipaddresses, },
         localMessage = { callback = localMessage, },
+        help = { callback = help, },
         join = { callback = joinTeam, },
         kick = { callback = kick, rankRequirement = enumerations.staffRank.MODERATOR, },
         leave = { callback = leaveTeam, },
@@ -727,6 +789,7 @@ return {
         setmodel = { callback = setPlayerModel, },
         setmonth = { callback = setMonth, rankRequirement = enumerations.staffRank.MODERATOR, },
         setrace = { callback = setRace, rankRequirement = enumerations.staffRank.ADMIN, },
+        storeRecord = { callback = storeRecord, rankRequirement = enumerations.staffRank.ADMIN, },
         teleport = { callback = teleport, rankRequirement = enumerations.staffRank.MODERATOR, },
         teleportto = { callback = teleportTo, rankRequirement = enumerations.staffRank.MODERATOR, },
         unban = { callback = unban, },
