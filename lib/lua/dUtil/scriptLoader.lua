@@ -243,7 +243,11 @@ function DScriptLoader.loadScriptHandlers(scriptPath, scriptRegistration)
       ('%s tried to define eventHandlers or eventValidators, but was loaded before customEventHooks. Sorry!'):format(
         scriptPath)
     )
-  elseif scriptRegistration.eventHandlers and type(scriptRegistration.eventHandlers) ~= 'table' then
+  end
+
+  customEventHooks.clearEventsFromScript(scriptPath)
+
+  if scriptRegistration.eventHandlers and type(scriptRegistration.eventHandlers) ~= 'table' then
     tes3mp.LogAppend(
       enumerations.log.ERROR,
       ('Script %s defined eventHandlers which were not a table: %s\nTerminating server. Oops!'):format(scriptPath,

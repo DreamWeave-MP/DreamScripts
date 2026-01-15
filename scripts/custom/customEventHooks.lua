@@ -51,6 +51,24 @@ function customEventHooks.updateEventStatus(oldStatus, newStatus)
     return result
 end
 
+--- Given a script path, removes all validators and handlers this script defined.
+--- Used by the scriptLoader when (re)loading a script.
+---@param scriptPath string
+function customEventHooks.clearEventsFromScript(scriptPath)
+    assert(scriptPath and type(scriptPath) == 'string', 'Invalid input to customEventHooks.clearEventsFromScript!')
+
+    local lowercasePath = scriptPath:lower()
+    for _, handlersTable in ipairs { customEventHooks.handlers, customEventHooks.validators, } do
+        for _, eventRegistrations in pairs(handlersTable) do
+            for eventIndex = #eventRegistrations, 1, -1 do
+                if eventRegistrations[eventIndex].definedBy:lower() == lowercasePath then
+                    eventRegistrations[eventIndex] = nil
+                end
+            end
+        end
+    end
+end
+
 ---@param event string
 ---@param validator EventHandler
 function customEventHooks.registerValidator(event, validator)
