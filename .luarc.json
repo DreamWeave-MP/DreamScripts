@@ -3,8 +3,12 @@
         "version": "LuaJIT",
         "path": [
             "./scripts/?.lua",
+            "./scripts/custom/?.lua",
             "./lib/lua/?.lua"
         ]
     },
-    "workspace.library": ["./lib/lua/doc/*.lua"]
+    "workspace.library": [
+        "./lib/lua/doc/*.lua",
+        "./scripts/custom/?.lua"
+    ]
 }
