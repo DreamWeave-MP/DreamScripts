@@ -74,9 +74,12 @@ DScriptLoader.Interfaces = setmetatable({},
   }
 )
 
+---@type table<string, true>
+local sandboxLoaded = {}
+
 --- Small shim for overriding require statements in curated script environment
 ---@param scriptName string
----@return any
+---@return any result, string? error
 function DScriptLoader.requireShim(scriptName)
   assert(scriptName and type(scriptName) == 'string')
 
@@ -90,8 +93,18 @@ function DScriptLoader.requireShim(scriptName)
 
   if scriptName == 'interfaces' then
     return DScriptLoader.Interfaces
+  elseif sandboxLoaded[scriptName] then
+    return sandboxLoaded[scriptName]
   else
-    return require(scriptName)
+    local chunk, err = loadfile()
+    if not chunk then return nil, err end
+
+    setfenv(chunk, getfenv(2))
+
+    local result = chunk()
+    sandboxLoaded[scriptName] = result
+
+    return result
   end
 end
 
