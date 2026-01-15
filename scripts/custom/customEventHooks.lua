@@ -113,7 +113,6 @@ function customEventHooks.triggerValidators(event, args)
     local eventStatus = customEventHooks.makeEventStatus(true, true)
     local eventValidators = customEventHooks.validators[event]
     if not eventValidators then
-        tableHelper.print(customEventHooks.validators)
         return eventStatus
     end
 
@@ -140,7 +139,6 @@ function customEventHooks.triggerHandlers(event, eventStatus, args)
     event = event:lower()
     local eventHandlers = customEventHooks.handlers[event]
     if not eventHandlers then
-        tableHelper.print(customEventHooks.handlers)
         return
     end
 
