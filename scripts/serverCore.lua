@@ -180,7 +180,12 @@ local function onGenericObjectEvent(pid, cellDescription, packetType)
     local objects = packetTables.objects
     local targetPlayers = packetTables.players
 
-    if tableHelper.isEmpty(objects) or tableHelper.isEmpty(targetPlayers) then return end
+    if tableHelper.isEmpty(objects) or tableHelper.isEmpty(targetPlayers) then
+        return tes3mp.LogAppend(
+            enumerations.log.WARN,
+            ('Either objects table or targetPlayers table of generic object event was empty. Sorry!')
+        )
+    end
 
     if not cell then
         logicHandler.LoadCell(cellDescription)
