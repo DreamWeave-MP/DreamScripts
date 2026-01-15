@@ -74,7 +74,7 @@ DScriptLoader.Interfaces = setmetatable({},
   }
 )
 
----@type table<string, any>
+---@type table<string, function>
 local sandboxLoaded = {}
 
 --- Small shim for overriding require statements in curated script environment
@@ -99,7 +99,14 @@ function DScriptLoader.requireShim(scriptName)
   else
     print('Loading fresh script ' .. scriptName)
     local chunk, err = loadfile(scriptName)
-    if not chunk then return nil, err end
+
+    if not chunk then
+      tes3mp.LogAppend(
+        enumerations.log.FATAL,
+        ('Failed to load script %s due to error %s. Aborting!'):format(scriptName, err)
+      )
+      tes3mp.StopServer(18)
+    end
 
     tes3mp.LogAppend(enumerations.log.WARN, ('Setting env for %s'):format(scriptName))
     setfenv(chunk, getfenv(2))
