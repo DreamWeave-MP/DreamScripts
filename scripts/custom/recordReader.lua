@@ -20,15 +20,14 @@ local function lowercase(string)
   if string then return string:lower() end
 end
 
-local tableHelper = require 'tes3mp.util.table'
-tableHelper.print(dUtil.getRequiredDataFiles())
+local RequiredDataFiles = dUtil.getRequiredDataFiles()
 
-local loadOrder = {
-  'Morrowind.esm',
-  'Tribunal.esm',
-  'Bloodmoon.esm',
-  'Starwind-TSI.omwaddon',
-}
+local loadOrder = tds.Vec()
+loadOrder:resize(#RequiredDataFiles)
+
+for i, loadOrderData in ipairs(dUtil.getRequiredDataFiles()) do
+  loadOrder[i] = loadOrderData.name
+end
 
 ---@type RecordStores
 local RecordStores = tds.Hash {
@@ -65,7 +64,8 @@ local TypeHandlers = {
     }
   end,
   Armor = function(armorRecord, recordId)
-    local bipedObjects = tds.Vec(#armorRecord.biped_objects)
+    local bipedObjects = tds.Vec()
+    bipedObjects:resize(#armorRecord.biped_objects)
 
     for i, bipedObject in ipairs(armorRecord.biped_objects) do
       bipedObjects[i] = tds.Hash {
@@ -93,7 +93,8 @@ local TypeHandlers = {
     }
   end,
   Alchemy = function(potionRecord, recordId)
-    local effects = tds.Vec(#potionRecord.effects)
+    local effects = tds.Vec()
+    effects:resize(#potionRecord.effects)
 
     for i, effect in ipairs(potionRecord.effects) do
       effects[i] = tds.Hash {
