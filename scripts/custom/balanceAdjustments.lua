@@ -70,11 +70,11 @@ end
 local function playerCoordsCommand(pid, _)
     local posX, posY, posZ = tes3mp.GetPosX(pid), tes3mp.GetPosY(pid), tes3mp.GetPosZ(pid)
     local player, positionVector = Players[pid], dUtil.vector3(posX, posY, posZ)
-    print(tostring(positionVector))
 
     player:Message(
         ('%s: %s\n')
         :format(
+            player.data.location.cell,
             tostring(positionVector)
         )
     )
