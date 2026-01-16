@@ -350,7 +350,6 @@ packetReader.GetObjectPacketTables = function(packetType)
         local object, uniqueIndex, player, pid = nil, nil, nil, nil
 
         if tableHelper.containsValue({ "ObjectActivate", "ObjectHit", "ObjectSound", "ConsoleCommand" }, packetType) then
-            tes3mp.LogAppend(enumerations.log.WARN, 'We tried to activate something...')
             local isObjectPlayer = tes3mp.IsObjectPlayer(packetIndex)
 
             if isObjectPlayer then
@@ -528,6 +527,7 @@ packetReader.GetObjectPacketTables = function(packetType)
             end
         end
 
+        print('packet table reader', object, uniqueIndex, packetType)
         if object ~= nil then
             packetTables.objects[uniqueIndex] = object
         elseif player ~= nil then
