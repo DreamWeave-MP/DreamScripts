@@ -39,7 +39,7 @@ local TypeHandlers = {
 
     local objectId = staticRecord.id:lower()
     recordStore[objectId] = tds.Hash {
-      flags = tonumber(staticRecord.flags),
+      flags = staticRecord.flags.bits,
       id = objectId,
       model = staticRecord.mesh:lower(),
     }
