@@ -49,8 +49,11 @@ end
 local saveDataTable = BufferedDiskPaths
 ---@return DefaultInterfaces
 function DScriptLoader.originalInterfaces()
+  local hasTDS, tds = pcall(require, 'tds.init')
+  local hasTES3, tes3 = pcall(require, 'tes3_lua')
+
   ---@type DefaultInterfaces
-  local interfaces = {
+  return {
     ---@type StorageModule
     storage = dUtil.misc.makeReadOnly {
       ---@param data SaveSubscriptionData
@@ -134,20 +137,9 @@ function DScriptLoader.originalInterfaces()
       loadScript = DScriptLoader.loadScript,
       loadAllScripts = DScriptLoader.loadAllScripts,
     },
+    tds = hasTDS and tds or nil,
+    tes3 = hasTES3 and tes3 or nil,
   }
-
-  local hasTDS, tds = pcall(require, 'tds.init')
-  local hasTES3, tes3 = pcall(require, 'tes3_lua')
-
-  if hasTES3 then
-    interfaces.tes3 = tes3
-  end
-
-  if hasTDS then
-    interfaces.tds = tds
-  end
-
-  return interfaces
 end
 
 ---@type DefaultInterfaces
