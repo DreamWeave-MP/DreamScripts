@@ -27,6 +27,7 @@ for _, pluginName in ipairs(loadOrder) do
 
   for i = 1, #plugin.objects do
     local object = plugin.objects[i]
-    tes3mp.LogAppend(enumerations.log.WARN, tostring(object))
+    tes3mp.LogAppend(enumerations.log.WARN, object.type)
+    -- tes3mp.LogAppend(enumerations.log.WARN, tostring(object))
   end
 end
