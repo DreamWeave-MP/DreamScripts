@@ -139,6 +139,7 @@ function DScriptLoader.getScriptEnv()
   ---@class DreamWeaveScriptEnv
   local ScriptEnv = {
     assert = assert,
+    coroutine = coroutine,
     debug = debug,
     error = error,
     getfenv = getfenv,
