@@ -151,9 +151,7 @@ for _, pluginName in ipairs(loadOrder) do
     )
   end
 
-  local plugin = tes3.load_plugin(pluginPath)
-
-  for _, object in ipairs(plugin.objects) do
+  for _, object in ipairs(tes3.load_plugin(pluginPath).objects) do
     local recordStore, typeHandler = RecordStores[object.type], TypeHandlers[object.type]
 
     if recordStore and typeHandler then
