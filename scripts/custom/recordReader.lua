@@ -41,7 +41,7 @@ local TypeHandlers = {
     local effects = {}
 
     for _, effect in ipairs(potionRecord.effects) do
-      effects[effects + 1] = tds.Hash {
+      effects[#effects + 1] = tds.Hash {
         magic_effect = effect.magic_effect,
         skill = effect.skill,
         attribute = effect.attribute,
