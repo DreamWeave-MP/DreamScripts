@@ -148,7 +148,6 @@ end
 local function onGenericObjectEvent(pid, cellDescription, packetType)
     local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
     if not isValid or not targetPid then return tes3mp.Kick(pid) end
-    print(('GenericObjectEvent received: %s %s %s'):format(pid, cellDescription, packetType))
 
     tes3mp.ReadReceivedObjectList()
     local packetOrigin = tes3mp.GetObjectListOrigin()
