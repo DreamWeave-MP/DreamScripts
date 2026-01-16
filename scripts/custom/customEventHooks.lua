@@ -189,7 +189,7 @@ function customEventHooks.triggerHandlers(event, eventStatus, args)
             :format(i, event, eventHandlerData.definedBy)
         )
 
-        local success, result = customEventHooks.safeCall(eventHandlerData.callback, unpack(args))
+        local success, result = customEventHooks.safeCall(eventHandlerData.callback, eventStatus, unpack(args))
         if not success then
             tes3mp.LogAppend(
                 enumerations.log.WARN,
