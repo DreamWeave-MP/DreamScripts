@@ -40,26 +40,10 @@ local merchantData = nil
 
 local initialMerchantGoldTracking = {} -- Used below for tracking merchant uniqueIndexes and their goldPools.
 
-local function dataLoaded()
-  if not merchantData then
-    tes3mp.LogAppend(enumerations.log.WARN,
-      "Your merchant database has not been generated. Please use merchantIndexGrabber to generate the necessary database.")
-    return false
-  else
-    tes3mp.LogAppend(enumerations.log.INFO, 'Successfully loaded merchant database.')
-    return true
-  end
-end
-
 local function fixGoldPool(pid, cellDescription, object)
-  if not dataLoaded() then
-    return tes3mp.LogAppend(enumerations.log.ERROR,
-      'No merchant database loaded! Cannot reset merchant data!')
-  end
-  assert(merchantData)
-  local refId = object.refId
-  local uniqueIndex = object.uniqueIndex
-  local expectedGoldPool
+  if not merchantData then return end
+
+  local refId, uniqueIndex, expectedGoldPool = object.refId, object.uniqueIndex, nil
 
   if merchantData[refId] then
     expectedGoldPool = merchantData[refId].gold_pool
@@ -110,16 +94,13 @@ local function fixGoldPool(pid, cellDescription, object)
 end
 
 local function restockItems(pid, cellDescription, merchant, receivedObject)
-  if not dataLoaded() then
-    return tes3mp.LogAppend(enumerations.log.ERROR,
-      'No merchant database loaded! Cannot reset merchant data!')
-  end
-  assert(merchantData)
-  if not receivedObject.uniqueIndex
-      or not merchant then
+  if not merchantData then return end
+
+  if not receivedObject.uniqueIndex or not merchant then
     if merchantRestockLog then
       tes3mp.LogAppend(enumerations.log.WARN, "Received nil object indices, something went very sideways")
     end
+
     return
   end
 
@@ -179,13 +160,8 @@ local function restockItems(pid, cellDescription, merchant, receivedObject)
 end
 
 local function resetMerchantData(_, pid, cellDescription, objects)
-  if not dataLoaded() then
-    return tes3mp.LogAppend(enumerations.log.ERROR,
-      'No merchant database loaded! Cannot reset merchant data!')
-  end
-  assert(merchantData)
-
-  if not Players[pid] or not Players[pid]:IsLoggedIn() then return end
+  local player = Players[pid]
+  if not merchantData or not player or not player:IsLoggedIn() then return end
 
   for _, object in pairs(objects) do
     if object.dialogueChoiceType ~= enumerations.dialogueChoice.BARTER then return end
@@ -234,18 +210,13 @@ local function resetMerchantData(_, pid, cellDescription, objects)
   end
 end
 
-local function getInitialGold(_, pid, cellDescription, objects)
-  if not Players[pid] or not Players[pid]:IsLoggedIn() then return end
-
-  if not dataLoaded() then
-    return tes3mp.LogAppend(enumerations.log.ERROR,
-      'No merchant database loaded! Cannot fetch initial gold!')
-  end
-  assert(merchantData)
+local function getInitialGold(_, pid, _, objects)
+  local player = Players[pid]
+  if not merchantData or not player or not player:IsLoggedIn() then return end
 
   for uniqueIndex, object in pairs(objects) do
     if not object.goldPool or object.goldPool < 0 then
-      if merchantRestockLog then tes3mp.LogAppend(enumerations.log.WARN, "This object's goldpool is nil or invalid") end
+      if merchantRestockLog then tes3mp.LogAppend(enumerations.log.WARN, 'This object\'s goldpool is nil or invalid') end
       return
     end
 
@@ -253,24 +224,34 @@ local function getInitialGold(_, pid, cellDescription, objects)
 
     if not merchant and not initialMerchantGoldTracking[uniqueIndex] then
       initialMerchantGoldTracking[uniqueIndex] = object.goldPool
+
       if merchantRestockLog then
-        tes3mp.LogAppend(enumerations.log.WARN,
-          "Captured initial gold count for " .. object.refId .. " as " .. object.goldPool)
+        tes3mp.LogAppend(
+          enumerations.log.WARN,
+          ('Captured initial gold count for %s as %s'):format(object.refId, object.goldPool)
+        )
       end
     end
   end
 end
 
 local function loadMerchants()
-  merchantData = jsonInterface.load("custom/merchantIndexDatabase.json")
+  merchantData = jsonInterface.load('custom/merchantIndexDatabase.json')
+
+  if merchantData then
+    tes3mp.LogAppend(enumerations.log.INFO, 'Successfully loaded merchant database.')
+  else
+    tes3mp.LogAppend(
+      enumerations.log.WARN,
+      'Failed to load merchant database from server/data/custom/merchantIndexDatabase.json. Please use merchantIndexGrabber to generate the necessary database. The server will now terminate.'
+    )
+    tes3mp.StopServer(17)
+  end
 end
 
 -- Given a number (preferably greater than 0) and a formed LEVI, returns a random item from the available options for the given number.
 function RecursiveGetLeveledItem(comparatorLevel, leveledList)
-  if not dataLoaded() then
-    return tes3mp.LogAppend(enumerations.log.ERROR,
-      'No merchant database loaded! Cannot fetch leveled item!')
-  end
+  if not merchantData then return end
 
   assert(merchantData)
 
