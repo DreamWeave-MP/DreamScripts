@@ -32,8 +32,8 @@ for _, pluginName in ipairs(loadOrder) do
 
   for i = 1, #plugin.objects do
     local object = plugin.objects[i]
-    if not SkipTypes[object.type] then
-      tes3mp.LogAppend(enumerations.log.WARN, object.type)
+    if object.type == 'Static' then
+      tes3mp.LogAppend(enumerations.log.WARN, tostring(object))
     end
     -- tes3mp.LogAppend(enumerations.log.WARN, tostring(object))
   end
