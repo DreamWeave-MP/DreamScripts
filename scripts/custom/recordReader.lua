@@ -34,7 +34,7 @@ local TypeHandlers = {
   Static = function(recordStore, staticRecord)
     tes3mp.LogAppend(
       enumerations.log.WARN,
-      staticRecord
+      tostring(staticRecord)
     )
 
     local objectId = staticRecord.id:lower()
