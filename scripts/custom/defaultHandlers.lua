@@ -102,14 +102,14 @@ return {
       local debugMessage = ''
 
       for uniqueIndex, object in pairs(objects) do
-        debugMessage = ('%s\n- %s %s has been activated by')
+        debugMessage = ('%s- %s %s has been activated by')
             :format(debugMessage, uniqueIndex, object.refId)
 
         if object.activatingPid then
-          debugMessage = ('%s %s')
+          debugMessage = ('%s %s\n')
               :format(debugMessage, logicHandler.GetChatName(object.activatingPid))
         else
-          debugMessage = ('%s %s %s')
+          debugMessage = ('%s %s %s\n')
               :format(debugMessage, object.activatingRefId, object.activatingUniqueIndex)
         end
 
@@ -117,14 +117,14 @@ return {
       end
 
       for targetPid, targetPlayer in pairs(targetPlayers) do
-        debugMessage = ('%s\n- %s has been activated by')
+        debugMessage = ('%s- %s has been activated by')
             :format(debugMessage, logicHandler.GetChatName(targetPid))
 
         if targetPlayer.activatingPid then
-          debugMessage = ('%s %s')
+          debugMessage = ('%s %s\n')
               :format(debugMessage, logicHandler.GetChatName(targetPlayer.activatingPid))
         else
-          debugMessage = ('%s %s %s')
+          debugMessage = ('%s %s %s\n')
               :format(
                 debugMessage,
                 targetPlayer.activatingRefId,
