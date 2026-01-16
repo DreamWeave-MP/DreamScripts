@@ -46,9 +46,6 @@ function DScriptLoader.sanitizePath(path)
   return path .. '.lua'
 end
 
-local hasTDS, tds = pcall(require, 'tds.init')
-local hasTES3, tes3 = pcall(require, 'tes3_lua')
-
 local saveDataTable = BufferedDiskPaths
 ---@return DefaultInterfaces
 function DScriptLoader.originalInterfaces()
@@ -138,6 +135,9 @@ function DScriptLoader.originalInterfaces()
       loadAllScripts = DScriptLoader.loadAllScripts,
     },
   }
+
+  local hasTDS, tds = pcall(require, 'tds.init')
+  local hasTES3, tes3 = pcall(require, 'tes3_lua')
 
   if hasTES3 then
     interfaces.tes3 = tes3
