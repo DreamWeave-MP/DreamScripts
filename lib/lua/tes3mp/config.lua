@@ -9,8 +9,6 @@ config.dataPath = tes3mp.GetDataPath()
 --- Array of script paths used to load handlers, validators, and interfaces from
 --- These directories are always relative to server/scripts/custom
 config.customScripts = {
-    --- Fancy special sauce using tes3_lua and TDS for hyper-optimized record loading
-    'recordReader',
     --- A basic color interface is defined here which reuses the original `color` module.
     --- To extend the color interface, simply edit scripts/color.lua.
     --- Don't change scripts/custom/color.lua
@@ -50,6 +48,8 @@ config.customScripts = {
     --- Prevent usage of trainers/traders
     --- And stacking magic effects
     'balanceAdjustments',
+    --- Fancy special sauce using tes3_lua and TDS for hyper-optimized record loading
+    'recordReader',
 }
 
 --- The game mode displayed for this server in the server browser
