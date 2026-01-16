@@ -77,6 +77,7 @@ local PathSeparator = tes3mp.GetOperatingSystemType() == 'Windows' and '\\' or '
 local ModuleCache = {
   interfaces = DScriptLoader.Interfaces,
 }
+local ScriptDirectories = { 'scripts/', 'lib/', 'lib/lua/', }
 
 --- Small shim for overriding require statements in curated script environment
 ---@param scriptName string
@@ -95,7 +96,7 @@ function DScriptLoader.requireShim(scriptName)
   ok, chunk = pcall(require, scriptName)
   if ok then return chunk end
 
-  for _, prefix in ipairs { 'scripts/', 'lib/', 'lib/lua/', } do
+  for _, prefix in ipairs(ScriptDirectories) do
     local checkPath = ('server/%s%s.lua'):format(prefix, scriptName:gsub('%.', PathSeparator))
 
     chunk, err = loadfile(checkPath)
