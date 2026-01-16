@@ -182,7 +182,6 @@ function customEventHooks.triggerHandlers(event, eventStatus, args)
         return
     end
 
-
     for i, eventHandlerData in ipairs(eventHandlers) do
         tes3mp.LogAppend(enumerations.log.WARN,
             ('Triggering handler %d for event %s from script %s')
