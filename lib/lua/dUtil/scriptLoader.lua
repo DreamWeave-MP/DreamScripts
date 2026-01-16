@@ -69,6 +69,51 @@ function DScriptLoader.originalInterfaces()
   local interfaces = {
     ---@type StorageModule
     storage = DScriptLoader.makeReadOnly {
+      ---@param data SaveSubscriptionData
+      ---@return table? resultData Returns the loaded file's contents if it exists, or, the initial data table which was subscribed to.
+      loadWithSubscription = function(data)
+        local traceback = debug.traceback()
+        assert(data and type(data) == 'table', traceback)
+        assert(data.filePath and type(data.filePath) == 'string', traceback)
+        assert(data.lastCheckedTime == nil, traceback)
+
+        if not data.data or type(data.data) ~= 'table' then
+          return tes3mp.LogAppend(
+            enumerations.log.WARN,
+            ('Provided an invalid data table to load subscription handler. Refusing to subscribe: %s\n%s')
+            :format(data, traceback)
+          )
+        end
+
+        if saveDataTable[data.filePath] then
+          if not jsonInterface.quicksave(data.filePath, saveDataTable[data.filePath]) then
+            return tes3mp.LogAppend(
+              enumerations.log.WARN,
+              ('Attempted to overwrite %s in the global saved data table, but failed somehow. You must wait for its original reference to be removed!\n%s')
+              :format(data.filePath, traceback)
+            )
+          end
+        end
+
+        local result = jsonInterface.load(data.filePath)
+        if result then
+          if type(result) == 'table' then
+            data.data = result
+          else
+            return tes3mp.LogAppend(
+              enumerations.log.WARN,
+              ('A data path provided to load subscription handler returned a non-table value %s. Refusing to subscribe: %s\n%s')
+              :format(result, data, traceback)
+            )
+          end
+        else
+          result = data.data
+        end
+
+        saveDataTable[data.filePath] = data
+
+        return result
+      end,
       subscribeToSave = function(data)
         local traceback = debug.traceback()
         assert(data and type(data) == 'table', traceback)

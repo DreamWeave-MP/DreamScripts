@@ -41,7 +41,17 @@
 ---@field lastCheckedTime integer? The last time in seconds the subscription was checked for a save. Should NEVER be provided by the constructor! You will trip an assertion if you provide this asa parameter.
 
 ---@class StorageModule
+--- Given some initial data, provide a path and details for subscription,
+--- The provided table will be auto-saved according to the parameters you set, once or continuously,
+--- On whatever delay you wish, or upon each server tick (which is a configurable timed delay up to the behest of the server administrator)
+--- No data is returned, and it is expected that references to the table you provide live as long as the subscription itself does.
+--- So, if you want to have a table be continuously saved for the entire runtime of the server, do not ever replace it entirely.
 ---@field subscribeToSave fun(data: SaveSubscriptionData)
+--- Given some initial data, provide a path and details for subscription,
+--- And return whatever the saved content is or will be.
+--- For example, this function can be used to provide a default configuration
+--- And keep the configuration file saving consistently every thirty seconds or what-have.
+---@field loadWithSubscription fun(data: SaveSubscriptionData): table?
 
 ---@class TES3MPCommandRegistration
 ---@field callback CommandHandler
