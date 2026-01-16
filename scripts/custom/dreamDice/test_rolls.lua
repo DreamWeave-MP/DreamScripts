@@ -12,7 +12,7 @@ for _ = 1, maxElements do
 
   repeat
     randomKey = math.random(1, maxElements + 1)
-  until not usedKeys[randomKey] -- Check if key already used
+  until not usedKeys[randomKey]
 
   usedKeys[randomKey] = true
 
