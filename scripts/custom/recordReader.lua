@@ -27,7 +27,7 @@ local SkipTypes = {
 }
 
 local RecordStores = {
-  Static = tds.Hash()
+  Static = {}
 }
 
 local TypeHandlers = {
@@ -39,18 +39,11 @@ local TypeHandlers = {
       objectId .. ' ' .. tostring(staticRecord) .. ' ' .. staticRecord.flags
     )
 
-    local objectHashMap = tds.Hash {
+    recordStore[objectId] = {
       flags = staticRecord.flags,
       id = objectId,
       model = staticRecord.mesh:lower(),
     }
-
-    tes3mp.LogAppend(
-      enumerations.log.WARN,
-      tostring(objectHashMap)
-    )
-
-    recordStore[objectId] = objectHashMap
   end,
 }
 
@@ -63,14 +56,15 @@ for _, pluginName in ipairs(loadOrder) do
 
   for i = 1, #plugin.objects do
     local object = plugin.objects[i]
-    if RecordStores[object.type] and TypeHandlers[object.type] then
-      TypeHandlers[object.type](RecordStores[object.type], object)
-      -- tes3mp.LogAppend(enumerations.log.WARN, tostring(object.id))
-      -- tes3mp.LogAppend(enumerations.log.WARN, tostring(object))
+    local recordStore, typeHandler = RecordStores[object.type], TypeHandlers[object.type]
+
+    if recordStore and typeHandler then
+      typeHandler(recordStore, object)
     end
-    -- tes3mp.LogAppend(enumerations.log.WARN, tostring(object))
   end
 end
+
+RecordStores = tds.Hash(RecordStores)
 
 ---@type TES3MPScriptRegistration
 return {
