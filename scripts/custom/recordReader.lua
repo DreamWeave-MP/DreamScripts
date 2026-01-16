@@ -47,7 +47,7 @@ local TypeHandlers = {
 
     tes3mp.LogAppend(
       enumerations.log.WARN,
-      objectHashMap
+      tostring(objectHashMap)
     )
 
     recordStore[objectId] = objectHashMap
