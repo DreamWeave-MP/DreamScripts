@@ -34,16 +34,10 @@ local StaticRecords = {}
 local TypeHandlers = {
   Static = function(recordStore, staticRecord)
     local objectId = staticRecord.id:lower()
-
-    tes3mp.LogAppend(
-      enumerations.log.WARN,
-      type(objectId) .. ' ' .. objectId .. ' ' .. tostring(staticRecord) .. ' ' .. staticRecord.flags
-    )
-
     recordStore[objectId] = tds.Hash {
       flags = staticRecord.flags,
       id = objectId,
-      model = staticRecord.mesh:lower(),
+      model = staticRecord.mesh:normalize(),
     }
   end,
 }
