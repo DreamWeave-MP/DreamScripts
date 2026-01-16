@@ -21,7 +21,6 @@ local function lowercase(string)
 end
 
 local loadOrder = {
-  'Fake.esm',
   'Morrowind.esm',
   'Tribunal.esm',
   'Bloodmoon.esm',
@@ -119,7 +118,7 @@ for _, pluginName in ipairs(loadOrder) do
 
   if not dUtil.io.fileExists(pluginPath) then
     error(
-      ('Requested to parse a plugin that doesn\'t actually exist: %s!\nThe server will now terminate. Remove %s from the list of plugins to load or place it at %s')
+      ('Requested to parse a plugin that doesn\'t actually exist: %s!\nThe server will now terminate. Remove %s from the list of plugins to load or place it at %s\n')
       :format(pluginPath, pluginName, pluginPath)
     )
   end
@@ -132,7 +131,7 @@ for _, pluginName in ipairs(loadOrder) do
   local ok, result = pcall(tes3.load_plugin, pluginPath)
   if not ok then
     error(
-      ('Failed to load the plugin %s, due to: %s'):format(pluginName, result)
+      ('Failed to load the plugin %s, due to: %s\n'):format(pluginName, result)
     )
   end
 
