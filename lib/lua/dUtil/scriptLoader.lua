@@ -121,7 +121,7 @@ function DScriptLoader.requireShim(scriptName)
     if not ok then
       tes3mp.LogAppend(
         enumerations.log.ERROR,
-        ('Tried to load the script at %s, but it threw an exception: %s. This script cannot be loaded!')
+        ('Tried to call `require` on the script at %s, but it threw an exception: %s. This script cannot be loaded!')
         :format(scriptName, result)
       )
       return tes3mp.StopServer(11)
