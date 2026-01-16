@@ -432,6 +432,10 @@ function DScriptLoader.loadScript(scriptName, callerPid)
     Interfaces.customEventHooks.clearEventsFromScript(scriptPath)
   end
 
+  if Interfaces.customCommandHooks then
+    Interfaces.customCommandHooks.clearCommandsFromScript(scriptPath)
+  end
+
   tes3mp.LogAppend(enumerations.log.INFO, ('Attempting to load custom script from path: %s'):format(scriptPath))
   local ok, result = pcall(function() return assert(loadfile(scriptPath)) end)
 
