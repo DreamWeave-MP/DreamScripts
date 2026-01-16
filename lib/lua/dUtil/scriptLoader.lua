@@ -88,7 +88,7 @@ function DScriptLoader.requireShim(scriptName)
   if scriptName == 'interfaces' then
     return DScriptLoader.Interfaces
   elseif sandboxLoaded[scriptName] then
-    return sandboxLoaded[scriptName]()
+    return sandboxLoaded[scriptName]
   else
     local ok, chunk, err, result = false, nil, nil, nil
 
@@ -127,7 +127,7 @@ function DScriptLoader.requireShim(scriptName)
       return tes3mp.StopServer(11)
     end
 
-    sandboxLoaded[scriptName] = chunk
+    sandboxLoaded[scriptName] = result
 
     return result
   end
