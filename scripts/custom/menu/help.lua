@@ -1,5 +1,7 @@
 local color = require 'color'
 local config = require 'tes3mp.config'
+local tableHelper = require 'tes3mp.util.table'
+local validRecordSettings = require 'tes3mp.util.validRecordSettings'
 
 local I = require 'interfaces'
 ---@type MenuHelper
@@ -335,7 +337,6 @@ Menus['help admin page 2'] = {
     }
 }
 
-local validRecordSettings = require 'tes3mp.util.validRecordSettings'
 Menus['help record origin'] = {
     text = color.White .. 'To create a record, you first fill in its values using this command:\n' ..
         color.Yellow .. '/storerecord <type> <setting> <value>\n' ..
