@@ -108,14 +108,7 @@ function SaveBufferedPaths()
             saveSubscription.lastCheckedTime = saveSubscription.lastCheckedTime or currentTime
             local timeDiff = currentTime - saveSubscription.lastCheckedTime
 
-            if timeDiff < saveSubscription.delay then
-                tes3mp.LogAppend(
-                    enumerations.log.WARN,
-                    ('Skipping serialization of %s as its delay of %d has not been met yet: %d')
-                    :format(dataPath, saveSubscription.delay, timeDiff)
-                )
-                goto CONTINUE
-            end
+            if timeDiff < saveSubscription.delay then goto CONTINUE end
         end
 
         if jsonInterface.quicksave(dataPath, saveSubscription.data) then
