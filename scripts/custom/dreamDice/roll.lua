@@ -123,7 +123,7 @@ local function getResultMessage(self, rollData)
     local player = Players[rollData.playerId]
     if not player or not player:IsLoggedIn() then return end
 
-    local forStat = (rollData.forStat and RollForStatFormatString:format(color.green, rollData.forStat)) or ''
+    local forStat = (rollData.forStat and RollForStatFormatString:format(color.Green, rollData.forStat)) or ''
     local rollResult = rollData.result or self:resolve()
 
     local diceNum = self.diceCount
