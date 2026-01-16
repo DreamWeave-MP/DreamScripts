@@ -31,9 +31,9 @@ config.customScripts = {
     'defaultHandlers',
     --- contentFixer is used to adjust corprus state and world variables in certain circumstances
     'contentFixer',
-    -- 'menu.help',
-    -- 'menu.defaultCrafting',
-    -- 'menu.advancedExample',
+    'menu/help',
+    'menu/defaultCrafting',
+    'menu/advancedExample',
     --- Custom scripts may be added here
     'customMerchantRestock',
     'dreamDice/main',
