@@ -1,3 +1,4 @@
+local dUtil = require 'dUtil.init'
 local enumerations = require 'tes3mp.enumerations'
 
 local I = require 'interfaces'
@@ -25,6 +26,27 @@ local SkipTypes = {
   DialogueInfo = true,
 }
 
+local RecordStores = {
+  Static = tds.Hash()
+}
+
+local TypeHandlers = {
+  Static = function(recordStore, staticRecord)
+    tes3mp.LogAppend(
+      enumerations.log.WARN,
+      staticRecord
+    )
+
+    local objectId = staticRecord.id:lower()
+    local objectHashTable = tds.Hash {
+      id = objectId,
+      model = staticRecord.model:lower(),
+    }
+
+    recordStore[objectId] = objectHashTable
+  end,
+}
+
 local PluginPathFormatter = tes3mp.GetDataPath() .. '/custom/recordParser/%s'
 
 for _, pluginName in ipairs(loadOrder) do
@@ -34,10 +56,17 @@ for _, pluginName in ipairs(loadOrder) do
 
   for i = 1, #plugin.objects do
     local object = plugin.objects[i]
-    if object.type == 'Static' then
-      tes3mp.LogAppend(enumerations.log.WARN, tostring(object.id))
+    if RecordStores[object.type] and TypeHandlers[object.type] then
+      TypeHandlers[object.type](RecordStores[object.type], object)
+      -- tes3mp.LogAppend(enumerations.log.WARN, tostring(object.id))
       -- tes3mp.LogAppend(enumerations.log.WARN, tostring(object))
     end
     -- tes3mp.LogAppend(enumerations.log.WARN, tostring(object))
   end
 end
+
+---@type TES3MPScriptRegistration
+return {
+  interfaceName = 'RecordStores',
+  interface = RecordStores,
+}
