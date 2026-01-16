@@ -145,22 +145,24 @@ local TypeHandlers = {
 
 local PluginPathFormatter = tes3mp.GetDataPath() .. '/custom/recordParser/%s'
 
-for _, pluginName in ipairs(loadOrder) do
-  local pluginPath = PluginPathFormatter:format(pluginName)
+local function createRecordStores()
+  for _, pluginName in ipairs(loadOrder) do
+    local pluginPath = PluginPathFormatter:format(pluginName)
 
-  if not dUtil.io.fileExists(pluginPath) then
-    error(
-      ('Requested to parse a plugin that doesn\'t actually exist: %s!\nThe server will now terminate. Remove %s from the list of plugins to load or place it at %s')
-      :format(pluginPath, pluginName, pluginPath)
-    )
-  end
+    if not dUtil.io.fileExists(pluginPath) then
+      error(
+        ('Requested to parse a plugin that doesn\'t actually exist: %s!\nThe server will now terminate. Remove %s from the list of plugins to load or place it at %s')
+        :format(pluginPath, pluginName, pluginPath)
+      )
+    end
 
-  for _, object in ipairs(tes3.load_plugin(pluginPath).objects) do
-    local recordStore, typeHandler = RecordStores[object.type], TypeHandlers[object.type]
+    for _, object in ipairs(tes3.load_plugin(pluginPath).objects) do
+      local recordStore, typeHandler = RecordStores[object.type], TypeHandlers[object.type]
 
-    if recordStore and typeHandler then
-      local recordId = object.id:lower()
-      recordStore[recordId] = typeHandler(object, recordId)
+      if recordStore and typeHandler then
+        local recordId = object.id:lower()
+        recordStore[recordId] = typeHandler(object, recordId)
+      end
     end
   end
 end
@@ -172,8 +174,17 @@ return {
   interface = {
     records = RecordStores,
   },
-  eventHandlers = {
+  eventValidators = {
     OnServerPostInit = function()
+      local startClock = os.clock()
+
+      createRecordStores()
+
+      tes3mp.LogAppend(
+        enumerations.log.INFO,
+        ('Successfully loaded recordStores in %.3f seconds.'):format(os.clock() - startClock)
+      )
+
       for storeType, recordStore in pairs(RecordStores) do
         for recordId, recordData in pairs(recordStore) do
           print(storeType, '\n', recordId, '\n', recordData)

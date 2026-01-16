@@ -29,6 +29,9 @@ config.customScripts = {
     'customCommandHooks',
     --- All chat commands are defined by this script
     'defaultCommands',
+    --- Fancy special sauce using tes3_lua and TDS for hyper-optimized record loading
+    --- If it exists, this script must load before *all* other event validators!!!!!
+    'recordReader',
     --- The default handlers and validators defined by tes3mp are very important!
     --- Don't mess with them!
     'defaultValidators',
@@ -48,8 +51,6 @@ config.customScripts = {
     --- Prevent usage of trainers/traders
     --- And stacking magic effects
     'balanceAdjustments',
-    --- Fancy special sauce using tes3_lua and TDS for hyper-optimized record loading
-    'recordReader',
 }
 
 --- The game mode displayed for this server in the server browser
