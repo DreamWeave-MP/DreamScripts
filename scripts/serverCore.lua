@@ -111,7 +111,7 @@ function SaveBufferedPaths()
                 tes3mp.LogAppend(
                     enumerations.log.WARN,
                     ('Skipping serialization of %s as its delay of %d has not been met yet: %d')
-                    :format(dataPath, saveSubscription.delay, saveSubscription.lastCheckedTime)
+                    :format(dataPath, saveSubscription.delay, timeDiff)
                 )
                 goto CONTINUE
             end
