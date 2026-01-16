@@ -1,6 +1,6 @@
 local enumerations = require 'tes3mp.enumerations'
 
--- local hasTDS, tds = pcall(require, 'tds')
+local hasTDS, tds = pcall(require, 'libtds')
 local hasTES3, tes3 = pcall(require, 'tes3_lua')
 
 -- if not hasTDS or not hasTES3 then
