@@ -128,14 +128,7 @@ for _, pluginName in ipairs(loadOrder) do
     ('Parsing records defined by %s'):format(pluginPath)
   )
 
-  local ok, result = pcall(tes3.load_plugin, pluginPath)
-  if not ok then
-    error(
-      ('Failed to load the plugin %s, due to: %s\n'):format(pluginName, result)
-    )
-  end
-
-  for _, object in ipairs(result) do
+  for _, object in ipairs(tes3.load_plugin(pluginPath)) do
     local recordStore, typeHandler = RecordStores[object.type], TypeHandlers[object.type]
 
     if recordStore and typeHandler then
