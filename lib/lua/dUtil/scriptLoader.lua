@@ -127,14 +127,18 @@ local PathSeparator = tes3mp.GetOperatingSystemType() == 'Windows' and '\\' or '
 local ModuleCache = {
   ---@type ReadOnlyInterfaces
   interfaces = DScriptLoader.Interfaces,
-  tes3 = require 'tes3_lua',
 }
 local ScriptDirectories = { 'scripts/', 'lib/', 'lib/lua/', }
 
 local hasTDS, tds = pcall(require, 'tds')
+local hasTES3, tes3 = pcall(require, 'tes3_lua')
 
 if hasTDS then
   ModuleCache.tds = tds
+end
+
+if hasTES3 then
+  ModuleCache.tes3 = tes3
 end
 
 --- Small shim for overriding require statements in curated script environment

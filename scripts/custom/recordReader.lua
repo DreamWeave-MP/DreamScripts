@@ -6,9 +6,9 @@ local hasTES3, tes3 = pcall(require, 'tes3_lua')
 if not hasTDS or not hasTES3 then
   tes3mp.LogAppend(
     enumerations.log.ERROR,
-    'Either TDS or TES3_lua was missing. The recordParser will not execute.'
+    'Either TDS or TES3_lua was missing.'
   )
-  return {}
+  -- return {}
 end
 
 local loadOrder = {
