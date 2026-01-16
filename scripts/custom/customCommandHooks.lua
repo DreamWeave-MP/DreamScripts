@@ -48,12 +48,15 @@ end
 function customCommandHooks:clearCommandsFromScript(scriptPath)
     scriptPath = scriptPath:lower()
 
-    for i = #self.commands, 1, -1 do
-        local definedCommand = self.commands[i]
-
-        if definedCommand.definedBy == scriptPath then
-            self.commands[i] = nil
+    local toRemove = {}
+    for commandName, commandData in pairs(self.commands) do
+        if commandData.definedBy == scriptPath then
+            toRemove[#toRemove + 1] = commandName
         end
+    end
+
+    for _, commandToRemove in ipairs(toRemove) do
+        self.commands[commandToRemove] = nil
     end
 end
 
