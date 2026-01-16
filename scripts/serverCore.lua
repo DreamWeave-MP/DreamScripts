@@ -121,7 +121,7 @@ function SaveBufferedPaths()
 
         tes3mp.LogAppend(
             enumerations.log.INFO,
-            ('Flushed %s buffer to disk at path %s'):format(saveSubscription.data, dataPath)
+            ('Flushed %s buffer to disk at path %s%s'):format(saveSubscription.data, tes3mp.GetDataPath(), dataPath)
         )
 
         ::CONTINUE::
