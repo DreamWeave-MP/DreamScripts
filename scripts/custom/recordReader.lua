@@ -20,13 +20,16 @@ local function lowercase(string)
   if string then return string:lower() end
 end
 
-local function recordErr()
-  error(('Records are not writable!\n%s'):format(debug.traceback()))
-end
-
 local function readOnlyRecord(record)
-  record.__newindex = recordErr
-  return record
+  return setmetatable(
+    {},
+    {
+      __index = record,
+      __newindex = function()
+        error(('Records are not writable!\n%s'):format(debug.traceback()))
+      end
+
+    })
 end
 
 local loadOrder = {
@@ -155,7 +158,6 @@ return {
       for storeType, recordStore in pairs(RecordStores) do
         for recordId, recordData in pairs(recordStore) do
           print(storeType, '\n', recordId, '\n', recordData)
-          recordData.newField = 'test'
           break
         end
       end
