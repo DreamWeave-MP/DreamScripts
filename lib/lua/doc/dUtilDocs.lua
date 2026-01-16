@@ -5,7 +5,7 @@
 ---@class DefaultInterfaces
 ---@field Color ColorModule?
 ---@field contentFixer ContentFixer?
----@field customCommandHooks CustomCommandHooks?
+---@field customCommandHooks CustomCommandHooksInterface?
 ---@field customEventHooks CustomEventHooks?
 ---@field menuHelper MenuHelper?
 ---@field scriptLoader DScriptLoaderHidden

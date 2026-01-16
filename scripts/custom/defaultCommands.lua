@@ -468,6 +468,12 @@ local function leaveTeam(pid, cmd)
 end
 
 ---@type CommandHandler
+local function loadAllScripts(pid, _)
+    I.scriptLoader.loadAllScripts()
+    Players[pid]:Message(('Successfully reloaded all scripts!\n'))
+end
+
+---@type CommandHandler
 local function loadScript(pid, cmd)
     local scriptName, player = cmd[2], Players[pid]
 
@@ -476,9 +482,9 @@ local function loadScript(pid, cmd)
     end
 
     if I.scriptLoader.loadScript(scriptName, pid) then
-        player:Message(('Successfully loaded the script at scripts/custom/%s.lua'):format(scriptName))
+        player:Message(('Successfully loaded the script at scripts/custom/%s.lua\n'):format(scriptName))
     else
-        player:Message(('Failed to load the script at scripts/custom/%s.lua'):format(scriptName))
+        player:Message(('Failed to load the script at scripts/custom/%s.lua\n'):format(scriptName))
     end
 end
 
@@ -1580,6 +1586,7 @@ return {
         kick = { callback = kick, rankRequirement = enumerations.staffRank.MODERATOR, },
         leave = { callback = leaveTeam, },
         list = { callback = players, },
+        load = { callback = loadScript, rankRequirement = enumerations.staffRank.ADMIN, },
         loadScript = { callback = loadScript, rankRequirement = enumerations.staffRank.ADMIN, },
         me = { callback = me, },
         message = { callback = msg, },
@@ -1588,6 +1595,7 @@ return {
         placeAt = { callback = placeAt, rankRequirement = enumerations.staffRank.ADMIN, },
         players = { callback = players, },
         regions = { callback = regions, },
+        reloadLua = { callback = loadAllScripts, rankRequirement = enumerations.staffRank.ADMIN, },
         resetcell = { callback = resetCell, },
         removeAdmin = { callback = removeAdmin, rankRequirement = enumerations.staffRank.OWNER, },
         resetKills = { callback = resetKillsShared, rankRequirement = enumerations.staffRank.MODERATOR, },

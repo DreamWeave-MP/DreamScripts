@@ -220,6 +220,7 @@ end
 ---@type TES3MPScriptRegistration
 return {
     interfaceName = 'customCommandHooks',
+    ---@class CustomCommandHooksInterface
     interface = {
         ---@param scriptPath string Name of the new command to register
         clearCommandsFromScript = function(scriptPath)

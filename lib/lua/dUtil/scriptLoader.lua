@@ -285,7 +285,8 @@ end
 function DScriptLoader.loadScriptCommands(scriptPath, scriptRegistration)
   if not scriptRegistration.chatCommands or type(scriptRegistration.chatCommands) ~= 'table' then return end
 
-  if not Interfaces.customCommandHooks then
+  local customCommandHooks = Interfaces.customCommandHooks
+  if not customCommandHooks then
     return tes3mp.LogAppend(
       enumerations.log.ERROR,
       ('%s attempted to define chat commands, but the customCommandHooks interface has not been loaded yet!\nFix your load order!')
@@ -293,7 +294,7 @@ function DScriptLoader.loadScriptCommands(scriptPath, scriptRegistration)
     )
   end
 
-  Interfaces.customCommandHooks.clearCommandsFromScript(scriptPath)
+  customCommandHooks.clearCommandsFromScript(scriptPath)
 
   for commandName, commandRegistration in pairs(scriptRegistration.chatCommands) do
     if type(commandName) ~= 'string' or commandName == '' or type(commandRegistration.callback) ~= 'function' then
@@ -304,7 +305,7 @@ function DScriptLoader.loadScriptCommands(scriptPath, scriptRegistration)
       )
     end
 
-    Interfaces.customCommandHooks.registerCommand(commandName, {
+    customCommandHooks.registerCommand(commandName, {
       definedBy = scriptPath,
       callback = commandRegistration.callback,
       nameRequirement = commandRegistration.nameRequirement,
