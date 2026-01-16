@@ -33,7 +33,7 @@ return function()
 
   tes3mp.LogAppend(
     enumerations.log.INFO,
-    ('DreamDice integration tests running for %d dice, with %d iterations each.'):format(numKeys, testIterations)
+    ('DreamDice integration tests running for %d dice, with %d iterations each.'):format(numKeys, TestIterations)
   )
 
   for dice, faces in pairs(testPairs) do
