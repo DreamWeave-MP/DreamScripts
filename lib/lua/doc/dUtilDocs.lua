@@ -3,7 +3,7 @@
 ---@alias Vector3Constructor fun(x: number, y: number, z: number): Vector3
 
 ---@class DefaultInterfaces
----@field color ColorModule?
+---@field Color ColorModule?
 ---@field contentFixer ContentFixer?
 ---@field customCommandHooks CustomCommandHooks?
 ---@field customEventHooks CustomEventHooks?

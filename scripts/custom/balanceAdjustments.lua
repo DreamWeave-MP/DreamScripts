@@ -2,6 +2,9 @@ local dUtil = require 'dUtil.init'
 local enumerations = require 'tes3mp.enumerations'
 local logicHandler = require 'tes3mp.logicHandler'
 
+---@type DefaultInterfaces
+local I = require 'interfaces'
+
 ---@param eventStatus EventStatusTable
 ---@param pid integer
 ---@param _ string
@@ -72,10 +75,13 @@ local function playerCoordsCommand(pid, _)
     local player, positionVector = Players[pid], dUtil.vector3(posX, posY, posZ)
 
     player:Message(
-        ('%s: %s\n')
+        ('%s%s: %s%s%s\n')
         :format(
+            I.Color.Aquamarine,
             player.data.location.cell,
-            tostring(positionVector)
+            I.Color.Gold,
+            tostring(positionVector),
+            I.Color.White
         )
     )
 end
