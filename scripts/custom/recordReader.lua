@@ -25,7 +25,7 @@ local RequiredDataFiles = dUtil.getRequiredDataFiles()
 local loadOrder = tds.Vec()
 loadOrder:resize(#RequiredDataFiles)
 
-for i, loadOrderData in ipairs(dUtil.getRequiredDataFiles()) do
+for i, loadOrderData in ipairs(RequiredDataFiles) do
   loadOrder[i] = loadOrderData.name
 end
 
