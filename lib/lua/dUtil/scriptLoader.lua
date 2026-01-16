@@ -456,6 +456,9 @@ function DScriptLoader.loadAllScripts()
   --- Reinitialize all interfaces when reloading all scripts
   Interfaces = {}
 
+  --- Un-cache all compiled scripts when reloading everything
+  sandboxLoaded = {}
+
   for _, scriptName in ipairs(config.customScripts) do
     if not DScriptLoader.loadScript(scriptName) then
       return tes3mp.LogAppend(
