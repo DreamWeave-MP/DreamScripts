@@ -22,12 +22,6 @@ for _ = 1, maxElements do
   numKeys = numKeys + 1
 end
 
-I.storage.subscribeToSave {
-  filePath = 'custom/diceTestKeys.json',
-  data = testPairs,
-  persistent = false,
-}
-
 tes3mp.LogAppend(
   enumerations.log.INFO,
   ('Generating %d random dice pairs for dreamDice integration tests . . .'):format(numKeys)
@@ -44,13 +38,23 @@ return function()
     ('DreamDice integration tests running for %d dice, with %d iterations each.'):format(numKeys, TestIterations)
   )
 
+  local testResults = {}
   for dice, faces in pairs(testPairs) do
     for _ = 1, TestIterations do
       local thisRoll = ('%sd%s+%s'):format(dice, faces, math.random(-100, 100))
       local rollObject = I.dreamDice.roll(thisRoll)
+
       rollObject:resolve()
+
+      testResults[#testResults + 1] = rollObject
     end
   end
+
+  I.storage.subscribeToSave {
+    filePath = 'custom/dice/diceTestResults.json',
+    data = testResults,
+    persistent = false,
+  }
 
   tes3mp.LogAppend(
     enumerations.log.INFO,
