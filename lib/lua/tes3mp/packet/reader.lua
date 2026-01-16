@@ -535,6 +535,8 @@ packetReader.GetObjectPacketTables = function(packetType)
         end
     end
 
+    tableHelper.print(packetTables)
+
     return packetTables
 end
 
