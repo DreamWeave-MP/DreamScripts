@@ -36,13 +36,13 @@ local TypeHandlers = {
 
     tes3mp.LogAppend(
       enumerations.log.WARN,
-      objectId .. ' ' .. tostring(staticRecord) .. ' ' .. staticRecord.flags
+      type(objectId) .. ' ' .. objectId .. ' ' .. tostring(staticRecord) .. ' ' .. staticRecord.flags
     )
 
     recordStore[objectId] = {
-      flags = staticRecord.flags,
-      id = objectId,
-      model = staticRecord.mesh:lower(),
+      -- flags = staticRecord.flags,
+      -- id = objectId,
+      -- model = staticRecord.mesh:lower(),
     }
   end,
 }
