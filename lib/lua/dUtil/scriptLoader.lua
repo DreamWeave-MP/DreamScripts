@@ -130,6 +130,17 @@ local ModuleCache = {
 }
 local ScriptDirectories = { 'scripts/', 'lib/', 'lib/lua/', }
 
+local hasTDS, tds = pcall(require, 'tds')
+local hasTES3, tes3 = pcall(require, 'tes3_lua')
+
+if hasTDS then
+  ModuleCache.tds = tds
+end
+
+if hasTES3 then
+  ModuleCache.tes3_lua = tes3
+end
+
 --- Small shim for overriding require statements in curated script environment
 ---@param scriptName string
 ---@return any result, string? error
