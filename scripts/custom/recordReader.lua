@@ -23,6 +23,7 @@ local loadOrder = {
 ---@type RecordStores
 local RecordStores = tds.Hash {
   Alchemy = tds.Hash(),
+  Armor = tds.Hash(),
   Activator = tds.Hash(),
   Static = tds.Hash(),
 }
@@ -37,11 +38,39 @@ local TypeHandlers = {
       script = activatorRecord.script,
     }
   end,
-  Alchemy = function(recordStore, potionRecord, recordId)
-    local effects = {}
+  Armor = function(recordStore, armorRecord, recordId)
+    local bipedObjects = tds.Vec(#armorRecord.biped_objects)
 
-    for _, effect in ipairs(potionRecord.effects) do
-      effects[#effects + 1] = tds.Hash {
+    for i, bipedObject in ipairs(armorRecord.biped_objects) do
+      bipedObjects[i] = tds.Hash {
+        bipedObjectType = bipedObject.biped_object_type,
+        malePart = bipedObject.male_bodypart,
+        femalePart = bipedObject.female_bodypart,
+      }
+    end
+
+    recordStore[recordId] = tds.Hash {
+      armorRating = armorRecord.data.armor_rating,
+      armorType = armorRecord.data.armor_type,
+      durability = armorRecord.data.health,
+      enchantment = armorRecord.enchanting,
+      enchantmentValue = armorRecord.data.enchantment,
+      icon = armorRecord.icon:normalize(),
+      id = recordId,
+      model = armorRecord.mesh:normalize(),
+      name = armorRecord.name,
+      objectFlags = armorRecord.flags,
+      parts = bipedObjects,
+      script = armorRecord.script,
+      weight = armorRecord.data.weight,
+      value = armorRecord.data.value,
+    }
+  end,
+  Alchemy = function(recordStore, potionRecord, recordId)
+    local effects = tds.Vec(#potionRecord.effects)
+
+    for i, effect in ipairs(potionRecord.effects) do
+      effects[i] = tds.Hash {
         magicEffect = effect.magic_effect,
         skill = effect.skill,
         attribute = effect.attribute,

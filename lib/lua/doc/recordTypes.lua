@@ -1,5 +1,18 @@
 ---@meta
 
+---@alias ArmorType
+---| 0 # Helmet
+---| 1 # Cuirass
+---| 2 # LeftPauldron
+---| 3 # RightPauldron
+---| 4 # Greaves
+---| 5 # Boots
+---| 6 # LeftGauntlet
+---| 7 # RightGauntlet
+---| 8 # Shield
+---| 9 # LeftBracer
+---| 10 # RightBracer
+
 ---@alias AttributeId2
 ---| -1 # None
 ---| 0 # Strength
@@ -10,6 +23,35 @@
 ---| 5 # Endurance
 ---| 6 # Personality
 ---| 7 # Luck
+
+---@alias BipedObjectType
+---| 0 # Head
+---| 1 # Hair
+---| 2 # Neck
+---| 3 # Chest
+---| 4 # Groin
+---| 5 # Skirt
+---| 6 # RightHand
+---| 7 # LeftHand
+---| 8 # RightWrist
+---| 9 # LeftWrist
+---| 10 # Shield
+---| 11 # RightForearm
+---| 12 # LeftForearm
+---| 13 # RightUpperArm
+---| 14 # LeftUpperArm
+---| 15 # RightFoot
+---| 16 # LeftFoot
+---| 17 # RightAnkle
+---| 18 # LeftAnkle
+---| 19 # RightKnee
+---| 20 # LeftKnee
+---| 21 # RightUpperLeg
+---| 22 # LeftUpperLeg
+---| 23 # RightPauldron
+---| 24 # LeftPauldron
+---| 25 # Weapon
+---| 26 # Tail
 
 ---@alias EffectRange
 ---| 0 # OnSelf
@@ -199,10 +241,30 @@
 ---@field objectFlags integer Numeric flags with default value 0
 ---@field id RecordId Record editor identifier. Always lowercase.
 
+--- Representation of an individual slot used by a clothing or armor
+---@class BipedObject
+---@field bipedObjectType BipedObjectType
+---@field malePart string
+---@field femalePart string? Female parts are optional
+
 ---@class ActivatorRecord: BaseRecord
 ---@field model NormalizedPath
 ---@field name? string
 ---@field script? RecordId
+
+---@class ArmorRecord
+---@field armorRating integer
+---@field armorType ArmorType
+---@field durability integer
+---@field enchantment RecordId?
+---@field enchantmentValue integer
+---@field icon NormalizedPath
+---@field id RecordId
+---@field model NormalizedPath
+---@field parts BipedObject[]
+---@field script RecordId?
+---@field weight integer
+---@field value integer
 
 ---@class MagicEffect
 ---@field area integer
@@ -229,5 +291,6 @@
 
 ---@class RecordStores
 ---@field Activator table<RecordId, ActivatorRecord>
+---@field Armor table<RecordId, ArmorRecord>
 ---@field Alchemy table<RecordId, PotionRecord>
 ---@field Static table<RecordId, StaticRecord>
