@@ -1,12 +1,16 @@
---- All customScripts utilized by this loader will return values in the following format:
--- return {
---   interface = '',
---   interfaceName = {},
---   eventHandlers = {},
---   eventValidators = {},
---   chatCommands = {},
--- }
--- All fields are, in and of themselves, optional, however, an interfaceName is required when attempting to define an interface for a script
+--[[
+All customScripts utilized by this loader will return values in the following format:
+return {
+  chatCommands = {},
+  eventHandlers = {},
+  eventValidators = {},
+  interface = '',
+  interfaceName = {},
+  menus = {},
+}
+
+All fields are, in and of themselves, optional, however, an interfaceName is required when attempting to define an interface for a script
+]]
 
 local config = require 'tes3mp.config'
 local enumerations = require 'tes3mp.enumerations'
