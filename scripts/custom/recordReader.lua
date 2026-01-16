@@ -25,7 +25,7 @@ for _, pluginName in ipairs(loadOrder) do
   local plugin = tes3.load_plugin(pluginPath)
   tes3mp.LogAppend(enumerations.log.WARN, 'Records defined by ' .. pluginPath)
 
-  for i = 1, #plugin.objects do
-    local object = plugin.objects[i]
-  end
+  -- for i = 1, #plugin.objects do
+  --   local object = plugin.objects[i]
+  -- end
 end
