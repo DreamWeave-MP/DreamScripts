@@ -124,7 +124,7 @@ function DScriptLoader.requireShim(scriptName)
         ('Tried to load the script at %s, but it threw an exception: %s. This script cannot be loaded!')
         :format(scriptName, result)
       )
-      tes3mp.StopServer(11)
+      return tes3mp.StopServer(11)
     end
 
     sandboxLoaded[scriptName] = chunk
@@ -206,7 +206,7 @@ function DScriptLoader.loadScriptInterface(scriptPath, scriptResult)
       ('%s defined an interface which was not a table! The interface field of all scripts must be a table, if it is defined.')
       :format(scriptPath)
     )
-    tes3mp.StopServer(13)
+    return tes3mp.StopServer(13)
   end
 
   if not scriptResult.interfaceName then
@@ -215,14 +215,14 @@ function DScriptLoader.loadScriptInterface(scriptPath, scriptResult)
       ('%s defined an interface, but no name to reference it by! Add an `interfaceName` field to the return table of your script.')
       :format(scriptPath)
     )
-    tes3mp.StopServer(14)
+    return tes3mp.StopServer(14)
   elseif type(scriptResult.interfaceName) ~= 'string' then
     tes3mp.LogAppend(
       enumerations.log.ERROR,
       ('%s defined an interfaceName, but it was not a string! It was: %s')
       :format(scriptPath, scriptResult.interfaceName)
     )
-    tes3mp.StopServer(11)
+    return tes3mp.StopServer(11)
   end
 
   Interfaces[scriptResult.interfaceName] = DScriptLoader.makeReadOnly(scriptResult.interface)
@@ -275,7 +275,7 @@ function DScriptLoader.loadScriptMenus(scriptPath, scriptRegistration)
       ('Failed to load the script %s as it attempt to define menus which were not a table: %s')
       :format(scriptPath, scriptMenus)
     )
-    tes3mp.StopServer(5)
+    return tes3mp.StopServer(5)
   elseif not DScriptLoader.Interfaces.menuHelper then
     return tes3mp.LogAppend(
       enumerations.log.WARN,
@@ -371,7 +371,7 @@ function DScriptLoader.loadScript(scriptName, callerPid)
       return Players[callerPid]:Message(ScriptFailedMessage:format(scriptPath))
     else
       tes3mp.LogAppend(enumerations.log.ERROR, ScriptFailedMessage:format(scriptPath))
-      tes3mp.StopServer(4)
+      return tes3mp.StopServer(4)
     end
   end
 
@@ -390,14 +390,14 @@ function DScriptLoader.loadScript(scriptName, callerPid)
           ('An invalid PlayerId: %s was provided to DScriptLoader.loadScript. This should never happen!')
           :format(callerPid)
         )
-        tes3mp.StopServer(10)
+        return tes3mp.StopServer(10)
       end
 
       return tes3mp.SendMessage(callerPid, ('Failed to load script: %s, error: %s'):format(scriptPath, result))
     else
       tes3mp.LogAppend(enumerations.log.FATAL,
         ('Failed to load %s, error: %s. Aborting startup!'):format(scriptPath, result))
-      tes3mp.StopServer(16)
+      return tes3mp.StopServer(16)
     end
   end
 
@@ -410,14 +410,14 @@ function DScriptLoader.loadScript(scriptName, callerPid)
       ('Tried to load the script at %s, but it threw an exception: %s. This script cannot be loaded!')
       :format(scriptPath, result)
     )
-    tes3mp.StopServer(11)
+    return tes3mp.StopServer(11)
   elseif type(result) ~= 'table' then
     tes3mp.LogAppend(
       enumerations.log.ERROR,
       ('Successfully loaded the script at %s, but its return value was not a table. This script cannot be loaded!')
       :format(scriptPath)
     )
-    tes3mp.StopServer(12)
+    return tes3mp.StopServer(12)
   end
 
   for elementName in pairs(result) do
@@ -427,7 +427,7 @@ function DScriptLoader.loadScript(scriptName, callerPid)
         ('Failed to load script %s as it returned an invalid field: %s. The server will now terminate!')
         :format(scriptPath, elementName)
       )
-      tes3mp.StopServer(9)
+      return tes3mp.StopServer(9)
     end
   end
 
