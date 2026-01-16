@@ -32,6 +32,7 @@ local customCommandHooks = {
 ---@param cmd string Name of the new command to register
 ---@param commandData TES3MPCommand
 function customCommandHooks:registerCommand(cmd, commandData)
+    commandData.definedBy = commandData.definedBy:lower()
     self.commands[cmd:lower()] = commandData
 end
 
