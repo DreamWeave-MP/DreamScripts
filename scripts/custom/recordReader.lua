@@ -1,3 +1,4 @@
+local dUtil = require 'dUtil.init'
 local enumerations = require 'tes3mp.enumerations'
 
 local I = require 'interfaces'
@@ -11,6 +12,12 @@ if not tds or not tes3 then
     'Either TDS or TES3_lua was missing.'
   )
   return {}
+end
+
+---@param string string
+---@return string? lowercased
+local function lowercase(string)
+  if string then return string:lower() end
 end
 
 local loadOrder = {
@@ -35,7 +42,7 @@ local TypeHandlers = {
       id = recordId,
       model = activatorRecord.mesh:normalize(),
       name = activatorRecord.name,
-      script = activatorRecord.script,
+      script = lowercase(activatorRecord.script),
     }
   end,
   Armor = function(recordStore, armorRecord, recordId)
@@ -44,8 +51,8 @@ local TypeHandlers = {
     for i, bipedObject in ipairs(armorRecord.biped_objects) do
       bipedObjects[i] = tds.Hash {
         bipedObjectType = bipedObject.biped_object_type,
-        malePart = (bipedObject.male_bodypart or ''):lower(),
-        femalePart = (bipedObject.female_bodypart or ''):lower(),
+        malePart = lowercase(bipedObject.male_bodypart),
+        femalePart = lowercase(bipedObject.female_bodypart),
       }
     end
 
@@ -53,7 +60,7 @@ local TypeHandlers = {
       armorRating = armorRecord.data.armor_rating,
       armorType = armorRecord.data.armor_type,
       durability = armorRecord.data.health,
-      enchantment = armorRecord.enchanting,
+      enchantment = lowercase(armorRecord.enchanting),
       enchantmentValue = armorRecord.data.enchantment,
       icon = armorRecord.icon:normalize(),
       id = recordId,
@@ -61,7 +68,7 @@ local TypeHandlers = {
       name = armorRecord.name,
       objectFlags = armorRecord.flags,
       parts = bipedObjects,
-      script = armorRecord.script,
+      script = lowercase(armorRecord.script),
       weight = armorRecord.data.weight,
       value = armorRecord.data.value,
     }
@@ -90,7 +97,7 @@ local TypeHandlers = {
       model = potionRecord.mesh:normalize(),
       name = potionRecord.name,
       potionFlags = potionRecord.data.flags,
-      script = potionRecord.script,
+      script = lowercase(potionRecord.script),
       value = potionRecord.data.value,
       weight = potionRecord.data.weight,
     }
@@ -108,6 +115,13 @@ local PluginPathFormatter = tes3mp.GetDataPath() .. '/custom/recordParser/%s'
 
 for _, pluginName in ipairs(loadOrder) do
   local pluginPath = PluginPathFormatter:format(pluginName)
+
+  if not dUtil.io.fileExists(pluginPath) then
+    error(
+      ('Requested to parse a plugin that doesn\'t actually exist: %s!\nThe server will now terminate. Remove %s from the list of plugins to load or place it at %s')
+      :format(pluginPath, pluginName, pluginPath)
+    )
+  end
   local plugin = tes3.load_plugin(pluginPath)
   tes3mp.LogAppend(
     enumerations.log.WARN,
