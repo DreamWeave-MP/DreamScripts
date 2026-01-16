@@ -20,6 +20,18 @@ local function lowercase(string)
   if string then return string:lower() end
 end
 
+local function readOnlyRecord(record)
+  return setmetatable(
+    {},
+    {
+      __index = record,
+      __newindex = function()
+        error(('Records are not writable!\n%s'):format(debug.traceback()))
+      end
+
+    })
+end
+
 local loadOrder = {
   'Morrowind.esm',
   'Tribunal.esm',
@@ -37,26 +49,26 @@ local RecordStores = tds.Hash {
 
 local TypeHandlers = {
   Activator = function(recordStore, activatorRecord, recordId)
-    recordStore[recordId] = tds.Hash {
+    recordStore[recordId] = readOnlyRecord(tds.Hash {
       objectFlags = activatorRecord.flags,
       id = recordId,
       model = activatorRecord.mesh:normalize(),
       name = activatorRecord.name,
       script = lowercase(activatorRecord.script),
-    }
+    })
   end,
   Armor = function(recordStore, armorRecord, recordId)
     local bipedObjects = tds.Vec(#armorRecord.biped_objects)
 
     for i, bipedObject in ipairs(armorRecord.biped_objects) do
-      bipedObjects[i] = tds.Hash {
+      bipedObjects[i] = readOnlyRecord(tds.Hash {
         bipedObjectType = bipedObject.biped_object_type,
         malePart = lowercase(bipedObject.male_bodypart),
         femalePart = lowercase(bipedObject.female_bodypart),
-      }
+      })
     end
 
-    recordStore[recordId] = tds.Hash {
+    recordStore[recordId] = readOnlyRecord(tds.Hash {
       armorRating = armorRecord.data.armor_rating,
       armorType = armorRecord.data.armor_type,
       durability = armorRecord.data.health,
@@ -71,13 +83,13 @@ local TypeHandlers = {
       script = lowercase(armorRecord.script),
       weight = armorRecord.data.weight,
       value = armorRecord.data.value,
-    }
+    })
   end,
   Alchemy = function(recordStore, potionRecord, recordId)
     local effects = tds.Vec(#potionRecord.effects)
 
     for i, effect in ipairs(potionRecord.effects) do
-      effects[i] = tds.Hash {
+      effects[i] = readOnlyRecord(tds.Hash {
         magicEffect = effect.magic_effect,
         skill = effect.skill,
         attribute = effect.attribute,
@@ -86,10 +98,10 @@ local TypeHandlers = {
         duration = effect.duration,
         maxMagnitude = effect.max_magnitude,
         minMagnitude = effect.min_magnitude,
-      }
+      })
     end
 
-    recordStore[recordId] = tds.Hash {
+    recordStore[recordId] = readOnlyRecord(tds.Hash {
       effects = effects,
       objectFlags = potionRecord.flags,
       icon = potionRecord.icon:normalize(),
@@ -100,14 +112,14 @@ local TypeHandlers = {
       script = lowercase(potionRecord.script),
       value = potionRecord.data.value,
       weight = potionRecord.data.weight,
-    }
+    })
   end,
   Static = function(recordStore, staticRecord, recordId)
-    recordStore[recordId] = tds.Hash {
+    recordStore[recordId] = readOnlyRecord(tds.Hash {
       objectFlags = staticRecord.flags,
       id = recordId,
       model = staticRecord.mesh:normalize(),
-    }
+    })
   end,
 }
 
