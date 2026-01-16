@@ -118,17 +118,14 @@ for _, pluginName in ipairs(loadOrder) do
 
   if not dUtil.io.fileExists(pluginPath) then
     error(
-      ('Requested to parse a plugin that doesn\'t actually exist: %s!\nThe server will now terminate. Remove %s from the list of plugins to load or place it at %s\n')
+      ('Requested to parse a plugin that doesn\'t actually exist: %s!\nThe server will now terminate. Remove %s from the list of plugins to load or place it at %s')
       :format(pluginPath, pluginName, pluginPath)
     )
   end
 
-  tes3mp.LogAppend(
-    enumerations.log.WARN,
-    ('Parsing records defined by %s'):format(pluginPath)
-  )
+  local plugin = tes3.load_plugin(pluginPath)
 
-  for _, object in ipairs(tes3.load_plugin(pluginPath)) do
+  for _, object in ipairs(plugin.objects) do
     local recordStore, typeHandler = RecordStores[object.type], TypeHandlers[object.type]
 
     if recordStore and typeHandler then
