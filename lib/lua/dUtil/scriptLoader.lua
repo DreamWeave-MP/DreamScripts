@@ -13,6 +13,7 @@ All fields are, in and of themselves, optional, however, an interfaceName is req
 ]]
 
 local config = require 'tes3mp.config'
+local dUtil = require 'dUtil.init'
 local enumerations = require 'tes3mp.enumerations'
 local logicHandler = require 'tes3mp.logicHandler'
 local tableHelper = require 'tes3mp.util.table'
@@ -44,21 +45,6 @@ function DScriptLoader.sanitizePath(path)
   return path .. '.lua'
 end
 
---- Takes a table as input and returns a read-only one.
---- Commits seppuku if the input is not a table, so do be careful
----@param inTable table<any, any>
----@return table<any, any>
-function DScriptLoader.makeReadOnly(inTable)
-  if type(inTable) ~= 'table' then error(('Input value to makeReadOnly %s was not a table!'):format(inTable)) end
-
-  return setmetatable(inTable, {
-    __newindex = function()
-      print(debug.traceback(('Write attempt to read-only table %s'):format(inTable), 3))
-      tes3mp.StopServer(15)
-    end,
-  })
-end
-
 local hasTDS, tds = pcall(require, 'tds.init')
 local hasTES3, tes3 = pcall(require, 'tes3_lua')
 
@@ -68,7 +54,7 @@ function DScriptLoader.originalInterfaces()
   ---@type DefaultInterfaces
   local interfaces = {
     ---@type StorageModule
-    storage = DScriptLoader.makeReadOnly {
+    storage = dUtil.misc.makeReadOnly {
       ---@param data SaveSubscriptionData
       ---@return table? resultData Returns the loaded file's contents if it exists, or, the initial data table which was subscribed to.
       loadWithSubscription = function(data)
@@ -143,7 +129,7 @@ function DScriptLoader.originalInterfaces()
     ---@class DScriptLoaderHidden
     ---@field loadScript function(scriptPath: string, callerPid: PlayerId?)
     ---@field loadAllScripts function()
-    scriptLoader = DScriptLoader.makeReadOnly {
+    scriptLoader = dUtil.misc.makeReadOnly {
       loadScript = DScriptLoader.loadScript,
       loadAllScripts = DScriptLoader.loadAllScripts,
     },
@@ -334,7 +320,7 @@ function DScriptLoader.loadScriptInterface(scriptPath, scriptResult)
     return tes3mp.StopServer(11)
   end
 
-  Interfaces[scriptResult.interfaceName] = DScriptLoader.makeReadOnly(scriptResult.interface)
+  Interfaces[scriptResult.interfaceName] = dUtil.misc.makeReadOnly(scriptResult.interface)
 end
 
 --- Given a loaded script and its path, insert chat commands

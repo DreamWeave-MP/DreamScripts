@@ -88,4 +88,19 @@ function MiscUtil.makeEventStatus(validDefaultHandler, validCustomHandlers)
   }
 end
 
+--- Takes a table as input and returns a read-only one.
+--- Commits seppuku if the input is not a table, so do be careful
+---@param inTable table<any, any>
+---@return table<any, any>
+function MiscUtil.makeReadOnly(inTable)
+  if type(inTable) ~= 'table' then error(('Input value to makeReadOnly %s was not a table!'):format(inTable)) end
+
+  return setmetatable(inTable, {
+    __newindex = function()
+      print(debug.traceback(('Write attempt to read-only table %s'):format(inTable), 3))
+      tes3mp.StopServer(15)
+    end,
+  })
+end
+
 return MiscUtil
