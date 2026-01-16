@@ -9,10 +9,12 @@ local tableHelper = require 'tes3mp.util.table'
 ---@return DataFileRequirements
 local function loadDataFileList(filename, log)
   local dataFileList = {}
-  tes3mp.LogMessage(
-    enumerations.log.INFO,
-    ('Reading data files from: %s'):format(filename)
-  )
+  if log then
+    tes3mp.LogMessage(
+      enumerations.log.INFO,
+      ('Reading data files from: %s'):format(filename)
+    )
+  end
 
   local jsonDataFileList = jsonInterface.load(filename)
 
