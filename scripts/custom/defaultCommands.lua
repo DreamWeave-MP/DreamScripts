@@ -12,6 +12,7 @@ local patterns = require 'patterns'
 local recordHelper = require 'tes3mp.util.record'
 local tableHelper = require 'tes3mp.util.table'
 
+---@type DefaultInterfaces
 local I = require 'interfaces'
 
 ---@type MenuHelper
@@ -474,7 +475,7 @@ local function loadScript(pid, cmd)
         return player:Message('Use /load <scriptName>\n')
     end
 
-    scriptLoader.loadScript(scriptName)
+    I.scriptLoader.loadScript(scriptName)
 end
 
 ---@type CommandHandler

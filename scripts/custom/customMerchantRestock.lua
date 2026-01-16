@@ -306,6 +306,7 @@ end
 ---@type TES3MPScriptRegistration
 return {
   interfaceName = 'customMerchantRestock',
+  ---@class RestockInterface
   interface = {
     getLeveledItem = RecursiveGetLeveledItem,
     merchantData = function()

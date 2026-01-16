@@ -1,9 +1,16 @@
 ---@meta
 
 ---@class DefaultInterfaces
----@field storage StorageModule
+---@field color ColorModule?
+---@field contentFixer ContentFixer?
 ---@field customCommandHooks CustomCommandHooks?
 ---@field customEventHooks CustomEventHooks?
+---@field menuHelper MenuHelper?
+---@field scriptLoader DScriptLoaderHidden
+---@field speechHelper SpeechHelper?
+---@field storage StorageModule
+---@field dreamDice DiceInterface?
+---@field customMerchantRestock RestockInterface?
 
 ---@class DreamWeaveMenuModule
 ---@field display function(pid: PlayerId, menuName: string)

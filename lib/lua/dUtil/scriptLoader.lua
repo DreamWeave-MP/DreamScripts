@@ -91,7 +91,14 @@ function DScriptLoader.originalInterfaces()
 
         saveDataTable[data.filePath] = data
       end,
-    }
+    },
+    ---@class DScriptLoaderHidden
+    ---@field loadScript function(scriptPath: string, callerPid: PlayerId?)
+    ---@field loadAllScripts function()
+    scriptLoader = DScriptLoader.makeReadOnly {
+      loadScript = DScriptLoader.loadScript,
+      loadAllScripts = DScriptLoader.loadAllScripts,
+    },
   }
 end
 
@@ -209,11 +216,6 @@ function DScriptLoader.getScriptEnv()
     type = type,
     unpack = unpack,
     xpcall = xpcall,
-    ---@class DScriptLoaderHidden
-    scriptLoader = {
-      loadScript = DScriptLoader.loadScript,
-      loadAllScripts = DScriptLoader.loadAllScripts,
-    },
     --- TES3MP Globals
     banList = banList,
     HourCounter = HourCounter,
