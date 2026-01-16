@@ -107,6 +107,7 @@ function SaveBufferedPaths()
             if not saveSubscription.lastCheckedTime
                 or currentTime - saveSubscription.lastCheckedTime < saveSubscription.delay
             then
+                saveSubscription.lastCheckedTime = saveSubscription.lastCheckedTime or currentTime
                 tes3mp.LogAppend(
                     enumerations.log.WARN,
                     ('Skipping serialization of %s as its delay of %d has not been met yet: %d')
