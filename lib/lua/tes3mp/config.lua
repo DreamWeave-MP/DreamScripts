@@ -9,6 +9,10 @@ config.dataPath = tes3mp.GetDataPath()
 --- Array of script paths used to load handlers, validators, and interfaces from
 --- These directories are always relative to server/scripts/custom
 config.customScripts = {
+    --- A basic color interface is defined here which reuses the original `color` module.
+    --- To extend the color interface, simply edit scripts/color.lua.
+    --- Don't change scripts/custom/color.lua
+    'color',
     --- The menu interface is what used to be menuHelper, and many builtins rely on it
     --- Don't disable or screw with this, or many things will break
     'menuInterface',
