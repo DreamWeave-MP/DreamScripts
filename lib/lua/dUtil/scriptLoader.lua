@@ -450,6 +450,7 @@ function DScriptLoader.loadAllScripts()
   --- Reinitialize all interfaces when reloading all scripts
   Interfaces = {}
 
+  local startTime = os.clock()
   for _, scriptName in ipairs(config.customScripts) do
     if not DScriptLoader.loadScript(scriptName) then
       return tes3mp.LogAppend(
@@ -458,6 +459,11 @@ function DScriptLoader.loadAllScripts()
       )
     end
   end
+
+  tes3mp.LogAppend(
+    enumerations.log.INFO,
+    ('Successfully completed script initialization in %.6f milliseconds.'):format((startTime - os.clock()) * 1000)
+  )
 end
 
 return DScriptLoader
