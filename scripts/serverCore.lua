@@ -835,7 +835,7 @@ function OnPlayerDisconnect(pid)
         end
 
         player:Destroy()
-        player = nil
+        Players[pid] = nil
     end
 
     -- If the server is now empty, quick saving of data isn't important anymore, so do a slower save of
