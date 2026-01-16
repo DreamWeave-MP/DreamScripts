@@ -50,6 +50,9 @@
 ---@field subscribeToSave fun(data: SaveSubscriptionData)
 --- Given some initial data, provide a path and details for subscription,
 --- And return whatever the saved content is or will be.
+--- If neither a data field is provided in the subscription handler, nor an existing file was found,
+--- An empty table will be returned which is used for serialization.
+--- Don't lose track of it!
 --- For example, this function can be used to provide a default configuration
 --- And keep the configuration file saving consistently every thirty seconds or what-have.
 ---@field loadWithSubscription fun(data: SaveSubscriptionData): table?

@@ -15,6 +15,7 @@ All fields are, in and of themselves, optional, however, an interfaceName is req
 local config = require 'tes3mp.config'
 local dUtil = require 'dUtil.init'
 local enumerations = require 'tes3mp.enumerations'
+local jsonInterface = require 'jsonInterface'
 local logicHandler = require 'tes3mp.logicHandler'
 local tableHelper = require 'tes3mp.util.table'
 
@@ -56,7 +57,7 @@ function DScriptLoader.originalInterfaces()
     ---@type StorageModule
     storage = dUtil.misc.makeReadOnly {
       ---@param data SaveSubscriptionData
-      ---@return table? resultData Returns the loaded file's contents if it exists, or, the initial data table which was subscribed to.
+      ---@return table? resultData Returns the loaded file's contents if it exists, or, the initial data table which was subscribed to, or an empty table.
       loadWithSubscription = function(data)
         local traceback = debug.traceback()
         assert(data and type(data) == 'table', traceback)
@@ -71,8 +72,9 @@ function DScriptLoader.originalInterfaces()
           )
         end
 
-        if saveDataTable[data.filePath] then
-          if not jsonInterface.quicksave(data.filePath, saveDataTable[data.filePath]) then
+        local existingData = saveDataTable[data.filePath]
+        if existingData then
+          if not jsonInterface.quicksave(data.filePath, existingData) then
             return tes3mp.LogAppend(
               enumerations.log.WARN,
               ('Attempted to overwrite %s in the global saved data table, but failed somehow. You must wait for its original reference to be removed!\n%s')
@@ -85,6 +87,8 @@ function DScriptLoader.originalInterfaces()
         if result then
           if type(result) == 'table' then
             data.data = result
+          elseif not result then
+            result = {}
           else
             return tes3mp.LogAppend(
               enumerations.log.WARN,
