@@ -21,22 +21,25 @@ local loadOrder = {
   -- 'Starwind-TSI.omwaddon',
 }
 
-local SkipTypes = {
-  Dialogue = true,
-  DialogueInfo = true,
-}
-
 local RecordStores = tds.Hash {
+  Activator = tds.Hash(),
   Static = tds.Hash(),
 }
 
-local StaticRecords = {}
 local TypeHandlers = {
-  Static = function(recordStore, staticRecord)
-    local objectId = staticRecord.id:lower()
-    recordStore[objectId] = tds.Hash {
+  Activator = function(recordStore, activatorRecord, recordId)
+    recordStore[recordId] = tds.Hash {
+      flags = activatorRecord.flags,
+      id = recordId,
+      model = activatorRecord.mesh:normalize(),
+      name = activatorRecord.name,
+      script = activatorRecord.script,
+    }
+  end,
+  Static = function(recordStore, staticRecord, recordId)
+    recordStore[recordId] = tds.Hash {
       flags = staticRecord.flags,
-      id = objectId,
+      id = recordId,
       model = staticRecord.mesh:normalize(),
     }
   end,
@@ -47,13 +50,16 @@ local PluginPathFormatter = tes3mp.GetDataPath() .. '/custom/recordParser/%s'
 for _, pluginName in ipairs(loadOrder) do
   local pluginPath = PluginPathFormatter:format(pluginName)
   local plugin = tes3.load_plugin(pluginPath)
-  tes3mp.LogAppend(enumerations.log.WARN, 'Records defined by ' .. pluginPath)
+  tes3mp.LogAppend(
+    enumerations.log.WARN,
+    ('Records defined by %s'):format(pluginPath)
+  )
 
   for _, object in ipairs(plugin.objects) do
     local recordStore, typeHandler = RecordStores[object.type], TypeHandlers[object.type]
 
     if recordStore and typeHandler then
-      typeHandler(recordStore, object)
+      typeHandler(recordStore, object, object.id:lower())
     end
   end
 end
