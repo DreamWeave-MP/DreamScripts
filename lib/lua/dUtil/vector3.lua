@@ -99,7 +99,7 @@ Vec3Methods.add_mut = function(a, b)
 end
 
 Vec3Methods.sub_mut = function(a, b)
-  assert(a.is(b), tostring(b) .. ' is not a vector type! Could not subtrack it from ' .. tostring(a))
+  assert(a.is(b), tostring(b) .. ' is not a vector type! Could not subtract it from ' .. tostring(a))
   a.x, a.y, a.z = a.x - b.x, a.y - b.y, a.z - b.z
 end
 
@@ -108,11 +108,10 @@ Vec3MT.__index = Vec3Methods
 ---@type ffi.ctype*(x?: number, y?: number, z?: number): Vector3
 local vector3 = ffi.metatype("vector3", Vec3MT)
 
----@type Vector3Module
-local Vector3 = {
-  new = function(...)
-    return vector3(...)
-  end,
-}
-
-return Vector3
+---@type Vector3Constructor
+return function(x, y, z)
+  assert(x and type(x) == 'number')
+  assert(y and type(y) == 'number')
+  assert(z and type(z) == 'number')
+  return vector3(x, y, z)
+end

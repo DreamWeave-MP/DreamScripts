@@ -1,5 +1,7 @@
 ---@meta
 
+---@alias Vector3Constructor fun(x: number, y: number, z: number): Vector3
+
 ---@class DefaultInterfaces
 ---@field color ColorModule?
 ---@field contentFixer ContentFixer?
@@ -28,7 +30,7 @@
 ---@field loadRequiredDataFiles fun(writeLog: boolean): DataFileRequirements Loads the required data files, whilst also initializing the server connection requirements. ONLY Call this once!
 ---@field io DUtilIO
 ---@field misc DUtilMisc
----@field vector3 Vector3Module
+---@field vector3 Vector3Constructor
 
 ---@class SaveSubscriptionData
 ---@field filePath string Path of the file, relative to `server/data`, eg, `custom/myData.json`
@@ -67,6 +69,3 @@
 ---@field is fun(v: any): boolean returns whether or not the input is also a vector3
 ---@field add_mut fun(v: Vector3) adds one vector onto this one mutably
 ---@field sub_mut fun(v: Vector3) subtract another vector from this one mutably
-
----@class Vector3Module
----@field new fun(x: number?, y: number?, z: number?): Vector3

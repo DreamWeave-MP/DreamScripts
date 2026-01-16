@@ -45,6 +45,9 @@ config.customScripts = {
     --- transition between cells, to prevent their AI from breaking
     --- Originally developed by Rickoff
     'fixFollowAI',
+    --- Prevent usage of trainers/traders
+    --- And stacking magic effects
+    'balanceAdjustments',
 }
 
 --- The game mode displayed for this server in the server browser

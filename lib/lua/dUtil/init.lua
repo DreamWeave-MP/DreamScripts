@@ -96,7 +96,7 @@ local Module = {
   io = require 'dUtil.io',
   ---@type DUtilMisc
   misc = require 'dUtil.miscellaneous',
-  ---@type Vector3Module
+  ---@type Vector3Constructor
   vector3 = require 'dUtil.vector3',
 }
 
