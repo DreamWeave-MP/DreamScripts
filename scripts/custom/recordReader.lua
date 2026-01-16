@@ -30,7 +30,7 @@ local RecordStores = tds.Hash {
 local TypeHandlers = {
   Activator = function(recordStore, activatorRecord, recordId)
     recordStore[recordId] = tds.Hash {
-      flags = activatorRecord.flags,
+      objectFlags = activatorRecord.flags,
       id = recordId,
       model = activatorRecord.mesh:normalize(),
       name = activatorRecord.name,
@@ -38,25 +38,41 @@ local TypeHandlers = {
     }
   end,
   Alchemy = function(recordStore, potionRecord, recordId)
+    local effects = {}
+
+    for _, effect in ipairs(potionRecord.effects) do
+      effects[effects + 1] = tds.Hash {
+        magic_effect = effect.magic_effect,
+        skill = effect.skill,
+        attribute = effect.attribute,
+        range = effect.range,
+        area = effect.area,
+        duration = effect.duration,
+        max_magnitude = effect.max_magnitude,
+        min_magnitude = effect.min_magnitude,
+      }
+    end
+
     print(potionRecord)
+
     recordStore[recordId] = tds.Hash {
       area = potionRecord.area,
       duration = potionRecord.duration,
-      flags = potionRecord.flags,
+      effects = effects,
+      objectFlags = potionRecord.flags,
       icon = potionRecord.icon:normalize(),
-      -- Effects are internally Vec<Effect>, so how do we represent Effect?
-      -- effects =
       id = recordId,
-      max_magnitude = potionRecord.max_magnitude,
-      min_magnitude = potionRecord.min_magnitude,
       model = potionRecord.mesh:normalize(),
       name = potionRecord.name,
+      potionFlags = potionRecord.data.flags,
       script = potionRecord.script,
+      value = potionRecord.data.value,
+      weight = potionRecord.data.weight,
     }
   end,
   Static = function(recordStore, staticRecord, recordId)
     recordStore[recordId] = tds.Hash {
-      flags = staticRecord.flags,
+      objectFlags = staticRecord.flags,
       id = recordId,
       model = staticRecord.mesh:normalize(),
     }
