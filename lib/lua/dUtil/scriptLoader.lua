@@ -59,11 +59,14 @@ function DScriptLoader.makeReadOnly(inTable)
   })
 end
 
+local hasTDS, tds = pcall(require, 'tds.init')
+local hasTES3, tes3 = pcall(require, 'tes3_lua')
+
 local saveDataTable = BufferedDiskPaths
 ---@return DefaultInterfaces
 function DScriptLoader.originalInterfaces()
   ---@type DefaultInterfaces
-  return {
+  local interfaces = {
     ---@type StorageModule
     storage = DScriptLoader.makeReadOnly {
       subscribeToSave = function(data)
@@ -100,6 +103,16 @@ function DScriptLoader.originalInterfaces()
       loadAllScripts = DScriptLoader.loadAllScripts,
     },
   }
+
+  if hasTES3 then
+    interfaces.tes3 = tes3
+  end
+
+  if hasTDS then
+    interfaces.tds = tds
+  end
+
+  return interfaces
 end
 
 ---@type DefaultInterfaces
@@ -129,17 +142,6 @@ local ModuleCache = {
   interfaces = DScriptLoader.Interfaces,
 }
 local ScriptDirectories = { 'scripts/', 'lib/', 'lib/lua/', }
-
-local hasTDS, tds = pcall(require, 'tds.init')
-local hasTES3, tes3 = pcall(require, 'tes3_lua')
-
-if hasTDS then
-  ModuleCache.tds = tds
-end
-
-if hasTES3 then
-  ModuleCache.tes3 = tes3
-end
 
 --- Small shim for overriding require statements in curated script environment
 ---@param scriptName string

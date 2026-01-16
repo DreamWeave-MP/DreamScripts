@@ -1,15 +1,17 @@
 local enumerations = require 'tes3mp.enumerations'
 
-local hasTDS, tds = pcall(require, 'tds')
-local hasTES3, tes3 = pcall(require, 'tes3_lua')
+local I = require 'interfaces'
 
--- if not hasTDS or not hasTES3 then
---   tes3mp.LogAppend(
---     enumerations.log.ERROR,
---     'Either TDS or TES3_lua was missing.'
---   )
--- return {}
--- end
+local tds = I.tds
+local tes3 = I.tes3
+
+if not tds or not tes3 then
+  tes3mp.LogAppend(
+    enumerations.log.ERROR,
+    'Either TDS or TES3_lua was missing.'
+  )
+  return {}
+end
 
 local loadOrder = {
   'Morrowind.esm',
