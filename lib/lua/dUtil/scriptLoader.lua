@@ -72,17 +72,21 @@ function DScriptLoader.originalInterfaces()
         assert(data.filePath and type(data.filePath) == 'string', traceback)
         assert(data.lastCheckedTime == nil, traceback)
 
-        if saveDataTable[data.filePath] then
-          return tes3mp.LogAppend(
-            enumerations.log.WARN,
-            ('%s was already assigned to the global saved data table. It may not be re-written, unless the storage manager removes the existing reference!')
-            :format(data.filePath)
-          )
-        elseif not data.data or type(data.data) ~= 'table' then
+        if not data.data or type(data.data) ~= 'table' then
           return tes3mp.LogAppend(
             enumerations.log.WARN,
             ('Provided an invalid data table to save subscription handler. Refusing to subscribe: %s'):format(data)
           )
+        end
+
+        if saveDataTable[data.filePath] then
+          if not jsonInterface.quicksave(data.filePath, saveDataTable[data.filePath]) then
+            return tes3mp.LogAppend(
+              enumerations.log.WARN,
+              ('Attempted to overwrite %s in the global saved data table, but failed somehow. You must wait for its original reference to be removed!')
+              :format(data.filePath)
+            )
+          end
         end
 
         saveDataTable[data.filePath] = data
