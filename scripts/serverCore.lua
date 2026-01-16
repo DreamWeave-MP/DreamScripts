@@ -179,13 +179,16 @@ local function onGenericObjectEvent(pid, cellDescription, packetType)
 
     print('Object list size is:', tes3mp.GetObjectListSize())
     local packetTables = packetReader.GetObjectPacketTables(packetType)
+    print('------_SERVERCORE_--------')
+    tableHelper.print(packetTables)
+    print('------_SERVERCORE_--------')
     local objects = packetTables.objects
     local targetPlayers = packetTables.players
 
-    if tableHelper.isEmpty(objects) or tableHelper.isEmpty(targetPlayers) then
+    if not next(objects) or not next(targetPlayers) then
         return tes3mp.LogAppend(
             enumerations.log.WARN,
-            ('Either objects table or targetPlayers table of generic object event was empty. Sorry!')
+            ('Either objects table or targetPlayers table of generic object event was empty.')
         )
     end
 
