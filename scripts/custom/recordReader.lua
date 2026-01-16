@@ -29,3 +29,5 @@ for _, pluginName in ipairs(loadOrder) do
   --   local object = plugin.objects[i]
   -- end
 end
+
+return {}
