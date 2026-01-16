@@ -46,7 +46,7 @@ return function()
 
       rollObject:resolve()
 
-      testResults[#testResults + 1] = rollObject
+      testResults[#testResults + 1] = tostring(rollObject)
     end
   end
 
