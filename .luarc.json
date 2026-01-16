@@ -3,7 +3,6 @@
         "version": "LuaJIT",
         "path": [
             "./scripts/?.lua",
-            "./scripts/custom/?.lua",
             "./lib/lua/?.lua"
         ]
     },
