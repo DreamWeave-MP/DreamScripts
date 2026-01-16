@@ -356,26 +356,23 @@ local ScriptFailedMessage = 'Attempted to load the script at %s, but failed, bec
 --- Can be called from the chat window by passing the second optional parameter, callerPid.
 ---@param scriptName string name of a script, relative to server/scripts/custom, to attempt to load
 ---@param callerPid PlayerId? optional PlayerId
----@return boolean didLoad Whether or not script loading was successful
+---@return true? didLoad Whether or not script loading was successful
 function DScriptLoader.loadScript(scriptName, callerPid)
   if not scriptName or type(scriptName) ~= 'string' then
-    tes3mp.LogAppend(
+    return tes3mp.LogAppend(
       enumerations.log.ERROR,
       ('Invalid script path provided to DScriptLoader.loadScript: %s'):format(scriptName)
     )
-    return false
   end
 
   local scriptPath = DScriptLoader.sanitizePath(ScriptPathFormatter:format(scriptName))
 
   if not dUtil.io.fileExists(scriptPath) then
     if callerPid then
-      Players[callerPid]:Message(ScriptFailedMessage:format(scriptPath))
-      return false
+      return Players[callerPid]:Message(ScriptFailedMessage:format(scriptPath))
     else
       tes3mp.LogAppend(enumerations.log.ERROR, ScriptFailedMessage:format(scriptPath))
-      tes3mp.StopServer(4)
-      return false
+      return tes3mp.StopServer(4)
     end
   end
 
@@ -394,17 +391,16 @@ function DScriptLoader.loadScript(scriptName, callerPid)
           ('An invalid PlayerId: %s was provided to DScriptLoader.loadScript. This should never happen!')
           :format(callerPid)
         )
-        tes3mp.StopServer(10)
-        return false
+
+        return tes3mp.StopServer(10)
       end
 
-      tes3mp.SendMessage(callerPid, ('Failed to load script: %s, error: %s'):format(scriptPath, result))
-      return false
+      return tes3mp.SendMessage(callerPid, ('Failed to load script: %s, error: %s'):format(scriptPath, result))
     else
       tes3mp.LogAppend(enumerations.log.FATAL,
         ('Failed to load %s, error: %s. Aborting startup!'):format(scriptPath, result))
-      tes3mp.StopServer(16)
-      return false
+
+      return tes3mp.StopServer(16)
     end
   end
 
@@ -417,16 +413,16 @@ function DScriptLoader.loadScript(scriptName, callerPid)
       ('Tried to load the script at %s, but it threw an exception: %s. This script cannot be loaded!')
       :format(scriptPath, result)
     )
-    tes3mp.StopServer(11)
-    return false
+
+    return tes3mp.StopServer(11)
   elseif type(result) ~= 'table' then
     tes3mp.LogAppend(
       enumerations.log.ERROR,
       ('Successfully loaded the script at %s, but its return value was not a table. This script cannot be loaded!')
       :format(scriptPath)
     )
-    tes3mp.StopServer(12)
-    return false
+
+    return tes3mp.StopServer(12)
   end
 
   for elementName in pairs(result) do
@@ -436,8 +432,8 @@ function DScriptLoader.loadScript(scriptName, callerPid)
         ('Failed to load script %s as it returned an invalid field: %s. The server will now terminate!')
         :format(scriptPath, elementName)
       )
-      tes3mp.StopServer(9)
-      return false
+
+      return tes3mp.StopServer(9)
     end
   end
 
