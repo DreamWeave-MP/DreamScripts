@@ -46,6 +46,8 @@ end
 --- Used by DScriptLoader whenever a script is loaded to flush old references to its registered commands.
 ---@param scriptPath string
 function customCommandHooks:clearCommandsFromScript(scriptPath)
+    scriptPath = scriptPath:lower()
+
     for i = #self.commands, 1, -1 do
         local definedCommand = self.commands[i]
 
