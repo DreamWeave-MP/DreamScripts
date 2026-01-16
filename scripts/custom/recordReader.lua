@@ -21,6 +21,7 @@ local function lowercase(string)
 end
 
 local loadOrder = {
+  'Fake.esm',
   'Morrowind.esm',
   'Tribunal.esm',
   'Bloodmoon.esm',
