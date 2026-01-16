@@ -55,8 +55,7 @@ for _, pluginName in ipairs(loadOrder) do
   local plugin = tes3.load_plugin(pluginPath)
   tes3mp.LogAppend(enumerations.log.WARN, 'Records defined by ' .. pluginPath)
 
-  for i = 1, #plugin.objects do
-    local object = plugin.objects[i]
+  for _, object in ipairs(plugin.objects) do
     local recordStore, typeHandler = RecordStores[object.type], TypeHandlers[object.type]
 
     if recordStore and typeHandler then
