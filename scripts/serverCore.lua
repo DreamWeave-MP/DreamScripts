@@ -71,7 +71,7 @@ banList = {}
 ---@type table<string, table>
 ---@global
 local BufferedDiskPaths = {
-    ['server/data/custom/testFile.json'] = {
+    ['custom/testFile.json'] = {
         data = {
             playerId = 15,
             data = {
