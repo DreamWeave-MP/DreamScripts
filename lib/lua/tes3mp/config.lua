@@ -41,6 +41,10 @@ config.customScripts = {
     --- Custom scripts may be added here
     'customMerchantRestock',
     'dreamDice/main',
+    --- Bit of a hack script to disable and re-enable actors when they
+    --- transition between cells, to prevent their AI from breaking
+    --- Originally developed by Rickoff
+    'fixFollowAI',
 }
 
 --- The game mode displayed for this server in the server browser
