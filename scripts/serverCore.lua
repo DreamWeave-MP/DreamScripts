@@ -177,18 +177,13 @@ local function onGenericObjectEvent(pid, cellDescription, packetType)
         )
     end
 
-    print('Object list size is:', tes3mp.GetObjectListSize())
     local packetTables = packetReader.GetObjectPacketTables(packetType)
-    print('------_SERVERCORE_--------')
-    tableHelper.print(packetTables)
-    print('------_SERVERCORE_--------')
-    local objects = packetTables.objects
-    local targetPlayers = packetTables.players
+    local objects, targetPlayers = packetTables.objects, packetTables.players
 
-    if not next(objects) or not next(targetPlayers) then
+    if not next(objects) and not next(targetPlayers) then
         return tes3mp.LogAppend(
             enumerations.log.WARN,
-            ('Either objects table or targetPlayers table of generic object event was empty.')
+            ('No targets provided to generic object event. This probably should never happen!!!')
         )
     end
 
@@ -197,10 +192,6 @@ local function onGenericObjectEvent(pid, cellDescription, packetType)
     end
 
     local eventName, eventStatus = ('On%s'):format(packetType)
-    tes3mp.LogAppend(
-        enumerations.log.WARN,
-        ('Triggering Generic Object event: On%s'):format(packetType)
-    )
     if CustomEventHooks then
         eventStatus = CustomEventHooks.triggerValidators(
             eventName,
@@ -214,7 +205,7 @@ local function onGenericObjectEvent(pid, cellDescription, packetType)
         local debugMessage = ('Accepted %s from %s about %s for ')
             :format(packetType, logicHandler.GetChatName(pid), cellDescription)
 
-        if next(objects) ~= nil then
+        if next(objects) then
             debugMessage = debugMessage .. 'objects: '
             local includeComma = false
 
@@ -229,7 +220,7 @@ local function onGenericObjectEvent(pid, cellDescription, packetType)
             end
         end
 
-        if next(targetPlayers) ~= nil then
+        if next(targetPlayers) then
             local chatNames = logicHandler.GetChatNames(tableHelper.getArrayFromIndices(targetPlayers))
             debugMessage = ('%splayers: %s')
                 :format(debugMessage, tableHelper.concatenateArrayValues(chatNames, 1, ', '))
