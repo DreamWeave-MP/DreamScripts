@@ -85,9 +85,11 @@ local BufferedDiskPaths = {
     }
 }
 
-local DiskBufferDelay, DiskBufferTimerId = 10, nil
+local DiskBufferDelay, DiskBufferTimerId = 30, nil
+local PlayerSaveDelay, CellSaveDelay, WorldSaveDelay = 15, 30, 45
 function SaveBufferedPaths()
     local removePaths = {}
+    local worldIsEmpty = next(Players) == nil
 
     for scriptPath, saveSubscription in pairs(BufferedDiskPaths) do
         tes3mp.LogAppend(
@@ -102,6 +104,36 @@ function SaveBufferedPaths()
 
     for _, removePath in ipairs(removePaths) do
         BufferedDiskPaths[removePath] = nil
+    end
+
+    for cellName, cell in pairs(LoadedCells) do
+        tes3mp.LogAppend(
+            enumerations.log.INFO,
+            ('Flushing %s cell buffer to disk'):format(cellName)
+        )
+        cell:QuicksaveToDrive()
+
+        if worldIsEmpty then
+            logicHandler.UnloadCell(cellName)
+        end
+    end
+
+    if worldIsEmpty then
+        WorldInstance:SaveToDrive()
+
+        for _, recordStore in pairs(RecordStores) do
+            recordStore:DeleteUnlinkedRecords()
+            recordStore:SaveToDrive()
+        end
+    else
+        for playerId, player in pairs(Players) do
+            tes3mp.LogAppend(
+                enumerations.log.INFO,
+                ('Flushing (%d) %s player buffer to disk')
+                :format(playerId, player.accountName)
+            )
+            player:QuicksaveToDrive()
+        end
     end
 
     tes3mp.StartTimer(DiskBufferTimerId)
