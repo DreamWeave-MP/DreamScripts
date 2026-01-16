@@ -201,8 +201,8 @@
 
 ---@class ActivatorRecord: BaseRecord
 ---@field model NormalizedPath
----@field name? string Optional name field
----@field script? string Optional script field
+---@field name? string
+---@field script? RecordId
 
 ---@class MagicEffect
 ---@field area integer
@@ -217,15 +217,15 @@
 ---@class PotionRecord: BaseRecord
 ---@field effects MagicEffect[]
 ---@field icon NormalizedPath
----@field name string Human-readable in-game name
+---@field name string
 ---@field model NormalizedPath
 ---@field potionFlags integer
----@field script string?
+---@field script RecordId?
 ---@field value integer
 ---@field weight integer
 
 ---@class StaticRecord: BaseRecord
----@field model NormalizedPath Normalized mesh path
+---@field model NormalizedPath
 
 ---@class RecordStores
 ---@field Activator table<RecordId, ActivatorRecord>
