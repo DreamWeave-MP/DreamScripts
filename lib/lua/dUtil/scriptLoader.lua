@@ -90,7 +90,7 @@ function DScriptLoader.requireShim(scriptName)
   elseif sandboxLoaded[scriptName] then
     return sandboxLoaded[scriptName]()
   else
-    local ok, chunk, err = false, nil, nil
+    local ok, chunk, err, result = false, nil, nil, nil
 
     ok, chunk = pcall(require, scriptName)
     if ok then return chunk end
@@ -117,7 +117,16 @@ function DScriptLoader.requireShim(scriptName)
     setfenv(chunk, DScriptLoader.getScriptEnv())
     -- setfenv(chunk, getfenv(2))
 
-    local result = chunk()
+    ok, result = pcall(chunk)
+    if not ok then
+      tes3mp.LogAppend(
+        enumerations.log.ERROR,
+        ('Tried to load the script at %s, but it threw an exception: %s. This script cannot be loaded!')
+        :format(scriptName, result)
+      )
+      tes3mp.StopServer(11)
+    end
+
     sandboxLoaded[scriptName] = chunk
 
     return result
@@ -393,9 +402,16 @@ function DScriptLoader.loadScript(scriptName, callerPid)
   end
 
   setfenv(result, DScriptLoader.getScriptEnv())
-  result = result()
+  ok, result = pcall(result)
 
-  if type(result) ~= 'table' then
+  if not ok then
+    tes3mp.LogAppend(
+      enumerations.log.ERROR,
+      ('Tried to load the script at %s, but it threw an exception: %s. This script cannot be loaded!')
+      :format(scriptPath, result)
+    )
+    tes3mp.StopServer(11)
+  elseif type(result) ~= 'table' then
     tes3mp.LogAppend(
       enumerations.log.ERROR,
       ('Successfully loaded the script at %s, but its return value was not a table. This script cannot be loaded!')
