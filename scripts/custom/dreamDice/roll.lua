@@ -273,7 +273,8 @@ function Roll.getNumFaces(input)
 
     local end_pos, number = substring:find(RollNumFacesMatchString)
     if end_pos then
-        number = tonumber(substring:find(1, end_pos - 1))
+        local result, _ = substring:find(1, end_pos - 1)
+        number = tonumber(result)
     else
         number = tonumber(substring)
     end
