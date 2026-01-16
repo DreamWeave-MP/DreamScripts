@@ -33,6 +33,7 @@ local RecordStores = tds.Hash {
   Armor = tds.Hash(),
   Apparatus = tds.Hash(),
   Activator = tds.Hash(),
+  Bodypart = tds.Hash(),
   Static = tds.Hash(),
 }
 
@@ -116,6 +117,9 @@ local TypeHandlers = {
       value = potionRecord.data.value,
       weight = potionRecord.data.weight,
     }
+  end,
+  Bodypart = function(recordStore, bodypartRecord, recordId)
+    error(tostring(bodypartRecord))
   end,
   Static = function(recordStore, staticRecord, recordId)
     recordStore[recordId] = tds.Hash {
