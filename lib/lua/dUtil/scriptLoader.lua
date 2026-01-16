@@ -66,17 +66,17 @@ function DScriptLoader.originalInterfaces()
   return {
     ---@type StorageModule
     storage = DScriptLoader.makeReadOnly {
-      subscribeToSave = function(filePath, data)
+      subscribeToSave = function(data)
         local traceback = debug.traceback()
-        assert(filePath and type(filePath) == 'string', traceback)
         assert(data and type(data) == 'table', traceback)
+        assert(data.filePath and type(data.filePath) == 'string', traceback)
         assert(data.lastCheckedTime == nil, traceback)
 
-        if saveDataTable[filePath] then
+        if saveDataTable[data.filePath] then
           return tes3mp.LogAppend(
             enumerations.log.WARN,
             ('%s was already assigned to the global saved data table. It may not be re-written, unless the storage manager removes the existing reference!')
-            :format(filePath)
+            :format(data.filePath)
           )
         elseif not data.data or type(data.data) ~= 'table' then
           return tes3mp.LogAppend(
@@ -85,13 +85,16 @@ function DScriptLoader.originalInterfaces()
           )
         end
 
-        saveDataTable[filePath] = data
+        saveDataTable[data.filePath] = data
       end,
     }
   }
 end
 
+---@type DefaultInterfaces
 local Interfaces = DScriptLoader.originalInterfaces()
+
+---@class ReadOnlyInterfaces: DefaultInterfaces The same as the default interfaces table, but, will throw and kill the server if you try to write to it. Uses a metatable to return a local reference to the current definition of Interfaces, so is never stale.
 DScriptLoader.Interfaces = setmetatable({},
   {
     __index = function(_, key)
@@ -111,6 +114,7 @@ DScriptLoader.Interfaces = setmetatable({},
 
 local PathSeparator = tes3mp.GetOperatingSystemType() == 'Windows' and '\\' or '/'
 local ModuleCache = {
+  ---@type ReadOnlyInterfaces
   interfaces = DScriptLoader.Interfaces,
 }
 local ScriptDirectories = { 'scripts/', 'lib/', 'lib/lua/', }

@@ -72,6 +72,7 @@ banList = {}
 ---@global
 BufferedDiskPaths = {
     ['custom/testFile.json'] = {
+        filePath = 'custom/testFile.json',
         delay = 30,
         data = {
             playerId = 15,

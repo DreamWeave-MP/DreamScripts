@@ -1,5 +1,7 @@
 local enumerations = require 'tes3mp.enumerations'
 
+---@class DiceInterfaceLocal: ReadOnlyInterfaces
+---@field dreamDice DiceInterface
 local I = require 'interfaces'
 
 local testPairs = {}
@@ -19,6 +21,12 @@ for _ = 1, maxElements do
   testPairs[randomKey] = math.random(20)
   numKeys = numKeys + 1
 end
+
+I.storage.subscribeToSave {
+  filePath = 'custom/diceTestKeys.json',
+  data = testPairs,
+  persistent = false,
+}
 
 tes3mp.LogAppend(
   enumerations.log.INFO,

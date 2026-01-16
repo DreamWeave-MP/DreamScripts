@@ -76,8 +76,10 @@ end
 ---@type TES3MPScriptRegistration
 return {
   interfaceName = 'dreamDice',
+  ---@class DiceInterface
   interface = {
     ---@param rollInput string A formatted string, like 2d6, to generate a roll from
+    ---@return RollObject
     roll = function(rollInput)
       assert(rollInput and type(rollInput) == 'string', 'Invalid roll input! No dice for you!')
       return Roll(rollInput)
