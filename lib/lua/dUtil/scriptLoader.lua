@@ -127,7 +127,7 @@ local PathSeparator = tes3mp.GetOperatingSystemType() == 'Windows' and '\\' or '
 local ModuleCache = {
   ---@type ReadOnlyInterfaces
   interfaces = DScriptLoader.Interfaces,
-  tes3 = require 'libtes3_lua',
+  tes3 = require 'tes3_lua',
 }
 local ScriptDirectories = { 'scripts/', 'lib/', 'lib/lua/', }
 
