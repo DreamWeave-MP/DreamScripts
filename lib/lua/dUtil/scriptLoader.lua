@@ -509,6 +509,9 @@ function DScriptLoader.loadAllScripts()
   Interfaces = DScriptLoader.originalInterfaces()
 
   local startTime = os.clock()
+
+  tableHelper.print(package.loaded)
+
   for _, scriptName in ipairs(config.customScripts) do
     if not DScriptLoader.loadScript(scriptName) then
       return tes3mp.LogAppend(
