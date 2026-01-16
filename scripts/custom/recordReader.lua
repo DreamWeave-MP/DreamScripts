@@ -144,7 +144,10 @@ return {
   eventHandlers = {
     OnServerPostInit = function()
       for storeType, recordStore in pairs(RecordStores) do
-        print(storeType, next(recordStore))
+        for recordId, recordData in pairs(recordStore) do
+          print(storeType, recordId, recordData)
+          break
+        end
       end
     end
   }
