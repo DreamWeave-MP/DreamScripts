@@ -99,11 +99,11 @@ return {
     OnObjectActivate = function(eventStatus, _, _, objects, targetPlayers)
       if eventStatus.validDefaultHandler == false then return end
 
-      local debugMessage
+      local debugMessage = ''
 
       for uniqueIndex, object in pairs(objects) do
-        debugMessage = ('- %s%s has been activated by ')
-            :format(debugMessage, uniqueIndex)
+        debugMessage = ('%s- %s%s has been activated by ')
+            :format(debugMessage, uniqueIndex, object.refId)
 
         if object.activatingPid then
           debugMessage = ('%s %s')
