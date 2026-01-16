@@ -242,7 +242,7 @@ function DScriptLoader.getScriptEnv()
     ipairs = ipairs,
     math = math,
     next = next,
-    os = os,
+    os = { clock = os.clock, date = os.date, time = os.time },
     require = DScriptLoader.requireShim,
     pairs = pairs,
     pcall = pcall,
