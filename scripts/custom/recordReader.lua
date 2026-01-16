@@ -38,7 +38,7 @@ local TypeHandlers = {
     }
   end,
   Alchemy = function(recordStore, potionRecord, recordId)
-    tableHelper.print(potionRecord.effects)
+    print(potionRecord)
     recordStore[recordId] = tds.Hash {
       area = potionRecord.area,
       duration = potionRecord.duration,
