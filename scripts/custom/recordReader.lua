@@ -1,4 +1,3 @@
-local dUtil = require 'dUtil.init'
 local enumerations = require 'tes3mp.enumerations'
 
 local I = require 'interfaces'
@@ -22,6 +21,7 @@ local loadOrder = {
 }
 
 local RecordStores = tds.Hash {
+  Alchemy = tds.Hash(),
   Activator = tds.Hash(),
   Static = tds.Hash(),
 }
@@ -34,6 +34,23 @@ local TypeHandlers = {
       model = activatorRecord.mesh:normalize(),
       name = activatorRecord.name,
       script = activatorRecord.script,
+    }
+  end,
+  Alchemy = function(recordStore, potionRecord, recordId)
+    tableHelper.print(potionRecord.effects)
+    recordStore[recordId] = tds.Hash {
+      area = potionRecord.area,
+      duration = potionRecord.duration,
+      flags = potionRecord.flags,
+      icon = potionRecord.icon:normalize(),
+      -- Effects are internally Vec<Effect>, so how do we represent Effect?
+      -- effects =
+      id = recordId,
+      max_magnitude = potionRecord.max_magnitude,
+      min_magnitude = potionRecord.min_magnitude,
+      model = potionRecord.mesh:normalize(),
+      name = potionRecord.name,
+      script = potionRecord.script,
     }
   end,
   Static = function(recordStore, staticRecord, recordId)
