@@ -73,8 +73,6 @@ DScriptLoader.Interfaces = setmetatable({},
   }
 )
 
----@type table<string, function>
-local sandboxLoaded = {}
 local PathSeparator = tes3mp.GetOperatingSystemType() == 'Windows' and '\\' or '/'
 
 --- Small shim for overriding require statements in curated script environment
@@ -87,8 +85,6 @@ function DScriptLoader.requireShim(scriptName)
 
   if scriptName == 'interfaces' then
     return DScriptLoader.Interfaces
-  elseif sandboxLoaded[scriptName] then
-    return sandboxLoaded[scriptName]
   else
     local ok, chunk, err, result = false, nil, nil, nil
 
@@ -126,8 +122,6 @@ function DScriptLoader.requireShim(scriptName)
       )
       return tes3mp.StopServer(11)
     end
-
-    sandboxLoaded[scriptName] = result
 
     return result
   end
@@ -455,9 +449,6 @@ end
 function DScriptLoader.loadAllScripts()
   --- Reinitialize all interfaces when reloading all scripts
   Interfaces = {}
-
-  --- Un-cache all compiled scripts when reloading everything
-  sandboxLoaded = {}
 
   for _, scriptName in ipairs(config.customScripts) do
     if not DScriptLoader.loadScript(scriptName) then
