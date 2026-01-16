@@ -177,6 +177,7 @@ local function onGenericObjectEvent(pid, cellDescription, packetType)
         )
     end
 
+    print('Object list size is:', tes3mp.GetObjectListSize())
     local packetTables = packetReader.GetObjectPacketTables(packetType)
     local objects = packetTables.objects
     local targetPlayers = packetTables.players
