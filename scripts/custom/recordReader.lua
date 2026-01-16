@@ -68,5 +68,7 @@ end
 ---@type TES3MPScriptRegistration
 return {
   interfaceName = 'RecordStores',
-  interface = RecordStores,
+  interface = {
+    records = RecordStores,
+  },
 }
