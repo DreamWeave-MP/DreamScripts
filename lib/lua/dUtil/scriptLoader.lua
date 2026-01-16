@@ -235,7 +235,7 @@ function DScriptLoader.getScriptEnv()
   local ScriptEnv = {
     assert = assert,
     coroutine = coroutine,
-    debug = debug,
+    debug = { traceback = debug.traceback, },
     error = error,
     getfenv = getfenv,
     getmetatable = getmetatable,
