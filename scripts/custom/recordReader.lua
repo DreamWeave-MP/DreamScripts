@@ -141,4 +141,11 @@ return {
   interface = {
     records = RecordStores,
   },
+  eventHandlers = {
+    OnServerPostInit = function()
+      for storeType, recordStore in pairs(RecordStores) do
+        print(storeType, next(recordStore))
+      end
+    end
+  }
 }
