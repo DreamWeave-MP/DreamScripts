@@ -306,7 +306,7 @@
 ---@field bodypartType BodypartType
 ---@field bodypartFlags integer
 ---@field part BodypartId
----@field race string
+---@field race RecordId
 ---@field model NormalizedPath
 ---@field isVampire boolean?
 
