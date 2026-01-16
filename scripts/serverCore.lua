@@ -69,24 +69,40 @@ banList = {}
 --- This table is used to track paths
 --- of files which the server is meant to save.
 ---@type table<string, table>
+---@global
 local BufferedDiskPaths = {
-    ['server/data/custom/testFile.json'] = { playerId = 15, data = { inventory = { { refId = 'Big Pantalones', count = 1, } }, }, }
+    ['server/data/custom/testFile.json'] = {
+        data = {
+            playerId = 15,
+            data = {
+                inventory = { {
+                    refId = 'Big Pantalones',
+                    count = 1,
+                } },
+            },
+        },
+        persistent = true,
+    }
 }
 
 local DiskBufferDelay, DiskBufferTimerId = 10, nil
 function SaveBufferedPaths()
     local removePaths = {}
 
-    for scriptPath, scriptData in pairs(BufferedDiskPaths) do
+    for scriptPath, saveSubscription in pairs(BufferedDiskPaths) do
         tes3mp.LogAppend(
             enumerations.log.INFO,
-            ('Flushing %s buffer to disk at path %s'):format(scriptData, scriptPath)
+            ('Flushing %s buffer to disk at path %s'):format(saveSubscription.data, scriptPath)
         )
+
+        if jsonInterface.writeToFile(scriptPath, saveSubscription) and not saveSubscription.persistent then
+            removePaths[#removePaths + 1] = scriptPath
+        end
     end
 
-    -- for _, removePath in ipairs(removePaths) do
-    --     BufferedDiskPaths[removePath] = nil
-    -- end
+    for _, removePath in ipairs(removePaths) do
+        BufferedDiskPaths[removePath] = nil
+    end
 
     tes3mp.StartTimer(DiskBufferTimerId)
 end
