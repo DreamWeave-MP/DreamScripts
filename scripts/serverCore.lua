@@ -72,6 +72,7 @@ banList = {}
 ---@global
 BufferedDiskPaths = {
     ['custom/testFile.json'] = {
+        delay = 03,
         data = {
             playerId = 15,
             data = {
@@ -85,21 +86,36 @@ BufferedDiskPaths = {
     }
 }
 
-local DiskBufferDelay, DiskBufferTimerId = 30, nil
-local PlayerSaveDelay, CellSaveDelay, WorldSaveDelay = 15, 30, 45
+local DiskBufferDelay, DiskBufferTimerId = 3, nil
+-- local PlayerSaveDelay, CellSaveDelay, WorldSaveDelay = 15, 30, 45
 function SaveBufferedPaths()
     local removePaths = {}
-    local worldIsEmpty = next(Players) == nil
 
-    for scriptPath, saveSubscription in pairs(BufferedDiskPaths) do
+    for dataPath, saveSubscription in pairs(BufferedDiskPaths) do
+        local shouldWriteFile = saveSubscription.condition == nil or saveSubscription.condition()
+        if not shouldWriteFile then goto CONTINUE end
+        if saveSubscription.delay then
+            if not saveSubscription.lastCheckedTime
+                or os.clock() - saveSubscription.lastCheckedTime < saveSubscription.delay
+            then
+                saveSubscription.lastCheckedTime = os.clock()
+                goto CONTINUE
+            end
+        end
+
+        if shouldWriteFile
+            and jsonInterface.quicksave(dataPath, saveSubscription.data)
+            and not saveSubscription.persistent
+        then
+            removePaths[#removePaths + 1] = dataPath
+        end
+
         tes3mp.LogAppend(
             enumerations.log.INFO,
-            ('Flushing %s buffer to disk at path %s'):format(saveSubscription.data, scriptPath)
+            ('Flushed %s buffer to disk at path %s'):format(saveSubscription.data, dataPath)
         )
 
-        if jsonInterface.quicksave(scriptPath, saveSubscription.data) and not saveSubscription.persistent then
-            removePaths[#removePaths + 1] = scriptPath
-        end
+        ::CONTINUE::
     end
 
     for _, removePath in ipairs(removePaths) do

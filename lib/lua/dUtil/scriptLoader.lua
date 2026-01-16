@@ -67,8 +67,10 @@ function DScriptLoader.originalInterfaces()
     ---@type StorageModule
     storage = DScriptLoader.makeReadOnly {
       subscribeToSave = function(filePath, data)
-        assert(filePath and type(filePath) == 'string', debug.traceback())
-        assert(data and type(data) == 'table', debug.traceback())
+        local traceback = debug.traceback()
+        assert(filePath and type(filePath) == 'string', traceback)
+        assert(data and type(data) == 'table', traceback)
+        assert(data.lastCheckedTime == nil, traceback)
 
         if saveDataTable[filePath] then
           return tes3mp.LogAppend(

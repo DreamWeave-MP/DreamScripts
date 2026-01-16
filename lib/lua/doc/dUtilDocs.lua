@@ -28,6 +28,7 @@
 ---@field data table<any, any> A persistent reference to the table to be saved. It must never be replaced!
 ---@field delay integer? Time in seconds between writes. This includes how long before the data is first saved.
 ---@field condition? fun(): boolean An optional condition function to run before determining whether or not to save.
+---@field lastCheckedTime integer? The last time in seconds the subscription was checked for a save. Should NEVER be provided by the constructor! You will trip an assertion if you provide this asa parameter.
 
 ---@class StorageModule
 ---@field subscribeToSave fun(filePath: string, data: SaveSubscriptionData)
