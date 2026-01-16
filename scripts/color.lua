@@ -1,3 +1,4 @@
+---@class ColorModule
 local Color = {
   AliceBlue = "#F0F8FF",
   AntiqueWhite = "#FAEBD7",
