@@ -20,6 +20,9 @@ local function lowercase(string)
   if string then return string:lower() end
 end
 
+local tableHelper = require 'tes3mp.util.table'
+tableHelper.print(dUtil.getRequiredDataFiles())
+
 local loadOrder = {
   'Morrowind.esm',
   'Tribunal.esm',
