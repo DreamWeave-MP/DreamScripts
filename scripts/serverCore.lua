@@ -139,6 +139,10 @@ function SaveBufferedPaths()
     tes3mp.StartTimer(DiskBufferTimerId)
 end
 
+function BigTestFunction()
+    tableHelper.print(BufferedDiskPaths)
+end
+
 DiskBufferTimerId = tes3mp.CreateTimerEx('SaveBufferedPaths', DiskBufferDelay * 1000, '')
 tes3mp.StartTimer(DiskBufferTimerId)
 
