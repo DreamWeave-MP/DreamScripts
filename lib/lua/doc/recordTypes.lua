@@ -59,6 +59,27 @@
 ---| 'Weapon' 25
 ---| 'Tail' 26
 
+---@alias BodypartId
+---| 'Head' # 0
+---| 'Hair' # 1
+---| 'Neck' # 2
+---| 'Chest' # 3
+---| 'Groin' # 4
+---| 'Hand' # 5
+---| 'Wrist' # 6
+---| 'Forearm' # 7
+---| 'UpperArm' # 8
+---| 'Foot' # 9
+---| 'Ankle' # 10
+---| 'Knee' # 11
+---| 'UpperLeg' # 12
+---| 'Clavicle' # 13
+---| 'Tail' # 14
+---@alias BodypartType
+---| 'Skin' 0
+---| 'Clothing' 1
+---| 'Armor' 2
+
 ---@alias EffectRange
 ---| 'OnSelf' # 0
 ---| 'OnTouch' # 1
@@ -280,6 +301,14 @@
 ---@field script RecordId?
 ---@field weight number
 ---@field value integer
+
+---@class BodypartRecord
+---@field bodypartType BodypartType
+---@field bodypartFlags integer
+---@field part BodypartId
+---@field race string
+---@field model NormalizedPath
+---@field isVampire boolean?
 
 ---@class MagicEffect
 ---@field area integer

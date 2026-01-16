@@ -38,8 +38,8 @@ local RecordStores = tds.Hash {
 }
 
 local TypeHandlers = {
-  Activator = function(recordStore, activatorRecord, recordId)
-    recordStore[recordId] = tds.Hash {
+  Activator = function(activatorRecord, recordId)
+    return tds.Hash {
       objectFlags = activatorRecord.flags,
       id = recordId,
       model = activatorRecord.mesh:normalize(),
@@ -47,8 +47,8 @@ local TypeHandlers = {
       script = lowercase(activatorRecord.script),
     }
   end,
-  Apparatus = function(recordStore, appaRecord, recordId)
-    recordStore[recordId] = tds.Hash {
+  Apparatus = function(appaRecord, recordId)
+    return tds.Hash {
       apparatusType = appaRecord.data.apparatus_type,
       icon = appaRecord.icon:normalize(),
       id = recordId,
@@ -61,7 +61,7 @@ local TypeHandlers = {
       value = appaRecord.data.value,
     }
   end,
-  Armor = function(recordStore, armorRecord, recordId)
+  Armor = function(armorRecord, recordId)
     local bipedObjects = tds.Vec(#armorRecord.biped_objects)
 
     for i, bipedObject in ipairs(armorRecord.biped_objects) do
@@ -72,7 +72,7 @@ local TypeHandlers = {
       }
     end
 
-    recordStore[recordId] = tds.Hash {
+    return tds.Hash {
       armorRating = armorRecord.data.armor_rating,
       armorType = armorRecord.data.armor_type,
       durability = armorRecord.data.health,
@@ -89,7 +89,7 @@ local TypeHandlers = {
       value = armorRecord.data.value,
     }
   end,
-  Alchemy = function(recordStore, potionRecord, recordId)
+  Alchemy = function(potionRecord, recordId)
     local effects = tds.Vec(#potionRecord.effects)
 
     for i, effect in ipairs(potionRecord.effects) do
@@ -105,7 +105,7 @@ local TypeHandlers = {
       }
     end
 
-    recordStore[recordId] = tds.Hash {
+    return tds.Hash {
       effects = effects,
       objectFlags = potionRecord.flags,
       icon = potionRecord.icon:normalize(),
@@ -118,14 +118,23 @@ local TypeHandlers = {
       weight = potionRecord.data.weight,
     }
   end,
-  Bodypart = function(recordStore, bodypartRecord, recordId)
-    error(tostring(bodypartRecord) .. ' ' .. bodypartRecord.data.flags)
-  end,
-  Static = function(recordStore, staticRecord, recordId)
-    recordStore[recordId] = tds.Hash {
-      objectFlags = staticRecord.flags,
+  Bodypart = function(record, recordId)
+    return tds.Hash {
+      objectFlags = record.flags,
       id = recordId,
-      model = staticRecord.mesh:normalize(),
+      race = lowercase(record.race),
+      model = record.mesh:normalize(),
+      part = record.data.part,
+      bodypartFlags = record.data.flags,
+      bodypartType = record.data.bodypart_type,
+      isVampire = record.data.vampire,
+    }
+  end,
+  Static = function(record, recordId)
+    return tds.Hash {
+      objectFlags = record.flags,
+      id = recordId,
+      model = record.mesh:normalize(),
     }
   end,
 }
@@ -148,7 +157,8 @@ for _, pluginName in ipairs(loadOrder) do
     local recordStore, typeHandler = RecordStores[object.type], TypeHandlers[object.type]
 
     if recordStore and typeHandler then
-      typeHandler(recordStore, object, object.id:lower())
+      local recordId = object.id:lower()
+      recordStore[recordId] = typeHandler(object, recordId)
     end
   end
 end
