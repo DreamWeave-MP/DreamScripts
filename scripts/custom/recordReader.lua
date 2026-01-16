@@ -16,9 +16,9 @@ end
 
 local loadOrder = {
   'Morrowind.esm',
-  -- 'Tribunal.esm',
-  -- 'Bloodmoon.esm',
-  -- 'Starwind-TSI.omwaddon',
+  'Tribunal.esm',
+  'Bloodmoon.esm',
+  'Starwind-TSI.omwaddon',
 }
 
 local RecordStores = tds.Hash {
@@ -52,8 +52,6 @@ local TypeHandlers = {
         min_magnitude = effect.min_magnitude,
       }
     end
-
-    print(potionRecord)
 
     recordStore[recordId] = tds.Hash {
       area = potionRecord.area,
