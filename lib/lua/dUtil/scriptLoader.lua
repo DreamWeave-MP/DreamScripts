@@ -130,8 +130,7 @@ local ModuleCache = {
 }
 local ScriptDirectories = { 'scripts/', 'lib/', 'lib/lua/', }
 
-require 'tds.init'
-local hasTDS, tds = pcall(require, 'libtds')
+local hasTDS, tds = pcall(require, 'tds.init')
 local hasTES3, tes3 = pcall(require, 'tes3_lua')
 
 if hasTDS then
