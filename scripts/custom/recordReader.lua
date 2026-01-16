@@ -1,5 +1,4 @@
 local enumerations = require 'tes3mp.enumerations'
-local tableHelper = require 'tes3mp.util.table'
 
 local I = require 'interfaces'
 
@@ -21,6 +20,7 @@ local loadOrder = {
   'Starwind-TSI.omwaddon',
 }
 
+---@type RecordStores
 local RecordStores = tds.Hash {
   Alchemy = tds.Hash(),
   Activator = tds.Hash(),
@@ -42,20 +42,18 @@ local TypeHandlers = {
 
     for _, effect in ipairs(potionRecord.effects) do
       effects[#effects + 1] = tds.Hash {
-        magic_effect = effect.magic_effect,
+        magicEffect = effect.magic_effect,
         skill = effect.skill,
         attribute = effect.attribute,
         range = effect.range,
         area = effect.area,
         duration = effect.duration,
-        max_magnitude = effect.max_magnitude,
-        min_magnitude = effect.min_magnitude,
+        maxMagnitude = effect.max_magnitude,
+        minMagnitude = effect.min_magnitude,
       }
     end
 
     recordStore[recordId] = tds.Hash {
-      area = potionRecord.area,
-      duration = potionRecord.duration,
       effects = effects,
       objectFlags = potionRecord.flags,
       icon = potionRecord.icon:normalize(),
@@ -98,7 +96,8 @@ end
 
 ---@type TES3MPScriptRegistration
 return {
-  interfaceName = 'RecordStores',
+  interfaceName = 'recordStores',
+  ---@class RecordInterface
   interface = {
     records = RecordStores,
   },

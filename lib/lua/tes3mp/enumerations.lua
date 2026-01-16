@@ -41,7 +41,7 @@ enumerations.doorstate = { OPEN = 1, CLOSED = 2 }
 ---@enum ActorStance
 enumerations.drawstate = { NONE = 0, WEAPON = 1, SPELL = 2 }
 
----@enum MagicEffectId
+---@enum MagicEffectEnum
 enumerations.effects = {
     WATER_BREATHING = 0,
     SWIFT_SWIM = 1,

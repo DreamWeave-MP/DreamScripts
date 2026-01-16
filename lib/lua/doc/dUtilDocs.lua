@@ -13,6 +13,7 @@
 ---@field storage StorageModule
 ---@field dreamDice DiceInterface?
 ---@field customMerchantRestock RestockInterface?
+---@field recordStores RecordInterface?
 
 ---@class DreamWeaveMenuModule
 ---@field display function(pid: PlayerId, menuName: string)

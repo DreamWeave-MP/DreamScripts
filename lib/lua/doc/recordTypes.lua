@@ -1,0 +1,233 @@
+---@meta
+
+---@alias AttributeId2
+---| -1 # None
+---| 0 # Strength
+---| 1 # Intelligence
+---| 2 # Willpower
+---| 3 # Agility
+---| 4 # Speed
+---| 5 # Endurance
+---| 6 # Personality
+---| 7 # Luck
+
+---@alias EffectRange
+---| 0 # OnSelf
+---| 1 # OnTouch
+---| 2 # OnTarget
+
+---@alias MagicEffectId
+---| -1 # None
+---| 0 # WaterBreathing
+---| 1 # SwiftSwim
+---| 2 # WaterWalking
+---| 3 # Shield
+---| 4 # FireShield
+---| 5 # LightningShield
+---| 6 # FrostShield
+---| 7 # Burden
+---| 8 # Feather
+---| 9 # Jump
+---| 10 # Levitate
+---| 11 # SlowFall
+---| 12 # Lock
+---| 13 # Open
+---| 14 # FireDamage
+---| 15 # ShockDamage
+---| 16 # FrostDamage
+---| 17 # DrainAttribute
+---| 18 # DrainHealth
+---| 19 # DrainMagicka
+---| 20 # DrainFatigue
+---| 21 # DrainSkill
+---| 22 # DamageAttribute
+---| 23 # DamageHealth
+---| 24 # DamageMagicka
+---| 25 # DamageFatigue
+---| 26 # DamageSkill
+---| 27 # Poison
+---| 28 # WeaknessToFire
+---| 29 # WeaknessToFrost
+---| 30 # WeaknessToShock
+---| 31 # WeaknessToMagicka
+---| 32 # WeaknessToCommonDisease
+---| 33 # WeaknessToBlightDisease
+---| 34 # WeaknessToCorprus
+---| 35 # WeaknessToPoison
+---| 36 # WeaknessToNormalWeapons
+---| 37 # DisintegrateWeapon
+---| 38 # DisintegrateArmor
+---| 39 # Invisibility
+---| 40 # Chameleon
+---| 41 # Light
+---| 42 # Sanctuary
+---| 43 # NightEye
+---| 44 # Charm
+---| 45 # Paralyze
+---| 46 # Silence
+---| 47 # Blind
+---| 48 # Sound
+---| 49 # CalmHumanoid
+---| 50 # CalmCreature
+---| 51 # FrenzyHumanoid
+---| 52 # FrenzyCreature
+---| 53 # DemoralizeHumanoid
+---| 54 # DemoralizeCreature
+---| 55 # RallyHumanoid
+---| 56 # RallyCreature
+---| 57 # Dispel
+---| 58 # SoulTrap
+---| 59 # Telekinesis
+---| 60 # Mark
+---| 61 # Recall
+---| 62 # DivineIntervention
+---| 63 # AlmsiviIntervention
+---| 64 # DetectAnimal
+---| 65 # DetectEnchantment
+---| 66 # DetectKey
+---| 67 # SpellAbsorption
+---| 68 # Reflect
+---| 69 # CureCommonDisease
+---| 70 # CureBlightDisease
+---| 71 # CureCorprus
+---| 72 # CurePoison
+---| 73 # CureParalyzation
+---| 74 # RestoreAttribute
+---| 75 # RestoreHealth
+---| 76 # RestoreMagicka
+---| 77 # RestoreFatigue
+---| 78 # RestoreSkill
+---| 79 # FortifyAttribute
+---| 80 # FortifyHealth
+---| 81 # FortifyMagicka
+---| 82 # FortifyFatigue
+---| 83 # FortifySkill
+---| 84 # FortifyMagickaMultiplier
+---| 85 # AbsorbAttribute
+---| 86 # AbsorbHealth
+---| 87 # AbsorbMagicka
+---| 88 # AbsorbFatigue
+---| 89 # AbsorbSkill
+---| 90 # ResistFire
+---| 91 # ResistFrost
+---| 92 # ResistShock
+---| 93 # ResistMagicka
+---| 94 # ResistCommonDisease
+---| 95 # ResistBlightDisease
+---| 96 # ResistCorprus
+---| 97 # ResistPoison
+---| 98 # ResistNormalWeapons
+---| 99 # ResistParalysis
+---| 100 # RemoveCurse
+---| 101 # TurnUndead
+---| 102 # SummonScamp
+---| 103 # SummonClannfear
+---| 104 # SummonDaedroth
+---| 105 # SummonDremora
+---| 106 # SummonGhost
+---| 107 # SummonSkeleton
+---| 108 # SummonLeastBonewalker
+---| 109 # SummonGreaterBonewalker
+---| 110 # SummonBonelord
+---| 111 # SummonTwilight
+---| 112 # SummonHunger
+---| 113 # SummonGoldenSaint
+---| 114 # SummonFlameAtronach
+---| 115 # SummonFrostAtronach
+---| 116 # SummonStormAtronach
+---| 117 # FortifyAttackBonus
+---| 118 # CommandCreature
+---| 119 # CommandHumanoid
+---| 120 # BoundDagger
+---| 121 # BoundLongsword
+---| 122 # BoundMace
+---| 123 # BoundBattleAxe
+---| 124 # BoundSpear
+---| 125 # BoundLongbow
+---| 126 # ExtraSpell
+---| 127 # BoundCuirass
+---| 128 # BoundHelm
+---| 129 # BoundBoots
+---| 130 # BoundShield
+---| 131 # BoundGloves
+---| 132 # Corprus
+---| 133 # Vampirism
+---| 134 # SummonCenturionSphere
+---| 135 # SunDamage
+---| 136 # StuntedMagicka
+---| 137 # SummonFabricant
+---| 138 # SummonWolf
+---| 139 # SummonBear
+---| 140 # SummonBoneWolf
+---| 141 # Summon04
+---| 142 # Summon05
+
+---@alias SkillId2
+---| -1 # None
+---| 0 # Block
+---| 1 # Armorer
+---| 2 # MediumArmor
+---| 3 # HeavyArmor
+---| 4 # BluntWeapon
+---| 5 # LongBlade
+---| 6 # Axe
+---| 7 # Spear
+---| 8 # Athletics
+---| 9 # Enchant
+---| 10 # Destruction
+---| 11 # Alteration
+---| 12 # Illusion
+---| 13 # Conjuration
+---| 14 # Mysticism
+---| 15 # Restoration
+---| 16 # Alchemy
+---| 17 # Unarmored
+---| 18 # Security
+---| 19 # Sneak
+---| 20 # Acrobatics
+---| 21 # LightArmor
+---| 22 # ShortBlade
+---| 23 # Marksman
+---| 24 # Mercantile
+---| 25 # Speechcraft
+---| 26 # HandToHand
+
+---@alias NormalizedPath string Lowercased string with unix-style paths
+---@alias RecordId string 32-character limited string. Always lowercase.
+
+---@class BaseRecord
+---@field objectFlags integer Numeric flags with default value 0
+---@field id RecordId Record editor identifier. Always lowercase.
+
+---@class ActivatorRecord: BaseRecord
+---@field model NormalizedPath
+---@field name? string Optional name field
+---@field script? string Optional script field
+
+---@class MagicEffect
+---@field area integer
+---@field attribute AttributeId2
+---@field duration integer
+---@field magicEffect MagicEffectId
+---@field maxMagnitude integer
+---@field minMagnitude integer
+---@field range EffectRange
+---@field skill SkillId2
+
+---@class PotionRecord: BaseRecord
+---@field effects MagicEffect[]
+---@field icon NormalizedPath
+---@field name string Human-readable in-game name
+---@field model NormalizedPath
+---@field potionFlags integer
+---@field script string?
+---@field value integer
+---@field weight integer
+
+---@class StaticRecord: BaseRecord
+---@field model NormalizedPath Normalized mesh path
+
+---@class RecordStores
+---@field Activator table<RecordId, ActivatorRecord>
+---@field Alchemy table<RecordId, PotionRecord>
+---@field Static table<RecordId, StaticRecord>
