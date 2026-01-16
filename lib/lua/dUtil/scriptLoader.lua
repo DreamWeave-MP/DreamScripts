@@ -462,7 +462,7 @@ function DScriptLoader.loadAllScripts()
 
   tes3mp.LogAppend(
     enumerations.log.INFO,
-    ('Successfully completed script initialization in %.6f milliseconds.'):format((startTime - os.clock()) * 1000)
+    ('Successfully completed script initialization in %.6f milliseconds.'):format((os.clock() - startTime) * 1000)
   )
 end
 
