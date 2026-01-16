@@ -65,7 +65,7 @@ for _, pluginName in ipairs(loadOrder) do
   end
 end
 
-RecordStores = tds.Hash(RecordStores)
+-- RecordStores = tds.Hash(RecordStores)
 
 ---@type TES3MPScriptRegistration
 return {
