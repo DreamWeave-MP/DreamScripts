@@ -93,21 +93,35 @@ function SaveBufferedPaths()
 
     for dataPath, saveSubscription in pairs(BufferedDiskPaths) do
         local shouldWriteFile = saveSubscription.condition == nil or saveSubscription.condition()
-        if not shouldWriteFile then goto CONTINUE end
+        if not shouldWriteFile then
+            tes3mp.LogAppend(
+                enumerations.log.WARN,
+                ('Skipping serialization of %s as its condition handler failed')
+                :format(dataPath)
+            )
+            goto CONTINUE
+        end
         if saveSubscription.delay then
+            local currentTime = os.time()
+
             if not saveSubscription.lastCheckedTime
-                or os.clock() - saveSubscription.lastCheckedTime < saveSubscription.delay
+                or currentTime - saveSubscription.lastCheckedTime < saveSubscription.delay
             then
-                saveSubscription.lastCheckedTime = os.clock()
+                tes3mp.LogAppend(
+                    enumerations.log.WARN,
+                    ('Skipping serialization of %s as its delay of %d has not been met yet: %d')
+                    :format(dataPath, saveSubscription.delay, saveSubscription.lastCheckedTime)
+                )
                 goto CONTINUE
             end
         end
 
-        if shouldWriteFile
-            and jsonInterface.quicksave(dataPath, saveSubscription.data)
-            and not saveSubscription.persistent
-        then
-            removePaths[#removePaths + 1] = dataPath
+        if jsonInterface.quicksave(dataPath, saveSubscription.data) then
+            if not saveSubscription.persistent then
+                removePaths[#removePaths + 1] = dataPath
+            end
+
+            saveSubscription.lastCheckedTime = nil
         end
 
         tes3mp.LogAppend(
