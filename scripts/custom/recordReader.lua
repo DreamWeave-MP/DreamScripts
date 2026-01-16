@@ -119,7 +119,7 @@ local TypeHandlers = {
     }
   end,
   Bodypart = function(recordStore, bodypartRecord, recordId)
-    error(tostring(bodypartRecord))
+    error(tostring(bodypartRecord) .. ' ' .. bodypartRecord.data.flags)
   end,
   Static = function(recordStore, staticRecord, recordId)
     recordStore[recordId] = tds.Hash {
