@@ -75,7 +75,8 @@ function DScriptLoader.originalInterfaces()
         if saveDataTable[filePath] then
           return tes3mp.LogAppend(
             enumerations.log.WARN,
-            ('%s was already assigned to the global saved data table. It may not be re-written!'):format(filePath)
+            ('%s was already assigned to the global saved data table. It may not be re-written, unless the storage manager removes the existing reference!')
+            :format(filePath)
           )
         elseif not data.data or type(data.data) ~= 'table' then
           return tes3mp.LogAppend(
