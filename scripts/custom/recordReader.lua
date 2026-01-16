@@ -45,7 +45,7 @@ local TypeHandlers = {
       model = staticRecord.mesh:lower(),
     }
 
-    -- recordStore[objectId] = objectHashMap
+    recordStore[objectId] = objectHashMap
   end,
 }
 
