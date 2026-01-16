@@ -1,6 +1,5 @@
 local color = require 'color'
 local config = require 'tes3mp.config'
-local tableHelper = require 'tes3mp.util.table'
 
 local I = require 'interfaces'
 ---@type MenuHelper
@@ -336,46 +335,46 @@ Menus['help admin page 2'] = {
     }
 }
 
-Menus['help record origin'] = {
-    text = color.White .. 'To create a record, you first fill in its values using this command:\n' ..
-        color.Yellow .. '/storerecord <type> <setting> <value>\n' ..
-        color.White .. 'To see the values you\'ve filled in for a certain type of record, use this:\n' ..
-        color.Yellow .. '/storerecord <type> print\n' ..
-        color.White .. 'To clear the values you\'ve filled in, use this:\n' ..
-        color.Yellow .. '/storerecord <type> clear\n' ..
-        color.White .. 'As of now, you can use the following for the ' .. color.Yellow .. '<type>' ..
-        color.White .. ' argument:\n' ..
-        color.Yellow .. tableHelper.concatenateTableIndices(config.validRecordSettings, ', ') .. '\n' ..
-        color.White .. 'To see what you can use for the ' .. color.Yellow .. '<setting>' .. color.White ..
-        ' argument, simply put in an invalid setting and the valid ones will be displayed for that record ' ..
-        'type.\nOnce you\'ve filled in the various settings, use this command to create your record:\n' ..
-        color.Yellow .. '/createrecord <type>\n\n' ..
-        color.White .. 'Your record can be:\n' ..
-        color.Yellow .. '1) ' .. color.White .. 'A record created entirely from scratch, when not ' ..
-        'setting a baseId for it and either not setting an id for it or setting an unused one\n' ..
-        color.Yellow .. '2) ' .. color.White .. 'A record that uses an existing record\'s values as ' ..
-        'its starting values without modifying anything in that existing record, when setting a ' ..
-        'baseId for it and either not setting an id for it or setting an unused one\n' ..
-        color.Yellow .. '3) ' .. color.White .. 'A record created from scratch that replaces an ' ..
-        'existing record in the game, when not setting a baseId and setting an id that ' ..
-        'is already used in the game\n' ..
-        color.Yellow .. '4) ' .. color.White .. 'A record that uses an existing record\'s values as ' ..
-        'its starting values and replaces an existing record, when setting both a baseId for it ' ..
-        'and an id that is already used in the game, with the baseId and id potentially ' ..
-        'being the same if you want to replace an existing record with a modified version of itself\n',
-    buttons = {
-        {
-            caption = 'Back to admin help',
-            displayConditions = { menuHelper.conditions.requireStaffRank(2) },
-            destinations = { menuHelper.destinations.setDefault('help admin page 1') }
-        },
-        {
-            caption = 'Examples of record creation',
-            destinations = { menuHelper.destinations.setDefault('help record examples') }
-        },
-        { caption = 'Exit', destinations = nil }
-    }
-}
+-- Menus['help record origin'] = {
+--     text = color.White .. 'To create a record, you first fill in its values using this command:\n' ..
+--         color.Yellow .. '/storerecord <type> <setting> <value>\n' ..
+--         color.White .. 'To see the values you\'ve filled in for a certain type of record, use this:\n' ..
+--         color.Yellow .. '/storerecord <type> print\n' ..
+--         color.White .. 'To clear the values you\'ve filled in, use this:\n' ..
+--         color.Yellow .. '/storerecord <type> clear\n' ..
+--         color.White .. 'As of now, you can use the following for the ' .. color.Yellow .. '<type>' ..
+--         color.White .. ' argument:\n' ..
+--         color.Yellow .. tableHelper.concatenateTableIndices(config.validRecordSettings, ', ') .. '\n' ..
+--         color.White .. 'To see what you can use for the ' .. color.Yellow .. '<setting>' .. color.White ..
+--         ' argument, simply put in an invalid setting and the valid ones will be displayed for that record ' ..
+--         'type.\nOnce you\'ve filled in the various settings, use this command to create your record:\n' ..
+--         color.Yellow .. '/createrecord <type>\n\n' ..
+--         color.White .. 'Your record can be:\n' ..
+--         color.Yellow .. '1) ' .. color.White .. 'A record created entirely from scratch, when not ' ..
+--         'setting a baseId for it and either not setting an id for it or setting an unused one\n' ..
+--         color.Yellow .. '2) ' .. color.White .. 'A record that uses an existing record\'s values as ' ..
+--         'its starting values without modifying anything in that existing record, when setting a ' ..
+--         'baseId for it and either not setting an id for it or setting an unused one\n' ..
+--         color.Yellow .. '3) ' .. color.White .. 'A record created from scratch that replaces an ' ..
+--         'existing record in the game, when not setting a baseId and setting an id that ' ..
+--         'is already used in the game\n' ..
+--         color.Yellow .. '4) ' .. color.White .. 'A record that uses an existing record\'s values as ' ..
+--         'its starting values and replaces an existing record, when setting both a baseId for it ' ..
+--         'and an id that is already used in the game, with the baseId and id potentially ' ..
+--         'being the same if you want to replace an existing record with a modified version of itself\n',
+--     buttons = {
+--         {
+--             caption = 'Back to admin help',
+--             displayConditions = { menuHelper.conditions.requireStaffRank(2) },
+--             destinations = { menuHelper.destinations.setDefault('help admin page 1') }
+--         },
+--         {
+--             caption = 'Examples of record creation',
+--             destinations = { menuHelper.destinations.setDefault('help record examples') }
+--         },
+--         { caption = 'Exit', destinations = nil }
+--     }
+-- }
 
 Menus['help record examples'] = {
     text = color.White .. 'Pick one of the following examples.',
