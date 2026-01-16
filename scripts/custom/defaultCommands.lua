@@ -475,7 +475,11 @@ local function loadScript(pid, cmd)
         return player:Message('Use /load <scriptName>\n')
     end
 
-    I.scriptLoader.loadScript(scriptName)
+    if I.scriptLoader.loadScript(scriptName, pid) then
+        player:Message(('Successfully loaded the script at scripts/custom/%s.lua'):format(scriptName))
+    else
+        player:Message(('Failed to load the script at scripts/custom/%s.lua'):format(scriptName))
+    end
 end
 
 ---@type CommandHandler
