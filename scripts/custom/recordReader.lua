@@ -31,6 +31,7 @@ local loadOrder = {
 local RecordStores = tds.Hash {
   Alchemy = tds.Hash(),
   Armor = tds.Hash(),
+  Apparatus = tds.Hash(),
   Activator = tds.Hash(),
   Static = tds.Hash(),
 }
@@ -43,6 +44,20 @@ local TypeHandlers = {
       model = activatorRecord.mesh:normalize(),
       name = activatorRecord.name,
       script = lowercase(activatorRecord.script),
+    }
+  end,
+  Apparatus = function(recordStore, appaRecord, recordId)
+    recordStore[recordId] = tds.Hash {
+      apparatusType = appaRecord.data.apparatus_type,
+      icon = appaRecord.icon:normalize(),
+      id = recordId,
+      model = appaRecord.mesh:normalize(),
+      name = appaRecord.name,
+      objectFlags = appaRecord.flags,
+      quality = appaRecord.data.quality,
+      script = lowercase(appaRecord.script),
+      weight = appaRecord.data.weight,
+      value = appaRecord.data.value,
     }
   end,
   Armor = function(recordStore, armorRecord, recordId)

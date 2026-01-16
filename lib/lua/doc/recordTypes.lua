@@ -1,238 +1,244 @@
 ---@meta
 
+---@alias ApparatusType
+---| 'MortarAndPestle' # 0
+---| 'Alembic' # 1
+---| 'Calcinator' # 2
+---| 'Retort' # 3
+
 ---@alias ArmorType
----| 0 # Helmet
----| 1 # Cuirass
----| 2 # LeftPauldron
----| 3 # RightPauldron
----| 4 # Greaves
----| 5 # Boots
----| 6 # LeftGauntlet
----| 7 # RightGauntlet
----| 8 # Shield
----| 9 # LeftBracer
----| 10 # RightBracer
+---| 'Helmet' 0
+---| 'Cuirass' 1
+---| 'LeftPauldron' 2
+---| 'RightPauldron' 3
+---| 'Greaves' 4
+---| 'Boots' 5
+---| 'LeftGauntlet' 6
+---| 'RightGauntlet' 7
+---| 'Shield' 8
+---| 'LeftBracer' 9
+---| 'RightBracer' 10
 
 ---@alias AttributeId2
----| -1 # None
----| 0 # Strength
----| 1 # Intelligence
----| 2 # Willpower
----| 3 # Agility
----| 4 # Speed
----| 5 # Endurance
----| 6 # Personality
----| 7 # Luck
+---| 'None' -1
+---| 'Strength' 0
+---| 'Intelligence' 1
+---| 'Willpower' 2
+---| 'Agility' 3
+---| 'Speed' 4
+---| 'Endurance' 5
+---| 'Personality' 6
+---| 'Luck' 7
 
 ---@alias BipedObjectType
----| 0 # Head
----| 1 # Hair
----| 2 # Neck
----| 3 # Chest
----| 4 # Groin
----| 5 # Skirt
----| 6 # RightHand
----| 7 # LeftHand
----| 8 # RightWrist
----| 9 # LeftWrist
----| 10 # Shield
----| 11 # RightForearm
----| 12 # LeftForearm
----| 13 # RightUpperArm
----| 14 # LeftUpperArm
----| 15 # RightFoot
----| 16 # LeftFoot
----| 17 # RightAnkle
----| 18 # LeftAnkle
----| 19 # RightKnee
----| 20 # LeftKnee
----| 21 # RightUpperLeg
----| 22 # LeftUpperLeg
----| 23 # RightPauldron
----| 24 # LeftPauldron
----| 25 # Weapon
----| 26 # Tail
+---| 'Head' 0
+---| 'Hair' 1
+---| 'Neck' 2
+---| 'Chest' 3
+---| 'Groin' 4
+---| 'Skirt' 5
+---| 'RightHand' 6
+---| 'LeftHand' 7
+---| 'RightWrist' 8
+---| 'LeftWrist' 9
+---| 'Shield' 10
+---| 'RightForearm' 11
+---| 'LeftForearm' 12
+---| 'RightUpperArm' 13
+---| 'LeftUpperArm' 14
+---| 'RightFoot' 15
+---| 'LeftFoot' 16
+---| 'RightAnkle' 17
+---| 'LeftAnkle' 18
+---| 'RightKnee' 19
+---| 'LeftKnee' 20
+---| 'RightUpperLeg' 21
+---| 'LeftUpperLeg' 22
+---| 'RightPauldron' 23
+---| 'LeftPauldron' 24
+---| 'Weapon' 25
+---| 'Tail' 26
 
 ---@alias EffectRange
----| 0 # OnSelf
----| 1 # OnTouch
----| 2 # OnTarget
+---| 'OnSelf' # 0
+---| 'OnTouch' # 1
+---| 'OnTarget' 2
 
 ---@alias MagicEffectId
----| -1 # None
----| 0 # WaterBreathing
----| 1 # SwiftSwim
----| 2 # WaterWalking
----| 3 # Shield
----| 4 # FireShield
----| 5 # LightningShield
----| 6 # FrostShield
----| 7 # Burden
----| 8 # Feather
----| 9 # Jump
----| 10 # Levitate
----| 11 # SlowFall
----| 12 # Lock
----| 13 # Open
----| 14 # FireDamage
----| 15 # ShockDamage
----| 16 # FrostDamage
----| 17 # DrainAttribute
----| 18 # DrainHealth
----| 19 # DrainMagicka
----| 20 # DrainFatigue
----| 21 # DrainSkill
----| 22 # DamageAttribute
----| 23 # DamageHealth
----| 24 # DamageMagicka
----| 25 # DamageFatigue
----| 26 # DamageSkill
----| 27 # Poison
----| 28 # WeaknessToFire
----| 29 # WeaknessToFrost
----| 30 # WeaknessToShock
----| 31 # WeaknessToMagicka
----| 32 # WeaknessToCommonDisease
----| 33 # WeaknessToBlightDisease
----| 34 # WeaknessToCorprus
----| 35 # WeaknessToPoison
----| 36 # WeaknessToNormalWeapons
----| 37 # DisintegrateWeapon
----| 38 # DisintegrateArmor
----| 39 # Invisibility
----| 40 # Chameleon
----| 41 # Light
----| 42 # Sanctuary
----| 43 # NightEye
----| 44 # Charm
----| 45 # Paralyze
----| 46 # Silence
----| 47 # Blind
----| 48 # Sound
----| 49 # CalmHumanoid
----| 50 # CalmCreature
----| 51 # FrenzyHumanoid
----| 52 # FrenzyCreature
----| 53 # DemoralizeHumanoid
----| 54 # DemoralizeCreature
----| 55 # RallyHumanoid
----| 56 # RallyCreature
----| 57 # Dispel
----| 58 # SoulTrap
----| 59 # Telekinesis
----| 60 # Mark
----| 61 # Recall
----| 62 # DivineIntervention
----| 63 # AlmsiviIntervention
----| 64 # DetectAnimal
----| 65 # DetectEnchantment
----| 66 # DetectKey
----| 67 # SpellAbsorption
----| 68 # Reflect
----| 69 # CureCommonDisease
----| 70 # CureBlightDisease
----| 71 # CureCorprus
----| 72 # CurePoison
----| 73 # CureParalyzation
----| 74 # RestoreAttribute
----| 75 # RestoreHealth
----| 76 # RestoreMagicka
----| 77 # RestoreFatigue
----| 78 # RestoreSkill
----| 79 # FortifyAttribute
----| 80 # FortifyHealth
----| 81 # FortifyMagicka
----| 82 # FortifyFatigue
----| 83 # FortifySkill
----| 84 # FortifyMagickaMultiplier
----| 85 # AbsorbAttribute
----| 86 # AbsorbHealth
----| 87 # AbsorbMagicka
----| 88 # AbsorbFatigue
----| 89 # AbsorbSkill
----| 90 # ResistFire
----| 91 # ResistFrost
----| 92 # ResistShock
----| 93 # ResistMagicka
----| 94 # ResistCommonDisease
----| 95 # ResistBlightDisease
----| 96 # ResistCorprus
----| 97 # ResistPoison
----| 98 # ResistNormalWeapons
----| 99 # ResistParalysis
----| 100 # RemoveCurse
----| 101 # TurnUndead
----| 102 # SummonScamp
----| 103 # SummonClannfear
----| 104 # SummonDaedroth
----| 105 # SummonDremora
----| 106 # SummonGhost
----| 107 # SummonSkeleton
----| 108 # SummonLeastBonewalker
----| 109 # SummonGreaterBonewalker
----| 110 # SummonBonelord
----| 111 # SummonTwilight
----| 112 # SummonHunger
----| 113 # SummonGoldenSaint
----| 114 # SummonFlameAtronach
----| 115 # SummonFrostAtronach
----| 116 # SummonStormAtronach
----| 117 # FortifyAttackBonus
----| 118 # CommandCreature
----| 119 # CommandHumanoid
----| 120 # BoundDagger
----| 121 # BoundLongsword
----| 122 # BoundMace
----| 123 # BoundBattleAxe
----| 124 # BoundSpear
----| 125 # BoundLongbow
----| 126 # ExtraSpell
----| 127 # BoundCuirass
----| 128 # BoundHelm
----| 129 # BoundBoots
----| 130 # BoundShield
----| 131 # BoundGloves
----| 132 # Corprus
----| 133 # Vampirism
----| 134 # SummonCenturionSphere
----| 135 # SunDamage
----| 136 # StuntedMagicka
----| 137 # SummonFabricant
----| 138 # SummonWolf
----| 139 # SummonBear
----| 140 # SummonBoneWolf
----| 141 # Summon04
----| 142 # Summon05
+---| 'None' # -1
+---| 'WaterBreathing' # 0
+---| 'SwiftSwim' # 1
+---| 'WaterWalking' # 2
+---| 'Shield' # 3
+---| 'FireShield' # 4
+---| 'LightningShield' # 5
+---| 'FrostShield' # 6
+---| 'Burden' # 7
+---| 'Feather' # 8
+---| 'Jump' # 9
+---| 'Levitate' # 10
+---| 'SlowFall' # 11
+---| 'Lock' # 12
+---| 'Open' # 13
+---| 'FireDamage' # 14
+---| 'ShockDamage' # 15
+---| 'FrostDamage' # 16
+---| 'DrainAttribute' # 17
+---| 'DrainHealth' # 18
+---| 'DrainMagicka' # 19
+---| 'DrainFatigue' # 20
+---| 'DrainSkill' # 21
+---| 'DamageAttribute' # 22
+---| 'DamageHealth' # 23
+---| 'DamageMagicka' # 24
+---| 'DamageFatigue' # 25
+---| 'DamageSkill' # 26
+---| 'Poison' # 27
+---| 'WeaknessToFire' # 28
+---| 'WeaknessToFrost' # 29
+---| 'WeaknessToShock' # 30
+---| 'WeaknessToMagicka' # 31
+---| 'WeaknessToCommonDisease' # 32
+---| 'WeaknessToBlightDisease' # 33
+---| 'WeaknessToCorprus' # 34
+---| 'WeaknessToPoison' # 35
+---| 'WeaknessToNormalWeapons' # 36
+---| 'DisintegrateWeapon' # 37
+---| 'DisintegrateArmor' # 38
+---| 'Invisibility' # 39
+---| 'Chameleon' # 40
+---| 'Light' # 41
+---| 'Sanctuary' # 42
+---| 'NightEye' # 43
+---| 'Charm' # 44
+---| 'Paralyze' # 45
+---| 'Silence' # 46
+---| 'Blind' # 47
+---| 'Sound' # 48
+---| 'CalmHumanoid' # 49
+---| 'CalmCreature' # 50
+---| 'FrenzyHumanoid' # 51
+---| 'FrenzyCreature' # 52
+---| 'DemoralizeHumanoid' # 53
+---| 'DemoralizeCreature' # 54
+---| 'RallyHumanoid' # 55
+---| 'RallyCreature' # 56
+---| 'Dispel' # 57
+---| 'SoulTrap' # 58
+---| 'Telekinesis' # 59
+---| 'Mark' # 60
+---| 'Recall' # 61
+---| 'DivineIntervention' # 62
+---| 'AlmsiviIntervention' # 63
+---| 'DetectAnimal' # 64
+---| 'DetectEnchantment' # 65
+---| 'DetectKey' # 66
+---| 'SpellAbsorption' # 67
+---| 'Reflect' # 68
+---| 'CureCommonDisease' # 69
+---| 'CureBlightDisease' # 70
+---| 'CureCorprus' # 71
+---| 'CurePoison' # 72
+---| 'CureParalyzation' # 73
+---| 'RestoreAttribute' # 74
+---| 'RestoreHealth' # 75
+---| 'RestoreMagicka' # 76
+---| 'RestoreFatigue' # 77
+---| 'RestoreSkill' # 78
+---| 'FortifyAttribute' # 79
+---| 'FortifyHealth' # 80
+---| 'FortifyMagicka' # 81
+---| 'FortifyFatigue' # 82
+---| 'FortifySkill' # 83
+---| 'FortifyMagickaMultiplier' # 84
+---| 'AbsorbAttribute' # 85
+---| 'AbsorbHealth' # 86
+---| 'AbsorbMagicka' # 87
+---| 'AbsorbFatigue' # 88
+---| 'AbsorbSkill' # 89
+---| 'ResistFire' # 90
+---| 'ResistFrost' # 91
+---| 'ResistShock' # 92
+---| 'ResistMagicka' # 93
+---| 'ResistCommonDisease' # 94
+---| 'ResistBlightDisease' # 95
+---| 'ResistCorprus' # 96
+---| 'ResistPoison' # 97
+---| 'ResistNormalWeapons' # 98
+---| 'ResistParalysis' # 99
+---| 'RemoveCurse' # 100
+---| 'TurnUndead' # 101
+---| 'SummonScamp' # 102
+---| 'SummonClannfear' # 103
+---| 'SummonDaedroth' # 104
+---| 'SummonDremora' # 105
+---| 'SummonGhost' # 106
+---| 'SummonSkeleton' # 107
+---| 'SummonLeastBonewalker' # 108
+---| 'SummonGreaterBonewalker' # 109
+---| 'SummonBonelord' # 110
+---| 'SummonTwilight' # 111
+---| 'SummonHunger' # 112
+---| 'SummonGoldenSaint' # 113
+---| 'SummonFlameAtronach' # 114
+---| 'SummonFrostAtronach' # 115
+---| 'SummonStormAtronach' # 116
+---| 'FortifyAttackBonus' # 117
+---| 'CommandCreature' # 118
+---| 'CommandHumanoid' # 119
+---| 'BoundDagger' # 120
+---| 'BoundLongsword' # 121
+---| 'BoundMace' # 122
+---| 'BoundBattleAxe' # 123
+---| 'BoundSpear' # 124
+---| 'BoundLongbow' # 125
+---| 'ExtraSpell' # 126
+---| 'BoundCuirass' # 127
+---| 'BoundHelm' # 128
+---| 'BoundBoots' # 129
+---| 'BoundShield' # 130
+---| 'BoundGloves' # 131
+---| 'Corprus' # 132
+---| 'Vampirism' # 133
+---| 'SummonCenturionSphere' # 134
+---| 'SunDamage' # 135
+---| 'StuntedMagicka' # 136
+---| 'SummonFabricant' # 137
+---| 'SummonWolf' # 138
+---| 'SummonBear' # 139
+---| 'SummonBoneWolf' # 140
+---| 'Summon04' # 141
+---| 'Summon05' # 142
 
 ---@alias SkillId2
----| -1 # None
----| 0 # Block
----| 1 # Armorer
----| 2 # MediumArmor
----| 3 # HeavyArmor
----| 4 # BluntWeapon
----| 5 # LongBlade
----| 6 # Axe
----| 7 # Spear
----| 8 # Athletics
----| 9 # Enchant
----| 10 # Destruction
----| 11 # Alteration
----| 12 # Illusion
----| 13 # Conjuration
----| 14 # Mysticism
----| 15 # Restoration
----| 16 # Alchemy
----| 17 # Unarmored
----| 18 # Security
----| 19 # Sneak
----| 20 # Acrobatics
----| 21 # LightArmor
----| 22 # ShortBlade
----| 23 # Marksman
----| 24 # Mercantile
----| 25 # Speechcraft
----| 26 # HandToHand
+---| 'None' -1
+---| 'Block' 0
+---| 'Armorer' 1
+---| 'MediumArmor' 2
+---| 'HeavyArmor' 3
+---| 'BluntWeapon' 4
+---| 'LongBlade' 5
+---| 'Axe' 6
+---| 'Spear' 7
+---| 'Athletics' 8
+---| 'Enchant' 9
+---| 'Destruction' 10
+---| 'Alteration' 11
+---| 'Illusion' 12
+---| 'Conjuration' 13
+---| 'Mysticism' 14
+---| 'Restoration' 15
+---| 'Alchemy' 16
+---| 'Unarmored' 17
+---| 'Security' 18
+---| 'Sneak' 19
+---| 'Acrobatics' 20
+---| 'LightArmor' 21
+---| 'ShortBlade' 22
+---| 'Marksman' 23
+---| 'Mercantile' 24
+---| 'Speechcraft' 25
+---| 'HandToHand' 26
 
 ---@alias NormalizedPath string Lowercased string with unix-style paths
 ---@alias RecordId string 32-character limited string. Always lowercase.
@@ -252,18 +258,27 @@
 ---@field name? string
 ---@field script? RecordId
 
----@class ArmorRecord
+---@class ApparatusRecord: BaseRecord
+---@field apparatusType ApparatusType
+---@field icon NormalizedPath
+---@field mesh NormalizedPath
+---@field name string
+---@field quality number
+---@field script RecordId?
+---@field value integer
+---@field weight number
+
+---@class ArmorRecord: BaseRecord
 ---@field armorRating integer
 ---@field armorType ArmorType
 ---@field durability integer
 ---@field enchantment RecordId?
 ---@field enchantmentValue integer
 ---@field icon NormalizedPath
----@field id RecordId
 ---@field model NormalizedPath
 ---@field parts BipedObject[]
 ---@field script RecordId?
----@field weight integer
+---@field weight number
 ---@field value integer
 
 ---@class MagicEffect
@@ -284,13 +299,14 @@
 ---@field potionFlags integer
 ---@field script RecordId?
 ---@field value integer
----@field weight integer
+---@field weight number
 
 ---@class StaticRecord: BaseRecord
 ---@field model NormalizedPath
 
 ---@class RecordStores
 ---@field Activator table<RecordId, ActivatorRecord>
+---@field Apparatus table<RecordId, ApparatusRecord>
 ---@field Armor table<RecordId, ArmorRecord>
 ---@field Alchemy table<RecordId, PotionRecord>
 ---@field Static table<RecordId, StaticRecord>
