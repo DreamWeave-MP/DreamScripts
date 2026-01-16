@@ -74,6 +74,9 @@ DScriptLoader.Interfaces = setmetatable({},
 )
 
 local PathSeparator = tes3mp.GetOperatingSystemType() == 'Windows' and '\\' or '/'
+local ModuleCache = {
+  interfaces = DScriptLoader.Interfaces,
+}
 
 --- Small shim for overriding require statements in curated script environment
 ---@param scriptName string
@@ -83,48 +86,48 @@ function DScriptLoader.requireShim(scriptName)
 
   scriptName = scriptName:gsub('[\\/]', '.')
 
-  if scriptName == 'interfaces' then
-    return DScriptLoader.Interfaces
-  else
-    local ok, chunk, err, result = false, nil, nil, nil
-
-    ok, chunk = pcall(require, scriptName)
-    if ok then return chunk end
-
-    for _, prefix in ipairs { 'scripts/', 'lib/', 'lib/lua/', } do
-      local checkPath = ('server/%s%s.lua'):format(prefix, scriptName:gsub('%.', PathSeparator))
-
-      chunk, err = loadfile(checkPath)
-
-      if chunk then
-        ok = true
-        break
-      end
-    end
-
-    if not ok or not chunk then
-      tes3mp.LogAppend(
-        enumerations.log.FATAL,
-        ('Failed to load script %s due to error %s. Aborting!'):format(scriptName, err)
-      )
-      return tes3mp.StopServer(18)
-    end
-
-    setfenv(chunk, DScriptLoader.getScriptEnv())
-    -- setfenv(chunk, getfenv(2))
-
-    ok, result = pcall(chunk)
-    if not ok then
-      tes3mp.LogAppend(
-        enumerations.log.ERROR,
-        ('Tried to call `require` on the script at %s, but it threw an exception: %s. This script cannot be loaded!')
-        :format(scriptName, result)
-      )
-      return tes3mp.StopServer(11)
-    end
-
-    return result
+  if ModuleCache[scriptName] then
+    return ModuleCache[scriptName]
   end
+
+  local ok, chunk, err, result = false, nil, nil, nil
+
+  ok, chunk = pcall(require, scriptName)
+  if ok then return chunk end
+
+  for _, prefix in ipairs { 'scripts/', 'lib/', 'lib/lua/', } do
+    local checkPath = ('server/%s%s.lua'):format(prefix, scriptName:gsub('%.', PathSeparator))
+
+    chunk, err = loadfile(checkPath)
+
+    if chunk then
+      ok = true
+      break
+    end
+  end
+
+  if not ok or not chunk then
+    tes3mp.LogAppend(
+      enumerations.log.FATAL,
+      ('Failed to load script %s due to error %s. Aborting!'):format(scriptName, err)
+    )
+    return tes3mp.StopServer(18)
+  end
+
+  setfenv(chunk, DScriptLoader.getScriptEnv())
+  -- setfenv(chunk, getfenv(2))
+
+  ok, result = pcall(chunk)
+  if not ok then
+    tes3mp.LogAppend(
+      enumerations.log.ERROR,
+      ('Tried to call `require` on the script at %s, but it threw an exception: %s. This script cannot be loaded!')
+      :format(scriptName, result)
+    )
+    return tes3mp.StopServer(11)
+  end
+
+  return result
 end
 
 --- Returns a fresh copy of the script environment for each loaded script, so it may not be mutated
