@@ -45,6 +45,11 @@ local TypeHandlers = {
       model = staticRecord.mesh:lower(),
     }
 
+    tes3mp.LogAppend(
+      enumerations.log.WARN,
+      objectHashMap
+    )
+
     recordStore[objectId] = objectHashMap
   end,
 }
