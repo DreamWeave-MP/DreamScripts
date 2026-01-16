@@ -95,7 +95,7 @@ function SaveBufferedPaths()
             ('Flushing %s buffer to disk at path %s'):format(saveSubscription.data, scriptPath)
         )
 
-        if jsonInterface.writeToFile(scriptPath, saveSubscription) and not saveSubscription.persistent then
+        if jsonInterface.quicksave(scriptPath, saveSubscription) and not saveSubscription.persistent then
             removePaths[#removePaths + 1] = scriptPath
         end
     end
