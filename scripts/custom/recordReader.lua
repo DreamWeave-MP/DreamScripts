@@ -145,7 +145,7 @@ return {
     OnServerPostInit = function()
       for storeType, recordStore in pairs(RecordStores) do
         for recordId, recordData in pairs(recordStore) do
-          print(storeType, recordId, recordData)
+          print(storeType, '\n', recordId, '\n', recordData)
           break
         end
       end
