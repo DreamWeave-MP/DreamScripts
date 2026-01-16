@@ -131,21 +131,21 @@ local function getResultMessage(self, rollData)
     if diceNum == 1 then dieOrDice = 'die' end
 
     return RollResultMessageFormatString:format(
-        color.lightBlue,
+        color.LightBlue,
         player.accountName,
-        color.blueViolet,
-        color.green,
+        color.BlueViolet,
+        color.Green,
         diceNum,
-        color.blueViolet,
+        color.BlueViolet,
         self.faceCount,
         dieOrDice,
-        color.green,
+        color.Green,
         self.modifier,
-        color.yellow,
+        color.Yellow,
         rollResult,
         forStat,
-        color.blueViolet,
-        color.defaultColor
+        color.BlueViolet,
+        color.Default
     )
 end
 
