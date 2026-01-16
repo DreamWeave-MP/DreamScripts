@@ -26,8 +26,8 @@ local SkipTypes = {
   DialogueInfo = true,
 }
 
-local RecordStores = {
-  Static = {}
+local RecordStores = tds.Hash {
+  Static = tds.Hash(),
 }
 
 local StaticRecords = {}
@@ -64,9 +64,6 @@ for _, pluginName in ipairs(loadOrder) do
     end
   end
 end
-
-RecordStores.Static = tds.Hash(RecordStores.Static)
--- RecordStores = tds.Hash(RecordStores)
 
 ---@type TES3MPScriptRegistration
 return {
