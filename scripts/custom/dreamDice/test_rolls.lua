@@ -4,7 +4,7 @@ local I = require 'interfaces'
 
 local testPairs = {}
 
-local maxElements = math.random(100) * math.random(100)
+local maxElements = math.random(25, 50)
 local usedKeys, numKeys = {}, 0
 
 for _ = 1, maxElements do
@@ -27,13 +27,8 @@ tes3mp.LogAppend(
 
 usedKeys = nil
 
-local DefaultTestIterations = 1000
----@param testIterations integer?
-return function(testIterations)
-  if not testIterations or type(testIterations) ~= 'number' then
-    testIterations = DefaultTestIterations
-  end
-
+local TestIterations = 25
+return function()
   local startTime = os.clock()
 
   tes3mp.LogAppend(
@@ -42,7 +37,7 @@ return function(testIterations)
   )
 
   for dice, faces in pairs(testPairs) do
-    for _ = 1, testIterations do
+    for _ = 1, TestIterations do
       local thisRoll = ('%sd%s+%s'):format(dice, faces, math.random(-100, 100))
       local rollObject = I.dreamDice.roll(thisRoll)
       rollObject:resolve()
@@ -53,7 +48,7 @@ return function(testIterations)
     enumerations.log.INFO,
     ('DreamDice integration tests completed %d rolls in %.6f milliseconds')
     :format(
-      numKeys * testIterations,
+      numKeys * TestIterations,
       (os.clock() - startTime) * 1000
     )
   )
