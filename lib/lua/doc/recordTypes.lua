@@ -244,7 +244,7 @@
 --- Representation of an individual slot used by a clothing or armor
 ---@class BipedObject
 ---@field bipedObjectType BipedObjectType
----@field malePart string
+---@field malePart string? A BipedObject may omit defining parts at all simply to prevent another item from using that slot.
 ---@field femalePart string? Female parts are optional
 
 ---@class ActivatorRecord: BaseRecord

@@ -44,8 +44,8 @@ local TypeHandlers = {
     for i, bipedObject in ipairs(armorRecord.biped_objects) do
       bipedObjects[i] = tds.Hash {
         bipedObjectType = bipedObject.biped_object_type,
-        malePart = bipedObject.male_bodypart,
-        femalePart = bipedObject.female_bodypart,
+        malePart = (bipedObject.male_bodypart or ''):lower(),
+        femalePart = (bipedObject.female_bodypart or ''):lower(),
       }
     end
 
