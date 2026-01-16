@@ -38,12 +38,11 @@ local TypeHandlers = {
     )
 
     local objectId = staticRecord.id:lower()
-    local objectHashTable = tds.Hash {
+    recordStore[objectId] = tds.Hash {
+      flags = staticRecord.flags,
       id = objectId,
-      model = staticRecord.model:lower(),
+      model = staticRecord.mesh:lower(),
     }
-
-    recordStore[objectId] = objectHashTable
   end,
 }
 
