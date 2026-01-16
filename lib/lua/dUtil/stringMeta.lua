@@ -31,3 +31,7 @@ function StringMeta:prefixZeroes(desiredLength)
 
   return newString
 end
+
+function StringMeta:normalize()
+  return self:lower():gsub('\\', '/')
+end
