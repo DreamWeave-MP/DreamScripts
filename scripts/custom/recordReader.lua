@@ -30,6 +30,7 @@ local RecordStores = {
   Static = {}
 }
 
+local StaticRecords = {}
 local TypeHandlers = {
   Static = function(recordStore, staticRecord)
     local objectId = staticRecord.id:lower()
@@ -39,7 +40,7 @@ local TypeHandlers = {
       type(objectId) .. ' ' .. objectId .. ' ' .. tostring(staticRecord) .. ' ' .. staticRecord.flags
     )
 
-    recordStore[objectId] = {
+    local objectHashMap = tds.Hash {
       -- flags = staticRecord.flags,
       -- id = objectId,
       -- model = staticRecord.mesh:lower(),
