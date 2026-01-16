@@ -527,15 +527,12 @@ packetReader.GetObjectPacketTables = function(packetType)
             end
         end
 
-        print('packet table reader', object, uniqueIndex, packetType)
         if object ~= nil then
             packetTables.objects[uniqueIndex] = object
         elseif player ~= nil then
             packetTables.players[pid] = player
         end
     end
-
-    tableHelper.print(packetTables)
 
     return packetTables
 end
