@@ -49,9 +49,18 @@ function customCommandHooks:clearCommandsFromScript(scriptPath)
     scriptPath = scriptPath:lower()
 
     local toRemove = {}
+    tes3mp.LogAppend(
+        enumerations.log.WARN,
+        'Removing commands defined by ' .. scriptPath
+    )
+
     for commandName, commandData in pairs(self.commands) do
         if commandData.definedBy == scriptPath then
             toRemove[#toRemove + 1] = commandName
+            tes3mp.LogAppend(
+                enumerations.log.WARN,
+                'Removing command ' .. commandName
+            )
         end
     end
 
