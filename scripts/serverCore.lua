@@ -66,6 +66,34 @@ updateTimerId = nil
 ---@global
 banList = {}
 
+--- This table is used to track paths
+--- of files which the server is meant to save.
+---@type table<string, table>
+local BufferedDiskPaths = {
+    ['server/data/custom/testFile.json'] = { playerId = 15, data = { inventory = { { refId = 'Big Pantalones', count = 1, } }, }, }
+}
+
+local DiskBufferDelay, DiskBufferTimerId = 10, nil
+function SaveBufferedPaths()
+    local removePaths = {}
+
+    for scriptPath, scriptData in pairs(BufferedDiskPaths) do
+        tes3mp.LogAppend(
+            enumerations.log.INFO,
+            ('Flushing %s buffer to disk at path %s'):format(scriptData, scriptPath)
+        )
+    end
+
+    -- for _, removePath in ipairs(removePaths) do
+    --     BufferedDiskPaths[removePath] = nil
+    -- end
+
+    tes3mp.StartTimer(DiskBufferTimerId)
+end
+
+DiskBufferTimerId = tes3mp.CreateTimerEx('SaveBufferedPaths', DiskBufferDelay * 1000, '')
+tes3mp.StartTimer(DiskBufferTimerId)
+
 --- If the CustomEventHooks interface is loaded,
 --- Then the OnServerInit event initializes this value
 ---@type CustomEventHooks?
