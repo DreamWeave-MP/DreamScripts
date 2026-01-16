@@ -34,6 +34,8 @@ return function(testIterations)
     testIterations = DefaultTestIterations
   end
 
+  local startTime = os.clock()
+
   tes3mp.LogAppend(
     enumerations.log.INFO,
     ('DreamDice integration tests running for %d dice, with %d iterations each.'):format(numKeys, testIterations)
@@ -46,4 +48,13 @@ return function(testIterations)
       rollObject:resolve()
     end
   end
+
+  tes3mp.LogAppend(
+    enumerations.log.INFO,
+    ('DreamDice integration tests completed %d rolls in %.6f milliseconds')
+    :format(
+      numKeys * testIterations,
+      (os.clock() - startTime) * 1000
+    )
+  )
 end
