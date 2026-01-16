@@ -18,6 +18,11 @@ local loadOrder = {
   -- 'Starwind-TSI.omwaddon',
 }
 
+local SkipTypes = {
+  Dialogue = true,
+  DialogueInfo = true,
+}
+
 local PluginPathFormatter = tes3mp.GetDataPath() .. '/custom/recordParser/%s'
 
 for _, pluginName in ipairs(loadOrder) do
@@ -27,7 +32,9 @@ for _, pluginName in ipairs(loadOrder) do
 
   for i = 1, #plugin.objects do
     local object = plugin.objects[i]
-    tes3mp.LogAppend(enumerations.log.WARN, object.type)
+    if not SkipTypes[object.type] then
+      tes3mp.LogAppend(enumerations.log.WARN, object.type)
+    end
     -- tes3mp.LogAppend(enumerations.log.WARN, tostring(object))
   end
 end
