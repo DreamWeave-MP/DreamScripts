@@ -122,13 +122,20 @@ for _, pluginName in ipairs(loadOrder) do
       :format(pluginPath, pluginName, pluginPath)
     )
   end
-  local plugin = tes3.load_plugin(pluginPath)
+
   tes3mp.LogAppend(
     enumerations.log.WARN,
-    ('Records defined by %s'):format(pluginPath)
+    ('Parsing records defined by %s'):format(pluginPath)
   )
 
-  for _, object in ipairs(plugin.objects) do
+  local ok, result = pcall(tes3.load_plugin, pluginPath)
+  if not ok then
+    error(
+      ('Failed to load the plugin %s, due to: %s'):format(pluginName, result)
+    )
+  end
+
+  for _, object in ipairs(result) do
     local recordStore, typeHandler = RecordStores[object.type], TypeHandlers[object.type]
 
     if recordStore and typeHandler then
