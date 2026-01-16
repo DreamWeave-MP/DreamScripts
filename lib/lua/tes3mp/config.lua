@@ -132,6 +132,10 @@ config.allowBedRest = true
 --- Whether players should be allowed to rest in the wilderness by default
 config.allowWildernessRest = true
 
+--- How long the server should wait between flushing subscription tables to disk.
+--- Higher values will make the server more performant, but, have higher risk of data loss or desync.
+config.diskBufferDelay = 3
+
 --- Whether players should be allowed to wait by default
 config.allowWait = true
 

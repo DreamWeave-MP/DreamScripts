@@ -86,7 +86,7 @@ BufferedDiskPaths = {
     }
 }
 
-local DiskBufferDelay, DiskBufferTimerId = 3, nil
+local DiskBufferTimerId
 -- local PlayerSaveDelay, CellSaveDelay, WorldSaveDelay = 15, 30, 45
 function SaveBufferedPaths()
     local removePaths = {}
@@ -140,7 +140,7 @@ function SaveBufferedPaths()
     tes3mp.StartTimer(DiskBufferTimerId)
 end
 
-DiskBufferTimerId = tes3mp.CreateTimerEx('SaveBufferedPaths', DiskBufferDelay * 1000, '')
+DiskBufferTimerId = tes3mp.CreateTimerEx('SaveBufferedPaths', config.diskBufferDelay * 1000, '')
 tes3mp.StartTimer(DiskBufferTimerId)
 
 --- If the CustomEventHooks interface is loaded,
