@@ -556,10 +556,7 @@ function DScriptLoader.loadAllScripts()
 
   for _, scriptName in ipairs(config.customScripts) do
     if not DScriptLoader.loadScript(scriptName) then
-      return tes3mp.LogAppend(
-        enumerations.log.ERROR,
-        'Script loading has failed! Check your server log for more details.'
-      )
+      error('Script loading has failed! Check your server log for more details.')
     end
   end
 
