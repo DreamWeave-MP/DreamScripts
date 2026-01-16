@@ -73,8 +73,6 @@ local function reroll(pid, sendToAll)
   sendMessage(message, sendToAll or player.data.location.cell, pid)
 end
 
-BigTestFunction()
-
 ---@type TES3MPScriptRegistration
 return {
   interfaceName = 'dreamDice',

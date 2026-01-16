@@ -68,9 +68,9 @@ banList = {}
 
 --- This table is used to track paths
 --- of files which the server is meant to save.
----@type table<string, table>
+---@type table<string, SaveSubscriptionData>
 ---@global
-local BufferedDiskPaths = {
+BufferedDiskPaths = {
     ['custom/testFile.json'] = {
         data = {
             playerId = 15,
@@ -106,41 +106,7 @@ function SaveBufferedPaths()
         BufferedDiskPaths[removePath] = nil
     end
 
-    for cellName, cell in pairs(LoadedCells) do
-        tes3mp.LogAppend(
-            enumerations.log.INFO,
-            ('Flushing %s cell buffer to disk'):format(cellName)
-        )
-        cell:QuicksaveToDrive()
-
-        if worldIsEmpty then
-            logicHandler.UnloadCell(cellName)
-        end
-    end
-
-    if worldIsEmpty then
-        WorldInstance:SaveToDrive()
-
-        for _, recordStore in pairs(RecordStores) do
-            recordStore:DeleteUnlinkedRecords()
-            recordStore:SaveToDrive()
-        end
-    else
-        for playerId, player in pairs(Players) do
-            tes3mp.LogAppend(
-                enumerations.log.INFO,
-                ('Flushing (%d) %s player buffer to disk')
-                :format(playerId, player.accountName)
-            )
-            player:QuicksaveToDrive()
-        end
-    end
-
     tes3mp.StartTimer(DiskBufferTimerId)
-end
-
-function BigTestFunction()
-    tableHelper.print(BufferedDiskPaths)
 end
 
 DiskBufferTimerId = tes3mp.CreateTimerEx('SaveBufferedPaths', DiskBufferDelay * 1000, '')

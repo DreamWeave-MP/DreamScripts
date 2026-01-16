@@ -59,7 +59,36 @@ function DScriptLoader.makeReadOnly(inTable)
   })
 end
 
-local Interfaces = {}
+local saveDataTable = BufferedDiskPaths
+---@return DefaultInterfaces
+function DScriptLoader.originalInterfaces()
+  ---@type DefaultInterfaces
+  return {
+    ---@type StorageModule
+    storage = DScriptLoader.makeReadOnly {
+      subscribeToSave = function(filePath, data)
+        assert(filePath and type(filePath) == 'string', debug.traceback())
+        assert(data and type(data) == 'table', debug.traceback())
+
+        if saveDataTable[filePath] then
+          return tes3mp.LogAppend(
+            enumerations.log.WARN,
+            ('%s was already assigned to the global saved data table. It may not be re-written!'):format(filePath)
+          )
+        elseif not data.data or type(data.data) ~= 'table' then
+          return tes3mp.LogAppend(
+            enumerations.log.WARN,
+            ('Provided an invalid data table to save subscription handler. Refusing to subscribe: %s'):format(data)
+          )
+        end
+
+        saveDataTable[filePath] = data
+      end,
+    }
+  }
+end
+
+local Interfaces = DScriptLoader.originalInterfaces()
 DScriptLoader.Interfaces = setmetatable({},
   {
     __index = function(_, key)
@@ -174,7 +203,6 @@ function DScriptLoader.getScriptEnv()
       loadScript = DScriptLoader.loadScript,
       loadAllScripts = DScriptLoader.loadAllScripts,
     },
-    BigTestFunction = BigTestFunction,
     --- TES3MP Globals
     banList = banList,
     HourCounter = HourCounter,
@@ -464,7 +492,7 @@ end
 --- This function should only be called upon initializing the server, OR when attempting to reload all running lua scripts.
 function DScriptLoader.loadAllScripts()
   --- Reinitialize all interfaces when reloading all scripts
-  Interfaces = {}
+  Interfaces = DScriptLoader.originalInterfaces()
 
   local startTime = os.clock()
   for _, scriptName in ipairs(config.customScripts) do

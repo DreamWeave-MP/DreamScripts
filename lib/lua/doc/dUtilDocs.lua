@@ -1,5 +1,10 @@
 ---@meta
 
+---@class DefaultInterfaces
+---@field storage StorageModule
+---@field customCommandHooks CustomCommandHooks?
+---@field customEventHooks CustomEventHooks?
+
 ---@class DreamWeaveMenuModule
 ---@field display function(pid: PlayerId, menuName: string)
 
@@ -17,6 +22,15 @@
 ---@field io DUtilIO
 ---@field misc DUtilMisc
 ---@field vector3 Vector3Module
+
+---@class SaveSubscriptionData
+---@field persistent boolean Whether or not to flush the data immediately after it's been saved, or keep it around
+---@field data table<any, any> A persistent reference to the table to be saved. It must never be replaced!
+---@field delay integer? Time in seconds between writes. This includes how long before the data is first saved.
+---@field condition? fun(): boolean An optional condition function to run before determining whether or not to save.
+
+---@class StorageModule
+---@field subscribeToSave fun(filePath: string, data: SaveSubscriptionData)
 
 ---@class TES3MPCommandRegistration
 ---@field callback CommandHandler
