@@ -152,7 +152,7 @@ local TypeHandlers = {
 
     return tds.Hash {
       armorRating = record.data.armor_rating,
-      armorType = ArmorTypeToNumber[record.data.armor_type],
+      armorType = assert(ArmorTypeToNumber[record.data.armor_type]),
       durability = record.data.health,
       enchantment = lowercase(record.enchanting),
       enchantmentValue = record.data.enchantment,
