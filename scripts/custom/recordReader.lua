@@ -243,6 +243,10 @@ return {
         ('Successfully loaded %d records in %.3f seconds.'):format(createRecordStores(), os.clock() - startClock)
       )
 
+      for k, v in pairs(I.recordStores) do
+        print(k, v)
+      end
+
       I.recordStores.Static.someRecord = 'value'
 
       for storeType, recordStore in pairs(RecordStores) do
