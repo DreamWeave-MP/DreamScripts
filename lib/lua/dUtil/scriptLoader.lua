@@ -168,7 +168,6 @@ function DScriptLoader.defaultModuleCache()
     bit = bit,
     cjson = hasCJSON and cjson or nil,
     ['dutil.init'] = dUtil,
-    -- ['dutil.vector3'] = dUtil.vector3,
     ffi = ffi,
     interfaces = DScriptLoader.Interfaces,
   }

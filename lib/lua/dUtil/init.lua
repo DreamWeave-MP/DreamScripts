@@ -5,16 +5,13 @@ local jsonInterface = require 'jsonInterface'
 local tableHelper = require 'tes3mp.util.table'
 
 local isModChunk, I = pcall(require, 'interfaces')
-local tds, tes3, ok, result
+local tds
 
 if isModChunk then
-  tds, tes3 = I.tds, I.tes3
+  tds = I.tds
 else
-  ok, result = pcall(require, 'tds.init')
+  local ok, result = pcall(require, 'tds.init')
   if ok then tds = result end
-
-  ok, result = pcall(require, 'tes3_lua')
-  if ok then tes3 = result end
 end
 
 ---@param filename string
@@ -85,7 +82,7 @@ local TableType = {
 ---@return table
 local function tableConstructor(tableType, elementCount, ...)
   assert(
-    hasTDS and table.isempty and table.isarray,
+    tds and table.isempty and table.isarray,
     'This function depends on TDS and OpenResty LuaJIT. Sorry!'
   )
 
