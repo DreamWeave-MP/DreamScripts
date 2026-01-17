@@ -256,31 +256,31 @@ end
 local hasTDS, tds = pcall(require, 'tds.init')
 local hasTES3, tes3 = pcall(require, 'tes3_lua')
 
-local ScriptLoaderInterface, StorageInterface = dUtil.misc.makeReadOnly {
+---@class DScriptLoaderHidden
+---@field loadScript function(scriptPath: string, callerPid: PlayerId?)
+---@field loadAllScripts function()
+local ScriptLoaderInterface = dUtil.misc.makeReadOnly {
   loadScript = DScriptLoader.loadScript,
   loadAllScripts = DScriptLoader.loadAllScripts,
 
-}, dUtil.misc.makeReadOnly {
+}
+
+---@type StorageModule
+local StorageInterface = dUtil.misc.makeReadOnly {
   loadWithSubscription = loadWithSubscription,
   subscribeToSave = subscribeToSave,
 }
 
 ---@return DefaultInterfaces
 function DScriptLoader.originalInterfaces()
-  ---@type DefaultInterfaces
   return {
-    ---@type StorageModule
     storage = StorageInterface,
-    ---@class DScriptLoaderHidden
-    ---@field loadScript function(scriptPath: string, callerPid: PlayerId?)
-    ---@field loadAllScripts function()
     scriptLoader = ScriptLoaderInterface,
     tds = hasTDS and tds or nil,
     tes3 = hasTES3 and tes3 or nil,
   }
 end
 
----@type DefaultInterfaces
 local Interfaces = DScriptLoader.originalInterfaces()
 
 ---@class ReadOnlyInterfaces: DefaultInterfaces The same as the default interfaces table, but, will throw and kill the server if you try to write to it. Uses a metatable to return a local reference to the current definition of Interfaces, so is never stale.
