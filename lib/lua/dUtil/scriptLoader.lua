@@ -20,6 +20,7 @@ local logicHandler = require 'tes3mp.logicHandler'
 local tableHelper = require 'tes3mp.util.table'
 
 local ScriptPathFormatter = 'server/scripts/custom/%s'
+local SaveDataTable = BufferedDiskPaths
 
 --- OpenMW-Style Script loader module for TES3MP.
 --- This is a stateful module which should only ever be `require`'d once by serverCore.lua
@@ -46,96 +47,234 @@ function DScriptLoader.sanitizePath(path)
   return path .. '.lua'
 end
 
+local AllowedFields, Loaders = {
+  chatCommands = true,
+  eventHandlers = true,
+  eventValidators = true,
+  interface = true,
+  interfaceName = true,
+  menus = true,
+}, {
+  'loadScriptInterface',
+  'loadScriptCommands',
+  'loadScriptMenus',
+  'loadScriptHandlers',
+}
+
+local ScriptFailedMessage = 'Attempted to load the script at %s, but failed, because it doesn\'t exist.'
+
+--- Given a script name, attempt to load it into the tes3mp environment like an OpenMW Lua script.
+--- Can be called from the chat window by passing the second optional parameter, callerPid.
+---@param scriptName string name of a script, relative to server/scripts/custom, to attempt to load
+---@param callerPid PlayerId? optional PlayerId
+---@return true? didLoad Whether or not script loading was successful
+function DScriptLoader.loadScript(scriptName, callerPid)
+  if not scriptName or type(scriptName) ~= 'string' then
+    error(
+      ('Invalid script path provided to DScriptLoader.loadScript: %s'):format(scriptName)
+    )
+  end
+
+  local scriptPath = DScriptLoader.sanitizePath(ScriptPathFormatter:format(scriptName))
+
+  if not dUtil.io.fileExists(scriptPath) then
+    if callerPid then
+      return Players[callerPid]:Message(ScriptFailedMessage:format(scriptPath))
+    else
+      error(ScriptFailedMessage:format(scriptPath))
+    end
+  end
+
+  if Interfaces.customEventHooks then
+    Interfaces.customEventHooks.clearEventsFromScript(scriptPath)
+  end
+
+  if Interfaces.customCommandHooks then
+    Interfaces.customCommandHooks.clearCommandsFromScript(scriptPath)
+  end
+
+  --- If this function was called from chat, then, we don't
+  --- Get the guarantee that loadAllScripts will have refreshed our module cache
+  --- So, we reset it here, just before initializing the file
+  if callerPid then
+    ModuleCache = DScriptLoader.defaultModuleCache()
+  end
+
+  tes3mp.LogAppend(enumerations.log.INFO, ('Attempting to load custom script from path: %s'):format(scriptPath))
+  local ok, result = pcall(function() return assert(loadfile(scriptPath)) end)
+
+  if not ok then
+    if callerPid then
+      if not logicHandler.CheckPlayerValidity(nil, callerPid) then
+        error(
+          ('An invalid PlayerId: %s was provided to DScriptLoader.loadScript. This should never happen!')
+          :format(callerPid)
+        )
+      end
+
+      return tes3mp.SendMessage(callerPid, ('Failed to load script: %s, error: %s'):format(scriptPath, result))
+    else
+      error(('Failed to load %s, error: %s. Aborting startup!'):format(scriptPath, result))
+    end
+  end
+
+  setfenv(result, DScriptLoader.getScriptEnv())
+  ok, result = pcall(result)
+
+  if not ok then
+    error(
+      ('Tried to load the script at %s, but it threw an exception: %s. This script cannot be loaded!')
+      :format(scriptPath, result)
+    )
+  elseif type(result) ~= 'table' then
+    error(
+      ('Successfully loaded the script at %s, but its return value was not a table. This script cannot be loaded!')
+      :format(scriptPath)
+    )
+  end
+
+  for elementName in pairs(result) do
+    if not AllowedFields[elementName] then
+      error(
+        ('Failed to load script %s as it returned an invalid field: %s. The server will now terminate!')
+        :format(scriptPath, elementName)
+      )
+    end
+  end
+
+  if config.debugScriptRegistrations then
+    tableHelper.print(result)
+  end
+
+  for _, loader in ipairs(Loaders) do
+    DScriptLoader[loader](scriptPath, result)
+  end
+
+  collectgarbage()
+  return true
+end
+
+--- Load all scripts defined by config.customScripts
+--- Upon failure, for any reason, the server will be terminated.
+--- This function should only be called upon initializing the server, OR when attempting to reload all running lua scripts.
+function DScriptLoader.loadAllScripts()
+  --- Reinitialize all interfaces when reloading all scripts
+  Interfaces = DScriptLoader.originalInterfaces()
+
+  --- When reloading all scripts, reinitialize the module cache
+  ModuleCache = DScriptLoader.defaultModuleCache()
+
+  local startTime = os.clock()
+
+  for _, scriptName in ipairs(config.customScripts) do
+    if not DScriptLoader.loadScript(scriptName) then
+      error('Script loading has failed! Check your server log for more details.')
+    end
+  end
+
+  tes3mp.LogAppend(
+    enumerations.log.INFO,
+    ('Successfully completed script initialization in %.6f milliseconds.'):format((os.clock() - startTime) * 1000)
+  )
+end
+
+---@param data SaveSubscriptionData
+---@return table? resultData Returns the loaded file's contents if it exists, or, the initial data table which was subscribed to, or an empty table.
+local function loadWithSubscription(data)
+  local traceback = debug.traceback()
+  assert(data and type(data) == 'table', traceback)
+  assert(data.filePath and type(data.filePath) == 'string', traceback)
+  assert(data.lastCheckedTime == nil, traceback)
+
+  if not data.data or type(data.data) ~= 'table' then
+    return tes3mp.LogAppend(
+      enumerations.log.WARN,
+      ('Provided an invalid data table to load subscription handler. Refusing to subscribe: %s\n%s')
+      :format(data, traceback)
+    )
+  end
+
+  local existingData = SaveDataTable[data.filePath]
+  if existingData then
+    if not jsonInterface.quicksave(data.filePath, existingData) then
+      return tes3mp.LogAppend(
+        enumerations.log.WARN,
+        ('Attempted to overwrite %s in the global saved data table, but failed somehow. You must wait for its original reference to be removed!\n%s')
+        :format(data.filePath, traceback)
+      )
+    end
+  end
+
+  local result = jsonInterface.load(data.filePath)
+  if result then
+    if type(result) == 'table' then
+      data.data = result
+    elseif not result then
+      result = {}
+    else
+      return tes3mp.LogAppend(
+        enumerations.log.WARN,
+        ('A data path provided to load subscription handler returned a non-table value %s. Refusing to subscribe: %s\n%s')
+        :format(result, data, traceback)
+      )
+    end
+  else
+    result = data.data
+  end
+
+  SaveDataTable[data.filePath] = data
+
+  return result
+end
+
+local function subscribeToSave(data)
+  local traceback = debug.traceback()
+  assert(data and type(data) == 'table', traceback)
+  assert(data.filePath and type(data.filePath) == 'string', traceback)
+  assert(data.lastCheckedTime == nil, traceback)
+
+  if not data.data or type(data.data) ~= 'table' then
+    return tes3mp.LogAppend(
+      enumerations.log.WARN,
+      ('Provided an invalid data table to save subscription handler. Refusing to subscribe: %s'):format(data)
+    )
+  end
+
+  if SaveDataTable[data.filePath] then
+    if not jsonInterface.quicksave(data.filePath, SaveDataTable[data.filePath]) then
+      return tes3mp.LogAppend(
+        enumerations.log.WARN,
+        ('Attempted to overwrite %s in the global saved data table, but failed somehow. You must wait for its original reference to be removed!')
+        :format(data.filePath)
+      )
+    end
+  end
+
+  SaveDataTable[data.filePath] = data
+end
+
 local hasTDS, tds = pcall(require, 'tds.init')
 local hasTES3, tes3 = pcall(require, 'tes3_lua')
-local saveDataTable = BufferedDiskPaths
+
+local ScriptLoaderInterface, StorageInterface = dUtil.misc.makeReadOnly {
+  loadScript = DScriptLoader.loadScript,
+  loadAllScripts = DScriptLoader.loadAllScripts,
+
+}, dUtil.misc.makeReadOnly {
+  loadWithSubscription = loadWithSubscription,
+  subscribeToSave = subscribeToSave,
+}
+
 ---@return DefaultInterfaces
 function DScriptLoader.originalInterfaces()
   ---@type DefaultInterfaces
   return {
     ---@type StorageModule
-    storage = dUtil.misc.makeReadOnly {
-      ---@param data SaveSubscriptionData
-      ---@return table? resultData Returns the loaded file's contents if it exists, or, the initial data table which was subscribed to, or an empty table.
-      loadWithSubscription = function(data)
-        local traceback = debug.traceback()
-        assert(data and type(data) == 'table', traceback)
-        assert(data.filePath and type(data.filePath) == 'string', traceback)
-        assert(data.lastCheckedTime == nil, traceback)
-
-        if not data.data or type(data.data) ~= 'table' then
-          return tes3mp.LogAppend(
-            enumerations.log.WARN,
-            ('Provided an invalid data table to load subscription handler. Refusing to subscribe: %s\n%s')
-            :format(data, traceback)
-          )
-        end
-
-        local existingData = saveDataTable[data.filePath]
-        if existingData then
-          if not jsonInterface.quicksave(data.filePath, existingData) then
-            return tes3mp.LogAppend(
-              enumerations.log.WARN,
-              ('Attempted to overwrite %s in the global saved data table, but failed somehow. You must wait for its original reference to be removed!\n%s')
-              :format(data.filePath, traceback)
-            )
-          end
-        end
-
-        local result = jsonInterface.load(data.filePath)
-        if result then
-          if type(result) == 'table' then
-            data.data = result
-          elseif not result then
-            result = {}
-          else
-            return tes3mp.LogAppend(
-              enumerations.log.WARN,
-              ('A data path provided to load subscription handler returned a non-table value %s. Refusing to subscribe: %s\n%s')
-              :format(result, data, traceback)
-            )
-          end
-        else
-          result = data.data
-        end
-
-        saveDataTable[data.filePath] = data
-
-        return result
-      end,
-      subscribeToSave = function(data)
-        local traceback = debug.traceback()
-        assert(data and type(data) == 'table', traceback)
-        assert(data.filePath and type(data.filePath) == 'string', traceback)
-        assert(data.lastCheckedTime == nil, traceback)
-
-        if not data.data or type(data.data) ~= 'table' then
-          return tes3mp.LogAppend(
-            enumerations.log.WARN,
-            ('Provided an invalid data table to save subscription handler. Refusing to subscribe: %s'):format(data)
-          )
-        end
-
-        if saveDataTable[data.filePath] then
-          if not jsonInterface.quicksave(data.filePath, saveDataTable[data.filePath]) then
-            return tes3mp.LogAppend(
-              enumerations.log.WARN,
-              ('Attempted to overwrite %s in the global saved data table, but failed somehow. You must wait for its original reference to be removed!')
-              :format(data.filePath)
-            )
-          end
-        end
-
-        saveDataTable[data.filePath] = data
-      end,
-    },
+    storage = StorageInterface,
     ---@class DScriptLoaderHidden
     ---@field loadScript function(scriptPath: string, callerPid: PlayerId?)
     ---@field loadAllScripts function()
-    scriptLoader = dUtil.misc.makeReadOnly {
-      loadScript = DScriptLoader.loadScript,
-      loadAllScripts = DScriptLoader.loadAllScripts,
-    },
+    scriptLoader = ScriptLoaderInterface,
     tds = hasTDS and tds or nil,
     tes3 = hasTES3 and tes3 or nil,
   }
@@ -415,137 +554,6 @@ function DScriptLoader.loadScriptHandlers(scriptPath, scriptRegistration)
       callback = eventValidator,
     })
   end
-end
-
-local AllowedFields, Loaders = {
-  chatCommands = true,
-  eventHandlers = true,
-  eventValidators = true,
-  interface = true,
-  interfaceName = true,
-  menus = true,
-}, {
-  'loadScriptInterface',
-  'loadScriptCommands',
-  'loadScriptMenus',
-  'loadScriptHandlers',
-}
-
-local ScriptFailedMessage = 'Attempted to load the script at %s, but failed, because it doesn\'t exist.'
-
---- Given a script name, attempt to load it into the tes3mp environment like an OpenMW Lua script.
---- Can be called from the chat window by passing the second optional parameter, callerPid.
----@param scriptName string name of a script, relative to server/scripts/custom, to attempt to load
----@param callerPid PlayerId? optional PlayerId
----@return true? didLoad Whether or not script loading was successful
-function DScriptLoader.loadScript(scriptName, callerPid)
-  if not scriptName or type(scriptName) ~= 'string' then
-    error(
-      ('Invalid script path provided to DScriptLoader.loadScript: %s'):format(scriptName)
-    )
-  end
-
-  local scriptPath = DScriptLoader.sanitizePath(ScriptPathFormatter:format(scriptName))
-
-  if not dUtil.io.fileExists(scriptPath) then
-    if callerPid then
-      return Players[callerPid]:Message(ScriptFailedMessage:format(scriptPath))
-    else
-      error(ScriptFailedMessage:format(scriptPath))
-    end
-  end
-
-  if Interfaces.customEventHooks then
-    Interfaces.customEventHooks.clearEventsFromScript(scriptPath)
-  end
-
-  if Interfaces.customCommandHooks then
-    Interfaces.customCommandHooks.clearCommandsFromScript(scriptPath)
-  end
-
-  --- If this function was called from chat, then, we don't
-  --- Get the guarantee that loadAllScripts will have refreshed our module cache
-  --- So, we reset it here, just before initializing the file
-  if callerPid then
-    ModuleCache = DScriptLoader.defaultModuleCache()
-  end
-
-  tes3mp.LogAppend(enumerations.log.INFO, ('Attempting to load custom script from path: %s'):format(scriptPath))
-  local ok, result = pcall(function() return assert(loadfile(scriptPath)) end)
-
-  if not ok then
-    if callerPid then
-      if not logicHandler.CheckPlayerValidity(nil, callerPid) then
-        error(
-          ('An invalid PlayerId: %s was provided to DScriptLoader.loadScript. This should never happen!')
-          :format(callerPid)
-        )
-      end
-
-      return tes3mp.SendMessage(callerPid, ('Failed to load script: %s, error: %s'):format(scriptPath, result))
-    else
-      error(('Failed to load %s, error: %s. Aborting startup!'):format(scriptPath, result))
-    end
-  end
-
-  setfenv(result, DScriptLoader.getScriptEnv())
-  ok, result = pcall(result)
-
-  if not ok then
-    error(
-      ('Tried to load the script at %s, but it threw an exception: %s. This script cannot be loaded!')
-      :format(scriptPath, result)
-    )
-  elseif type(result) ~= 'table' then
-    error(
-      ('Successfully loaded the script at %s, but its return value was not a table. This script cannot be loaded!')
-      :format(scriptPath)
-    )
-  end
-
-  for elementName in pairs(result) do
-    if not AllowedFields[elementName] then
-      error(
-        ('Failed to load script %s as it returned an invalid field: %s. The server will now terminate!')
-        :format(scriptPath, elementName)
-      )
-    end
-  end
-
-  if config.debugScriptRegistrations then
-    tableHelper.print(result)
-  end
-
-  for _, loader in ipairs(Loaders) do
-    DScriptLoader[loader](scriptPath, result)
-  end
-
-  collectgarbage()
-  return true
-end
-
---- Load all scripts defined by config.customScripts
---- Upon failure, for any reason, the server will be terminated.
---- This function should only be called upon initializing the server, OR when attempting to reload all running lua scripts.
-function DScriptLoader.loadAllScripts()
-  --- Reinitialize all interfaces when reloading all scripts
-  Interfaces = DScriptLoader.originalInterfaces()
-
-  --- When reloading all scripts, reinitialize the module cache
-  ModuleCache = DScriptLoader.defaultModuleCache()
-
-  local startTime = os.clock()
-
-  for _, scriptName in ipairs(config.customScripts) do
-    if not DScriptLoader.loadScript(scriptName) then
-      error('Script loading has failed! Check your server log for more details.')
-    end
-  end
-
-  tes3mp.LogAppend(
-    enumerations.log.INFO,
-    ('Successfully completed script initialization in %.6f milliseconds.'):format((os.clock() - startTime) * 1000)
-  )
 end
 
 return DScriptLoader
