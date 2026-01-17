@@ -14,6 +14,61 @@ if not tds or not tes3 then
   return {}
 end
 
+local AIPackageHandlers = {
+  AiActivatePackage = function(package)
+    return tds.Hash {
+      reset = package.reset,
+      target = package.target,
+    }
+  end,
+  AiEscortPackage = function(package)
+    return tds.Hash {
+      cell = package.cell,
+      duration = package.duration,
+      locX = package.location[1],
+      locY = package.location[2],
+      locZ = package.location[3],
+      reset = package.reset,
+      target = package.target,
+    }
+  end,
+  AiFollowPackage = function(package)
+    return tds.Hash {
+      cell = package.cell,
+      duration = package.duration,
+      locX = package.location[1],
+      locY = package.location[2],
+      locZ = package.location[3],
+      reset = package.reset,
+      target = package.target,
+    }
+  end,
+  AiTravelPackage = function(package)
+    return tds.Hash {
+      locX = package.location[1],
+      locY = package.location[2],
+      locZ = package.location[3],
+      reset = package.reset,
+    }
+  end,
+  AiWanderPackage = function(package)
+    return tds.Hash {
+      distance = package.distance,
+      duration = package.duration,
+      gameHour = package.game_hour,
+      idle2    = package.idle2,
+      idle3    = package.idle3,
+      idle4    = package.idle4,
+      idle5    = package.idle5,
+      idle6    = package.idle6,
+      idle7    = package.idle7,
+      idle8    = package.idle8,
+      idle9    = package.idle9,
+      reset    = package.reset,
+    }
+  end,
+}
+
 ---@param string string
 ---@return string? lowercased
 local function lowercase(string)
@@ -242,7 +297,8 @@ local TypeHandlers = {
 
     aiPackages:resize(#record.ai_packages)
     for i, aiPackage in ipairs(record.ai_packages) do
-      print(recordId, aiPackage, aiPackage.type)
+      assert(AIPackageHandlers[aiPackage.type])
+      aiPackages[i] = AIPackageHandlers[aiPackage.type](aiPackage)
     end
 
     inventory:resize(#record.inventory)
