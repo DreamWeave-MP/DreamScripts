@@ -171,7 +171,7 @@ local TypeHandlers = {
     effects:resize(#record.effects)
 
     for i, effect in ipairs(record.effects) do
-      local skill = record.data.skill and assert(Enums.SkillId[record.data.skill]) or nil
+      -- local skill = record.data.skill and assert(Enums.SkillId[record.data.skill]) or nil
 
       effects[i] = tds.Hash {
         area = effect.area,
@@ -181,7 +181,7 @@ local TypeHandlers = {
         maxMagnitude = effect.max_magnitude,
         minMagnitude = effect.min_magnitude,
         range = effect.range,
-        skill = skill,
+        -- skill = skill,
       }
     end
 
