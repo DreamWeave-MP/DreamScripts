@@ -55,10 +55,10 @@ local AllowedFields, Loaders = {
   interfaceName = true,
   menus = true,
 }, {
-  'loadScriptInterface',
   'loadScriptCommands',
   'loadScriptMenus',
   'loadScriptHandlers',
+  'loadScriptInterface',
 }
 
 local ScriptFailedMessage = 'Attempted to load the script at %s, but failed, because it doesn\'t exist.'
@@ -463,7 +463,22 @@ function DScriptLoader.loadScriptInterface(scriptPath, scriptResult)
     )
   end
 
-  Interfaces[scriptResult.interfaceName] = dUtil.misc.makeReadOnly(scriptResult.interface)
+  local customEventHooks = Interfaces.customEventHooks
+  local oldInterface = Interfaces[scriptResult.interfaceName]
+  local eventStatus
+  if customEventHooks and oldInterface then
+    eventStatus = customEventHooks.triggerValidators(
+      'OnInterfaceOverride',
+      scriptResult.interfaceName,
+      oldInterface
+    )
+  else
+    eventStatus = dUtil.misc.makeEventStatus()
+  end
+
+  if eventStatus.validDefaultHandler then
+    Interfaces[scriptResult.interfaceName] = dUtil.misc.makeReadOnly(scriptResult.interface)
+  end
 end
 
 --- Given a loaded script and its path, insert chat commands
