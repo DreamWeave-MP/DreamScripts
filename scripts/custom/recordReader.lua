@@ -263,12 +263,6 @@ local function createRecordStores()
 
     for _, object in ipairs(tes3.load_plugin(pluginPath).objects) do
       local recordStore, typeHandler = RecordStores[object.type], TypeHandlers[object.type]
-      if object.type == "Npc" then
-        for _, item in ipairs(object.inventory) do
-          print(item.type)
-          break
-        end
-      end
 
       if recordStore and typeHandler then
         local recordId = object.id:lower()
