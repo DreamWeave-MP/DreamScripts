@@ -48,5 +48,10 @@ return dUtil.table(dUtil.tableType.HASH, nil, {
     LeftPauldron = 24,
     Weapon = 25,
     Tail = 26,
-  }
+  },
+  BodypartType = {
+    Skin = 0,
+    Clothing = 1,
+    Armor = 2,
+  },
 })

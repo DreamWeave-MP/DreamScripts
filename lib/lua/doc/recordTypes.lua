@@ -82,10 +82,11 @@
 ---| 'UpperLeg' # 12
 ---| 'Clavicle' # 13
 ---| 'Tail' # 14
+
 ---@alias BodypartType
----| 'Skin' 0
----| 'Clothing' 1
----| 'Armor' 2
+---| 0 # 'Skin'
+---| 1 # 'Clothing'
+---| 2 # 'Armor'
 
 ---@alias BookType
 ---| 'Book' # 0

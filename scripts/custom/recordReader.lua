@@ -216,7 +216,7 @@ local TypeHandlers = {
   Bodypart = function(record, recordId)
     return tds.Hash {
       bodypartFlags = record.data.flags,
-      bodypartType = record.data.bodypart_type,
+      bodypartType = assert(Enums.BodypartType[record.data.bodypart_type]),
       id = recordId,
       isVampire = record.data.vampire,
       model = record.mesh:normalize(),
