@@ -171,6 +171,7 @@ local TypeHandlers = {
     effects:resize(#record.effects)
 
     for i, effect in ipairs(record.effects) do
+      print(recordId, effect.magic_effect, record.data.skill)
       effects[i] = tds.Hash {
         magicEffect = effect.magic_effect,
         skill = assert(Enums.SkillId[record.data.skill], 'Failed on skill id ' .. record.data.skill),
