@@ -418,14 +418,14 @@ return {
     OnServerPostInit = function()
       local startClock = os.clock()
 
-      tes3mp.LogAppend(
-        enumerations.log.INFO,
-        ('Successfully loaded %d records in %.3f seconds.'):format(createRecordStores(), os.clock() - startClock)
-      )
+      local logStr = ('Successfully loaded %d records in %.3f seconds.\n')
+          :format(createRecordStores(), os.clock() - startClock)
 
       for k, v in pairs(I.recordStores.records) do
-        print(('RecordStore type %s contains %s records'):format(k, #v))
+        logStr = logStr .. ('%s %s Records loaded'):format(#v, k)
       end
+
+      tes3mp.LogAppend(enumerations.log.INFO, logStr)
 
       for storeType, recordStore in pairs(RecordStores) do
         for recordId, recordData in pairs(recordStore) do
