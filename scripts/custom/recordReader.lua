@@ -408,7 +408,7 @@ local function createRecordStores()
   local pluginHashes = I.storage.loadWithSubscription {
     data = {},
     filePath = '/custom/recordParser/fileHashes.json',
-    persistent = true,
+    persistent = false,
   }
   assert(pluginHashes)
 
