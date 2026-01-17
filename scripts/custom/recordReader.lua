@@ -130,7 +130,7 @@ local TypeHandlers = {
 
     for i, spellId in ipairs(record.spells) do
       print(spellId, type(spellId))
-      spells[i] = spellId:lower()
+      spells[i] = tostring(spellId):lower()
     end
 
     return tds.Hash {
