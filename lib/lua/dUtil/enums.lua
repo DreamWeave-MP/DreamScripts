@@ -1,4 +1,6 @@
 local dUtil = require 'dUtil.init'
+local tableHelper = require 'tes3mp.util.table'
+tableHelper.print(dUtil)
 
 return dUtil.table(dUtil.tableType.HASH, nil, {
   ApparatusType = {
