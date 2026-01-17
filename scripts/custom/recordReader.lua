@@ -1,6 +1,6 @@
 local dUtil = require 'dUtil.init'
 local enumerations = require 'tes3mp.enumerations'
-local fileHelper = require 'tes3mp.fileHelper'
+local fileHelper = require 'fileHelper'
 
 ---@type DefaultInterfaces
 local I = require 'interfaces'
