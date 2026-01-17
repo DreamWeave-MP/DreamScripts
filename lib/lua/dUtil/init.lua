@@ -7,15 +7,6 @@ local tableHelper = require 'tes3mp.util.table'
 local hasTDS, tds = pcall(require, 'tds.init')
 local hasTES3, tes3 = pcall(require, 'tes3_lua')
 
-local tableIsArray, tableIsEmpty
-do
-  local hasResty, result = pcall(require, 'table.isempty')
-  if hasResty then
-    tableIsEmpty = result
-    tableIsArray = require 'table.isarray'
-  end
-end
-
 ---@param filename string
 ---@param log boolean? Whether or not to write initialization logs
 ---@return DataFileRequirements
@@ -90,7 +81,7 @@ local function tableConstructor(tableType, elementCount, ...)
   assert(hasTDS,
     'This function depends on TDS and OpenResty LuaJIT. Sorry!'
   )
-  assert(tableIsArray ~= nil and tableIsEmpty ~= nil,
+  assert(table.isempty ~= nil and table.isarray ~= nil,
     'This function depends on TDS and OpenResty LuaJIT. Sorry!'
   )
 
@@ -101,8 +92,8 @@ local function tableConstructor(tableType, elementCount, ...)
       return tds.Hash()
     elseif
         type(firstVarArg) == 'table'
-        and not tableIsArray(firstVarArg)
-        and not tableIsEmpty(firstVarArg)
+        and not table.isarray(firstVarArg)
+        and not table.isempty(firstVarArg)
     then
       return tds.Hash(firstVarArg)
     else
@@ -117,7 +108,7 @@ local function tableConstructor(tableType, elementCount, ...)
       return result
     elseif
         type(firstVarArg) == 'table'
-        and tableIsArray(firstVarArg)
+        and table.isarray(firstVarArg)
     then
       return tds.Vec(firstVarArg)
     else
