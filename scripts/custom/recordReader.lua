@@ -181,7 +181,9 @@ local TypeHandlers = {
 
 local PluginPathFormatter = tes3mp.GetDataPath() .. '/custom/recordParser/%s'
 
+---@return integer numRecords
 local function createRecordStores()
+  local loadedRecords = 0
   for _, pluginName in ipairs(loadOrder) do
     local pluginPath = PluginPathFormatter:format(pluginName)
 
@@ -198,6 +200,7 @@ local function createRecordStores()
       if recordStore and typeHandler then
         local recordId = object.id:lower()
         recordStore[recordId] = typeHandler(object, recordId)
+        loadedRecords = loadedRecords + 1
       end
     end
   end
@@ -215,6 +218,8 @@ local function createRecordStores()
 
     MetaInterfaces[typeName] = readOnlyInterface(subInterface, typeName)
   end
+
+  return loadedRecords
 end
 
 ---@type TES3MPScriptRegistration
@@ -233,11 +238,9 @@ return {
     OnServerPostInit = function()
       local startClock = os.clock()
 
-      createRecordStores()
-
       tes3mp.LogAppend(
         enumerations.log.INFO,
-        ('Successfully loaded recordStores in %.3f seconds.'):format(os.clock() - startClock)
+        ('Successfully loaded %d records in %.3f seconds.'):format(createRecordStores(), os.clock() - startClock)
       )
 
       for storeType, recordStore in pairs(RecordStores) do
