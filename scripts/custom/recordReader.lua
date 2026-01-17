@@ -229,9 +229,7 @@ return {
   interface = setmetatable(
     {},
     {
-      __index = function(_, key)
-        return MetaInterfaces[key]
-      end
+      __index = MetaInterfaces,
     }
   ),
   eventValidators = {
