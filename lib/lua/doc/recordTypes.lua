@@ -312,32 +312,30 @@
 ---@field services integer
 
 ---@class AIActivate
----@field target RecordId
 ---@field reset integer
+---@field target RecordId
+---@field type AIState
 
 ---@class AIEscort
 ---@field cell RecordId
 ---@field duration integer
----@field locX number
----@field locY number
----@field locZ number
+---@field location number[]
 ---@field reset integer
 ---@field target RecordId
+---@field type AIState
 
 ---@class AIFollow
 ---@field cell RecordId
 ---@field duration integer
----@field locX number
----@field locY number
----@field locZ number
+---@field location number[]
 ---@field reset integer
 ---@field target RecordId
+---@field type AIState
 
 ---@class AITravel
----@field locX number
----@field locY number
----@field locZ number
+---@field location number[]
 ---@field reset number
+---@field type AIState
 
 ---@class AIWander
 ---@field distance integer
@@ -352,6 +350,7 @@
 ---@field idle8 integer
 ---@field idle9 integer
 ---@field reset integer
+---@field type AIState
 
 ---@class BaseRecord
 ---@field objectFlags integer Numeric flags with default value 0

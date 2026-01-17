@@ -16,41 +16,57 @@ end
 
 local Enums = require 'dUtil.enums'
 
+---@param string string
+---@return string? lowercased
+local function lowercase(string)
+  if string then return tostring(string):lower() end
+end
+
 local AIPackageHandlers = {
   AiActivatePackage = function(package)
     return tds.Hash {
       reset = package.reset,
       target = package.target,
+      type = enumerations.ai.ACTIVATE,
     }
   end,
   AiEscortPackage = function(package)
     return tds.Hash {
-      cell = package.cell,
+      cell = lowercase(package.cell),
       duration = package.duration,
-      locX = tonumber(package.location[1]),
-      locY = tonumber(package.location[2]),
-      locZ = tonumber(package.location[3]),
+      location = tds.Vec {
+        tonumber(package.location[1]),
+        tonumber(package.location[2]),
+        tonumber(package.location[3]),
+      },
       reset = package.reset,
       target = package.target,
+      type = enumerations.ai.ESCORT,
     }
   end,
   AiFollowPackage = function(package)
     return tds.Hash {
-      cell = package.cell,
+      cell = lowercase(package.cell),
       duration = package.duration,
-      locX = tonumber(package.location[1]),
-      locY = tonumber(package.location[2]),
-      locZ = tonumber(package.location[3]),
+      location = tds.Vec {
+        tonumber(package.location[1]),
+        tonumber(package.location[2]),
+        tonumber(package.location[3]),
+      },
       reset = package.reset,
       target = package.target,
+      type = enumerations.ai.FOLLOW,
     }
   end,
   AiTravelPackage = function(package)
     return tds.Hash {
-      locX = tonumber(package.location[1]),
-      locY = tonumber(package.location[2]),
-      locZ = tonumber(package.location[3]),
+      location = tds.Vec {
+        tonumber(package.location[1]),
+        tonumber(package.location[2]),
+        tonumber(package.location[3]),
+      },
       reset = package.reset,
+      type = enumerations.ai.TRAVEL,
     }
   end,
   AiWanderPackage = function(package)
@@ -67,15 +83,10 @@ local AIPackageHandlers = {
       idle8    = package.idle8,
       idle9    = package.idle9,
       reset    = package.reset,
+      type     = enumerations.ai.WANDER,
     }
   end,
 }
-
----@param string string
----@return string? lowercased
-local function lowercase(string)
-  if string then return tostring(string):lower() end
-end
 
 local RequiredDataFiles = dUtil.getRequiredDataFiles()
 
