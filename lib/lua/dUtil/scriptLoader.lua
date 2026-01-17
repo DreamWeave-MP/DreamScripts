@@ -221,7 +221,7 @@ function DScriptLoader.requireShim(scriptName)
     )
   end
 
-  ModuleCache[scriptName] = result
+  ModuleCache[lowerName] = result
 
   return result
 end
