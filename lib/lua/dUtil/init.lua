@@ -171,8 +171,6 @@ local Module = {
   misc = require 'dUtil.miscellaneous',
   table = tds and tableConstructor or nil,
   tableType = tds and TableType or nil,
-  tds = tds and tds or nil,
-  tes3 = tds and tes3 or nil,
   ---@type Vector3Constructor
   vector3 = require 'dUtil.vector3',
 }
