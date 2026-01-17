@@ -41,6 +41,7 @@ local RecordStores = tds.Hash {
   Class = tds.Hash(),
   Clothing = tds.Hash(),
   Container = tds.Hash(),
+  Creature = tds.Hash(),
   Static = tds.Hash(),
 }
 
