@@ -73,6 +73,7 @@ local TableType = {
 
 --- Fancy table constructor using either TDS or OpenResty functions
 --- To construct optimized data structures
+--- Can also be used to generate pre-filled arrays with numeric values, or empty strings if the third argument is true.
 ---@param tableType TableType
 ---@param elementCount integer
 ---@return table
@@ -83,32 +84,32 @@ local function tableConstructor(tableType, elementCount, ...)
     'This function depends on TDS and OpenResty LuaJIT. Sorry!'
   )
 
-  local firstArg = select(1, ...)
+  local firstVarArg = select(1, ...)
 
   if tableType == TableType.HASH then
-    if not firstArg then
+    if not firstVarArg then
       return tds.Hash()
     elseif
-        type(firstArg) == 'table'
-        and not table.isarray(firstArg)
-        and not table.isempty(firstArg)
+        type(firstVarArg) == 'table'
+        and not table.isarray(firstVarArg)
+        and not table.isempty(firstVarArg)
     then
-      return tds.Hash(firstArg)
+      return tds.Hash(firstVarArg)
     else
       return tds.Hash()
     end
   elseif tableType == TableType.VEC then
-    if not firstArg then
+    if not firstVarArg then
       local result = tds.Vec()
 
       if elementCount then result:resize(elementCount) end
 
       return result
     elseif
-        type(firstArg) == 'table'
-        and table.isarray(firstArg)
+        type(firstVarArg) == 'table'
+        and table.isarray(firstVarArg)
     then
-      return tds.Vec(firstArg)
+      return tds.Vec(firstVarArg)
     else
       return tds.Vec { ... }
     end
@@ -117,7 +118,7 @@ local function tableConstructor(tableType, elementCount, ...)
 
     if elementCount then
       for i = 1, elementCount do
-        result[i] = 0
+        result[i] = firstVarArg == true and '' or 0
       end
     end
 
