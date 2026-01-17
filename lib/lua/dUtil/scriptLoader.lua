@@ -164,7 +164,7 @@ DScriptLoader.Interfaces = setmetatable({},
 local bit, ffi = require 'bit', require 'ffi'
 local hasCJSON, cjson = pcall(require, 'cjson')
 function DScriptLoader.defaultModuleCache()
-  local cache = {
+  return {
     bit = bit,
     cjson = hasCJSON and cjson or nil,
     ['dutil.init'] = dUtil,
@@ -172,10 +172,6 @@ function DScriptLoader.defaultModuleCache()
     interfaces = DScriptLoader.Interfaces,
     jsoninterface = jsonInterface,
   }
-
-  if tds then cache = tds.Hash(cache) end
-
-  return cache
 end
 
 local PathSeparator = tes3mp.GetOperatingSystemType() == 'Windows' and '\\' or '/'
