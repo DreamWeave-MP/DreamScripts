@@ -101,6 +101,11 @@
 ---| 'OnTouch' # 1
 ---| 'OnTarget' 2
 
+--- Awkward table representation of an inventory tuple
+--- Inventory items are not unique, so, the inventory itself cannot be a hashmap,
+--- Rather it is a vector of maps from recordIds to instance counts.
+---@alias InventoryItem table<string, integer>
+
 ---@alias MagicEffectId
 ---| 'None' # -1
 ---| 'WaterBreathing' # 0
@@ -380,6 +385,14 @@
 ---@field script RecordId?
 ---@field weight number
 ---@field value integer
+
+---@class ContainerRecord
+---@field capacity number
+---@field containerFlags integer
+---@field inventory InventoryItem[]
+---@field model NormalizedPath
+---@field name string
+---@field script RecordId?
 
 ---@class MagicEffect
 ---@field area integer

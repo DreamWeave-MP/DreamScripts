@@ -40,6 +40,7 @@ local RecordStores = tds.Hash {
   Book = tds.Hash(),
   Class = tds.Hash(),
   Clothing = tds.Hash(),
+  Container = tds.Hash(),
   Static = tds.Hash(),
 }
 
@@ -215,6 +216,25 @@ local TypeHandlers = {
       script = lowercase(record.script),
       weight = record.data.weight,
       value = record.data.value,
+    }
+  end,
+  Container = function(record, recordId)
+    local inventory = tds.Vec()
+    inventory:resize(#record.inventory)
+
+    for i, item in ipairs(record.inventory) do
+      inventory[i] = tds.Hash { [item[2]] = item[1] }
+    end
+
+    return tds.Hash {
+      capacity = record.encumbrance,
+      containerFlags = record.container_flags,
+      id = recordId,
+      inventory = inventory,
+      model = record.mesh:normalize(),
+      name = record.name,
+      objectFlags = record.flags,
+      script = lowercase(record.script),
     }
   end,
   Static = function(record, recordId)
