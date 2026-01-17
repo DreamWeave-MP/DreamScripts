@@ -14,17 +14,17 @@
 ---| 3 # 'Retort'
 
 ---@alias ArmorType
----| 'Helmet' 0
----| 'Cuirass' 1
----| 'LeftPauldron' 2
----| 'RightPauldron' 3
----| 'Greaves' 4
----| 'Boots' 5
----| 'LeftGauntlet' 6
----| 'RightGauntlet' 7
----| 'Shield' 8
----| 'LeftBracer' 9
----| 'RightBracer' 10
+---| 0 # 'Helmet'
+---| 1 # 'Cuirass'
+---| 2 # 'LeftPauldron'
+---| 3 # 'RightPauldron'
+---| 4 # 'Greaves'
+---| 5 # 'Boots'
+---| 6 # 'LeftGauntlet'
+---| 7 # 'RightGauntlet'
+---| 8 # 'Shield'
+---| 9 # 'LeftBracer'
+---| 10 # 'RightBracer'
 
 ---@alias AttributeId2
 ---| 'None' -1
