@@ -405,12 +405,11 @@ local PluginPathFormatter = tes3mp.GetDataPath() .. '/custom/recordParser/%s'
 ---@return integer numRecords
 local function createRecordStores()
   local loadedRecords = 0
-  local pluginHashes = I.storage.loadWithSubscription {
+  local pluginHashes = assert(I.storage.loadWithSubscription {
     data = {},
     filePath = '/custom/recordParser/fileHashes.json',
     persistent = false,
-  }
-  assert(pluginHashes)
+  })
 
   for _, pluginName in ipairs(loadOrder) do
     local pluginPath = PluginPathFormatter:format(pluginName)
