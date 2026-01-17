@@ -14,19 +14,22 @@ if not tds or not tes3 then
   return {}
 end
 
-local ArmorTypeToNumber = {
-  Helmet = 0,
-  Cuirass = 1,
-  LeftPauldron = 2,
-  RightPauldron = 3,
-  Greaves = 4,
-  Boots = 5,
-  LeftGauntlet = 6,
-  RightGauntlet = 7,
-  Shield = 8,
-  LeftBracer = 9,
-  RightBracer = 10,
-}
+local Enums = dUtil.table(dUtil.tableType.HASH, nil, {
+  ArmorType = {
+    Helmet = 0,
+    Cuirass = 1,
+    LeftPauldron = 2,
+    RightPauldron = 3,
+    Greaves = 4,
+    Boots = 5,
+    LeftGauntlet = 6,
+    RightGauntlet = 7,
+    Shield = 8,
+    LeftBracer = 9,
+    RightBracer = 10,
+  },
+})
+
 
 local AIPackageHandlers = {
   AiActivatePackage = function(package)
@@ -152,7 +155,7 @@ local TypeHandlers = {
 
     return tds.Hash {
       armorRating = record.data.armor_rating,
-      armorType = assert(ArmorTypeToNumber[record.data.armor_type]),
+      armorType = assert(Enums.ArmorType[record.data.armor_type]),
       durability = record.data.health,
       enchantment = lowercase(record.enchanting),
       enchantmentValue = record.data.enchantment,
