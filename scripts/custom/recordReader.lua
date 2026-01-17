@@ -14,22 +14,7 @@ if not tds or not tes3 then
   return {}
 end
 
-local Enums = dUtil.table(dUtil.tableType.HASH, nil, {
-  ArmorType = {
-    Helmet = 0,
-    Cuirass = 1,
-    LeftPauldron = 2,
-    RightPauldron = 3,
-    Greaves = 4,
-    Boots = 5,
-    LeftGauntlet = 6,
-    RightGauntlet = 7,
-    Shield = 8,
-    LeftBracer = 9,
-    RightBracer = 10,
-  },
-})
-
+local Enums = require 'dUtil.enums'
 
 local AIPackageHandlers = {
   AiActivatePackage = function(package)
@@ -147,7 +132,7 @@ local TypeHandlers = {
 
     for i, bipedObject in ipairs(record.biped_objects) do
       bipedObjects[i] = tds.Hash {
-        bipedObjectType = bipedObject.biped_object_type,
+        bipedObjectType = assert(Enums.BipedObjectType[bipedObject.biped_object_type]),
         malePart = lowercase(bipedObject.male_bodypart),
         femalePart = lowercase(bipedObject.female_bodypart),
       }
@@ -269,7 +254,7 @@ local TypeHandlers = {
 
     for i, bipedObject in ipairs(record.biped_objects) do
       bipedObjects[i] = tds.Hash {
-        bipedObjectType = bipedObject.biped_object_type,
+        bipedObjectType = assert(Enums.BipedObjectType[bipedObject.biped_object_type]),
         malePart = lowercase(bipedObject.male_bodypart),
         femalePart = lowercase(bipedObject.female_bodypart),
       }

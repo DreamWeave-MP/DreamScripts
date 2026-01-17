@@ -38,33 +38,33 @@
 ---| 'Luck' 7
 
 ---@alias BipedObjectType
----| 'Head' 0
----| 'Hair' 1
----| 'Neck' 2
----| 'Chest' 3
----| 'Groin' 4
----| 'Skirt' 5
----| 'RightHand' 6
----| 'LeftHand' 7
----| 'RightWrist' 8
----| 'LeftWrist' 9
----| 'Shield' 10
----| 'RightForearm' 11
----| 'LeftForearm' 12
----| 'RightUpperArm' 13
----| 'LeftUpperArm' 14
----| 'RightFoot' 15
----| 'LeftFoot' 16
----| 'RightAnkle' 17
----| 'LeftAnkle' 18
----| 'RightKnee' 19
----| 'LeftKnee' 20
----| 'RightUpperLeg' 21
----| 'LeftUpperLeg' 22
----| 'RightPauldron' 23
----| 'LeftPauldron' 24
----| 'Weapon' 25
----| 'Tail' 26
+---| 0 # 'Head'
+---| 1 # 'Hair'
+---| 2 # 'Neck'
+---| 3 # 'Chest'
+---| 4 # 'Groin'
+---| 5 # 'Skirt'
+---| 6 # 'RightHand'
+---| 7 # 'LeftHand'
+---| 8 # 'RightWrist'
+---| 9 # 'LeftWrist'
+---| 10 # 'Shield'
+---| 11 # 'RightForearm'
+---| 12 # 'LeftForearm'
+---| 13 # 'RightUpperArm'
+---| 14 # 'LeftUpperArm'
+---| 15 # 'RightFoot'
+---| 16 # 'LeftFoot'
+---| 17 # 'RightAnkle'
+---| 18 # 'LeftAnkle'
+---| 19 # 'RightKnee'
+---| 20 # 'LeftKnee'
+---| 21 # 'RightUpperLeg'
+---| 22 # 'LeftUpperLeg'
+---| 23 # 'RightPauldron'
+---| 24 # 'LeftPauldron'
+---| 25 # 'Weapon'
+---| 26 # 'Tail'
 
 ---@alias BodypartId
 ---| 'Head' # 0
@@ -316,22 +316,22 @@
 ---@field reset integer
 
 ---@class AIEscort
+---@field cell RecordId
+---@field duration integer
 ---@field locX number
 ---@field locY number
 ---@field locZ number
----@field duration integer
----@field target RecordId
 ---@field reset integer
----@field cell RecordId
+---@field target RecordId
 
 ---@class AIFollow
+---@field cell RecordId
+---@field duration integer
 ---@field locX number
 ---@field locY number
 ---@field locZ number
----@field duration integer
----@field target RecordId
 ---@field reset integer
----@field cell RecordId
+---@field target RecordId
 
 ---@class AITravel
 ---@field locX number
@@ -343,7 +343,6 @@
 ---@field distance integer
 ---@field duration integer
 ---@field gameHour integer
----@field reset integer
 ---@field idle2 integer
 ---@field idle3 integer
 ---@field idle4 integer
@@ -352,6 +351,7 @@
 ---@field idle7 integer
 ---@field idle8 integer
 ---@field idle9 integer
+---@field reset integer
 
 ---@class BaseRecord
 ---@field objectFlags integer Numeric flags with default value 0
