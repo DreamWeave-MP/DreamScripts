@@ -369,6 +369,18 @@
 ---@field services integer
 ---@field specialization Specialization
 
+---@class ClothingRecord: BaseRecord
+---@field clothingType ClothingType
+---@field enchantment RecordId?
+---@field enchantmentValue integer
+---@field icon NormalizedPath
+---@field model NormalizedPath
+---@field name string
+---@field parts BipedObject[]
+---@field script RecordId?
+---@field weight number
+---@field value integer
+
 ---@class MagicEffect
 ---@field area integer
 ---@field attribute AttributeId2
@@ -401,4 +413,5 @@
 ---@field BodyPart table<RecordId, BodypartRecord>
 ---@field Book table<RecordId, BookRecord>
 ---@field Class table<RecordId, ClassRecord>
+---@field Clothing table<RecordId, ClothingRecord>
 ---@field Static table<RecordId, StaticRecord>

@@ -189,6 +189,33 @@ local TypeHandlers = {
       services = record.services,
     }
   end,
+  Clothing = function(record, recordId)
+    local bipedObjects = tds.Vec()
+    bipedObjects:resize(#record.biped_objects)
+
+    for i, bipedObject in ipairs(record.biped_objects) do
+      bipedObjects[i] = tds.Hash {
+        bipedObjectType = bipedObject.biped_object_type,
+        malePart = lowercase(bipedObject.male_bodypart),
+        femalePart = lowercase(bipedObject.female_bodypart),
+      }
+    end
+
+    return tds.Hash {
+      clothingType = record.data.clothing_type,
+      enchantment = lowercase(record.enchanting),
+      enchantmentValue = record.data.enchantment,
+      icon = record.icon:normalize(),
+      id = recordId,
+      model = record.mesh:normalize(),
+      name = record.name,
+      objectFlags = record.flags,
+      parts = bipedObjects,
+      script = lowercase(record.script),
+      weight = record.data.weight,
+      value = record.data.value,
+    }
+  end,
   Static = function(record, recordId)
     return tds.Hash {
       id = recordId,
