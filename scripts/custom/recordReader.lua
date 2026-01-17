@@ -243,6 +243,8 @@ return {
         ('Successfully loaded %d records in %.3f seconds.'):format(createRecordStores(), os.clock() - startClock)
       )
 
+      I.recordStores.some = 'value'
+
       for storeType, recordStore in pairs(RecordStores) do
         for recordId, recordData in pairs(recordStore) do
           print(storeType, '\n', recordId, '\n', recordData)
