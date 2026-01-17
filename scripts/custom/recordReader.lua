@@ -39,6 +39,42 @@ local RecordStores = tds.Hash {
   Static = tds.Hash(),
 }
 
+local MetaInterfaces = {}
+
+local function readOnlyRecord(record)
+  return setmetatable(
+    {},
+    {
+      __index = record,
+      __newindex = function(_, key, value)
+        error(
+          ('Attemped to write %s with value %s to record %s.\nRecords are not writable!\n%s')
+          :format(key, value, record.id, debug.traceback())
+        )
+      end,
+    }
+  )
+end
+
+---@param inputTable table
+---@param typeName string
+local function readOnlyInterface(inputTable, typeName)
+  return setmetatable(
+    inputTable,
+    {
+      __index = function(_, key)
+        return MetaInterfaces[typeName][key]
+      end,
+      __newindex = function(_, key, value)
+        error(
+          ('Attempted to write %s with value %s to RecordStore %s. RecordStores are not mutable!')
+          :format(key, value, typeName)
+        )
+      end,
+    }
+  )
+end
+
 local TypeHandlers = {
   Activator = function(activatorRecord, recordId)
     return tds.Hash {
@@ -165,15 +201,27 @@ local function createRecordStores()
       end
     end
   end
+
+  -- In order to ensure that neither an individual recordStore,
+  -- nor an individual record, is ever overwritten,
+  -- Make metatables for all of them
+  -- This may be the worst idea I have ever had
+  for typeName, recordStore in pairs(RecordStores) do
+    local subInterface = {}
+
+    for objectId, object in pairs(recordStore) do
+      subInterface[objectId] = readOnlyRecord(object)
+    end
+
+    MetaInterfaces[typeName] = readOnlyInterface(subInterface, typeName)
+  end
 end
 
 ---@type TES3MPScriptRegistration
 return {
   interfaceName = 'recordStores',
   ---@class RecordInterface
-  interface = {
-    records = RecordStores,
-  },
+  interface = MetaInterfaces,
   eventValidators = {
     OnServerPostInit = function()
       local startClock = os.clock()
