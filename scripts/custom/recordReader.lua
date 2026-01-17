@@ -33,42 +33,39 @@ local AIPackageHandlers = {
     }
   end,
   AiFollowPackage = function(package)
-    return tds.Hash()
-    -- return tds.Hash {
-    --   cell = package.cell,
-    --   duration = package.duration,
-    --   locX = package.location[1],
-    --   locY = package.location[2],
-    --   locZ = package.location[3],
-    --   reset = package.reset,
-    --   target = package.target,
-    -- }
+    return tds.Hash {
+      cell = package.cell,
+      duration = package.duration,
+      locX = tonumber(package.location[1]),
+      locY = tonumber(package.location[2]),
+      locZ = tonumber(package.location[3]),
+      reset = package.reset,
+      target = package.target,
+    }
   end,
   AiTravelPackage = function(package)
-    return tds.Hash()
-    -- return tds.Hash {
-    --   locX = package.location[1],
-    --   locY = package.location[2],
-    --   locZ = package.location[3],
-    --   reset = package.reset,
-    -- }
+    return tds.Hash {
+      locX = tonumber(package.location[1]),
+      locY = tonumber(package.location[2]),
+      locZ = tonumber(package.location[3]),
+      reset = package.reset,
+    }
   end,
   AiWanderPackage = function(package)
-    return tds.Hash()
-    -- return tds.Hash {
-    --   distance = package.distance,
-    --   duration = package.duration,
-    --   gameHour = package.game_hour,
-    --   idle2    = package.idle2,
-    --   idle3    = package.idle3,
-    --   idle4    = package.idle4,
-    --   idle5    = package.idle5,
-    --   idle6    = package.idle6,
-    --   idle7    = package.idle7,
-    --   idle8    = package.idle8,
-    --   idle9    = package.idle9,
-    --   reset    = package.reset,
-    -- }
+    return tds.Hash {
+      distance = package.distance,
+      duration = package.duration,
+      gameHour = package.game_hour,
+      idle2    = package.idle2,
+      idle3    = package.idle3,
+      idle4    = package.idle4,
+      idle5    = package.idle5,
+      idle6    = package.idle6,
+      idle7    = package.idle7,
+      idle8    = package.idle8,
+      idle9    = package.idle9,
+      reset    = package.reset,
+    }
   end,
 }
 
