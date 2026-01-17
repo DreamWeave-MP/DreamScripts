@@ -160,9 +160,11 @@ DScriptLoader.Interfaces = setmetatable({},
 )
 
 local bit, ffi = require 'bit', require 'ffi'
+local hasCJSON, cjson = pcall(require, 'cjson')
 function DScriptLoader.defaultModuleCache()
   return {
     bit = bit,
+    cjson = cjson,
     dUtil = dUtil,
     ffi = ffi,
     interfaces = DScriptLoader.Interfaces,
