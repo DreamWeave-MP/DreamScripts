@@ -35,6 +35,7 @@ local RecordStores = tds.Hash {
   Armor = tds.Hash(),
   Apparatus = tds.Hash(),
   Activator = tds.Hash(),
+  Birthsign = tds.Hash(),
   Bodypart = tds.Hash(),
   Static = tds.Hash(),
 }
@@ -122,16 +123,34 @@ local TypeHandlers = {
       weight = potionRecord.data.weight,
     }
   end,
+  Birthsign = function(record, recordId)
+    local spells = tds.Vec()
+
+    spells:resize(#record.spells)
+
+    for i, spellId in ipairs(record.spells) do
+      spells[i] = spellId:lower()
+    end
+
+    return tds.Hash {
+      description = record.description,
+      id = recordId,
+      name = record.name,
+      objectFlags = record.flags,
+      spells = spells,
+      texture = record.texture:normalize(),
+    }
+  end,
   Bodypart = function(record, recordId)
     return tds.Hash {
-      objectFlags = record.flags,
-      id = recordId,
-      race = lowercase(record.race),
-      model = record.mesh:normalize(),
-      part = record.data.part,
       bodypartFlags = record.data.flags,
       bodypartType = record.data.bodypart_type,
+      id = recordId,
       isVampire = record.data.vampire,
+      model = record.mesh:normalize(),
+      objectFlags = record.flags,
+      part = record.data.part,
+      race = lowercase(record.race),
     }
   end,
   Static = function(record, recordId)

@@ -302,6 +302,12 @@
 ---@field weight number
 ---@field value integer
 
+---@class BirthsignRecord
+---@field description string
+---@field name string
+---@field texture NormalizedPath
+---@field spells RecordId[]
+
 ---@class BodypartRecord
 ---@field bodypartType BodypartType
 ---@field bodypartFlags integer
