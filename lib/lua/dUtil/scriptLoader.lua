@@ -20,6 +20,8 @@ local logicHandler = require 'tes3mp.logicHandler'
 local tableHelper = require 'tes3mp.util.table'
 
 local ScriptPathFormatter = 'server/scripts/custom/%s'
+local hasTDS, tds = pcall(require, 'tds.init')
+local hasTES3, tes3 = pcall(require, 'tes3_lua')
 
 --- OpenMW-Style Script loader module for TES3MP.
 --- This is a stateful module which should only ever be `require`'d once by serverCore.lua
@@ -49,9 +51,6 @@ end
 local saveDataTable = BufferedDiskPaths
 ---@return DefaultInterfaces
 function DScriptLoader.originalInterfaces()
-  local hasTDS, tds = pcall(require, 'tds.init')
-  local hasTES3, tes3 = pcall(require, 'tes3_lua')
-
   ---@type DefaultInterfaces
   return {
     ---@type StorageModule
@@ -441,7 +440,6 @@ local AllowedFields = {
   menus = true,
 }
 
-local dUtil = require 'dUtil.init'
 local ScriptFailedMessage = 'Attempted to load the script at %s, but failed, because it doesn\'t exist.'
 
 --- Given a script name, attempt to load it into the tes3mp environment like an OpenMW Lua script.
