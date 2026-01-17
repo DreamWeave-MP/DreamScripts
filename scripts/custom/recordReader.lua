@@ -410,8 +410,6 @@ local function createRecordStores()
 
   for _, pluginName in ipairs(loadOrder) do
     local pluginPath = PluginPathFormatter:format(pluginName)
-    local crcResult = dUtil.crc32File(pluginPath)
-    print(('%s crc32 is %s'):format(pluginPath, crcResult))
 
     if not dUtil.io.fileExists(pluginPath) then
       error(
