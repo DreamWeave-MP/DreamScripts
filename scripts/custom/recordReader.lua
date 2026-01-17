@@ -129,7 +129,6 @@ local TypeHandlers = {
     spells:resize(#record.spells)
 
     for i, spellId in ipairs(record.spells) do
-      print(spellId, type(spellId))
       spells[i] = tostring(spellId):lower()
     end
 
