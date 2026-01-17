@@ -173,7 +173,7 @@ local TypeHandlers = {
     for i, effect in ipairs(record.effects) do
       effects[i] = tds.Hash {
         magicEffect = effect.magic_effect,
-        skill = effect.skill,
+        skill = assert(Enums.SkillId[record.data.skill]),
         attribute = effect.attribute,
         range = effect.range,
         area = effect.area,
