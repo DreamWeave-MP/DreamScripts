@@ -388,6 +388,7 @@ function DScriptLoader.getScriptEnv()
     -- getfenv = getfenv,
     getmetatable = getmetatable,
     ipairs = ipairs,
+    -- io = io,
     math = tableHelper.deepCopy(math),
     next = next,
     os = { clock = os.clock, date = os.date, time = os.time },
