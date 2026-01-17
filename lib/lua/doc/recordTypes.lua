@@ -8,10 +8,10 @@
 ---| AIWander
 
 ---@alias ApparatusType
----| 'MortarAndPestle' # 0
----| 'Alembic' # 1
----| 'Calcinator' # 2
----| 'Retort' # 3
+---| 0 # 'MortarAndPestle'
+---| 1 # 'Alembic'
+---| 2 # 'Calcinator'
+---| 3 # 'Retort'
 
 ---@alias ArmorType
 ---| 'Helmet' 0

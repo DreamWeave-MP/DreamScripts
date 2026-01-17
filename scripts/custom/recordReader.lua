@@ -125,7 +125,7 @@ local TypeHandlers = {
   end,
   Apparatus = function(record, recordId)
     return tds.Hash {
-      apparatusType = record.data.apparatus_type,
+      apparatusType = assert(Enums.ApparatusType[record.data.apparatus_type]),
       icon = record.icon:normalize(),
       id = recordId,
       model = record.mesh:normalize(),

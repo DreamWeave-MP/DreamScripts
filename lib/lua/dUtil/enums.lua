@@ -1,6 +1,12 @@
 local dUtil = require 'dUtil.init'
 
 return dUtil.table(dUtil.tableType.HASH, nil, {
+  ApparatusType = {
+    MortarAndPestle = 0,
+    Alembic = 1,
+    Calcinator = 2,
+    Retort = 3,
+  },
   ArmorType = {
     Helmet = 0,
     Cuirass = 1,
