@@ -1,6 +1,8 @@
 require 'doc.dUtilDocs'
 
+local bit = require 'bit'
 local enumerations = require 'tes3mp.enumerations'
+local ioModule = tes3mp.GetOperatingSystemType() == 'Windows' and require 'io2' or io
 local jsonInterface = require 'jsonInterface'
 local tableHelper = require 'tes3mp.util.table'
 
@@ -130,8 +132,30 @@ local function tableConstructor(tableType, elementCount, ...)
   error(('Invalid tableType: %s'):format(tableType))
 end
 
+---@param path string OS-Specific path relative to the working directory
+---@return integer? CRC32
+local function crc32File(path)
+  local file = ioModule.open(path, 'rb')
+  if not file then return end
+
+  local crc = 0xFFFFFFFF
+  for byte in file:lines('*L') do
+    for i = 1, #byte do
+      crc = bit.bxor(crc, byte:byte(i))
+      for _ = 1, 8 do
+        local mask = bit.band(crc, 1) * 0xEDB88320
+        crc = bit.bxor(bit.rshift(crc, 1), mask)
+      end
+    end
+  end
+
+  file:close()
+  return bit.bxor(crc, 0xFFFFFFFF)
+end
+
 ---@type DUtilModule
 local Module = {
+  crc32File = crc32File,
   ---@return DataFileRequirements
   getRequiredDataFiles = function()
     return loadDataFileList('requiredDataFiles.json', false)
