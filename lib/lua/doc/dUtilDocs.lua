@@ -20,6 +20,8 @@
 ---@field dreamDice DiceInterface?
 ---@field customMerchantRestock RestockInterface?
 ---@field recordStores RecordInterface?
+---@field tds table<string, function>?
+---@field tes3 table<string, function>?
 
 ---@class DreamWeaveMenuModule
 ---@field display function(pid: PlayerId, menuName: string)
