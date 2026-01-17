@@ -316,7 +316,7 @@ local TypeHandlers = {
 
     inventory:resize(#record.inventory)
     for i, item in ipairs(record.inventory) do
-      inventory[i] = tds.Hash { [item[2]] = item[1] }
+      inventory[i] = tds.Hash { [lowercase(item[2])] = item[1] }
     end
 
     spells:resize(#record.spells)
