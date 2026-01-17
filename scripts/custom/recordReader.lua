@@ -1,5 +1,6 @@
 local dUtil = require 'dUtil.init'
 local enumerations = require 'tes3mp.enumerations'
+local fileHelper = require 'tes3mp.fileHelper'
 
 ---@type DefaultInterfaces
 local I = require 'interfaces'
@@ -16,6 +17,7 @@ if not tds or not tes3 then
 end
 
 local Enums = require 'dUtil.enums'
+local RecordPathFormatter = 'custom/recordParser/%s/%s.json'
 
 ---@param string string
 ---@return string? lowercased
@@ -391,12 +393,23 @@ local TypeHandlers = {
       willpower = record.data.willpower,
     }
   end,
-  Static = function(record, recordId)
-    return tds.Hash {
+  Static = function(record, recordId, writeOnly)
+    local result = {
       id = recordId,
       model = record.mesh:normalize(),
       objectFlags = record.flags,
     }
+
+    if writeOnly then
+      I.storage.subscribeToSave {
+        -- delay = math.random(600),
+        data = result,
+        filePath = RecordPathFormatter:format('Static', fileHelper.fixFilename(recordId)),
+        persistent = false,
+      }
+    else
+      return tds.Hash(result)
+    end
   end,
 }
 
@@ -432,7 +445,7 @@ local function createRecordStores()
 
       if recordStore and typeHandler then
         local recordId = object.id:lower()
-        recordStore[recordId] = typeHandler(object, recordId)
+        recordStore[recordId] = typeHandler(object, recordId, true)
         loadedRecords = loadedRecords + 1
       end
     end
