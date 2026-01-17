@@ -163,8 +163,9 @@ local bit, ffi = require 'bit', require 'ffi'
 function DScriptLoader.defaultModuleCache()
   return {
     bit = bit,
-    interfaces = DScriptLoader.Interfaces,
+    dUtil = dUtil,
     ffi = ffi,
+    interfaces = DScriptLoader.Interfaces,
     tds = dUtil.tds,
     tes3 = dUtil.tes3,
   }
