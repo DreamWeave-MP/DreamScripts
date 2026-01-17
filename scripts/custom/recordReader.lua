@@ -430,6 +430,10 @@ return {
   },
   eventValidators = {
     OnServerPostInit = function()
+      dUtil.table(dUtil.tableType.HASH, nil, {
+        fuck = 'you'
+      })
+
       local startClock = os.clock()
 
       local logStr = ('Successfully loaded %d records in %.3f seconds.\n')
