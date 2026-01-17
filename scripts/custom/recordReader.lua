@@ -447,6 +447,10 @@ return {
           break
         end
       end
+
+      print(dUtil.table(dUtil.tableType.HASH, nil, {
+        fuck = 'you'
+      }))
     end
   }
 }
