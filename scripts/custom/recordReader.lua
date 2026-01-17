@@ -101,7 +101,7 @@ for i, loadOrderData in ipairs(RequiredDataFiles) do
 end
 
 ---@type RecordStores
-local RecordStores = tds.Hash {
+local RecordStores = {
   -- Alchemy = tds.Hash(),
   -- Armor = tds.Hash(),
   -- Apparatus = tds.Hash(),
