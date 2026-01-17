@@ -113,5 +113,11 @@ return dUtil.table(dUtil.tableType.HASH, nil, {
     Mercantile = 24,
     Speechcraft = 25,
     HandToHand = 26,
+  },
+  Specialization = {
+    None = -1,
+    Combat = 0,
+    Magic = 1,
+    Stealth = 2,
   }
 })
