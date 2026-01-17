@@ -84,6 +84,18 @@
 ---| 'Book' # 0
 ---| 'Scroll' # 1
 
+---@alias ClothingType
+---| 'Pants' # 0
+---| 'Shoes' # 1
+---| 'Shirt' # 2
+---| 'Belt' # 3
+---| 'Robe' # 4
+---| 'RightGlove' # 5
+---| 'LeftGlove' # 6
+---| 'Skirt' # 7
+---| 'Ring' # 8
+---| 'Amulet' # 9
+
 ---@alias EffectRange
 ---| 'OnSelf' # 0
 ---| 'OnTouch' # 1
@@ -307,18 +319,19 @@
 ---@field enchantmentValue integer
 ---@field icon NormalizedPath
 ---@field model NormalizedPath
+---@field name string
 ---@field parts BipedObject[]
 ---@field script RecordId?
 ---@field weight number
 ---@field value integer
 
----@class BirthsignRecord
+---@class BirthsignRecord: BaseRecord
 ---@field description string
 ---@field name string
 ---@field texture NormalizedPath
 ---@field spells RecordId[]
 
----@class BookRecord
+---@class BookRecord: BaseRecord
 ---@field bookType BookType
 ---@field enchantment RecordId
 ---@field enchantmentValue integer
@@ -331,7 +344,7 @@
 ---@field value integer
 ---@field weight number
 
----@class BodypartRecord
+---@class BodypartRecord: BaseRecord
 ---@field bodypartType BodypartType
 ---@field bodypartFlags integer
 ---@field part BodypartId
@@ -339,7 +352,7 @@
 ---@field model NormalizedPath
 ---@field isVampire boolean?
 
----@class ClassRecord
+---@class ClassRecord: BaseRecord
 ---@field attribute1 AttributeId2
 ---@field attribute2 AttributeId2
 ---@field classFlags integer
