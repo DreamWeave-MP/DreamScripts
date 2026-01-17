@@ -406,6 +406,7 @@ local function createRecordStores()
   local loadedRecords = 0
   for _, pluginName in ipairs(loadOrder) do
     local pluginPath = PluginPathFormatter:format(pluginName)
+    print(pluginPath .. 'crc32 is ' .. dUtil.crc32File(pluginPath))
 
     if not dUtil.io.fileExists(pluginPath) then
       error(
