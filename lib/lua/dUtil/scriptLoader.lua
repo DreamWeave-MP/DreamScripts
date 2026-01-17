@@ -309,7 +309,7 @@ DScriptLoader.Interfaces = setmetatable({},
         end
       end
 
-      return ('Global Interfaces {\n%s\n}'):format(interfaceStr)
+      return ('Global Interfaces {\n  %s\n}'):format(interfaceStr)
     end,
   }
 )
