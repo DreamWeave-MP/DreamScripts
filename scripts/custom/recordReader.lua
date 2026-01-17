@@ -268,7 +268,6 @@ local function createRecordStores()
           print(item.type)
           break
         end
-        break
       end
 
       if recordStore and typeHandler then
