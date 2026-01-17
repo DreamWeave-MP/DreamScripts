@@ -22,6 +22,17 @@ return dUtil.table(dUtil.tableType.HASH, nil, {
     LeftBracer = 9,
     RightBracer = 10,
   },
+  AttributeId = {
+    None = -1,
+    Strength = 0,
+    Intelligence = 1,
+    Willpower = 2,
+    Agility = 3,
+    Speed = 4,
+    Endurance = 5,
+    Personality = 6,
+    Luck = 7
+  },
   BipedObjectType = {
     Head = 0,
     Hair = 1,

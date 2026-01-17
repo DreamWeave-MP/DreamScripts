@@ -178,7 +178,7 @@ local TypeHandlers = {
 
       effects[i] = tds.Hash {
         area = effect.area,
-        attribute = effect.attribute,
+        attribute = assert(Enums.AttributeId[effect.attribute]),
         duration = effect.duration,
         magicEffect = effect.magic_effect,
         maxMagnitude = effect.max_magnitude,
@@ -248,8 +248,10 @@ local TypeHandlers = {
   end,
   Class = function(record, recordId)
     return tds.Hash {
-      attribute1 = record.data.attribute1,
-      attribute2 = record.data.attribute2,
+      attribute = tds.Vec(
+        assert(Enums.AttributeId[record.data.attribute1]),
+        assert(Enums.AttributeId[record.data.attribute2])
+      ),
       id = recordId,
       major = tds.Vec(
         assert(Enums.SkillId[record.data.major1]),
@@ -267,7 +269,7 @@ local TypeHandlers = {
       ),
       objectFlags = record.flags,
       services = record.data.services,
-      specialization = record.data.specialization,
+      specialization = assert(Enums.Specialization[record.data.specialization]),
     }
   end,
   Clothing = function(record, recordId)

@@ -26,16 +26,16 @@
 ---| 9 # 'LeftBracer'
 ---| 10 # 'RightBracer'
 
----@alias AttributeId2
----| 'None' -1
----| 'Strength' 0
----| 'Intelligence' 1
----| 'Willpower' 2
----| 'Agility' 3
----| 'Speed' 4
----| 'Endurance' 5
----| 'Personality' 6
----| 'Luck' 7
+---@alias AttributeId
+---| -1 # None
+---| 0 # Strength
+---| 1 # Intelligence
+---| 2 # Willpower
+---| 3 # Agility
+---| 4 # Speed
+---| 5 # Endurance
+---| 6 # Personality
+---| 7 # Luck
 
 ---@alias BipedObjectType
 ---| 0 # 'Head'
@@ -297,10 +297,10 @@
 ---| 26 # 'HandToHand'
 
 ---@alias Specialization
----| 'None' # -1
----| 'Combat' # 0
----| 'Magic' # 1
----| 'Stealth' # 2
+---| -1 # None
+---| 0 # Combat
+---| 1 # Magic
+---| 2 # Stealth
 
 ---@alias NormalizedPath string Lowercased string with unix-style paths
 ---@alias RecordId string 32-character limited string. Always lowercase.
@@ -420,8 +420,7 @@
 ---@field isVampire boolean?
 
 ---@class ClassRecord: BaseRecord
----@field attribute1 AttributeId2
----@field attribute2 AttributeId2
+---@field attribute AttributeId[]
 ---@field classFlags integer
 ---@field major SkillId[]
 ---@field minor SkillId[]
@@ -488,7 +487,7 @@
 
 ---@class MagicEffect
 ---@field area integer
----@field attribute AttributeId2
+---@field attribute AttributeId
 ---@field duration integer
 ---@field magicEffect MagicEffectId
 ---@field maxMagnitude integer
