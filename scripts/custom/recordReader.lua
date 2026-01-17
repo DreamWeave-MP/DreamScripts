@@ -394,7 +394,7 @@ local TypeHandlers = {
     }
   end,
   Static = function(record, recordId)
-    return {
+    return tds.Hash {
       id = recordId,
       model = record.mesh:normalize(),
       objectFlags = record.flags,
