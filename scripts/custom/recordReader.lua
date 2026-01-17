@@ -38,6 +38,7 @@ local RecordStores = tds.Hash {
   Birthsign = tds.Hash(),
   Bodypart = tds.Hash(),
   Book = tds.Hash(),
+  Class = tds.Hash(),
   Static = tds.Hash(),
 }
 
@@ -169,11 +170,30 @@ local TypeHandlers = {
       weight = record.data.weight,
     }
   end,
+  Class = function(record, recordId)
+    return tds.Hash {
+      attribute1 = record.attribute1,
+      attribute2 = record.attribute2,
+      id = recordId,
+      major1 = record.major1,
+      minor1 = record.minor1,
+      major2 = record.major2,
+      minor2 = record.minor2,
+      major3 = record.major3,
+      minor3 = record.minor3,
+      major4 = record.major4,
+      minor4 = record.minor4,
+      major5 = record.major5,
+      minor5 = record.minor5,
+      objectFlags = record.flags,
+      services = record.services,
+    }
+  end,
   Static = function(record, recordId)
     return tds.Hash {
-      objectFlags = record.flags,
       id = recordId,
       model = record.mesh:normalize(),
+      objectFlags = record.flags,
     }
   end,
 }

@@ -265,6 +265,12 @@
 ---| 'Speechcraft' 25
 ---| 'HandToHand' 26
 
+---@alias Specialization
+---| 'None' # -1
+---| 'Combat' # 0
+---| 'Magic' # 1
+---| 'Stealth' # 2
+
 ---@alias NormalizedPath string Lowercased string with unix-style paths
 ---@alias RecordId string 32-character limited string. Always lowercase.
 
@@ -333,6 +339,23 @@
 ---@field model NormalizedPath
 ---@field isVampire boolean?
 
+---@class ClassRecord
+---@field attribute1 AttributeId2
+---@field attribute2 AttributeId2
+---@field classFlags integer
+---@field major1 SkillId2
+---@field major2 SkillId2
+---@field major3 SkillId2
+---@field major4 SkillId2
+---@field major5 SkillId2
+---@field minor1 SkillId2
+---@field minor2 SkillId2
+---@field minor3 SkillId2
+---@field minor4 SkillId2
+---@field minor5 SkillId2
+---@field services integer
+---@field specialization Specialization
+
 ---@class MagicEffect
 ---@field area integer
 ---@field attribute AttributeId2
@@ -361,4 +384,8 @@
 ---@field Apparatus table<RecordId, ApparatusRecord>
 ---@field Armor table<RecordId, ArmorRecord>
 ---@field Alchemy table<RecordId, PotionRecord>
+---@field Birthsign table<RecordId, BirthsignRecord>
+---@field BodyPart table<RecordId, BodypartRecord>
+---@field Book table<RecordId, BookRecord>
+---@field Class table<RecordId, ClassRecord>
 ---@field Static table<RecordId, StaticRecord>
