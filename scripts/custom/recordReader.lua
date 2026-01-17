@@ -1,6 +1,7 @@
 local dUtil = require 'dUtil.init'
 local enumerations = require 'tes3mp.enumerations'
 
+---@type DefaultInterfaces
 local I = require 'interfaces'
 
 local tds = I.tds
@@ -404,9 +405,21 @@ local PluginPathFormatter = tes3mp.GetDataPath() .. '/custom/recordParser/%s'
 ---@return integer numRecords
 local function createRecordStores()
   local loadedRecords = 0
+  local pluginHashes = I.storage.loadWithSubscription {
+    data = {},
+    filePath = '/custom/recordParser/fileHashes.json',
+    persistent = true,
+  }
+  assert(pluginHashes)
+
   for _, pluginName in ipairs(loadOrder) do
     local pluginPath = PluginPathFormatter:format(pluginName)
-    print(pluginPath .. 'crc32 is ' .. dUtil.crc32File(pluginPath))
+    local crcResult = dUtil.crc32File(pluginPath)
+    print(('%s crc32 is %s'):format(pluginPath, crcResult))
+
+    if pluginHashes[pluginName] then goto CONTINUE end
+
+    pluginHashes[pluginName] = crcResult
 
     if not dUtil.io.fileExists(pluginPath) then
       error(
@@ -424,6 +437,8 @@ local function createRecordStores()
         loadedRecords = loadedRecords + 1
       end
     end
+
+    ::CONTINUE::
   end
 
   return loadedRecords
