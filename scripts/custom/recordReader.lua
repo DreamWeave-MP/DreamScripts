@@ -195,6 +195,8 @@ return {
         print(k, v)
       end
 
+      print(I.recordStores.Static or 'WTF NO INTERFACE')
+
       for storeType, recordStore in pairs(RecordStores) do
         for recordId, recordData in pairs(recordStore) do
           print(storeType, '\n', recordId, '\n', recordData)
