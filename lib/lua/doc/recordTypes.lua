@@ -80,6 +80,10 @@
 ---| 'Clothing' 1
 ---| 'Armor' 2
 
+---@alias BookType
+---| 'Book' # 0
+---| 'Scroll' # 1
+
 ---@alias EffectRange
 ---| 'OnSelf' # 0
 ---| 'OnTouch' # 1
@@ -307,6 +311,19 @@
 ---@field name string
 ---@field texture NormalizedPath
 ---@field spells RecordId[]
+
+---@class BookRecord
+---@field weight number
+---@field value integer
+---@field bookType BookType
+---@field skill SkillId2
+---@field enchantmentValue integer
+---@field name string
+---@field script RecordId?
+---@field model NormalizedPath
+---@field icon NormalizedPath
+---@field enchantment RecordId
+---@field text string
 
 ---@class BodypartRecord
 ---@field bodypartType BodypartType

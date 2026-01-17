@@ -37,6 +37,7 @@ local RecordStores = tds.Hash {
   Activator = tds.Hash(),
   Birthsign = tds.Hash(),
   Bodypart = tds.Hash(),
+  Book = tds.Hash(),
   Static = tds.Hash(),
 }
 
@@ -151,6 +152,21 @@ local TypeHandlers = {
       objectFlags = record.flags,
       part = record.data.part,
       race = lowercase(record.race),
+    }
+  end,
+  Book = function(record, recordId)
+    return tds.Hash {
+      bookType = record.data.book_type,
+      enchantment = lowercase(record.enchanting),
+      enchantmentValue = record.data.enchantment,
+      icon = record.icon:normalize(),
+      id = recordId,
+      model = record.mesh:normalize(),
+      name = record.name,
+      script = lowercase(record.script),
+      text = record.text,
+      value = record.data.value,
+      weight = record.data.weight,
     }
   end,
   Static = function(record, recordId)
