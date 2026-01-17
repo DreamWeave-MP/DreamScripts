@@ -165,7 +165,8 @@ function DScriptLoader.defaultModuleCache()
   return {
     bit = bit,
     cjson = cjson,
-    dUtil = dUtil,
+    dutil = dUtil,
+    ['dutil.vector3'] = dUtil.vector3,
     ffi = ffi,
     interfaces = DScriptLoader.Interfaces,
     tds = dUtil.tds,
@@ -186,8 +187,9 @@ function DScriptLoader.requireShim(scriptName)
 
   scriptName = scriptName:gsub('[\\/]+', '.'):gsub('^%.', ''):gsub('%.$', ''):gsub('%.%.+', '.')
 
-  if ModuleCache[scriptName] then
-    return ModuleCache[scriptName]
+  local lowerName = scriptName:lower()
+  if ModuleCache[lowerName] then
+    return ModuleCache[lowerName]
   end
 
   local ok, chunk, err, result = false, nil, nil, nil
