@@ -39,6 +39,7 @@ local RecordStores = tds.Hash {
   Bodypart = tds.Hash(),
   Book = tds.Hash(),
   Class = tds.Hash(),
+  Clothing = tds.Hash(),
   Static = tds.Hash(),
 }
 
