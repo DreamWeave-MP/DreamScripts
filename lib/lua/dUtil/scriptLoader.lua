@@ -542,6 +542,7 @@ function DScriptLoader.loadScript(scriptName, callerPid)
   DScriptLoader.loadScriptMenus(scriptPath, result)
   DScriptLoader.loadScriptHandlers(scriptPath, result)
 
+  collectgarbage()
   return true
 end
 
