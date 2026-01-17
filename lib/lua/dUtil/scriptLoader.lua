@@ -170,6 +170,7 @@ function DScriptLoader.defaultModuleCache()
     ['dutil.init'] = dUtil,
     ffi = ffi,
     interfaces = DScriptLoader.Interfaces,
+    jsoninterface = jsonInterface,
   }
 end
 
