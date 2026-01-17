@@ -113,7 +113,7 @@ local RecordStores = tds.Hash {
   -- Clothing = tds.Hash(),
   -- Container = tds.Hash(),
   -- Creature = tds.Hash(),
-  Static = tds.Hash(),
+  Static = {},
 }
 
 local TypeHandlers = {
