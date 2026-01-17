@@ -221,7 +221,14 @@ end
 return {
   interfaceName = 'recordStores',
   ---@class RecordInterface
-  interface = MetaInterfaces,
+  interface = setmetatable(
+    {},
+    {
+      __index = function(_, key)
+        return MetaInterfaces[key]
+      end
+    }
+  ),
   eventValidators = {
     OnServerPostInit = function()
       local startClock = os.clock()
