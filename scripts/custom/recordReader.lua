@@ -176,12 +176,9 @@ end
 return {
   interfaceName = 'recordStores',
   ---@class RecordInterface
-  interface = setmetatable(
-    {},
-    {
-      __index = RecordStores,
-    }
-  ),
+  interface = {
+    records = RecordStores,
+  },
   eventValidators = {
     OnServerPostInit = function()
       local startClock = os.clock()
