@@ -242,7 +242,7 @@ local TypeHandlers = {
 
     aiPackages:resize(#record.ai_packages)
     for i, aiPackage in ipairs(record.ai_packages) do
-      print(recordId, aiPackage)
+      print(recordId, aiPackage, aiPackage.type)
     end
 
     inventory:resize(#record.inventory)
