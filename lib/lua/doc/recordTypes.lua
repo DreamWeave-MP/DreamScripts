@@ -1,5 +1,12 @@
 ---@meta
 
+---@alias AIPackage
+---| AIActivate
+---| AIEscort
+---| AIFollow
+---| AITravel
+---| AIWander
+
 ---@alias ApparatusType
 ---| 'MortarAndPestle' # 0
 ---| 'Alembic' # 1
@@ -95,6 +102,12 @@
 ---| 'Skirt' # 7
 ---| 'Ring' # 8
 ---| 'Amulet' # 9
+
+---@alias CreatureType
+---| 'Normal' # 0
+---| 'Daedra' # 1
+---| 'Undead' # 2
+---| 'Humanoid' # 3
 
 ---@alias EffectRange
 ---| 'OnSelf' # 0
@@ -291,6 +304,55 @@
 ---@alias NormalizedPath string Lowercased string with unix-style paths
 ---@alias RecordId string 32-character limited string. Always lowercase.
 
+---@class AIData
+---@field alarm integer
+---@field fight integer
+---@field flee integer
+---@field hello integer
+---@field services integer
+
+---@class AIActivate
+---@field target RecordId
+---@field reset integer
+
+---@class AIEscort
+---@field locX number
+---@field locY number
+---@field locZ number
+---@field duration integer
+---@field target RecordId
+---@field reset integer
+---@field cell RecordId
+
+---@class AIFollow
+---@field locX number
+---@field locY number
+---@field locZ number
+---@field duration integer
+---@field target RecordId
+---@field reset integer
+---@field cell RecordId
+
+---@class AITravel
+---@field locX number
+---@field locY number
+---@field locZ number
+---@field reset number
+
+---@class AIWander
+---@field distance integer
+---@field duration integer
+---@field gameHour integer
+---@field reset integer
+---@field idle2 integer
+---@field idle3 integer
+---@field idle4 integer
+---@field idle5 integer
+---@field idle6 integer
+---@field idle7 integer
+---@field idle8 integer
+---@field idle9 integer
+
 ---@class BaseRecord
 ---@field objectFlags integer Numeric flags with default value 0
 ---@field id RecordId Record editor identifier. Always lowercase.
@@ -386,13 +448,51 @@
 ---@field weight number
 ---@field value integer
 
----@class ContainerRecord
+---@class ContainerRecord: BaseRecord
 ---@field capacity number
 ---@field containerFlags integer
 ---@field inventory InventoryItem[]
 ---@field model NormalizedPath
 ---@field name string
 ---@field script RecordId?
+
+---@class CreatureRecord: BaseRecord
+---@field AIData AIData
+---@field AIPackages AIPackage[]
+---@field agility integer
+---@field attack1Min integer
+---@field attack1Max integer
+---@field attack2Min integer
+---@field attack2Max integer
+---@field attack3Min integer
+---@field attack3Max integer
+---@field baseGold integer
+---@field bloodType integer
+---@field combatAbility integer
+---@field creatureFlags integer
+---@field creatureType CreatureType
+---@field endurance integer
+---@field fatigue integer
+---@field health integer
+---@field intelligence integer
+---@field inventory InventoryItem[]
+---@field level integer
+---@field luck integer
+---@field magicAbility integer
+---@field magicka integer
+---@field model NormalizedPath
+---@field name string
+---@field personality integer
+---@field scale number?
+---@field script RecordId?
+---@field soulValue integer
+---@field sound RecordId
+---@field speed integer
+---@field spells RecordId[]
+---@field stealthAbility integer
+---@field strength integer
+---@field travelDestinations TravelDestination[]
+---@field willpower integer
 
 ---@class MagicEffect
 ---@field area integer
@@ -417,6 +517,15 @@
 ---@class StaticRecord: BaseRecord
 ---@field model NormalizedPath
 
+---@class TravelDestination
+---@field cell RecordId
+---@field posX number
+---@field posY number
+---@field posZ number
+---@field rotX number
+---@field rotY number
+---@field rotZ number
+
 ---@class RecordStores
 ---@field Activator table<RecordId, ActivatorRecord>
 ---@field Apparatus table<RecordId, ApparatusRecord>
@@ -427,4 +536,6 @@
 ---@field Book table<RecordId, BookRecord>
 ---@field Class table<RecordId, ClassRecord>
 ---@field Clothing table<RecordId, ClothingRecord>
+---@field Container table<RecordId, ContainerRecord>
+---@field Creature table<RecordId, CreatureRecord>
 ---@field Static table<RecordId, StaticRecord>

@@ -45,34 +45,34 @@ local RecordStores = tds.Hash {
 }
 
 local TypeHandlers = {
-  Activator = function(activatorRecord, recordId)
+  Activator = function(record, recordId)
     return tds.Hash {
-      objectFlags = activatorRecord.flags,
+      objectFlags = record.flags,
       id = recordId,
-      model = activatorRecord.mesh:normalize(),
-      name = activatorRecord.name,
-      script = lowercase(activatorRecord.script),
+      model = record.mesh:normalize(),
+      name = record.name,
+      script = lowercase(record.script),
     }
   end,
-  Apparatus = function(appaRecord, recordId)
+  Apparatus = function(record, recordId)
     return tds.Hash {
-      apparatusType = appaRecord.data.apparatus_type,
-      icon = appaRecord.icon:normalize(),
+      apparatusType = record.data.apparatus_type,
+      icon = record.icon:normalize(),
       id = recordId,
-      model = appaRecord.mesh:normalize(),
-      name = appaRecord.name,
-      objectFlags = appaRecord.flags,
-      quality = appaRecord.data.quality,
-      script = lowercase(appaRecord.script),
-      weight = appaRecord.data.weight,
-      value = appaRecord.data.value,
+      model = record.mesh:normalize(),
+      name = record.name,
+      objectFlags = record.flags,
+      quality = record.data.quality,
+      script = lowercase(record.script),
+      weight = record.data.weight,
+      value = record.data.value,
     }
   end,
-  Armor = function(armorRecord, recordId)
+  Armor = function(record, recordId)
     local bipedObjects = tds.Vec()
-    bipedObjects:resize(#armorRecord.biped_objects)
+    bipedObjects:resize(#record.biped_objects)
 
-    for i, bipedObject in ipairs(armorRecord.biped_objects) do
+    for i, bipedObject in ipairs(record.biped_objects) do
       bipedObjects[i] = tds.Hash {
         bipedObjectType = bipedObject.biped_object_type,
         malePart = lowercase(bipedObject.male_bodypart),
@@ -81,27 +81,27 @@ local TypeHandlers = {
     end
 
     return tds.Hash {
-      armorRating = armorRecord.data.armor_rating,
-      armorType = armorRecord.data.armor_type,
-      durability = armorRecord.data.health,
-      enchantment = lowercase(armorRecord.enchanting),
-      enchantmentValue = armorRecord.data.enchantment,
-      icon = armorRecord.icon:normalize(),
+      armorRating = record.data.armor_rating,
+      armorType = record.data.armor_type,
+      durability = record.data.health,
+      enchantment = lowercase(record.enchanting),
+      enchantmentValue = record.data.enchantment,
+      icon = record.icon:normalize(),
       id = recordId,
-      model = armorRecord.mesh:normalize(),
-      name = armorRecord.name,
-      objectFlags = armorRecord.flags,
+      model = record.mesh:normalize(),
+      name = record.name,
+      objectFlags = record.flags,
       parts = bipedObjects,
-      script = lowercase(armorRecord.script),
-      weight = armorRecord.data.weight,
-      value = armorRecord.data.value,
+      script = lowercase(record.script),
+      weight = record.data.weight,
+      value = record.data.value,
     }
   end,
-  Alchemy = function(potionRecord, recordId)
+  Alchemy = function(record, recordId)
     local effects = tds.Vec()
-    effects:resize(#potionRecord.effects)
+    effects:resize(#record.effects)
 
-    for i, effect in ipairs(potionRecord.effects) do
+    for i, effect in ipairs(record.effects) do
       effects[i] = tds.Hash {
         magicEffect = effect.magic_effect,
         skill = effect.skill,
@@ -116,22 +116,21 @@ local TypeHandlers = {
 
     return tds.Hash {
       effects = effects,
-      objectFlags = potionRecord.flags,
-      icon = potionRecord.icon:normalize(),
+      objectFlags = record.flags,
+      icon = record.icon:normalize(),
       id = recordId,
-      model = potionRecord.mesh:normalize(),
-      name = potionRecord.name,
-      potionFlags = potionRecord.data.flags,
-      script = lowercase(potionRecord.script),
-      value = potionRecord.data.value,
-      weight = potionRecord.data.weight,
+      model = record.mesh:normalize(),
+      name = record.name,
+      potionFlags = record.data.flags,
+      script = lowercase(record.script),
+      value = record.data.value,
+      weight = record.data.weight,
     }
   end,
   Birthsign = function(record, recordId)
     local spells = tds.Vec()
 
     spells:resize(#record.spells)
-
     for i, spellId in ipairs(record.spells) do
       spells[i] = tostring(spellId):lower()
     end
@@ -235,6 +234,82 @@ local TypeHandlers = {
       name = record.name,
       objectFlags = record.flags,
       script = lowercase(record.script),
+    }
+  end,
+  Creature = function(record, recordId)
+    local aiPackages, destinations, inventory, spells = tds.Vec(), tds.Vec(), tds.Vec(), tds.Vec()
+
+    aiPackages:resize(#record.ai_packages)
+    for i, aiPackage in ipairs(record.ai_packages) do
+      print(recordId, aiPackage)
+    end
+
+    inventory:resize(#record.inventory)
+    for i, item in ipairs(record.inventory) do
+      inventory[i] = tds.Hash { [item[2]] = item[1] }
+    end
+
+    spells:resize(#record.spells)
+    for i, spellId in ipairs(record.spells) do
+      spells[i] = lowercase(spellId)
+    end
+
+    destinations:resize(#record.travel_destinations)
+    for i, travelDestination in ipairs(record.travel_destinations) do
+      destinations[i] = tds.Hash {
+        cell = lowercase(travelDestination.cell),
+        posX = travelDestination.position[1],
+        posY = travelDestination.position[2],
+        posZ = travelDestination.position[3],
+        rotX = travelDestination.rotation[1],
+        rotY = travelDestination.rotation[2],
+        rotZ = travelDestination.rotation[3],
+      }
+    end
+
+    return tds.Hash {
+      AIData = tds.Hash {
+        alarm = record.ai_data.alarm,
+        fight = record.ai_data.fight,
+        flee = record.ai_data.flee,
+        hello = record.ai_data.hello,
+        services = record.ai_data.services,
+      },
+      AIPackages = aiPackages,
+      agility = record.data.agility,
+      attack1Min = record.data.attack1[1],
+      attack1Max = record.data.attack1[2],
+      attack2Min = record.data.attack2[1],
+      attack2Max = record.data.attack2[2],
+      attack3Min = record.data.attack3[1],
+      attack3Max = record.data.attack3[2],
+      baseGold = record.data.gold,
+      bloodType = record.blood_type,
+      creatureFlags = record.creature_flags,
+      creatureType = record.data.creature_type,
+      endurance = record.data.endurance,
+      fatigue = record.data.fatigue,
+      health = record.data.health,
+      id = recordId,
+      intelligence = record.data.intelligence,
+      inventory = inventory,
+      level = record.data.level,
+      luck = record.data.luck,
+      magicAbility = record.data.magic,
+      magicka = record.data.magicka,
+      model = record.mesh:normalize(),
+      objectFlags = record.flags,
+      personality = record.data.personality,
+      scale = record.scale or 1,
+      script = lowercase(record.script),
+      soulValue = record.data.soul,
+      sound = lowercase(record.sound),
+      speed = record.data.speed,
+      spells = spells,
+      stealthAbility = record.data.stealth,
+      strength = record.data.strength,
+      travelDestinations = destinations,
+      willpower = record.data.willpower,
     }
   end,
   Static = function(record, recordId)
