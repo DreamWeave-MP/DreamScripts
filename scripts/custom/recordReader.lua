@@ -422,7 +422,7 @@ return {
           :format(createRecordStores(), os.clock() - startClock)
 
       for k, v in pairs(I.recordStores.records) do
-        logStr = logStr .. ('%s %s Records loaded'):format(#v, k)
+        logStr = logStr .. ('%s %s Records loaded.\n'):format(#v, k)
       end
 
       tes3mp.LogAppend(enumerations.log.INFO, logStr)
