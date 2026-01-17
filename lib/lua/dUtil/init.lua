@@ -75,7 +75,7 @@ local TableType = {
 --- To construct optimized data structures
 --- Can also be used to generate pre-filled arrays with numeric values, or empty strings if the third argument is true.
 ---@param tableType TableType
----@param elementCount integer
+---@param elementCount integer?
 ---@return table
 local function tableConstructor(tableType, elementCount, ...)
   assert(hasTDS, 'This function mostly depends on TDS and OpenResty LuaJIT. Sorry!')
