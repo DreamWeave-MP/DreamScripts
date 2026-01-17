@@ -22,11 +22,7 @@ local function loadDataFileList(filename, log)
   local jsonDataFileList = jsonInterface.load(filename)
 
   if not jsonDataFileList then
-    tes3mp.LogMessage(
-      enumerations.log.ERROR,
-      ('Data file list at %s cannot be read!'):format(filename)
-    )
-    tes3mp.StopServer(2)
+    error(('Data file list at %s cannot be read!'):format(filename))
   end
 
   ---@cast jsonDataFileList DataFileRequirements
@@ -78,10 +74,8 @@ local TableType = {
 ---@param elementCount integer?
 ---@return table
 local function tableConstructor(tableType, elementCount, ...)
-  assert(hasTDS,
-    'This function depends on TDS and OpenResty LuaJIT. Sorry!'
-  )
-  assert(table.isempty ~= nil and table.isarray ~= nil,
+  assert(
+    hasTDS and table.isempty and table.isarray,
     'This function depends on TDS and OpenResty LuaJIT. Sorry!'
   )
 
