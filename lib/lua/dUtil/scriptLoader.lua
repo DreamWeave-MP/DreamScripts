@@ -46,6 +46,8 @@ function DScriptLoader.sanitizePath(path)
   return path .. '.lua'
 end
 
+local hasTDS, tds = pcall(require, 'tds.init')
+local hasTES3, tes3 = pcall(require, 'tes3_lua')
 local saveDataTable = BufferedDiskPaths
 ---@return DefaultInterfaces
 function DScriptLoader.originalInterfaces()
@@ -134,8 +136,8 @@ function DScriptLoader.originalInterfaces()
       loadScript = DScriptLoader.loadScript,
       loadAllScripts = DScriptLoader.loadAllScripts,
     },
-    tds = dUtil.tds,
-    tes3 = dUtil.tes3,
+    tds = hasTDS and tds or nil,
+    tes3 = hasTES3 and tes3 or nil,
   }
 end
 
@@ -164,13 +166,11 @@ local hasCJSON, cjson = pcall(require, 'cjson')
 function DScriptLoader.defaultModuleCache()
   return {
     bit = bit,
-    cjson = cjson,
+    cjson = hasCJSON and cjson or nil,
     dutil = dUtil,
     ['dutil.vector3'] = dUtil.vector3,
     ffi = ffi,
     interfaces = DScriptLoader.Interfaces,
-    tds = dUtil.tds,
-    tes3 = dUtil.tes3,
   }
 end
 

@@ -4,8 +4,9 @@ local enumerations = require 'tes3mp.enumerations'
 local jsonInterface = require 'jsonInterface'
 local tableHelper = require 'tes3mp.util.table'
 
-local hasTDS, tds = pcall(require, 'tds.init')
-local hasTES3, tes3 = pcall(require, 'tes3_lua')
+local I = require 'interfaces'
+
+local tds, tes3 = I.tds, I.tes3
 
 ---@param filename string
 ---@param log boolean? Whether or not to write initialization logs
@@ -159,10 +160,10 @@ local Module = {
   io = require 'dUtil.io',
   ---@type DUtilMisc
   misc = require 'dUtil.miscellaneous',
-  table = hasTDS and tableConstructor or nil,
-  tableType = hasTDS and TableType or nil,
-  tds = hasTDS and tds or nil,
-  tes3 = hasTES3 and tes3 or nil,
+  table = tds and tableConstructor or nil,
+  tableType = tds and TableType or nil,
+  tds = tds and tds or nil,
+  tes3 = tds and tes3 or nil,
   ---@type Vector3Constructor
   vector3 = require 'dUtil.vector3',
 }
