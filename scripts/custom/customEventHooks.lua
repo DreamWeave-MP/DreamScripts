@@ -153,12 +153,7 @@ function customEventHooks.triggerValidators(event, args)
                 )
 
                 if not config.ignoreScriptErrors then
-                    tes3mp.LogAppend(
-                        enumerations.log.FATAL,
-                        'The server will now terminate.'
-                    )
-                    tes3mp.StopServer(13)
-                    break
+                    error('The server will now terminate.')
                 end
             else
                 eventStatus = customEventHooks.updateEventStatus(
