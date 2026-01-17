@@ -67,21 +67,21 @@
 ---| 26 # 'Tail'
 
 ---@alias BodypartId
----| 'Head' # 0
----| 'Hair' # 1
----| 'Neck' # 2
----| 'Chest' # 3
----| 'Groin' # 4
----| 'Hand' # 5
----| 'Wrist' # 6
----| 'Forearm' # 7
----| 'UpperArm' # 8
----| 'Foot' # 9
----| 'Ankle' # 10
----| 'Knee' # 11
----| 'UpperLeg' # 12
----| 'Clavicle' # 13
----| 'Tail' # 14
+---| 0 # 'Head'
+---| 1 # 'Hair'
+---| 2 # 'Neck'
+---| 3 # 'Chest'
+---| 4 # 'Groin'
+---| 5 # 'Hand'
+---| 6 # 'Wrist'
+---| 7 # 'Forearm'
+---| 8 # 'UpperArm'
+---| 9 # 'Foot'
+---| 10 # 'Ankle'
+---| 11 # 'Knee'
+---| 12 # 'UpperLeg'
+---| 13 # 'Clavicle'
+---| 14 # 'Tail'
 
 ---@alias BodypartType
 ---| 0 # 'Skin'

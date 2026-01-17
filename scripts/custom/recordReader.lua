@@ -221,7 +221,7 @@ local TypeHandlers = {
       isVampire = record.data.vampire,
       model = record.mesh:normalize(),
       objectFlags = record.flags,
-      part = record.data.part,
+      part = assert(Enums.BodypartId[record.data.part]),
       race = lowercase(record.race),
     }
   end,
