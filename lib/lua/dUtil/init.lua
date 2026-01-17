@@ -16,8 +16,6 @@ if isMainChunk then
 else
   tds, tes3 = I.tds, I.tes3
 end
-tableHelper.print(tds)
-tableHelper.print(tes3)
 
 ---@param filename string
 ---@param log boolean? Whether or not to write initialization logs

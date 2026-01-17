@@ -48,6 +48,8 @@ end
 
 local hasTDS, tds = pcall(require, 'tds.init')
 local hasTES3, tes3 = pcall(require, 'tes3_lua')
+tableHelper.print(tds)
+tableHelper.print(tes3)
 local saveDataTable = BufferedDiskPaths
 ---@return DefaultInterfaces
 function DScriptLoader.originalInterfaces()
