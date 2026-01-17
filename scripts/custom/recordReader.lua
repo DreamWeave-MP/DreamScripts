@@ -176,9 +176,14 @@ end
 return {
   interfaceName = 'recordStores',
   ---@class RecordInterface
-  interface = {
-    records = RecordStores,
-  },
+  interface = setmetatable({}, {
+    __index = function(_, key)
+      return RecordStores[key]
+    end
+  }),
+  -- interface = {
+  --   records = RecordStores,
+  -- },
   eventValidators = {
     OnServerPostInit = function()
       local startClock = os.clock()
@@ -188,7 +193,11 @@ return {
         ('Successfully loaded %d records in %.3f seconds.'):format(createRecordStores(), os.clock() - startClock)
       )
 
-      for k, v in pairs(I.recordStores.records) do
+      -- for k, v in pairs(I.recordStores.records) do
+      --   print(('RecordStore type %s contains %s records'):format(k, #v))
+      -- end
+
+      for k, v in pairs(I.recordStores) do
         print(('RecordStore type %s contains %s records'):format(k, #v))
       end
 
