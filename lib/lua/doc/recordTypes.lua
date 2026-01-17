@@ -313,17 +313,17 @@
 ---@field spells RecordId[]
 
 ---@class BookRecord
----@field weight number
----@field value integer
 ---@field bookType BookType
----@field skill SkillId2
+---@field enchantment RecordId
 ---@field enchantmentValue integer
+---@field icon NormalizedPath
+---@field model NormalizedPath
 ---@field name string
 ---@field script RecordId?
----@field model NormalizedPath
----@field icon NormalizedPath
----@field enchantment RecordId
+---@field skill SkillId2
 ---@field text string
+---@field value integer
+---@field weight number
 
 ---@class BodypartRecord
 ---@field bodypartType BodypartType
