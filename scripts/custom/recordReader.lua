@@ -22,6 +22,10 @@ local AIPackageHandlers = {
     }
   end,
   AiEscortPackage = function(package)
+    for _, value in ipairs { package.location[1], package.location[2], package.location[3], package.reset, package.target } do
+      print(value, type(value))
+    end
+
     return tds.Hash {
       -- cell = package.cell,
       -- duration = package.duration,
