@@ -197,6 +197,7 @@ return {
       --   print(('RecordStore type %s contains %s records'):format(k, #v))
       -- end
 
+      print(I.recordStores.Static)
       for k, v in pairs(I.recordStores) do
         print(('RecordStore type %s contains %s records'):format(k, #v))
       end
