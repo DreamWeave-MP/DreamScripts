@@ -159,14 +159,21 @@ DScriptLoader.Interfaces = setmetatable({},
   }
 )
 
+local bit, ffi = require 'bit', require 'ffi'
+function DScriptLoader.defaultModuleCache()
+  return {
+    bit = bit,
+    interfaces = DScriptLoader.Interfaces,
+    ffi = ffi,
+    tds = dUtil.tds,
+    tes3 = dUtil.tes3,
+  }
+end
+
 local PathSeparator = tes3mp.GetOperatingSystemType() == 'Windows' and '\\' or '/'
-local ModuleCache = {
-  ---@type ReadOnlyInterfaces
-  interfaces = DScriptLoader.Interfaces,
-  tds = dUtil.tds,
-  tes3 = dUtil.tes3,
-}
-local ScriptDirectories = { 'scripts/', 'lib/', 'lib/lua/', }
+local ModuleCache, ScriptDirectories =
+    DScriptLoader.defaultModuleCache(),
+    { 'scripts/', 'lib/', 'lib/lua/', }
 
 --- Small shim for overriding require statements in curated script environment
 ---@param scriptName string
@@ -174,16 +181,13 @@ local ScriptDirectories = { 'scripts/', 'lib/', 'lib/lua/', }
 function DScriptLoader.requireShim(scriptName)
   assert(scriptName and type(scriptName) == 'string')
 
-  scriptName = scriptName:gsub('[\\/]', '.')
+  scriptName = scriptName:gsub('[\\/]+', '.'):gsub('^%.', ''):gsub('%.$', ''):gsub('%.%.+', '.')
 
   if ModuleCache[scriptName] then
     return ModuleCache[scriptName]
   end
 
   local ok, chunk, err, result = false, nil, nil, nil
-
-  -- ok, chunk = pcall(require, scriptName)
-  -- if ok then return chunk end
 
   for _, prefix in ipairs(ScriptDirectories) do
     local checkPath = ('server/%s%s.lua'):format(prefix, scriptName:gsub('%.', PathSeparator))
@@ -203,7 +207,6 @@ function DScriptLoader.requireShim(scriptName)
   end
 
   setfenv(chunk, DScriptLoader.getScriptEnv())
-  -- setfenv(chunk, getfenv(2))
 
   ok, result = pcall(chunk)
   if not ok then
@@ -212,6 +215,8 @@ function DScriptLoader.requireShim(scriptName)
       :format(scriptName, result)
     )
   end
+
+  ModuleCache[scriptName] = result
 
   return result
 end
@@ -458,6 +463,13 @@ function DScriptLoader.loadScript(scriptName, callerPid)
     Interfaces.customCommandHooks.clearCommandsFromScript(scriptPath)
   end
 
+  --- If this function was called from chat, then, we don't
+  --- Get the guarantee that loadAllScripts will have refreshed our module cache
+  --- So, we reset it here, just before initializing the file
+  if callerPid then
+    ModuleCache = DScriptLoader.defaultModuleCache()
+  end
+
   tes3mp.LogAppend(enumerations.log.INFO, ('Attempting to load custom script from path: %s'):format(scriptPath))
   local ok, result = pcall(function() return assert(loadfile(scriptPath)) end)
 
@@ -518,6 +530,9 @@ end
 function DScriptLoader.loadAllScripts()
   --- Reinitialize all interfaces when reloading all scripts
   Interfaces = DScriptLoader.originalInterfaces()
+
+  --- When reloading all scripts, reinitialize the module cache
+  ModuleCache = DScriptLoader.defaultModuleCache()
 
   local startTime = os.clock()
 
