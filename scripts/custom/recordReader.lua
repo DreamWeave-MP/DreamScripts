@@ -22,16 +22,15 @@ local AIPackageHandlers = {
     }
   end,
   AiEscortPackage = function(package)
-    return tds.Hash()
-    -- return tds.Hash {
-    --   cell = package.cell,
-    --   duration = package.duration,
-    --   locX = package.location[1],
-    --   locY = package.location[2],
-    --   locZ = package.location[3],
-    --   reset = package.reset,
-    --   target = package.target,
-    -- }
+    return tds.Hash {
+      -- cell = package.cell,
+      -- duration = package.duration,
+      locX = package.location[1],
+      locY = package.location[2],
+      locZ = package.location[3],
+      reset = package.reset,
+      target = package.target,
+    }
   end,
   AiFollowPackage = function(package)
     return tds.Hash()
