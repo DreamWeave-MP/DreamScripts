@@ -51,7 +51,7 @@ local saveDataTable = BufferedDiskPaths
 function DScriptLoader.originalInterfaces()
   local hasTDS, tds = pcall(require, 'tds.init')
   local hasTES3, tes3 = pcall(require, 'libtes3_lua')
-  if not hasTES3 then error(debug.traceback()) end
+  if not hasTES3 then error(tes3 .. '\n' .. debug.traceback()) end
 
   ---@type DefaultInterfaces
   return {
