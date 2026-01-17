@@ -102,17 +102,17 @@ end
 
 ---@type RecordStores
 local RecordStores = tds.Hash {
-  Alchemy = tds.Hash(),
-  Armor = tds.Hash(),
-  Apparatus = tds.Hash(),
-  Activator = tds.Hash(),
-  Birthsign = tds.Hash(),
-  Bodypart = tds.Hash(),
-  Book = tds.Hash(),
-  Class = tds.Hash(),
-  Clothing = tds.Hash(),
-  Container = tds.Hash(),
-  Creature = tds.Hash(),
+  -- Alchemy = tds.Hash(),
+  -- Armor = tds.Hash(),
+  -- Apparatus = tds.Hash(),
+  -- Activator = tds.Hash(),
+  -- Birthsign = tds.Hash(),
+  -- Bodypart = tds.Hash(),
+  -- Book = tds.Hash(),
+  -- Class = tds.Hash(),
+  -- Clothing = tds.Hash(),
+  -- Container = tds.Hash(),
+  -- Creature = tds.Hash(),
   Static = tds.Hash(),
 }
 
@@ -394,7 +394,7 @@ local TypeHandlers = {
     }
   end,
   Static = function(record, recordId)
-    return tds.Hash {
+    return {
       id = recordId,
       model = record.mesh:normalize(),
       objectFlags = record.flags,
