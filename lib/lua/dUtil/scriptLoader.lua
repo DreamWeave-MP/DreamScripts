@@ -206,19 +206,14 @@ function DScriptLoader.requireShim(scriptName)
   end
 
   if not ok or not chunk then
-    error(
-      ('Failed to load script %s due to error %s. Aborting!'):format(scriptName, err)
-    )
+    error(('%s: %s!'):format(scriptName, err))
   end
 
   setfenv(chunk, DScriptLoader.getScriptEnv())
 
   ok, result = pcall(chunk)
   if not ok then
-    error(
-      ('Tried to call `require` on the script at %s, but it threw an exception: %s. This script cannot be loaded!')
-      :format(scriptName, result)
-    )
+    error(('%s: %s!'):format(scriptName, result))
   end
 
   ModuleCache[lowerName] = result
