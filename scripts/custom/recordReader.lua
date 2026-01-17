@@ -44,12 +44,13 @@ local AIPackageHandlers = {
     }
   end,
   AiTravelPackage = function(package)
-    return tds.Hash {
-      locX = package.location[1],
-      locY = package.location[2],
-      locZ = package.location[3],
-      reset = package.reset,
-    }
+    return tds.Hash()
+    -- return tds.Hash {
+    --   locX = package.location[1],
+    --   locY = package.location[2],
+    --   locZ = package.location[3],
+    --   reset = package.reset,
+    -- }
   end,
   AiWanderPackage = function(package)
     return tds.Hash()
