@@ -4,6 +4,9 @@ local enumerations = require 'tes3mp.enumerations'
 local jsonInterface = require 'jsonInterface'
 local tableHelper = require 'tes3mp.util.table'
 
+local hasTDS, tds = pcall(require, 'tds.init')
+local hasTES3, tes3 = pcall(require, 'tes3_lua')
+
 ---@param filename string
 ---@param log boolean? Whether or not to write initialization logs
 ---@return DataFileRequirements
@@ -62,6 +65,68 @@ local function loadDataFileList(filename, log)
   return dataFileList
 end
 
+---@enum TableType
+local TableType = {
+  HASH = 0,
+  VEC = 1,
+}
+
+--- Fancy table constructor using either TDS or OpenResty functions
+--- To construct optimized data structures
+---@param tableType TableType
+---@param elementCount integer
+---@return table
+local function tableConstructor(tableType, elementCount, ...)
+  assert(hasTDS, 'This function mostly depends on TDS and OpenResty LuaJIT. Sorry!')
+  assert(
+    table.isarray ~= nil and table.isempty ~= nil,
+    'This function depends on TDS and OpenResty LuaJIT. Sorry!'
+  )
+
+  local firstArg = select(1, ...)
+
+  if tableType == TableType.HASH then
+    if not firstArg then
+      return tds.Hash()
+    elseif
+        type(firstArg) == 'table'
+        and not table.isarray(firstArg)
+        and not table.isempty(firstArg)
+    then
+      return tds.Hash(firstArg)
+    else
+      return tds.Hash()
+    end
+  elseif tableType == TableType.VEC then
+    if not firstArg then
+      local result = tds.Vec()
+
+      if elementCount then result:resize(elementCount) end
+
+      return result
+    elseif
+        type(firstArg) == 'table'
+        and table.isarray(firstArg)
+    then
+      return tds.Vec(firstArg)
+    else
+      return tds.Vec { ... }
+    end
+  elseif not tableType then
+    local result = {}
+
+    if elementCount then
+      for i = 1, elementCount do
+        result[i] = 0
+      end
+    end
+
+    return result
+  end
+
+  error(('Invalid tableType: %s'):format(tableType))
+end
+
 ---@type DUtilModule
 local Module = {
   ---@return DataFileRequirements
@@ -98,6 +163,10 @@ local Module = {
   io = require 'dUtil.io',
   ---@type DUtilMisc
   misc = require 'dUtil.miscellaneous',
+  table = hasTDS and tableConstructor or nil,
+  tableType = hasTDS and TableType or nil,
+  tds = hasTDS and tds or nil,
+  tes3 = hasTES3 and tes3 or nil,
   ---@type Vector3Constructor
   vector3 = require 'dUtil.vector3',
 }

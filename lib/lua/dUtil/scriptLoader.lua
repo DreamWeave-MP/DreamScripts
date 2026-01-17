@@ -20,8 +20,6 @@ local logicHandler = require 'tes3mp.logicHandler'
 local tableHelper = require 'tes3mp.util.table'
 
 local ScriptPathFormatter = 'server/scripts/custom/%s'
-local hasTDS, tds = pcall(require, 'tds.init')
-local hasTES3, tes3 = pcall(require, 'tes3_lua')
 
 --- OpenMW-Style Script loader module for TES3MP.
 --- This is a stateful module which should only ever be `require`'d once by serverCore.lua
@@ -136,8 +134,8 @@ function DScriptLoader.originalInterfaces()
       loadScript = DScriptLoader.loadScript,
       loadAllScripts = DScriptLoader.loadAllScripts,
     },
-    tds = hasTDS and tds or nil,
-    tes3 = hasTES3 and tes3 or nil,
+    tds = dUtil.tds,
+    tes3 = dUtil.tes3,
   }
 end
 
