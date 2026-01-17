@@ -423,16 +423,8 @@
 ---@field attribute1 AttributeId2
 ---@field attribute2 AttributeId2
 ---@field classFlags integer
----@field major1 SkillId
----@field major2 SkillId
----@field major3 SkillId
----@field major4 SkillId
----@field major5 SkillId
----@field minor1 SkillId
----@field minor2 SkillId
----@field minor3 SkillId
----@field minor4 SkillId
----@field minor5 SkillId
+---@field major SkillId[]
+---@field minor SkillId[]
 ---@field services integer
 ---@field specialization Specialization
 
