@@ -17,7 +17,7 @@ end
 ---@param string string
 ---@return string? lowercased
 local function lowercase(string)
-  if string then return string:lower() end
+  if string then return tostring(string):lower() end
 end
 
 local RequiredDataFiles = dUtil.getRequiredDataFiles()
