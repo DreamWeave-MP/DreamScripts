@@ -266,35 +266,35 @@
 ---| 'Summon04' # 141
 ---| 'Summon05' # 142
 
----@alias SkillId2
----| 'None' -1
----| 'Block' 0
----| 'Armorer' 1
----| 'MediumArmor' 2
----| 'HeavyArmor' 3
----| 'BluntWeapon' 4
----| 'LongBlade' 5
----| 'Axe' 6
----| 'Spear' 7
----| 'Athletics' 8
----| 'Enchant' 9
----| 'Destruction' 10
----| 'Alteration' 11
----| 'Illusion' 12
----| 'Conjuration' 13
----| 'Mysticism' 14
----| 'Restoration' 15
----| 'Alchemy' 16
----| 'Unarmored' 17
----| 'Security' 18
----| 'Sneak' 19
----| 'Acrobatics' 20
----| 'LightArmor' 21
----| 'ShortBlade' 22
----| 'Marksman' 23
----| 'Mercantile' 24
----| 'Speechcraft' 25
----| 'HandToHand' 26
+---@alias SkillId
+---| -1 # 'None'
+---| 0 # 'Block'
+---| 1 # 'Armorer'
+---| 2 # 'MediumArmor'
+---| 3 # 'HeavyArmor'
+---| 4 # 'BluntWeapon'
+---| 5 # 'LongBlade'
+---| 6 # 'Axe'
+---| 7 # 'Spear'
+---| 8 # 'Athletics'
+---| 9 # 'Enchant'
+---| 10 # 'Destruction'
+---| 11 # 'Alteration'
+---| 12 # 'Illusion'
+---| 13 # 'Conjuration'
+---| 14 # 'Mysticism'
+---| 15 # 'Restoration'
+---| 16 # 'Alchemy'
+---| 17 # 'Unarmored'
+---| 18 # 'Security'
+---| 19 # 'Sneak'
+---| 20 # 'Acrobatics'
+---| 21 # 'LightArmor'
+---| 22 # 'ShortBlade'
+---| 23 # 'Marksman'
+---| 24 # 'Mercantile'
+---| 25 # 'Speechcraft'
+---| 26 # 'HandToHand'
 
 ---@alias Specialization
 ---| 'None' # -1
@@ -406,7 +406,7 @@
 ---@field model NormalizedPath
 ---@field name string
 ---@field script RecordId?
----@field skill SkillId2
+---@field skill SkillId
 ---@field text string
 ---@field value integer
 ---@field weight number
@@ -423,16 +423,16 @@
 ---@field attribute1 AttributeId2
 ---@field attribute2 AttributeId2
 ---@field classFlags integer
----@field major1 SkillId2
----@field major2 SkillId2
----@field major3 SkillId2
----@field major4 SkillId2
----@field major5 SkillId2
----@field minor1 SkillId2
----@field minor2 SkillId2
----@field minor3 SkillId2
----@field minor4 SkillId2
----@field minor5 SkillId2
+---@field major1 SkillId
+---@field major2 SkillId
+---@field major3 SkillId
+---@field major4 SkillId
+---@field major5 SkillId
+---@field minor1 SkillId
+---@field minor2 SkillId
+---@field minor3 SkillId
+---@field minor4 SkillId
+---@field minor5 SkillId
 ---@field services integer
 ---@field specialization Specialization
 
@@ -502,7 +502,7 @@
 ---@field maxMagnitude integer
 ---@field minMagnitude integer
 ---@field range EffectRange
----@field skill SkillId2
+---@field skill SkillId
 
 ---@class PotionRecord: BaseRecord
 ---@field effects MagicEffect[]
@@ -519,12 +519,8 @@
 
 ---@class TravelDestination
 ---@field cell RecordId
----@field posX number
----@field posY number
----@field posZ number
----@field rotX number
----@field rotY number
----@field rotZ number
+---@field rotation number[]
+---@field location number[]
 
 ---@class RecordStores
 ---@field Activator table<RecordId, ActivatorRecord>
