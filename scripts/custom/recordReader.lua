@@ -52,20 +52,21 @@ local AIPackageHandlers = {
     }
   end,
   AiWanderPackage = function(package)
-    return tds.Hash {
-      distance = package.distance,
-      duration = package.duration,
-      gameHour = package.game_hour,
-      idle2    = package.idle2,
-      idle3    = package.idle3,
-      idle4    = package.idle4,
-      idle5    = package.idle5,
-      idle6    = package.idle6,
-      idle7    = package.idle7,
-      idle8    = package.idle8,
-      idle9    = package.idle9,
-      reset    = package.reset,
-    }
+    return tds.Hash()
+    -- return tds.Hash {
+    --   distance = package.distance,
+    --   duration = package.duration,
+    --   gameHour = package.game_hour,
+    --   idle2    = package.idle2,
+    --   idle3    = package.idle3,
+    --   idle4    = package.idle4,
+    --   idle5    = package.idle5,
+    --   idle6    = package.idle6,
+    --   idle7    = package.idle7,
+    --   idle8    = package.idle8,
+    --   idle9    = package.idle9,
+    --   reset    = package.reset,
+    -- }
   end,
 }
 
