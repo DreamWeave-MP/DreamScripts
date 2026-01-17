@@ -173,7 +173,7 @@ local TypeHandlers = {
     for i, effect in ipairs(record.effects) do
       effects[i] = tds.Hash {
         magicEffect = effect.magic_effect,
-        skill = assert(Enums.SkillId[effect.skill]),
+        skill = effect.skill,
         attribute = effect.attribute,
         range = effect.range,
         area = effect.area,
@@ -201,7 +201,7 @@ local TypeHandlers = {
 
     spells:resize(#record.spells)
     for i, spellId in ipairs(record.spells) do
-      spells[i] = lowercase(spellId)
+      spells[i] = tostring(spellId):lower()
     end
 
     return tds.Hash {
@@ -235,7 +235,6 @@ local TypeHandlers = {
       model = record.mesh:normalize(),
       name = record.name,
       script = lowercase(record.script),
-      skill = assert(Enums.SkillId[record.data.skill]),
       text = record.text,
       value = record.data.value,
       weight = record.data.weight,
@@ -246,16 +245,16 @@ local TypeHandlers = {
       attribute1 = record.attribute1,
       attribute2 = record.attribute2,
       id = recordId,
-      major1 = assert(Enums.SkillId[record.major1]),
-      major2 = assert(Enums.SkillId[record.major2]),
-      major3 = assert(Enums.SkillId[record.major3]),
-      major4 = assert(Enums.SkillId[record.major4]),
-      major5 = assert(Enums.SkillId[record.major5]),
-      minor1 = assert(Enums.SkillId[record.minor1]),
-      minor2 = assert(Enums.SkillId[record.minor2]),
-      minor3 = assert(Enums.SkillId[record.minor3]),
-      minor4 = assert(Enums.SkillId[record.minor4]),
-      minor5 = assert(Enums.SkillId[record.minor5]),
+      major1 = record.major1,
+      minor1 = record.minor1,
+      major2 = record.major2,
+      minor2 = record.minor2,
+      major3 = record.major3,
+      minor3 = record.minor3,
+      major4 = record.major4,
+      minor4 = record.minor4,
+      major5 = record.major5,
+      minor5 = record.minor5,
       objectFlags = record.flags,
       services = record.services,
     }
@@ -292,7 +291,7 @@ local TypeHandlers = {
     inventory:resize(#record.inventory)
 
     for i, item in ipairs(record.inventory) do
-      inventory[i] = tds.Hash { [lowercase(item[2])] = item[1] }
+      inventory[i] = tds.Hash { [item[2]] = item[1] }
     end
 
     return tds.Hash {
@@ -311,12 +310,13 @@ local TypeHandlers = {
 
     aiPackages:resize(#record.ai_packages)
     for i, aiPackage in ipairs(record.ai_packages) do
+      assert(AIPackageHandlers[aiPackage.type])
       aiPackages[i] = AIPackageHandlers[aiPackage.type](aiPackage)
     end
 
     inventory:resize(#record.inventory)
     for i, item in ipairs(record.inventory) do
-      inventory[i] = tds.Hash { [lowercase(item[2])] = item[1] }
+      inventory[i] = tds.Hash { [item[2]] = item[1] }
     end
 
     spells:resize(#record.spells)
@@ -328,16 +328,12 @@ local TypeHandlers = {
     for i, travelDestination in ipairs(record.travel_destinations) do
       destinations[i] = tds.Hash {
         cell = lowercase(travelDestination.cell),
-        position = tds.Vec {
-          travelDestination.position[1],
-          travelDestination.position[2],
-          travelDestination.position[3],
-        },
-        rotation = tds.Vec {
-          travelDestination.rotation[1],
-          travelDestination.rotation[2],
-          travelDestination.rotation[3],
-        }
+        posX = travelDestination.position[1],
+        posY = travelDestination.position[2],
+        posZ = travelDestination.position[3],
+        rotX = travelDestination.rotation[1],
+        rotY = travelDestination.rotation[2],
+        rotZ = travelDestination.rotation[3],
       }
     end
 
@@ -374,7 +370,7 @@ local TypeHandlers = {
       model = record.mesh:normalize(),
       objectFlags = record.flags,
       personality = record.data.personality,
-      scale = tonumber(record.scale),
+      scale = tonumber(record.scale) or 1,
       script = lowercase(record.script),
       soulValue = record.data.soul,
       sound = lowercase(record.sound),
