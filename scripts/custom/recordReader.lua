@@ -17,7 +17,7 @@ if not tds or not tes3 then
 end
 
 local Enums = require 'dUtil.enums'
-local RecordPathFormatter = 'custom/recordParser/%s/%s.json'
+local RecordPathFormatter = 'custom/recordParser/records/%s/%s.json'
 
 ---@param string string
 ---@return string? lowercased
