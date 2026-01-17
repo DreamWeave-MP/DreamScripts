@@ -163,6 +163,8 @@ local PathSeparator = tes3mp.GetOperatingSystemType() == 'Windows' and '\\' or '
 local ModuleCache = {
   ---@type ReadOnlyInterfaces
   interfaces = DScriptLoader.Interfaces,
+  tds = dUtil.tds,
+  tes3 = dUtil.tes3,
 }
 local ScriptDirectories = { 'scripts/', 'lib/', 'lib/lua/', }
 
@@ -180,8 +182,8 @@ function DScriptLoader.requireShim(scriptName)
 
   local ok, chunk, err, result = false, nil, nil, nil
 
-  ok, chunk = pcall(require, scriptName)
-  if ok then return chunk end
+  -- ok, chunk = pcall(require, scriptName)
+  -- if ok then return chunk end
 
   for _, prefix in ipairs(ScriptDirectories) do
     local checkPath = ('server/%s%s.lua'):format(prefix, scriptName:gsub('%.', PathSeparator))
