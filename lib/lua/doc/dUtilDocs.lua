@@ -2,6 +2,12 @@
 
 ---@alias Vector3Constructor fun(x: number, y: number, z: number): Vector3
 
+---@class tablelib
+---@field isarray fun(inTable: table): boolean Returns true for pure lua array-like tables and false otherwise
+---@field isempty fun(inTable: table): boolean Returns true when the given Lua table contains neither non-nil array elements nor non-nil key-value pairs, or false otherwise.
+---@field nkeys fun(inTable: table): integer Returns the total number of elements in a given Lua table (i.e. from both the array and hash parts combined).
+---@field clone fun(inTable: table): table Returns a shallow copy of the given Lua table.
+
 ---@class DefaultInterfaces
 ---@field Color ColorModule?
 ---@field contentFixer ContentFixer?
