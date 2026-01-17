@@ -255,18 +255,18 @@ local TypeHandlers = {
       spells[i] = lowercase(spellId)
     end
 
-    destinations:resize(#record.travel_destinations)
-    for i, travelDestination in ipairs(record.travel_destinations) do
-      destinations[i] = tds.Hash {
-        cell = lowercase(travelDestination.cell),
-        posX = travelDestination.position[1],
-        posY = travelDestination.position[2],
-        posZ = travelDestination.position[3],
-        rotX = travelDestination.rotation[1],
-        rotY = travelDestination.rotation[2],
-        rotZ = travelDestination.rotation[3],
-      }
-    end
+    -- destinations:resize(#record.travel_destinations)
+    -- for i, travelDestination in ipairs(record.travel_destinations) do
+    --   destinations[i] = tds.Hash {
+    --     cell = lowercase(travelDestination.cell),
+    --     posX = travelDestination.position[1],
+    --     posY = travelDestination.position[2],
+    --     posZ = travelDestination.position[3],
+    --     rotX = travelDestination.rotation[1],
+    --     rotY = travelDestination.rotation[2],
+    --     rotZ = travelDestination.rotation[3],
+    --   }
+    -- end
 
     return tds.Hash {
       AIData = tds.Hash {
