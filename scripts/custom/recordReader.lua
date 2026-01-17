@@ -393,23 +393,12 @@ local TypeHandlers = {
       willpower = record.data.willpower,
     }
   end,
-  Static = function(record, recordId, writeOnly)
-    local result = {
+  Static = function(record, recordId)
+    return tds.Hash {
       id = recordId,
       model = record.mesh:normalize(),
       objectFlags = record.flags,
     }
-
-    if writeOnly then
-      I.storage.subscribeToSave {
-        -- delay = math.random(600),
-        data = result,
-        filePath = RecordPathFormatter:format('Static', fileHelper.fixFilename(recordId)),
-        persistent = false,
-      }
-    else
-      return tds.Hash(result)
-    end
   end,
 }
 
@@ -445,12 +434,23 @@ local function createRecordStores()
 
       if recordStore and typeHandler then
         local recordId = object.id:lower()
-        recordStore[recordId] = typeHandler(object, recordId, true)
+        recordStore[recordId] = typeHandler(object, recordId)
         loadedRecords = loadedRecords + 1
       end
     end
 
     ::CONTINUE::
+  end
+
+  for recordType, recordStore in pairs(RecordStores) do
+    for recordId, recordData in pairs(recordStore) do
+      I.storage.subscribeToSave {
+        filePath = RecordPathFormatter:format(recordType, fileHelper.fixFilename(recordId)),
+        persistent = false,
+        data = recordData,
+        delay = math.random(600),
+      }
+    end
   end
 
   return loadedRecords
