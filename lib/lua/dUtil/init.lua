@@ -4,17 +4,17 @@ local enumerations = require 'tes3mp.enumerations'
 local jsonInterface = require 'jsonInterface'
 local tableHelper = require 'tes3mp.util.table'
 
-local isMainChunk, I = pcall(require, 'interfaces')
+local isModChunk, I = pcall(require, 'interfaces')
 local tds, tes3, ok, result
 
-if isMainChunk then
+if isModChunk then
+  tds, tes3 = I.tds, I.tes3
+else
   ok, result = pcall(require, 'tds.init')
   if ok then tds = result end
 
   ok, result = pcall(require, 'tes3_lua')
   if ok then tes3 = result end
-else
-  tds, tes3 = I.tds, I.tes3
 end
 
 ---@param filename string
