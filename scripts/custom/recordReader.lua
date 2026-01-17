@@ -255,18 +255,18 @@ local TypeHandlers = {
       spells[i] = lowercase(spellId)
     end
 
-    -- destinations:resize(#record.travel_destinations)
-    -- for i, travelDestination in ipairs(record.travel_destinations) do
-    --   destinations[i] = tds.Hash {
-    --     cell = lowercase(travelDestination.cell),
-    --     posX = travelDestination.position[1],
-    --     posY = travelDestination.position[2],
-    --     posZ = travelDestination.position[3],
-    --     rotX = travelDestination.rotation[1],
-    --     rotY = travelDestination.rotation[2],
-    --     rotZ = travelDestination.rotation[3],
-    --   }
-    -- end
+    destinations:resize(#record.travel_destinations)
+    for i, travelDestination in ipairs(record.travel_destinations) do
+      destinations[i] = tds.Hash {
+        cell = lowercase(travelDestination.cell),
+        posX = travelDestination.position[1],
+        posY = travelDestination.position[2],
+        posZ = travelDestination.position[3],
+        rotX = travelDestination.rotation[1],
+        rotY = travelDestination.rotation[2],
+        rotZ = travelDestination.rotation[3],
+      }
+    end
 
     return tds.Hash {
       AIData = tds.Hash {
@@ -278,30 +278,30 @@ local TypeHandlers = {
       },
       AIPackages = aiPackages,
       agility = record.data.agility,
-      -- attack1Min = record.data.attack1[1],
-      -- attack1Max = record.data.attack1[2],
-      -- attack2Min = record.data.attack2[1],
-      -- attack2Max = record.data.attack2[2],
-      -- attack3Min = record.data.attack3[1],
-      -- attack3Max = record.data.attack3[2],
-      -- baseGold = record.data.gold,
-      -- bloodType = record.blood_type,
-      -- creatureFlags = record.creature_flags,
-      -- creatureType = record.data.creature_type,
-      -- endurance = record.data.endurance,
-      -- fatigue = record.data.fatigue,
-      -- health = record.data.health,
-      -- id = recordId,
-      -- intelligence = record.data.intelligence,
-      -- inventory = inventory,
-      -- level = record.data.level,
-      -- luck = record.data.luck,
-      -- magicAbility = record.data.magic,
-      -- magicka = record.data.magicka,
-      -- model = record.mesh:normalize(),
+      attack1Min = record.data.attack1[1],
+      attack1Max = record.data.attack1[2],
+      attack2Min = record.data.attack2[1],
+      attack2Max = record.data.attack2[2],
+      attack3Min = record.data.attack3[1],
+      attack3Max = record.data.attack3[2],
+      baseGold = record.data.gold,
+      bloodType = record.blood_type,
+      creatureFlags = record.creature_flags,
+      creatureType = record.data.creature_type,
+      endurance = record.data.endurance,
+      fatigue = record.data.fatigue,
+      health = record.data.health,
+      id = recordId,
+      intelligence = record.data.intelligence,
+      inventory = inventory,
+      level = record.data.level,
+      luck = record.data.luck,
+      magicAbility = record.data.magic,
+      magicka = record.data.magicka,
+      model = record.mesh:normalize(),
       objectFlags = record.flags,
       personality = record.data.personality,
-      scale = record.scale or 1,
+      scale = tonumber(record.scale) or 1,
       script = lowercase(record.script),
       soulValue = record.data.soul,
       sound = lowercase(record.sound),
