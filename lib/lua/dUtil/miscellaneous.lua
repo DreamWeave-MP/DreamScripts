@@ -95,7 +95,8 @@ end
 function MiscUtil.makeReadOnly(inTable)
   if type(inTable) ~= 'table' then error(('Input value to makeReadOnly %s was not a table!'):format(inTable)) end
 
-  return setmetatable(inTable, {
+  return setmetatable({}, {
+    __index = inTable,
     __newindex = function()
       print(debug.traceback(('Write attempt to read-only table %s'):format(inTable), 3))
       tes3mp.StopServer(15)
