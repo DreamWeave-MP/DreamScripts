@@ -171,16 +171,17 @@ local TypeHandlers = {
     effects:resize(#record.effects)
 
     for i, effect in ipairs(record.effects) do
-      print(recordId, effect.magic_effect, record.data.skill)
+      local skill = record.data.skill and assert(Enums.SkillId[record.data.skill]) or nil
+
       effects[i] = tds.Hash {
-        magicEffect = effect.magic_effect,
-        skill = assert(Enums.SkillId[record.data.skill], 'Failed on skill id ' .. record.data.skill),
-        attribute = effect.attribute,
-        range = effect.range,
         area = effect.area,
+        attribute = effect.attribute,
         duration = effect.duration,
+        magicEffect = effect.magic_effect,
         maxMagnitude = effect.max_magnitude,
         minMagnitude = effect.min_magnitude,
+        range = effect.range,
+        skill = skill,
       }
     end
 
@@ -202,7 +203,7 @@ local TypeHandlers = {
 
     spells:resize(#record.spells)
     for i, spellId in ipairs(record.spells) do
-      spells[i] = tostring(spellId):lower()
+      spells[i] = lowercase(spellId)
     end
 
     return tds.Hash {
