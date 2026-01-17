@@ -189,10 +189,8 @@ return {
       )
 
       for k, v in pairs(I.recordStores) do
-        print(k, v)
+        print(('RecordStore type %s contains %s records'):format(k, #v))
       end
-
-      print(I.recordStores.Static or 'WTF NO INTERFACE')
 
       for storeType, recordStore in pairs(RecordStores) do
         for recordId, recordData in pairs(recordStore) do
