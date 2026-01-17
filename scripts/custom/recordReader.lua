@@ -222,9 +222,9 @@ local TypeHandlers = {
     local inventory = tds.Vec()
     inventory:resize(#record.inventory)
 
-    -- for i, item in ipairs(record.inventory) do
-    --   inventory[i] = tds.Hash { [item[2]] = item[1] }
-    -- end
+    for i, item in ipairs(record.inventory) do
+      inventory[i] = tds.Hash { [item[2]] = item[1] }
+    end
 
     return tds.Hash {
       capacity = record.encumbrance,
