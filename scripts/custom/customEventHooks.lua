@@ -126,9 +126,9 @@ function customEventHooks.safeCall(fn, ...)
 end
 
 ---@param event string
----@param args any[]
+---@param ... any[]
 ---@return EventStatusTable
-function customEventHooks.triggerValidators(event, args)
+function customEventHooks.triggerValidators(event, ...)
     event = event:lower()
 
     local eventStatus = customEventHooks.makeEventStatus(true, true)
@@ -144,7 +144,7 @@ function customEventHooks.triggerValidators(event, args)
                 :format(i, event, eventHandlerData.definedBy)
             )
 
-            local success, result = customEventHooks.safeCall(eventHandlerData.callback, eventStatus, unpack(args))
+            local success, result = customEventHooks.safeCall(eventHandlerData.callback, eventStatus, unpack(...))
             if not success then
                 tes3mp.LogAppend(
                     enumerations.log.WARN,
