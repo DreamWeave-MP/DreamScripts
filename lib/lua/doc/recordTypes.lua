@@ -519,12 +519,8 @@
 
 ---@class TravelDestination
 ---@field cell RecordId
----@field posX number
----@field posY number
----@field posZ number
----@field rotX number
----@field rotY number
----@field rotZ number
+---@field position number[]
+---@field rotation number[]
 
 ---@class RecordStores
 ---@field Activator table<RecordId, ActivatorRecord>

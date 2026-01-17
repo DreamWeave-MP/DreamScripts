@@ -328,12 +328,16 @@ local TypeHandlers = {
     for i, travelDestination in ipairs(record.travel_destinations) do
       destinations[i] = tds.Hash {
         cell = lowercase(travelDestination.cell),
-        posX = travelDestination.position[1],
-        posY = travelDestination.position[2],
-        posZ = travelDestination.position[3],
-        rotX = travelDestination.rotation[1],
-        rotY = travelDestination.rotation[2],
-        rotZ = travelDestination.rotation[3],
+        position = tds.Vec {
+          tonumber(travelDestination.position[1]),
+          tonumber(travelDestination.position[2]),
+          tonumber(travelDestination.position[3]),
+        },
+        rotation = tds.Vec {
+          tonumber(travelDestination.rotation[1]),
+          tonumber(travelDestination.rotation[2]),
+          tonumber(travelDestination.rotation[3]),
+        },
       }
     end
 
