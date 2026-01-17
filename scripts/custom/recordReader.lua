@@ -101,19 +101,19 @@ for i, loadOrderData in ipairs(RequiredDataFiles) do
 end
 
 ---@type RecordStores
-local RecordStores = {
-  -- Alchemy = tds.Hash(),
-  -- Armor = tds.Hash(),
-  -- Apparatus = tds.Hash(),
-  -- Activator = tds.Hash(),
-  -- Birthsign = tds.Hash(),
-  -- Bodypart = tds.Hash(),
-  -- Book = tds.Hash(),
-  -- Class = tds.Hash(),
-  -- Clothing = tds.Hash(),
-  -- Container = tds.Hash(),
-  -- Creature = tds.Hash(),
-  Static = {},
+local RecordStores = tds.Hash {
+  Alchemy = tds.Hash(),
+  Armor = tds.Hash(),
+  Apparatus = tds.Hash(),
+  Activator = tds.Hash(),
+  Birthsign = tds.Hash(),
+  Bodypart = tds.Hash(),
+  Book = tds.Hash(),
+  Class = tds.Hash(),
+  Clothing = tds.Hash(),
+  Container = tds.Hash(),
+  Creature = tds.Hash(),
+  Static = tds.Hash(),
 }
 
 local TypeHandlers = {
@@ -407,20 +407,11 @@ local PluginPathFormatter = tes3mp.GetDataPath() .. '/custom/recordParser/%s'
 ---@return integer numRecords
 local function createRecordStores()
   local loadedRecords = 0
-  local pluginHashes = assert(I.storage.loadWithSubscription {
-    data = {},
-    filePath = '/custom/recordParser/fileHashes.json',
-    persistent = false,
-  })
 
   for _, pluginName in ipairs(loadOrder) do
     local pluginPath = PluginPathFormatter:format(pluginName)
     local crcResult = dUtil.crc32File(pluginPath)
     print(('%s crc32 is %s'):format(pluginPath, crcResult))
-
-    if pluginHashes[pluginName] then goto CONTINUE end
-
-    pluginHashes[pluginName] = crcResult
 
     if not dUtil.io.fileExists(pluginPath) then
       error(
@@ -437,19 +428,6 @@ local function createRecordStores()
         recordStore[recordId] = typeHandler(object, recordId)
         loadedRecords = loadedRecords + 1
       end
-    end
-
-    ::CONTINUE::
-  end
-
-  for recordType, recordStore in pairs(RecordStores) do
-    for recordId, recordData in pairs(recordStore) do
-      I.storage.subscribeToSave {
-        filePath = RecordPathFormatter:format(recordType, fileHelper.fixFilename(recordId)),
-        persistent = false,
-        data = recordData,
-        delay = math.random(600),
-      }
     end
   end
 
