@@ -85,13 +85,13 @@ function DScriptLoader.loadScript(scriptName, callerPid)
     end
   end
 
-  tableHelper.print(Interfaces)
-  if Interfaces.customEventHooks then
-    Interfaces.customEventHooks.clearEventsFromScript(scriptPath)
+  tableHelper.print(DScriptLoader.Interfaces)
+  if DScriptLoader.Interfaces.customEventHooks then
+    DScriptLoader.Interfaces.customEventHooks.clearEventsFromScript(scriptPath)
   end
 
-  if Interfaces.customCommandHooks then
-    Interfaces.customCommandHooks.clearCommandsFromScript(scriptPath)
+  if DScriptLoader.Interfaces.customCommandHooks then
+    DScriptLoader.Interfaces.customCommandHooks.clearCommandsFromScript(scriptPath)
   end
 
   --- If this function was called from chat, then, we don't
