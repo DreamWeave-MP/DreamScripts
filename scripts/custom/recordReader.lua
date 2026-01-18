@@ -196,7 +196,7 @@ local Handlers = {
     if not originalEffects then return end
 
     local numItems = #originalEffects
-    if numItems <= 0 then error() end
+    if numItems <= 0 then error(tostring(originalEffects)) end
 
     local newEffects = tds.Vec()
     newEffects:resize(numItems)
