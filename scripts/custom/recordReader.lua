@@ -1,6 +1,7 @@
 local dUtil = require 'dUtil.init'
 local enumerations = require 'tes3mp.enumerations'
-local fileHelper = require 'fileHelper'
+
+local PluginPathFormatter = tes3mp.GetDataPath() .. '/custom/recordParser/%s'
 
 ---@type DefaultInterfaces
 local I = require 'interfaces'
@@ -593,8 +594,6 @@ local TypeHandlers = {
     return hash
   end,
 }
-
-local PluginPathFormatter = tes3mp.GetDataPath() .. '/custom/recordParser/%s'
 
 ---@return integer numRecords
 local function createRecordStores()
