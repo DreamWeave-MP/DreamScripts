@@ -95,8 +95,16 @@
 ---@field AddEnforcedCollisionRefId fun(refId: RecordId)
 ---Add a cell with given cellDescription to the list of cells that should be reset on the client.
 ---@field AddCellToReset fun(cellDescription: CellDescription)
+---Add a client local variable with an integer value to the client locals of the server's temporary object.
+---@field AddClientLocalInteger fun(internalIndex: integer, intValue: integer, variableType: integer)
+---Add a client local variable with a float value to the client locals of the server's temporary object.
+---@field AddClientLocalFloat fun(internalIndex: integer, floatValue: number)
+---Add a copy of the server's temporary container item to the container changes of the server's temporary object.
+---@field AddContainerItem fun()
 ---Add a destination override containing the cell description for the old cell and the new cell.
 ---@field AddDestinationOverride fun(oldCellDescription: CellDescription, newCellDescription: CellDescription)
+---Add a copy of the server's temporary object to the server's currently stored object list.
+---@field AddObject fun()
 ---@field BanAddress fun(ipAddress: string) Given an IP Address string, bans it. Doesn't perform any validation, so caller functions need to do so themselves.
 ---Clear the modifier value of a player's attribute.
 ---@field ClearAttributeModifier fun(pid: PlayerId, attributeId: integer)
@@ -117,6 +125,8 @@
 ---@field ClearKillChanges fun()
 ---Clear the map changes for the write-only worldstate.
 ---@field ClearMapChanges fun()
+---Clear the data from the object list stored on the server.
+---@field ClearObjectList fun()
 ---Clear the data from the records stored on the server.
 ---@field ClearRecords fun()
 ---Clear the modifier value of a player's skill.
@@ -130,11 +140,21 @@
 ---Clear the list of global IDs whose value changes should be sent to the server by clients.
 ---@field ClearSynchronizedClientGlobalIds fun()
 ---@field ClearVRSettingValues fun(pid: PlayerId) Clears VR game setting values for a specific player, undoing changes made by calls to SetGameSetting
+---Copy the contents of the read-only object list last received by the server from a player to the stored object list that can be sent by the server.
+---@field CopyReceivedObjectListToStore fun()
 ---Take the contents of the read-only worldstate last received by the server from a player and move its contents to the stored worldstate that can be sent by the server.
 ---@field CopyReceivedWorldstateToStore fun()
 ---@field CustomMessageBox fun(pid: PlayerId, id: integer, label: string, items: string) Displays a multiple-choice message box to the target PID
 ---Check whether a certain file path exists.
 ---@field DoesFilePathExist fun(filePath: string): boolean
+---Check whether the object at a certain index in the read object list has a container.
+---@field DoesObjectHaveContainer fun(index: integer): boolean
+---Check whether the object at a certain index in the read object list has been hit by a player.
+---@field DoesObjectHavePlayerHitting fun(index: integer): boolean
+---Check whether the object at a certain index in the read object list has been activated by a player.
+---@field DoesObjectHavePlayerActivating fun(index: integer): boolean
+---Check whether the object at a certain index in the read object list has a player as its summoner.
+---@field DoesObjectHavePlayerSummoner fun(index: integer): boolean
 ---Check whether the spell at a certain index in a player's latest spells active changes has a player as its caster.
 ---@field DoesSpellsActiveHavePlayerCaster fun(pid: PlayerId, index: integer): boolean
 ---Get the architecture type used by the server.
@@ -168,6 +188,30 @@
 ---@field GetClientGlobalId fun(index: integer): RecordId
 ---Get the type of the global variable at a certain index in the read worldstate's client globals.
 ---@field GetClientGlobalVariableType fun(index: integer): integer
+---Get the number of client local variables of the object at a certain index in the read object list.
+---@field GetClientLocalsSize fun(objectIndex: integer): integer
+---Get the float value of the client local variable at a certain variableIndex in the client locals of the object at a certain objectIndex in the read object list.
+---@field GetClientLocalFloatValue fun(objectIndex: integer, variableIndex: integer): number
+---Get the internal script index of the client local variable at a certain variableIndex in the client locals of the object at a certain objectIndex in the read object list.
+---@field GetClientLocalInternalIndex fun(objectIndex: integer, variableIndex: integer): integer
+---Get the integer value of the client local variable at a certain variableIndex in the client locals of the object at a certain objectIndex in the read object list.
+---@field GetClientLocalIntValue fun(objectIndex: integer, variableIndex: integer): integer
+---Get the type of the client local variable at a certain variableIndex in the client locals of the object at a certain objectIndex in the read object list.
+---@field GetClientLocalVariableType fun(objectIndex: integer, variableIndex: integer): integer
+---Get the number of container item indexes of the object at a certain index in the read object list.
+---@field GetContainerChangesSize fun(objectIndex: integer): integer
+---Get the action count of the container item at a certain itemIndex in the container changes of the object at a certain objectIndex in the read object list.
+---@field GetContainerItemActionCount fun(objectIndex: integer, itemIndex: integer): integer
+---Get the charge of the container item at a certain itemIndex in the container changes of the object at a certain objectIndex in the read object list.
+---@field GetContainerItemCharge fun(objectIndex: integer, itemIndex: integer): integer
+---Get the item count of the container item at a certain itemIndex in the container changes of the object at a certain objectIndex in the read object list.
+---@field GetContainerItemCount fun(objectIndex: integer, itemIndex: integer): integer
+---Get the enchantment charge of the container item at a certain itemIndex in the container changes of the object at a certain objectIndex in the read object list.
+---@field GetContainerItemEnchantmentCharge fun(objectIndex: integer, itemIndex: integer): number
+---Get the refId of the container item at a certain itemIndex in the container changes of the object at a certain objectIndex in the read object list.
+---@field GetContainerItemRefId fun(objectIndex: integer, itemIndex: integer): RecordId
+---Get the soul of the container item at a certain itemIndex in the container changes of the object at a certain objectIndex in the read object list.
+---@field GetContainerItemSoul fun(objectIndex: integer, itemIndex: integer): string
 ---Get the number of indexes in a player's latest cooldown changes.
 ---@field GetCooldownChangesSize fun(pid: PlayerId): integer
 ---Get the spell id at a certain index in a player's latest cooldown changes.
@@ -239,6 +283,112 @@
 ---@field GetModel fun(pid: PlayerId): string
 ---Get the name of a player.
 ---@field GetName fun(pid: PlayerId): string
+---Get the mpNum of the actor activating the object at a certain index in the read object list.
+---@field GetObjectActivatingMpNum fun(index: integer): integer
+---Get the name of the actor activating the object at a certain index in the read object list.
+---@field GetObjectActivatingName fun(index: integer): string
+---Get the player ID of the player activating the object at a certain index in the read object list.
+---@field GetObjectActivatingPid fun(index: integer): integer
+---Get the refId of the actor activating the object at a certain index in the read object list.
+---@field GetObjectActivatingRefId fun(index: integer): RecordId
+---Get the refNum of the actor activating the object at a certain index in the read object list.
+---@field GetObjectActivatingRefNum fun(index: integer): integer
+---Get the charge of the object at a certain index in the read object list.
+---@field GetObjectCharge fun(index: integer): integer
+---Get the count of the object at a certain index in the read object list.
+---@field GetObjectCount fun(index: integer): integer
+---Get the dialogue choice topic for the object at a certain index in the read object list.
+---@field GetObjectDialogueChoiceTopic fun(index: integer): string
+---Get the dialogue choice type for the object at a certain index in the read object list.
+---@field GetObjectDialogueChoiceType fun(index: integer): integer
+---Get the door state of the object at a certain index in the read object list.
+---@field GetObjectDoorState fun(index: integer): integer
+---Get the enchantment charge of the object at a certain index in the read object list.
+---@field GetObjectEnchantmentCharge fun(index: integer): number
+---Get the gold pool of the object at a certain index in the read object list.
+---@field GetObjectGoldPool fun(index: integer): integer
+---Get the gold value of the object at a certain index in the read object list.
+---@field GetObjectGoldValue fun(index: integer): integer
+---Get the player ID of the player hitting the object at a certain index in the read object list.
+---@field GetObjectHittingPid fun(index: integer): integer
+---Get the refId of the actor hitting the object at a certain index in the read object list.
+---@field GetObjectHittingRefId fun(index: integer): RecordId
+---Get the refNum of the actor hitting the object at a certain index in the read object list.
+---@field GetObjectHittingRefNum fun(index: integer): integer
+---Get the mpNum of the actor hitting the object at a certain index in the read object list.
+---@field GetObjectHittingMpNum fun(index: integer): integer
+---Get the name of the actor hitting the object at a certain index in the read object list.
+---@field GetObjectHittingName fun(index: integer): string
+---Get the block state of the object at a certain index in the read object list.
+---@field GetObjectHitBlock fun(index: integer): boolean
+---Get the damage caused to the object at a certain index in the read object list in a hit.
+---@field GetObjectHitDamage fun(index: integer): number
+---Get the knockdown state of the object at a certain index in the read object list.
+---@field GetObjectHitKnockdown fun(index: integer): boolean
+---Get the success state of the object at a certain index in the read object list.
+---@field GetObjectHitSuccess fun(index: integer): boolean
+---Get the hour of the last gold restock of the object at a certain index in the read object list.
+---@field GetObjectLastGoldRestockHour fun(index: integer): number
+---Get the day of the last gold restock of the object at a certain index in the read object list.
+---@field GetObjectLastGoldRestockDay fun(index: integer): integer
+---Get the action type used in the read object list.
+---@field GetObjectListAction fun(): integer
+---Get the client script that the read object list originated from.
+---@field GetObjectListClientScript fun(): string
+---Get the container subaction type used in the read object list.
+---@field GetObjectListContainerSubAction fun(): integer
+---Get the origin of the read object list.
+---@field GetObjectListOrigin fun(): integer
+---Get the number of indexes in the read object list.
+---@field GetObjectListSize fun(): integer
+---Get the console command used in the read object list.
+---@field GetObjectListConsoleCommand fun(): string
+---Get the lock level of the object at a certain index in the read object list
+---@field GetObjectLockLevel fun(index: integer): integer
+---Get the mpNum of the object at a certain index in the read object list.
+---@field GetObjectMpNum fun(index: integer): integer
+---Get the player ID of the object at a certain index in the read object list, only valid if the object is a player.
+---@field GetObjectPid fun(index: integer): integer
+---Get the X position of the object at a certain index in the read object list.
+---@field GetObjectPosX fun(index: integer): number
+---Get the Y position of the object at a certain index in the read object list.
+---@field GetObjectPosY fun(index: integer): number
+---Get the Z position at a certain index in the read object list.
+---@field GetObjectPosZ fun(index: integer): number
+---Get the refId of the object at a certain index in the read object list.
+---@field GetObjectRefId fun(index: integer): RecordId
+---Get the refNum of the object at a certain index in the read object list.
+---@field GetObjectRefNum fun(index: integer): integer
+---Get the X rotation of the object at a certain index in the read object list.
+---@field GetObjectRotX fun(index: integer): number
+---Get the Y rotation of the object at a certain index in the read object list.
+---@field GetObjectRotY fun(index: integer): number
+---Get the Z rotation of the object at a certain index in the read object list.
+---@field GetObjectRotZ fun(index: integer): number
+---Get the scale of the object at a certain index in the read object list.
+---@field GetObjectScale fun(index: integer): number
+---Get the sound ID of the object at a certain index in the read object list.
+---@field GetObjectSoundId fun(index: integer): string
+---Get the soul of the object at a certain index in the read object list.
+---@field GetObjectSoul fun(index: integer): string
+---Get the object state of the object at a certain index in the read object list.
+---@field GetObjectState fun(index: integer): boolean
+---Get the player ID of the summoner of the object at a certain index in the read object list.
+---@field GetObjectSummonerPid fun(index: integer): integer
+---Get the mpNum of the actor summoner of the object at a certain index in the read object list.
+---@field GetObjectSummonerMpNum fun(index: integer): integer
+---Get the refId of the actor summoner of the object at a certain index in the read object list.
+---@field GetObjectSummonerRefId fun(index: integer): RecordId
+---Get the summon duration of the object at a certain index in the read object list.
+---@field GetObjectSummonDuration fun(index: integer): number
+---Get the summon effect ID of the object at a certain index in the read object list.
+---@field GetObjectSummonEffectId fun(index: integer): number
+---Get the summon spell ID of the object at a certain index in the read object list.
+---@field GetObjectSummonSpellId fun(index: integer): RecordId
+---Get the summon state of the object at a certain index in the read object list.
+---@field GetObjectSummonState fun(index: integer): boolean
+---Get the refNum of the actor summoner of the object at a certain index in the read object list.
+---@field GetObjectSummonerRefNum fun(index: integer): integer
 ---@field GetOperatingSystemType fun(): OSType
 ---Get the port used by the server.
 ---@field GetPort fun(): integer
@@ -377,6 +527,8 @@
 ---@field GetSpellsActiveId fun(pid: PlayerId, index: integer): RecordId
 ---Get the spell stacking state at a certain index in a player's latest spells active changes.
 ---@field GetSpellsActiveStackingState fun(pid: PlayerId, index: integer): boolean
+---Get the videoFilename of the object at a certain index in the read object list.
+---@field GetVideoFilename fun(index: integer): string
 ---Get the current weather in the read worldstate.
 ---@field GetWeatherCurrent fun(): integer
 ---Get the next weather in the read worldstate.
@@ -390,6 +542,10 @@
 ---Checking if the server requires a password to connect.
 ---@field HasPassword fun(): boolean
 ---@field InputDialog fun(pid: PlayerId, id: GUIID, label: string, note: string) Displays an input dialog
+---Check whether the object at a certain index in the read object list is a player.
+---@field IsObjectPlayer fun(index: integer): boolean
+---Check whether the object at a certain index in the read object list has been dropped by a player.
+---@field IsObjectDroppedByPlayer fun(index: integer): boolean
 ---Check whether a player is a werewolf.
 ---@field IsWerewolf fun(pid: PlayerId): boolean
 ---Kick a certain player from the server.
@@ -400,6 +556,8 @@
 ---@field LogAppend fun(logLevel: LogLevel, logMessage: string) Emits a message to the server log & stdout at the provided log level
 ---@field PasswordDialog fun(pid: PlayerId, id: GUIID, label: string, note: string) Displays an input dialog whose inputs are displayed only as asterisks
 ---@field PlaySpeech fun(pid: PlayerId, speechPath: string) Plays a voice file for all players on the server. Intended to be used with speechHelper interface
+---Use the last object list received by the server as the one being read.
+---@field ReadReceivedObjectList fun()
 ---Use the last worldstate received by the server as the one being read.
 ---@field ReadReceivedWorldstate fun()
 ---Save the .png image data of the map tile at a certain index in the read worldstate's map changes.
@@ -414,10 +572,20 @@
 ---@field SendCellReset fun(pid: PlayerId, sendToOtherPlayers: boolean)
 ---Send a ClientScriptGlobal packet with the current client script globals in the write-only worldstate.
 ---@field SendClientScriptGlobal fun(pid: PlayerId, sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
+---Send a ClientScriptLocal packet.
+---@field SendClientScriptLocal fun(sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
 ---Send a ClientScriptSettings packet with the current client script settings in the write-only worldstate.
 ---@field SendClientScriptSettings fun(pid: PlayerId, sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
 ---Send a PlayerCooldowns packet with a player's recorded cooldown changes.
 ---@field SendCooldownChanges fun(pid: PlayerId)
+---Send a ConsoleCommand packet.
+---@field SendConsoleCommand fun(sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
+---Send a Container packet.
+---@field SendContainer fun(sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
+---Send a DoorDestination packet.
+---@field SendDoorDestination fun(sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
+---Send a DoorState packet.
+---@field SendDoorState fun(sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
 ---Send a PlayerJournal packet with a player's recorded journal changes.
 ---@field SendJournalChanges fun(pid: PlayerId, sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
 ---Send a PlayerLevel packet with a player's character level and progress towards the next level up.
@@ -425,6 +593,34 @@
 ---@field SendMessage fun(pid: PlayerId, message: string, sendToAll: boolean?) Emits a chat message to a specific player, optionally relaying it to all players
 ---Send a PlayerMomentum packet about a player.
 ---@field SendMomentum fun(pid: PlayerId)
+---Send an ObjectActivate packet.
+---@field SendObjectActivate fun(sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
+---Send an ObjectDelete packet.
+---@field SendObjectDelete fun(sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
+---Send an ObjectDialogueChoice packet.
+---@field SendObjectDialogueChoice fun(sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
+---Send an ObjectLock packet.
+---@field SendObjectLock fun(sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
+---Send an ObjectMiscellaneous packet.
+---@field SendObjectMiscellaneous fun(sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
+---Send an ObjectMove packet.
+---@field SendObjectMove fun(sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
+---Send an ObjectPlace packet.
+---@field SendObjectPlace fun(sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
+---Send an ObjectRestock packet.
+---@field SendObjectRestock fun(sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
+---Send an ObjectRotate packet.
+---@field SendObjectRotate fun(sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
+---Send an ObjectScale packet.
+---@field SendObjectScale fun(sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
+---Send an ObjectSound packet.
+---@field SendObjectSound fun(sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
+---Send an ObjectSpawn packet.
+---@field SendObjectSpawn fun(sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
+---Send an ObjectState packet.
+---@field SendObjectState fun(sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
+---Send an ObjectTrap packet.
+---@field SendObjectTrap fun(sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
 ---Send a PlayerPosition packet about a player.
 ---@field SendPos fun(pid: PlayerId)
 ---Send a RecordDynamic packet with the current specified record type.
@@ -442,6 +638,8 @@
 ---@field SendSpellsActiveChanges fun(pid: PlayerId, sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
 ---Send a PlayerStatsDynamic packet with a player's dynamic stats (health, magicka and fatigue).
 ---@field SendStatsDynamic fun(pid: PlayerId)
+---Send a VideoPlay packet.
+---@field SendVideoPlay fun(sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
 ---Send a WorldCollisionOverride packet with the current collision overrides in the write-only worldstate.
 ---@field SendWorldCollisionOverride fun(pid: PlayerId, sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
 ---Send a WorldDestinationOverride packet with the current destination overrides in the write-only worldstate.
@@ -472,6 +670,18 @@
 ---Set the current and ending stages of character generation for a player.
 ---@field SetCharGenStage fun(pid: PlayerId, currentStage: integer, endStage: integer)
 ---@field SetConsoleAllowed fun(pid: PlayerId, consoleAllowed: boolean) Set whether or not a specific player may use the console
+---Set the action count of the container item at a certain itemIndex in the container changes of the object at a certain objectIndex in the object list stored on the server.
+---@field SetContainerItemActionCountByIndex fun(objectIndex: integer, itemIndex: integer, actionCount: integer)
+---Set the charge of the temporary container item stored on the server.
+---@field SetContainerItemCharge fun(charge: integer)
+---Set the count of the temporary container item stored on the server.
+---@field SetContainerItemCount fun(count: integer)
+---Set the enchantment charge of the temporary container item stored on the server.
+---@field SetContainerItemEnchantmentCharge fun(enchantmentCharge: number)
+---Set the refId of the temporary container item stored on the server.
+---@field SetContainerItemRefId fun(refId: RecordId)
+---Set the soul of the temporary container item stored on the server.
+---@field SetContainerItemSoul fun(soul: string)
 ---Set whether a player's name is replaced by that of the creature they are disguised as when other players hover over them.
 ---@field SetCreatureNameDisplayState fun(pid: PlayerId, displayState: boolean)
 ---Set the refId of the creature a player is disguised as.
@@ -521,9 +731,89 @@
 ---@field SetMonth fun(month: integer)
 ---Set the name of a player.
 ---@field SetName fun(pid: PlayerId, name: string)
+---Set the player ID of the player activating the temporary object stored on the server.
+---@field SetObjectActivatingPid fun(pid: PlayerId)
+---Set the charge of the temporary object stored on the server.
+---@field SetObjectCharge fun(charge: integer)
+---Set the count of the temporary object stored on the server.
+---@field SetObjectCount fun(count: integer)
+---Set the dialogue choice topic for the temporary object stored on the server.
+---@field SetObjectDialogueChoiceTopic fun(topic: string)
+---Set the dialogue choice type of the temporary object stored on the server.
+---@field SetObjectDialogueChoiceType fun(dialogueChoiceType: integer)
+---Set the disarm state of the temporary object stored on the server.
+---@field SetObjectDisarmState fun(disarmState: boolean)
+---Set the door state of the temporary object stored on the server.
+---@field SetObjectDoorState fun(doorState: integer)
+---Set the door destination cell of the temporary object stored on the server.
+---@field SetObjectDoorDestinationCell fun(cellDescription: CellDescription)
+---Set the door destination position of the temporary object stored on the server.
+---@field SetObjectDoorDestinationPosition fun(x: number, y: number, z: number)
+---Set the door destination rotation of the temporary object stored on the server.
+---@field SetObjectDoorDestinationRotation fun(x: number, z: number)
+---Set the door teleport state of the temporary object stored on the server.
+---@field SetObjectDoorTeleportState fun(teleportState: boolean)
+---Set whether the object has been dropped by a player.
+---@field SetObjectDroppedByPlayerState fun(dropedByPlayerState: boolean)
+---Set the enchantment charge of the temporary object stored on the server.
+---@field SetObjectEnchantmentCharge fun(enchantmentCharge: number)
+---Set the gold pool of the temporary object stored on the server.
+---@field SetObjectGoldPool fun(goldPool: integer)
+---Set the gold value of the temporary object stored on the server.
+---@field SetObjectGoldValue fun(goldValue: integer)
+---Set the hour of the last gold restock of the temporary object stored on the server.
+---@field SetObjectLastGoldRestockHour fun(hour: number)
+---Set the day of the last gold restock of the temporary object stored on the server.
+---@field SetObjectLastGoldRestockDay fun(day: integer)
+---Set the pid attached to the ObjectList.
+---@field SetObjectListPid fun(pid: PlayerId)
+---Set the action type of the temporary object list stored on the server.
+---@field SetObjectListAction fun(action: integer)
+---Set the cell of the temporary object list stored on the server.
+---@field SetObjectListCell fun(cellDescription: CellDescription)
+---Set the console command of the temporary object list stored on the server.
+---@field SetObjectListConsoleCommand fun(consoleCommand: string)
+---Set the container subaction type of the temporary object list stored on the server.
+---@field SetObjectListContainerSubAction fun(subAction: integer)
+---Set the lock level of the temporary object stored on the server.
+---@field SetObjectLockLevel fun(lockLevel: integer)
+---Set the mpNum of the temporary object stored on the server.
+---@field SetObjectMpNum fun(mpNum: integer)
+---Set the position of the temporary object stored on the server.
+---@field SetObjectPosition fun(x: number, y: number, z: number)
+---Set the refId of the temporary object stored on the server.
+---@field SetObjectRefId fun(refId: RecordId)
+---Set the refNum of the temporary object stored on the server.
+---@field SetObjectRefNum fun(refNum: integer)
+---Set the rotation of the temporary object stored on the server.
+---@field SetObjectRotation fun(x: number, y: number, z: number)
+---Set the scale of the temporary object stored on the server.
+---@field SetObjectScale fun(scale: number)
+---Set the sound of the temporary object stored on the server.
+---@field SetObjectSound fun(soundId: string, volume: number, pitch: number)
+---Set the soul of the temporary object stored on the server.
+---@field SetObjectSoul fun(soul: string)
+---Set the object state of the temporary object stored on the server.
+---@field SetObjectState fun(objectState: boolean)
+---Set the player ID of the summoner of the temporary object stored on the server.
+---@field SetObjectSummonerPid fun(pid: PlayerId)
+---Set the mpNum of the actor summoner of the temporary object stored on the server.
+---@field SetObjectSummonerMpNum fun(mpNum: integer)
+---Set the refNum of the actor summoner of the temporary object stored on the server.
+---@field SetObjectSummonerRefNum fun(refNum: integer)
+---Set the summon duration of the temporary object stored on the server.
+---@field SetObjectSummonDuration fun(summonDuration: number)
+---Set the summon effect ID of the temporary object stored on the server.
+---@field SetObjectSummonEffectId fun(summonEffectId: integer)
+---Set the summon spell ID of the temporary object stored on the server.
+---@field SetObjectSummonSpellId fun(summonSpellId: RecordId)
+---Set the summon state of the temporary object stored on the server.
+---@field SetObjectSummonState fun(summonState: boolean)
 ---@field SetPhysicsFramerate fun(pid: PlayerId, framerate: integer) Sets the physics framerate for a specific client. Doesn't send a packet. Use SendSettings to notify clients of changes.
 ---Set the collision state for placed objects in the write-only worldstate stored on the server.
 ---@field SetPlacedObjectCollisionState fun(state: boolean)
+---Set a player as the object in the temporary object stored on the server.
+---@field SetPlayerAsObject fun(pid: PlayerId)
 ---Set the collision state for other players in the write-only worldstate stored on the server.
 ---@field SetPlayerCollisionState fun(state: boolean)
 ---Set the position of a player.
