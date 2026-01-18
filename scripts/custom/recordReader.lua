@@ -149,13 +149,12 @@ local TypeHandlers = {
 
       hashBipedObject.bipedObjectType = assert(Enums.BipedObjectType[bipedObject.biped_object_type])
       local malePart, femalePart = lowercase(bipedObject.male_bodypart), lowercase(bipedObject.female_bodypart)
-      print(malePart, type(malePart), femalePart, type(femalePart))
 
-      if malePart then
+      if malePart and malePart ~= '' then
         hashBipedObject.malePart = malePart
       end
 
-      if femalePart then
+      if femalePart and femalePart ~= '' then
         hashBipedObject.femalePart = femalePart
       end
 
@@ -292,11 +291,11 @@ local TypeHandlers = {
       hashBipedObject.bipedObjectType = assert(Enums.BipedObjectType[bipedObject.biped_object_type])
       local malePart, femalePart = lowercase(bipedObject.male_bodypart), lowercase(bipedObject.female_bodypart)
 
-      if malePart then
+      if malePart and malePart ~= '' then
         hashBipedObject.malePart = malePart
       end
 
-      if femalePart then
+      if femalePart and femalePart ~= '' then
         hashBipedObject.femalePart = femalePart
       end
 
