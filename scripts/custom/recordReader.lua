@@ -741,17 +741,17 @@ local TypeHandlers = {
     )
 
     hash.skills = tds.Vec(
-      numberField(Enums.SkillId[record.data.skills[1]]),
-      numberField(Enums.SkillId[record.data.skills[2]]),
-      numberField(Enums.SkillId[record.data.skills[3]]),
-      numberField(Enums.SkillId[record.data.skills[4]])
+      numberField(Enums.SkillId[RealString(record.data.skills[1])]),
+      numberField(Enums.SkillId[RealString(record.data.skills[2])]),
+      numberField(Enums.SkillId[RealString(record.data.skills[3])]),
+      numberField(Enums.SkillId[RealString(record.data.skills[4])])
     )
 
     hash.attributes = tds.Vec(
-      numberField(Enums.AttributeId[record.data.attributes[1]]),
-      numberField(Enums.AttributeId[record.data.attributes[2]]),
-      numberField(Enums.AttributeId[record.data.attributes[3]]),
-      numberField(Enums.AttributeId[record.data.attributes[4]])
+      numberField(Enums.AttributeId[RealString(record.data.attributes[1])]),
+      numberField(Enums.AttributeId[RealString(record.data.attributes[2])]),
+      numberField(Enums.AttributeId[RealString(record.data.attributes[3])]),
+      numberField(Enums.AttributeId[RealString(record.data.attributes[4])])
     )
 
     local name = RealString(record.name)
