@@ -242,6 +242,18 @@
 ---@field GetOperatingSystemType fun(): OSType
 ---Get the port used by the server.
 ---@field GetPort fun(): integer
+---Get the X position of a player.
+---@field GetPosX fun(pid: PlayerId): number
+---Get the Y position of a player.
+---@field GetPosY fun(pid: PlayerId): number
+---Get the Z position of a player.
+---@field GetPosZ fun(pid: PlayerId): number
+---Get the X position of a player from before their latest cell change.
+---@field GetPreviousCellPosX fun(pid: PlayerId): number
+---Get the Y position of a player from before their latest cell change.
+---@field GetPreviousCellPosY fun(pid: PlayerId): number
+---Get the Z position of a player from before their latest cell change.
+---@field GetPreviousCellPosZ fun(pid: PlayerId): number
 ---Get the protocol version of the server.
 ---@field GetProtocolVersion fun(): string
 ---Get the race of a player.
@@ -302,6 +314,10 @@
 ---@field GetRecordWeight fun(index: integer): number
 ---Get the a certain player's reputation.
 ---@field GetReputation fun(pid: PlayerId): integer
+---Get the X rotation of a player.
+---@field GetRotX fun(pid: PlayerId): number
+---Get the Z rotation of a player.
+---@field GetRotZ fun(pid: PlayerId): number
 ---Get the scale of a player.
 ---@field GetScale fun(pid: PlayerId): number
 ---Get the script error ignoring state of the server.
@@ -407,6 +423,10 @@
 ---Send a PlayerLevel packet with a player's character level and progress towards the next level up.
 ---@field SendLevel fun(pid: PlayerId)
 ---@field SendMessage fun(pid: PlayerId, message: string, sendToAll: boolean?) Emits a chat message to a specific player, optionally relaying it to all players
+---Send a PlayerMomentum packet about a player.
+---@field SendMomentum fun(pid: PlayerId)
+---Send a PlayerPosition packet about a player.
+---@field SendPos fun(pid: PlayerId)
 ---Send a RecordDynamic packet with the current specified record type.
 ---@field SendRecordDynamic fun(pid: PlayerId, sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
 ---Send a PlayerReputation packet with a player's recorded reputation.
@@ -495,6 +515,8 @@
 ---@field SetMagickaCurrent fun(pid: PlayerId, value: number)
 ---Set the (animation) model of a player.
 ---@field SetModel fun(pid: PlayerId, model: string)
+---Set the momentum of a player.
+---@field SetMomentum fun(pid: PlayerId, x: number, y: number, z: number)
 ---Set the world's month in the write-only worldstate stored on the server.
 ---@field SetMonth fun(month: integer)
 ---Set the name of a player.
@@ -504,6 +526,8 @@
 ---@field SetPlacedObjectCollisionState fun(state: boolean)
 ---Set the collision state for other players in the write-only worldstate stored on the server.
 ---@field SetPlayerCollisionState fun(state: boolean)
+---Set the position of a player.
+---@field SetPos fun(pid: PlayerId, x: number, y: number, z: number)
 ---Set the race of a player.
 ---@field SetRace fun(pid: PlayerId, race: string)
 ---Set the AI alarm value of the temporary record stored on the server for the currently specified record type.
@@ -660,6 +684,8 @@
 ---@field SetReputation fun(pid: PlayerId, value: integer)
 ---Set whether the player's stats should be reset based on their current race as the result of a PlayerBaseInfo packet.
 ---@field SetResetStats fun(pid: PlayerId, resetStats: boolean)
+---Set the rotation of a player.
+---@field SetRot fun(pid: PlayerId, x: number, z: number)
 ---Set a rule string for the server details displayed in the server browser.
 ---@field SetRuleString fun(key: string, value: string)
 ---Set a rule value for the server details displayed in the server browser.
