@@ -130,6 +130,17 @@ local AIPackageHandlers = {
 }
 
 local Handlers = {
+  AIData = function(aiData)
+    local hash = tds.Hash()
+
+    hash.alarm = numberField(aiData.alarm)
+    hash.fight = numberField(aiData.fight)
+    hash.flee = numberField(aiData.flee)
+    hash.hello = numberField(aiData.hello)
+    hash.services = numberField(aiData.services)
+
+    return hash
+  end,
   AIPackages = function(aiPackages)
     if not aiPackages then return end
 
@@ -485,13 +496,7 @@ local TypeHandlers = {
   end,
   Creature = function(record, recordId)
     local creatureHash = tds.Hash {
-      AIData = tds.Hash {
-        alarm = record.ai_data.alarm,
-        fight = record.ai_data.fight,
-        flee = record.ai_data.flee,
-        hello = record.ai_data.hello,
-        services = record.ai_data.services,
-      },
+      AIData = Handlers.AIData(record.ai_data),
       agility = record.data.agility,
       attack1Min = record.data.attack1[1],
       attack1Max = record.data.attack1[2],
