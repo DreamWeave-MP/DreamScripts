@@ -325,6 +325,7 @@ local RecordStores = tds.Hash {
   GlobalVariable = tds.Hash(),
   Ingredient = tds.Hash(),
   LeveledCreature = tds.Hash(),
+  LeveledItem = tds.Hash(),
   Static = tds.Hash(),
 }
 
@@ -795,6 +796,20 @@ local TypeHandlers = {
 
     local creatures = Handlers.LeveledEntry(record.creatures)
     if creatures then hash.creatures = creatures end
+
+    return hash
+  end,
+
+  LeveledItem = function(record, recordId)
+    local hash = tds.Hash()
+
+    hash.chanceNone = numberField(record.chance_none)
+    hash.id = recordId
+    hash.leveledItemFlags = numberField(record.leveled_item_flags)
+    hash.objectFlags = numberField(record.flags)
+
+    local items = Handlers.LeveledEntry(record.items)
+    if items then hash.items = items end
 
     return hash
   end,

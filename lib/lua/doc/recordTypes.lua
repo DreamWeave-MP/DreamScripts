@@ -544,14 +544,23 @@
 ---@field value integer
 ---@field weight number
 
----@class LeveledCreatureRecord
----@field leveldCreatureFlags integer
+---@class LeveledCreatureRecord: BaseRecord
+---@field leveledCreatureFlags integer
 ---@field chanceNone integer
 --- Not literally inventory items, but,
 --- handled as such since the fields are the same.
 --- In this case the second field refers not to a count but
 --- to the level requirement for the list item to spawn.
 ---@field creatures LeveledItemRef[]
+
+---@class LeveledItemRecord: BaseRecord
+---@field leveledItemFlags integer
+---@field chanceNone integer
+--- Not literally inventory items, but,
+--- handled as such since the fields are the same.
+--- In this case the second field refers not to a count but
+--- to the level requirement for the list item to spawn.
+---@field items LeveledItemRef[]
 
 ---@class MagicEffect
 ---@field area integer
@@ -600,4 +609,5 @@
 ---@field GlobalVariable table<RecordId, number>
 ---@field Ingredient table<RecordId, IngredientRecord>
 ---@field LeveledCreature table<RecordId, LeveledCreatureRecord>
+---@field LeveledItem table<RecordId, LeveledItemRecord>
 ---@field Static table<RecordId, StaticRecord>
