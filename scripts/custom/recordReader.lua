@@ -145,11 +145,20 @@ local TypeHandlers = {
     bipedObjects:resize(#record.biped_objects)
 
     for i, bipedObject in ipairs(record.biped_objects) do
-      bipedObjects[i] = tds.Hash {
-        bipedObjectType = assert(Enums.BipedObjectType[bipedObject.biped_object_type]),
-        malePart = lowercase(bipedObject.male_bodypart),
-        femalePart = lowercase(bipedObject.female_bodypart),
-      }
+      local hashBipedObject = tds.Hash()
+
+      hashBipedObject.bipedObjectType = assert(Enums.BipedObjectType[bipedObject.biped_object_type])
+      local malePart, femalePart = lowercase(bipedObject.male_bodypart), lowercase(bipedObject.female_bodypart)
+
+      if malePart then
+        hashBipedObject.malePart = malePart
+      end
+
+      if femalePart then
+        hashBipedObject.femalePart = femalePart
+      end
+
+      bipedObjects[i] = hashBipedObject
     end
 
     return tds.Hash {
@@ -277,11 +286,20 @@ local TypeHandlers = {
     bipedObjects:resize(#record.biped_objects)
 
     for i, bipedObject in ipairs(record.biped_objects) do
-      bipedObjects[i] = tds.Hash {
-        bipedObjectType = assert(Enums.BipedObjectType[bipedObject.biped_object_type]),
-        malePart = lowercase(bipedObject.male_bodypart),
-        femalePart = lowercase(bipedObject.female_bodypart),
-      }
+      local hashBipedObject = tds.Hash()
+
+      hashBipedObject.bipedObjectType = assert(Enums.BipedObjectType[bipedObject.biped_object_type])
+      local malePart, femalePart = lowercase(bipedObject.male_bodypart), lowercase(bipedObject.female_bodypart)
+
+      if malePart then
+        hashBipedObject.malePart = malePart
+      end
+
+      if femalePart then
+        hashBipedObject.femalePart = femalePart
+      end
+
+      bipedObjects[i] = hashBipedObject
     end
 
     return tds.Hash {
