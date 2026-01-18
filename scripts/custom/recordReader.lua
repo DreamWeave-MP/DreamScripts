@@ -611,6 +611,9 @@ local TypeHandlers = {
     if aiPackages then hash.AIPackages = aiPackages end
     if spells then hash.spells = spells end
 
+    local name = RealString(record.name)
+    if name then hash.name = name end
+
     return hash
   end,
 
