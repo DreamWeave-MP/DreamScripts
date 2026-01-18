@@ -105,7 +105,11 @@
 ---@field AddDestinationOverride fun(oldCellDescription: CellDescription, newCellDescription: CellDescription)
 ---Add a copy of the server's temporary object to the server's currently stored object list.
 ---@field AddObject fun()
+---Add an ally to a player's list of allied players.
+---@field AddAlliedPlayerForPlayer fun(pid: PlayerId, alliedPlayerPid: PlayerId)
 ---@field BanAddress fun(ipAddress: string) Given an IP Address string, bans it. Doesn't perform any validation, so caller functions need to do so themselves.
+---Clear the list of players who will be regarded as being player's allies.
+---@field ClearAlliedPlayersForPlayer fun(pid: PlayerId)
 ---Clear the modifier value of a player's attribute.
 ---@field ClearAttributeModifier fun(pid: PlayerId, attributeId: integer)
 ---Clear the list of cells which should be reset on the client.
@@ -155,6 +159,8 @@
 ---@field DoesObjectHavePlayerActivating fun(index: integer): boolean
 ---Check whether the object at a certain index in the read object list has a player as its summoner.
 ---@field DoesObjectHavePlayerSummoner fun(index: integer): boolean
+---Check whether the killer of a certain player is also a player.
+---@field DoesPlayerHavePlayerKiller fun(pid: PlayerId): boolean
 ---Check whether the spell at a certain index in a player's latest spells active changes has a player as its caster.
 ---@field DoesSpellsActiveHavePlayerCaster fun(pid: PlayerId, index: integer): boolean
 ---Generate a random string of a particular length that only contains letters and numbers.
@@ -232,6 +238,8 @@
 ---@field GetDataFileEnforcementState fun(): boolean
 ---Get the path of the server's data folder.
 ---@field GetDataPath fun(): string
+---Get the draw state of a player (0 for nothing, 1 for drawn weapon, 2 for drawn spell).
+---@field GetDrawState fun(pid: PlayerId): integer
 ---Get the base fatigue of the player.
 ---@field GetFatigueBase fun(pid: PlayerId): number
 ---Get the current fatigue of the player.
@@ -279,10 +287,24 @@
 ---@field GetMapTileCellX fun(index: integer): integer
 ---Get the Y coordinate of the cell corresponding to the map tile at a certain index in the read worldstate's map tiles.
 ---@field GetMapTileCellY fun(index: integer): integer
+---Get the cell description of a player's Mark cell.
+---@field GetMarkCell fun(pid: PlayerId): CellDescription
+---Get the X position of a player's Mark.
+---@field GetMarkPosX fun(pid: PlayerId): number
+---Get the Y position of a player's Mark.
+---@field GetMarkPosY fun(pid: PlayerId): number
+---Get the Z position of a player's Mark.
+---@field GetMarkPosZ fun(pid: PlayerId): number
+---Get the X rotation of a player's Mark.
+---@field GetMarkRotX fun(pid: PlayerId): number
+---Get the Z rotation of a player's Mark.
+---@field GetMarkRotZ fun(pid: PlayerId): number
 ---Get the maximum number of players.
 ---@field GetMaxPlayers fun(): integer
 ---Get the milliseconds elapsed since the server was started.
 ---@field GetMillisecondsSinceServerStart fun(): integer
+---Get the type of a PlayerMiscellaneous packet.
+---@field GetMiscellaneousChangeType fun(pid: PlayerId): integer
 ---Get the model of a player.
 ---@field GetModel fun(pid: PlayerId): string
 ---Get the name of a player.
@@ -394,6 +416,16 @@
 ---Get the refNum of the actor summoner of the object at a certain index in the read object list.
 ---@field GetObjectSummonerRefNum fun(index: integer): integer
 ---@field GetOperatingSystemType fun(): OSType
+---Get the player ID of the killer of a certain player.
+---@field GetPlayerKillerPid fun(pid: PlayerId): integer
+---Get the mpNum of the actor killer of a certain player.
+---@field GetPlayerKillerMpNum fun(pid: PlayerId): integer
+---Get the name of the actor killer of a certain player.
+---@field GetPlayerKillerName fun(pid: PlayerId): string
+---Get the refId of the actor killer of a certain player.
+---@field GetPlayerKillerRefId fun(pid: PlayerId): RecordId
+---Get the refNum of the actor killer of a certain player.
+---@field GetPlayerKillerRefNum fun(pid: PlayerId): integer
 ---Get the port used by the server.
 ---@field GetPort fun(): integer
 ---Get the X position of a player.
@@ -476,6 +508,8 @@
 ---@field GetScale fun(pid: PlayerId): number
 ---Get the script error ignoring state of the server.
 ---@field GetScriptErrorIgnoringState fun(): boolean
+---Get the ID of a player's selected spell.
+---@field GetSelectedSpellId fun(pid: PlayerId): RecordId
 ---Get the TES3MP version of the server.
 ---@field GetServerVersion fun(): string
 ---@field GetSHA256Hash fun(input: string): string Given some string input, hashes it
@@ -495,6 +529,8 @@
 ---@field GetSkillName fun(skillId: integer): string
 ---Get the progress the player has made towards increasing a certain skill by 1.
 ---@field GetSkillProgress fun(pid: PlayerId, skillId: integer): number
+---Get the sneak state of a player.
+---@field GetSneakState fun(pid: PlayerId): boolean
 ---Get the action type used in a player's latest spellbook changes.
 ---@field GetSpellbookChangesAction fun(pid: PlayerId): integer
 ---Get the number of indexes in a player's latest spellbook changes.
@@ -552,6 +588,8 @@
 ---@field IsObjectDroppedByPlayer fun(index: integer): boolean
 ---Check whether a player is a werewolf.
 ---@field IsWerewolf fun(pid: PlayerId): boolean
+---Send a PlayerJail packet about a player.
+---@field Jail fun(pid: PlayerId, jailDays: integer, ignoreJailTeleportation: boolean, ignoreJailSkillIncreases: boolean, jailProgressText: string, jailEndText: string)
 ---Kick a certain player from the server.
 ---@field Kick fun(pid: PlayerId)
 ---Load a .png file as the image data for a map tile and add it to the write-only worldstate stored on the server.
@@ -564,8 +602,12 @@
 ---@field ReadReceivedObjectList fun()
 ---Use the last worldstate received by the server as the one being read.
 ---@field ReadReceivedWorldstate fun()
+---Send a PlayerResurrect packet about a player.
+---@field Resurrect fun(pid: PlayerId, type: integer)
 ---Save the .png image data of the map tile at a certain index in the read worldstate's map changes.
 ---@field SaveMapTileImageFile fun(index: integer, filePath: string)
+---Send a PlayerMiscellaneous packet with a list of team member IDs to a player.
+---@field SendAlliedPlayers fun(pid: PlayerId, sendToOtherPlayers: boolean)
 ---Send a PlayerAttribute packet with a player's attributes and bonuses to those attributes at the next level up.
 ---@field SendAttributes fun(pid: PlayerId)
 ---Send a PlayerBaseInfo packet with a player's name, race, head mesh, hairstyle mesh, birthsign and stat reset state.
@@ -594,6 +636,8 @@
 ---@field SendJournalChanges fun(pid: PlayerId, sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
 ---Send a PlayerLevel packet with a player's character level and progress towards the next level up.
 ---@field SendLevel fun(pid: PlayerId)
+---Send a PlayerMiscellaneous packet with a Mark location to a player.
+---@field SendMarkLocation fun(pid: PlayerId)
 ---@field SendMessage fun(pid: PlayerId, message: string, sendToAll: boolean?) Emits a chat message to a specific player, optionally relaying it to all players
 ---Send a PlayerMomentum packet about a player.
 ---@field SendMomentum fun(pid: PlayerId)
@@ -631,6 +675,8 @@
 ---@field SendRecordDynamic fun(pid: PlayerId, sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
 ---Send a PlayerReputation packet with a player's recorded reputation.
 ---@field SendReputation fun(pid: PlayerId, sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
+---Send a PlayerMiscellaneous packet with a selected spell ID to a player.
+---@field SendSelectedSpell fun(pid: PlayerId)
 ---@field SendSettings fun(pid: PlayerId, sendToAll: boolean, skipAttachedPlayer: boolean) After constructing a settings packet using `SetEnforcedLogLevel`, `SetPhysicsFramerate`, SetGameSettingValue`, `SetVRSettingValue`, or `SetDifficulty`, send it to players, optionally including or omitting all players or just the `pid` provided
 ---Send a PlayerShapeshift packet about a player.
 ---@field SendShapeshift fun(pid: PlayerId)
@@ -729,6 +775,12 @@
 ---@field SetMagickaBase fun(pid: PlayerId, value: number)
 ---Set the current magicka of a player.
 ---@field SetMagickaCurrent fun(pid: PlayerId, value: number)
+---Set the Mark cell of a player.
+---@field SetMarkCell fun(pid: PlayerId, cellDescription: CellDescription)
+---Set the Mark position of a player.
+---@field SetMarkPos fun(pid: PlayerId, x: number, y: number, z: number)
+---Set the Mark rotation of a player.
+---@field SetMarkRot fun(pid: PlayerId, x: number, z: number)
 ---Set the (animation) model of a player.
 ---@field SetModel fun(pid: PlayerId, model: string)
 ---Set the momentum of a player.
@@ -990,6 +1042,8 @@
 ---@field SetScale fun(pid: PlayerId, scale: number)
 ---Set the script error ignoring state of the server.
 ---@field SetScriptErrorIgnoringState fun(state: boolean)
+---Set the ID of a player's selected spell.
+---@field SetSelectedSpellId fun(pid: PlayerId, spellId: RecordId)
 ---Set the base value of a player's skill.
 ---@field SetSkillBase fun(pid: PlayerId, skillId: integer, value: integer)
 ---Set the amount of damage (as caused through the Damage Skill effect) to a player's skill.
