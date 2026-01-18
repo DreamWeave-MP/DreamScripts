@@ -665,7 +665,7 @@ return {
 
       for storeType, recordStore in pairs(RecordStores) do
         for recordId, recordData in pairs(recordStore) do
-          print(storeType, '\n', recordId, '\n', recordData)
+          print(storeType, '\n', recordId, '\n', recordData, '\n')
           break
         end
       end
