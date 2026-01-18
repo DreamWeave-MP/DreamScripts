@@ -86,7 +86,7 @@ return dUtil.table(dUtil.tableType.HASH, nil, {
   },
   BookType = {
     Book = 0,
-    Scrol = 1,
+    Scroll = 1,
   },
   SkillId = {
     None = -1,
