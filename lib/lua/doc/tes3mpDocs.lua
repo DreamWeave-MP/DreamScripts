@@ -57,30 +57,156 @@
 ---@field rankRequirement integer? optional rank requirement to run a command
 
 ---@class TES3MPModule
+---Add a new client global integer to the client globals.
+---@field AddClientGlobalInteger fun(id: RecordId, intValue: integer, variableType?: integer)
+---Add a new client global float to the client globals.
+---@field AddClientGlobalFloat fun(id: RecordId, floatValue: number)
+---Add a new kill count to the kill count changes.
+---@field AddKill fun(refId: RecordId, number: integer)
+---Add an ID to the list of script IDs whose variable changes should be sent to the server by clients.
+---@field AddSynchronizedClientScriptId fun(scriptId: RecordId)
+---Add an ID to the list of global IDs whose value changes should be sent to the server by clients.
+---@field AddSynchronizedClientGlobalId fun(globalId: RecordId)
+---Add a refId to the list of refIds for which collision should be enforced irrespective of other settings.
+---@field AddEnforcedCollisionRefId fun(refId: RecordId)
+---Add a cell with given cellDescription to the list of cells that should be reset on the client.
+---@field AddCellToReset fun(cellDescription: CellDescription)
+---Add a destination override containing the cell description for the old cell and the new cell.
+---@field AddDestinationOverride fun(oldCellDescription: CellDescription, newCellDescription: CellDescription)
 ---@field BanAddress fun(ipAddress: string) Given an IP Address string, bans it. Doesn't perform any validation, so caller functions need to do so themselves.
+---Clear the list of cells which should be reset on the client.
+---@field ClearCellsToReset fun()
+---Clear the client globals for the write-only worldstate.
+---@field ClearClientGlobals fun()
+---Clear the list of destination overrides.
+---@field ClearDestinationOverrides fun()
+---Clear the list of refIds for which collision should be enforced irrespective of other settings.
+---@field ClearEnforcedCollisionRefIds fun()
 ---@field ClearGameSettingValues fun(pid: PlayerId) Clears game setting values for a specific player, undoing changes made by calls to SetGameSetting
+---Clear the kill count changes for the write-only worldstate.
+---@field ClearKillChanges fun()
+---Clear the map changes for the write-only worldstate.
+---@field ClearMapChanges fun()
+---Clear the list of script IDs whose variable changes should be sent to the server by clients.
+---@field ClearSynchronizedClientScriptIds fun()
+---Clear the list of global IDs whose value changes should be sent to the server by clients.
+---@field ClearSynchronizedClientGlobalIds fun()
 ---@field ClearVRSettingValues fun(pid: PlayerId) Clears VR game setting values for a specific player, undoing changes made by calls to SetGameSetting
+---Take the contents of the read-only worldstate last received by the server from a player and move its contents to the stored worldstate that can be sent by the server.
+---@field CopyReceivedWorldstateToStore fun()
 ---@field CustomMessageBox fun(pid: PlayerId, id: integer, label: string, items: string) Displays a multiple-choice message box to the target PID
 ---@field GetAvgPing fun(pid: PlayerId): integer returns a specific player's average ping
+---Get the number of indexes in the read worldstate's client globals.
+---@field GetClientGlobalsSize fun(): integer
+---Get the float value of the global variable at a certain index in the read worldstate's client globals.
+---@field GetClientGlobalFloatValue fun(index: integer): number
+---Get the integer value of the global variable at a certain index in the read worldstate's client globals.
+---@field GetClientGlobalIntValue fun(index: integer): integer
+---Get the id of the global variable at a certain index in the read worldstate's client globals.
+---@field GetClientGlobalId fun(index: integer): RecordId
+---Get the type of the global variable at a certain index in the read worldstate's client globals.
+---@field GetClientGlobalVariableType fun(index: integer): integer
+---Get the number of indexes in the read worldstate's kill changes.
+---@field GetKillChangesSize fun(): integer
+---Get the number of kills at a certain index in the read worldstate's kill count changes.
+---@field GetKillNumber fun(index: integer): integer
+---Get the refId at a certain index in the read worldstate's kill count changes.
+---@field GetKillRefId fun(index: integer): RecordId
 ---@field GetLastPlayerId fun(): PlayerId returns the last PID which connected to the server
+---Get the number of indexes in the read worldstate's map changes.
+---@field GetMapChangesSize fun(): integer
+---Get the X coordinate of the cell corresponding to the map tile at a certain index in the read worldstate's map tiles.
+---@field GetMapTileCellX fun(index: integer): integer
+---Get the Y coordinate of the cell corresponding to the map tile at a certain index in the read worldstate's map tiles.
+---@field GetMapTileCellY fun(index: integer): integer
 ---@field GetOperatingSystemType fun(): OSType
 ---@field GetSHA256Hash fun(input: string): string Given some string input, hashes it
+---Get the current weather in the read worldstate.
+---@field GetWeatherCurrent fun(): integer
+---Get the next weather in the read worldstate.
+---@field GetWeatherNext fun(): integer
+---Get the queued weather in the read worldstate.
+---@field GetWeatherQueued fun(): integer
+---Get the weather region in the read worldstate.
+---@field GetWeatherRegion fun(): string
+---Get the transition factor of the weather in the read worldstate.
+---@field GetWeatherTransitionFactor fun(): number
 ---@field InputDialog fun(pid: PlayerId, id: GUIID, label: string, note: string) Displays an input dialog
+---Load a .png file as the image data for a map tile and add it to the write-only worldstate stored on the server.
+---@field LoadMapTileImageFile fun(cellX: integer, cellY: integer, filePath: string)
 ---@field LogMessage fun(logLevel: LogLevel, logMessage: string) Emits a message to the server log & stdout at the provided log level
 ---@field LogAppend fun(logLevel: LogLevel, logMessage: string) Emits a message to the server log & stdout at the provided log level
 ---@field PasswordDialog fun(pid: PlayerId, id: GUIID, label: string, note: string) Displays an input dialog whose inputs are displayed only as asterisks
 ---@field PlaySpeech fun(pid: PlayerId, speechPath: string) Plays a voice file for all players on the server. Intended to be used with speechHelper interface
----@field SetDifficulty fun(pid: PlayerId, difficulty: integer) Changes the difficulty for a player, but does NOT send a packet. Use SendSettings to notify clients of difficulty changes.
+---Use the last worldstate received by the server as the one being read.
+---@field ReadReceivedWorldstate fun()
+---Save the .png image data of the map tile at a certain index in the read worldstate's map changes.
+---@field SaveMapTileImageFile fun(index: integer, filePath: string)
+---Send a CellReset packet with a list of cells.
+---@field SendCellReset fun(pid: PlayerId, sendToOtherPlayers: boolean)
+---Send a ClientScriptGlobal packet with the current client script globals in the write-only worldstate.
+---@field SendClientScriptGlobal fun(pid: PlayerId, sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
+---Send a ClientScriptSettings packet with the current client script settings in the write-only worldstate.
+---@field SendClientScriptSettings fun(pid: PlayerId, sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
 ---@field SendMessage fun(pid: PlayerId, message: string, sendToAll: boolean?) Emits a chat message to a specific player, optionally relaying it to all players
 ---@field SendSettings fun(pid: PlayerId, sendToAll: boolean, skipAttachedPlayer: boolean) After constructing a settings packet using `SetEnforcedLogLevel`, `SetPhysicsFramerate`, SetGameSettingValue`, `SetVRSettingValue`, or `SetDifficulty`, send it to players, optionally including or omitting all players or just the `pid` provided
+---Send a WorldCollisionOverride packet with the current collision overrides in the write-only worldstate.
+---@field SendWorldCollisionOverride fun(pid: PlayerId, sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
+---Send a WorldDestinationOverride packet with the current destination overrides in the write-only worldstate.
+---@field SendWorldDestinationOverride fun(pid: PlayerId, sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
+---Send a WorldKillCount packet with the current set of kill count changes in the write-only worldstate.
+---@field SendWorldKillCount fun(pid: PlayerId, sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
+---Send a WorldMap packet with the current set of map changes in the write-only worldstate.
+---@field SendWorldMap fun(pid: PlayerId, sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
+---Send a WorldRegionAuthority packet establishing a certain player as the only one who should process certain region-specific events (such as weather changes).
+---@field SendWorldRegionAuthority fun(pid: PlayerId)
+---Send a WorldTime packet with the current time and time scale in the write-only worldstate.
+---@field SendWorldTime fun(pid: PlayerId, sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
+---Send a WorldWeather packet with the current weather in the write-only worldstate.
+---@field SendWorldWeather fun(pid: PlayerId, sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
+---Set the collision state for actors in the write-only worldstate stored on the server.
+---@field SetActorCollisionState fun(state: boolean)
+---Set the region affected by the next WorldRegionAuthority packet sent.
+---@field SetAuthorityRegion fun(authorityRegion: string)
 ---@field SetBedRestAllowed fun(pid: PlayerId, bedAllowed: boolean) Set whether or not a specific player may use beds
 ---@field SetConsoleAllowed fun(pid: PlayerId, consoleAllowed: boolean) Set whether or not a specific player may use the console
+---Set the world's day in the write-only worldstate stored on the server.
+---@field SetDay fun(day: integer)
+---Set the world's days passed in the write-only worldstate stored on the server.
+---@field SetDaysPassed fun(daysPassed: integer)
+---@field SetDifficulty fun(pid: PlayerId, difficulty: integer) Changes the difficulty for a player, but does NOT send a packet. Use SendSettings to notify clients of difficulty changes.--
 ---@field SetEnforcedLogLevel fun(pid: PlayerId, logLevel: LogLevel) Sets the enforced log level for a player. Doesn't send a packet on its own. Log level enforcement is important to prevent players from receiving information about world state they otherwise would not. Use a logLevel of -1 not to enforce this setting.
 ---@field SetGameSettingValue fun(pid: PlayerId, gameSetting: string, value: any) Override a setting from the `Game` category of settings.cfg. For valid settings and values, refer to here: https://openmw.readthedocs.io/en/openmw-0.47.0_a/reference/modding/settings/game.html
+---Set the world's hour in the write-only worldstate stored on the server.
+---@field SetHour fun(hour: number)
+---Set the world's month in the write-only worldstate stored on the server.
+---@field SetMonth fun(month: integer)
 ---@field SetPhysicsFramerate fun(pid: PlayerId, framerate: integer) Sets the physics framerate for a specific client. Doesn't send a packet. Use SendSettings to notify clients of changes.
+---Set the collision state for placed objects in the write-only worldstate stored on the server.
+---@field SetPlacedObjectCollisionState fun(state: boolean)
+---Set the collision state for other players in the write-only worldstate stored on the server.
+---@field SetPlayerCollisionState fun(state: boolean)
+---Set the world's time scale in the write-only worldstate stored on the server.
+---@field SetTimeScale fun(timeScale: number)
 ---@field SetVRSettingValue fun(pid: PlayerId, vrSetting: string, value: any) Override a setting from the `VR` category of settings.cfg. For valid settings and values, refer to here: https://openmw.readthedocs.io/en/openmw-0.47.0_a/reference/modding/settings/game.html
 ---@field SetWaitAllowed fun(pid: PlayerId, waitAllowed: boolean) Set whether or not a specific player may wait
+---Set the current weather in the write-only worldstate stored on the server.
+---@field SetWeatherCurrent fun(currentWeather: integer)
+---Set the weather forcing state in the write-only worldstate stored on the server.
+---@field SetWeatherForceState fun(forceState: boolean)
+---Set the next weather in the write-only worldstate stored on the server.
+---@field SetWeatherNext fun(nextWeather: integer)
+---Set the queued weather in the write-only worldstate stored on the server.
+---@field SetWeatherQueued fun(queuedWeather: integer)
+---Set the weather region in the write-only worldstate stored on the server.
+---@field SetWeatherRegion fun(region: string)
+---Set the transition factor for the weather in the write-only worldstate stored on the server.
+---@field SetWeatherTransitionFactor fun(transitionFactor: number)
 ---@field SetWildernessRestAllowed fun(pid: PlayerId, wildernessRestAllowed: boolean) Set whether or not a specific player may rest in the wilderness
+---Set the world's year in the write-only worldstate stored on the server.
+---@field SetYear fun(year: integer)
 ---@field StopServer fun(exitCode: integer) Terminate the server with a provided exit code
 ---@field UnbanAddress fun(ipAddress: string) Given an IP Address string, unbans it. Doesn't perform any validation, so caller functions need to do so themselves.
+---Whether placed objects with collision turned on should use actor collision, i.e. whether they should be slippery and prevent players from standing on them.
+---@field UseActorCollisionForPlacedObjects fun(useActorCollision: boolean)
 tes3mp = tes3mp
