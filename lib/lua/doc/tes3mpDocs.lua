@@ -61,10 +61,18 @@
 ---@field AddClientGlobalInteger fun(id: RecordId, intValue: integer, variableType?: integer)
 ---Add a new client global float to the client globals.
 ---@field AddClientGlobalFloat fun(id: RecordId, floatValue: number)
+---Add a new cooldown spell to the cooldown changes for a player.
+---@field AddCooldownSpell fun(pid: PlayerId, spellId: RecordId, startDay: integer, startHour: number)
 ---Set a rule string for the server details displayed in the server browser.
 ---@field AddDataFileRequirement fun(dataFilename: string, checksumString: string)
 ---Add a new kill count to the kill count changes.
 ---@field AddKill fun(refId: RecordId, number: integer)
+---Add a new spell to the spellbook changes for a player.
+---@field AddSpell fun(pid: PlayerId, spellId: RecordId)
+---Add a new active spell to the spells active changes for a player, using the temporary effect values stored so far.
+---@field AddSpellActive fun(pid: PlayerId, spellId: RecordId, displayName: string, stackingState: boolean)
+---Add a new effect to the next active spell that will be added to a player.
+---@field AddSpellActiveEffect fun(pid: PlayerId, effectId: integer, magnitude: number, duration: number, timeLeft: number, arg: integer)
 ---Add an ID to the list of script IDs whose variable changes should be sent to the server by clients.
 ---@field AddSynchronizedClientScriptId fun(scriptId: RecordId)
 ---Add an ID to the list of global IDs whose value changes should be sent to the server by clients.
@@ -82,6 +90,8 @@
 ---@field ClearCellsToReset fun()
 ---Clear the client globals for the write-only worldstate.
 ---@field ClearClientGlobals fun()
+---Clear the last recorded cooldown changes for a player.
+---@field ClearCooldownChanges fun(pid: PlayerId)
 ---Clear the list of destination overrides.
 ---@field ClearDestinationOverrides fun()
 ---Clear the list of refIds for which collision should be enforced irrespective of other settings.
@@ -93,6 +103,10 @@
 ---@field ClearMapChanges fun()
 ---Clear the modifier value of a player's skill.
 ---@field ClearSkillModifier fun(pid: PlayerId, skillId: integer)
+---Clear the last recorded spellbook changes for a player.
+---@field ClearSpellbookChanges fun(pid: PlayerId)
+---Clear the last recorded spells active changes for a player.
+---@field ClearSpellsActiveChanges fun(pid: PlayerId)
 ---Clear the list of script IDs whose variable changes should be sent to the server by clients.
 ---@field ClearSynchronizedClientScriptIds fun()
 ---Clear the list of global IDs whose value changes should be sent to the server by clients.
@@ -103,6 +117,8 @@
 ---@field CustomMessageBox fun(pid: PlayerId, id: integer, label: string, items: string) Displays a multiple-choice message box to the target PID
 ---Check whether a certain file path exists.
 ---@field DoesFilePathExist fun(filePath: string): boolean
+---Check whether the spell at a certain index in a player's latest spells active changes has a player as its caster.
+---@field DoesSpellsActiveHavePlayerCaster fun(pid: PlayerId, index: integer): boolean
 ---Get the architecture type used by the server.
 ---@field GetArchitectureType fun(): string
 ---Get the base value of a player's attribute.
@@ -134,6 +150,14 @@
 ---@field GetClientGlobalId fun(index: integer): RecordId
 ---Get the type of the global variable at a certain index in the read worldstate's client globals.
 ---@field GetClientGlobalVariableType fun(index: integer): integer
+---Get the number of indexes in a player's latest cooldown changes.
+---@field GetCooldownChangesSize fun(pid: PlayerId): integer
+---Get the spell id at a certain index in a player's latest cooldown changes.
+---@field GetCooldownSpellId fun(pid: PlayerId, index: integer): RecordId
+---Get the starting day of the cooldown at a certain index in a player's latest cooldown changes.
+---@field GetCooldownStartDay fun(pid: PlayerId, index: integer): integer
+---Get the starting hour of the cooldown at a certain index in a player's latest cooldown changes.
+---@field GetCooldownStartHour fun(pid: PlayerId, index: integer): number
 ---Get the data file enforcement state of the server.
 ---@field GetDataFileEnforcementState fun(): boolean
 ---Get the path of the server's data folder.
@@ -211,6 +235,42 @@
 ---@field GetSkillName fun(skillId: integer): string
 ---Get the progress the player has made towards increasing a certain skill by 1.
 ---@field GetSkillProgress fun(pid: PlayerId, skillId: integer): number
+---Get the action type used in a player's latest spellbook changes.
+---@field GetSpellbookChangesAction fun(pid: PlayerId): integer
+---Get the number of indexes in a player's latest spellbook changes.
+---@field GetSpellbookChangesSize fun(pid: PlayerId): integer
+---Get the spell id at a certain index in a player's latest spellbook changes.
+---@field GetSpellId fun(pid: PlayerId, index: integer): RecordId
+---Get the mpNum of the actor caster of the spell at a certain index in a player's latest spells active changes.
+---@field GetSpellsActiveCasterMpNum fun(pid: PlayerId, index: integer): integer
+---Get the player ID of the caster of the spell at a certain index in a player's latest spells active changes.
+---@field GetSpellsActiveCasterPid fun(pid: PlayerId, index: integer): integer
+---Get the refId of the actor caster of the spell at a certain index in a player's latest spells active changes.
+---@field GetSpellsActiveCasterRefId fun(pid: PlayerId, index: integer): RecordId
+---Get the refNum of the actor caster of the spell at a certain index in a player's latest spells active changes.
+---@field GetSpellsActiveCasterRefNum fun(pid: PlayerId, index: integer): integer
+---Get the action type used in a player's latest spells active changes.
+---@field GetSpellsActiveChangesAction fun(pid: PlayerId): integer
+---Get the number of indexes in a player's latest spells active changes.
+---@field GetSpellsActiveChangesSize fun(pid: PlayerId): integer
+---Get the spell display name at a certain index in a player's latest spells active changes.
+---@field GetSpellsActiveDisplayName fun(pid: PlayerId, index: integer): string
+---Get the arg for an effect index at a spell index in a player's latest spells active changes.
+---@field GetSpellsActiveEffectArg fun(pid: PlayerId, spellIndex: integer, effectIndex: integer): integer
+---Get the number of effects at an index in a player's latest spells active changes.
+---@field GetSpellsActiveEffectCount fun(pid: PlayerId, index: integer): integer
+---Get the duration for an effect index at a spell index in a player's latest spells active changes.
+---@field GetSpellsActiveEffectDuration fun(pid: PlayerId, spellIndex: integer, effectIndex: integer): number
+---Get the id for an effect index at a spell index in a player's latest spells active changes.
+---@field GetSpellsActiveEffectId fun(pid: PlayerId, spellIndex: integer, effectIndex: integer): integer
+---Get the magnitude for an effect index at a spell index in a player's latest spells active changes.
+---@field GetSpellsActiveEffectMagnitude fun(pid: PlayerId, spellIndex: integer, effectIndex: integer): number
+---Get the time left for an effect index at a spell index in a player's latest spells active changes.
+---@field GetSpellsActiveEffectTimeLeft fun(pid: PlayerId, spellIndex: integer, effectIndex: integer): number
+---Get the spell id at a certain index in a player's latest spells active changes.
+---@field GetSpellsActiveId fun(pid: PlayerId, index: integer): RecordId
+---Get the spell stacking state at a certain index in a player's latest spells active changes.
+---@field GetSpellsActiveStackingState fun(pid: PlayerId, index: integer): boolean
 ---Get the current weather in the read worldstate.
 ---@field GetWeatherCurrent fun(): integer
 ---Get the next weather in the read worldstate.
@@ -248,12 +308,18 @@
 ---@field SendClientScriptGlobal fun(pid: PlayerId, sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
 ---Send a ClientScriptSettings packet with the current client script settings in the write-only worldstate.
 ---@field SendClientScriptSettings fun(pid: PlayerId, sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
+---Send a PlayerCooldowns packet with a player's recorded cooldown changes.
+---@field SendCooldownChanges fun(pid: PlayerId)
 ---Send a PlayerLevel packet with a player's character level and progress towards the next level up.
 ---@field SendLevel fun(pid: PlayerId)
 ---@field SendMessage fun(pid: PlayerId, message: string, sendToAll: boolean?) Emits a chat message to a specific player, optionally relaying it to all players
 ---@field SendSettings fun(pid: PlayerId, sendToAll: boolean, skipAttachedPlayer: boolean) After constructing a settings packet using `SetEnforcedLogLevel`, `SetPhysicsFramerate`, SetGameSettingValue`, `SetVRSettingValue`, or `SetDifficulty`, send it to players, optionally including or omitting all players or just the `pid` provided
 ---Send a PlayerSkill packet with a player's skills.
 ---@field SendSkills fun(pid: PlayerId)
+---Send a PlayerSpellbook packet with a player's recorded spellbook changes.
+---@field SendSpellbookChanges fun(pid: PlayerId, sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
+---Send a PlayerSpellsActive packet with a player's recorded spells active changes.
+---@field SendSpellsActiveChanges fun(pid: PlayerId, sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
 ---Send a PlayerStatsDynamic packet with a player's dynamic stats (health, magicka and fatigue).
 ---@field SendStatsDynamic fun(pid: PlayerId)
 ---Send a WorldCollisionOverride packet with the current collision overrides in the write-only worldstate.
@@ -354,6 +420,10 @@
 ---@field SetSkillProgress fun(pid: PlayerId, skillId: integer, value: number)
 ---Set the password required to join the server.
 ---@field SetServerPassword fun(password: string)
+---Set the action type in a player's spellbook changes.
+---@field SetSpellbookChangesAction fun(pid: PlayerId, action: integer)
+---Set the action type in a player's spells active changes.
+---@field SetSpellsActiveChangesAction fun(pid: PlayerId, action: integer)
 ---Set the world's time scale in the write-only worldstate stored on the server.
 ---@field SetTimeScale fun(timeScale: number)
 ---@field SetVRSettingValue fun(pid: PlayerId, vrSetting: string, value: any) Override a setting from the `VR` category of settings.cfg. For valid settings and values, refer to here: https://openmw.readthedocs.io/en/openmw-0.47.0_a/reference/modding/settings/game.html
