@@ -371,7 +371,7 @@ local TypeHandlers = {
       }
     end
 
-    return tds.Hash {
+    local creatureHash = tds.Hash {
       AIData = tds.Hash {
         alarm = record.ai_data.alarm,
         fight = record.ai_data.fight,
@@ -404,10 +404,7 @@ local TypeHandlers = {
       model = record.mesh:normalize(),
       objectFlags = record.flags,
       personality = record.data.personality,
-      scale = tonumber(record.scale) or 1,
-      script = lowercase(record.script),
       soulValue = record.data.soul,
-      sound = lowercase(record.sound),
       speed = record.data.speed,
       spells = spells,
       stealthAbility = record.data.stealth,
@@ -415,7 +412,19 @@ local TypeHandlers = {
       travelDestinations = destinations,
       willpower = record.data.willpower,
     }
+
+    local creatureScale = tonumber(record.scale)
+    if creatureScale and creatureScale ~= 1 then creatureHash.scale = creatureScale end
+
+    local mwScript = lowercase(record.script)
+    if mwScript and mwScript ~= '' then creatureHash.script = mwScript end
+
+    local sound = lowercase(record.sound)
+    if sound and sound ~= '' then creatureHash.sound = sound end
+
+    return creatureHash
   end,
+
   Static = function(record, recordId)
     return tds.Hash {
       id = recordId,
