@@ -269,6 +269,9 @@ return I.tds.Hash {
     HeavyArmor = 3,
     BluntWeapon = 4,
     LongBlade = 5,
+    ---HACK: Duplicate the longblade and shortblade values so titleCase works
+    --- When loading faction records
+    Longblade = 5,
     Axe = 6,
     Spear = 7,
     Athletics = 8,
@@ -286,6 +289,7 @@ return I.tds.Hash {
     Acrobatics = 20,
     LightArmor = 21,
     ShortBlade = 22,
+    Shortblade = 22,
     Marksman = 23,
     Mercantile = 24,
     Speechcraft = 25,
