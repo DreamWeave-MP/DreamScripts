@@ -933,6 +933,8 @@ local function createRecordStores()
         if not recordId[recordId] then
           recordStore[recordId] = typeHandler(object, recordId)
           loadedRecords = loadedRecords + 1
+        else
+          error(recordId .. ' ' .. object.type)
         end
       end
 
