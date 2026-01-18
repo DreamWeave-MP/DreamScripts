@@ -420,20 +420,28 @@ local TypeHandlers = {
     return hash
   end,
   Book = function(record, recordId)
-    return tds.Hash {
-      bookType = assert(Enums.BookType[record.data.book_type]),
-      enchantment = lowercase(record.enchanting),
-      enchantmentValue = record.data.enchantment,
-      icon = record.icon:normalize(),
-      id = recordId,
-      model = record.mesh:normalize(),
-      name = record.name,
-      script = lowercase(record.script),
-      skill = assert(Enums.SkillId[record.data.skill]),
-      text = record.text,
-      value = record.data.value,
-      weight = record.data.weight,
-    }
+    local hash = tds.Hash()
+
+    hash.bookType = numberField(Enums.BookType[record.data.book_type])
+    hash.enchantmentValue = numberField(record.data.enchantment)
+    hash.icon = path(record.icon)
+    hash.id = MandatoryRecordId(recordId)
+    hash.model = path(record.mesh)
+    hash.skill = numberField(Enums.SkillId[record.data.skill])
+    hash.text = assert(RealString(record.text))
+    hash.value = numberField(record.data.value)
+    hash.weight = numberField(record.data.weight)
+
+    local name = RealString(record.name)
+    if name then hash.name = name end
+
+    local enchantment = OptionalRecordId(record.enchanting)
+    if enchantment then hash.enchantment = enchantment end
+
+    local script = OptionalRecordId(record.script)
+    if script then hash.script = script end
+
+    return hash
   end,
   Class = function(record, recordId)
     local hash = tds.Hash()
