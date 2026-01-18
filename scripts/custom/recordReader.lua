@@ -70,7 +70,7 @@ local AIPackageHandlers = {
   AiEscortPackage = function(package)
     local hash = tds.Hash()
 
-    hash.cell = assert(lowercase(package.cell))
+    hash.cell = assert(OptionalRecordId(package.cell))
     hash.duration = assert(package.duration)
     hash.reset = assert(package.reset)
     hash.target = assert(package.target)
@@ -84,7 +84,7 @@ local AIPackageHandlers = {
   AiFollowPackage = function(package)
     local hash = tds.Hash()
 
-    hash.cell = assert(lowercase(package.cell))
+    hash.cell = assert(OptionalRecordId(package.cell))
     hash.duration = assert(package.duration)
     hash.reset = assert(package.reset)
     hash.target = assert(package.target)
@@ -107,18 +107,18 @@ local AIPackageHandlers = {
   AiWanderPackage = function(package)
     local hash    = tds.hash()
 
-    hash.distance = assert(package.distance)
-    hash.duration = assert(package.duration)
-    hash.gameHour = assert(package.game_hour)
-    hash.idle2    = assert(package.idle2)
-    hash.idle3    = assert(package.idle3)
-    hash.idle4    = assert(package.idle4)
-    hash.idle5    = assert(package.idle5)
-    hash.idle6    = assert(package.idle6)
-    hash.idle7    = assert(package.idle7)
-    hash.idle8    = assert(package.idle8)
-    hash.idle9    = assert(package.idle9)
-    hash.reset    = assert(package.reset)
+    hash.distance = numberField(package.distance)
+    hash.duration = numberField(package.duration)
+    hash.gameHour = numberField(package.game_hour)
+    hash.idle2    = numberField(package.idle2)
+    hash.idle3    = numberField(package.idle3)
+    hash.idle4    = numberField(package.idle4)
+    hash.idle5    = numberField(package.idle5)
+    hash.idle6    = numberField(package.idle6)
+    hash.idle7    = numberField(package.idle7)
+    hash.idle8    = numberField(package.idle8)
+    hash.idle9    = numberField(package.idle9)
+    hash.reset    = numberField(package.reset)
     hash.type     = enumerations.ai.WANDER
 
     return hash
