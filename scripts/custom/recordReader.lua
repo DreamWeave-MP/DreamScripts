@@ -208,11 +208,11 @@ local Handlers = {
       hash.duration = numberField(effect.duration)
       hash.maxMagnitude = numberField(effect.max_magnitude)
       hash.minMagnitude = numberField(effect.min_magnitude)
+      hash.range = numberField(Enums.EffectRange[effect.range])
       hash.skill = numberField(Enums.SkillId[effect.skill])
 
       --- Convert these to int representation
       hash.magicEffect = assert(effect.magic_effect)
-      hash.range = numberField(Enums.EffectRange[effect.range])
 
       newEffects[i] = hash
     end
