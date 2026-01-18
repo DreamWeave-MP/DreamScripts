@@ -302,6 +302,7 @@ local RecordStores = tds.Hash {
   Faction = tds.Hash(),
   GameSetting = tds.Hash(),
   GlobalVariable = tds.Hash(),
+  Ingredient = tds.Hash(),
   Static = tds.Hash(),
 }
 
@@ -720,6 +721,46 @@ local TypeHandlers = {
 
   GlobalVariable = function(record, _)
     return numberField(tostring(record.value))
+  end,
+
+  Ingredient = function(record, recordId)
+    local hash = tds.Hash()
+
+    hash.icon = path(record.icon)
+    hash.id = MandatoryRecordId(recordId)
+    hash.flags = record.flags
+    hash.model = path(record.mesh)
+    hash.value = numberField(record.data.value)
+    hash.weight = numberField(record.data.weight)
+
+    hash.effects = tds.Vec(
+      assert(Enums.MagicEffectId[numberField(record.data.effects[1])]),
+      assert(Enums.MagicEffectId[numberField(record.data.effects[2])]),
+      assert(Enums.MagicEffectId[numberField(record.data.effects[3])]),
+      assert(Enums.MagicEffectId[numberField(record.data.effects[4])])
+    )
+
+    hash.skills = tds.Vec(
+      assert(Enums.SkillId[numberField(record.data.skills[1])]),
+      assert(Enums.SkillId[numberField(record.data.skills[2])]),
+      assert(Enums.SkillId[numberField(record.data.skills[3])]),
+      assert(Enums.SkillId[numberField(record.data.skills[4])])
+    )
+
+    hash.attributes = tds.Vec(
+      assert(Enums.AttributeId[numberField(record.data.attributes[1])]),
+      assert(Enums.AttributeId[numberField(record.data.attributes[2])]),
+      assert(Enums.AttributeId[numberField(record.data.attributes[3])]),
+      assert(Enums.AttributeId[numberField(record.data.attributes[4])])
+    )
+
+    local name = RealString(record.name)
+    if name then hash.name = name end
+
+    local script = OptionalRecordId(record.script)
+    if script then hash.script = script end
+
+    return hash
   end,
 
   Static = function(record, recordId)

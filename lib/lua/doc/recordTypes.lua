@@ -519,6 +519,17 @@
 ---@field reactions FactionReaction[]
 ---@field requirements FactionRequirement[] Length 10
 
+---@class IngredientRecord: BaseRecord
+---@field attributes AttributeId[] Length 4
+---@field effects MagicEffectId[] Length 4
+---@field icon NormalizedPath
+---@field model NormalizedPath
+---@field name string?
+---@field script RecordId?
+---@field skills SkillId[] Length 4
+---@field value integer
+---@field weight number
+
 ---@class MagicEffect
 ---@field area integer
 ---@field attribute AttributeId
@@ -564,4 +575,5 @@
 ---@field Faction table<RecordId, FactionRecord>
 ---@field GameSetting table<RecordId, number|string>
 ---@field GlobalVariable table<RecordId, number>
+---@field Ingredient table<RecordId, IngredientRecord>
 ---@field Static table<RecordId, StaticRecord>
