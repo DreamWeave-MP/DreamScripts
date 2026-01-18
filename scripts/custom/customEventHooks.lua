@@ -56,20 +56,29 @@ end
 
 --- Given a script path, removes all validators and handlers this script defined.
 --- Used by the scriptLoader when (re)loading a script.
+--- Returns a table containing the names and indices of all removed handlers.
 ---@param scriptPath string
+---@return table<string, table<string, integer>?>
 function customEventHooks.clearEventsFromScript(scriptPath)
     assert(scriptPath and type(scriptPath) == 'string', 'Invalid input to customEventHooks.clearEventsFromScript!')
+    local oldRegistrationIndices = {}
 
     local lowercasePath = scriptPath:lower()
-    for _, handlersTable in ipairs { customEventHooks.handlers, customEventHooks.validators, } do
-        for _, eventRegistrations in pairs(handlersTable) do
+    for handlerType, handlersTable in pairs {
+        handlers = customEventHooks.handlers, validators = customEventHooks.validators,
+    } do
+        for handlerName, eventRegistrations in pairs(handlersTable) do
             for eventIndex = #eventRegistrations, 1, -1 do
                 if eventRegistrations[eventIndex].definedBy == lowercasePath then
-                    eventRegistrations[eventIndex] = nil
+                    oldRegistrationIndices[handlerType] = oldRegistrationIndices[handlerType] or {}
+                    oldRegistrationIndices[handlerType][handlerName] = eventIndex
+                    table.remove(eventRegistrations, eventIndex)
                 end
             end
         end
     end
+
+    return oldRegistrationIndices
 end
 
 ---@param event string
