@@ -212,7 +212,6 @@ local Handlers = {
       hash.range = numberField(Enums.EffectRange[effect.range])
       hash.skill = numberField(Enums.SkillId[effect.skill])
 
-
       newEffects[i] = hash
     end
 
