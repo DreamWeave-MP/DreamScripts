@@ -1,5 +1,9 @@
 ---@meta
 
+---@alias MiscItemFlags
+---| 0 # None
+---| 1 # Key
+
 --- Bitmask of object state flags
 ---@alias ObjectFlags
 ---| 0      # None (0x0)
@@ -8,10 +12,6 @@
 ---| 1024   # Persistent (0x400)
 ---| 4096   # Ignored (0x1000)
 ---| 8192   # Blocked (0x2000)
-
----@alias MiscItemFlags
----| 0 # None
----| 1 # Key
 
 ---@alias AIPackage
 ---| AIActivate
