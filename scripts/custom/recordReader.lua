@@ -656,18 +656,18 @@ local TypeHandlers = {
     hash.objectFlags = numberField(record.flags)
 
     hash.favoredAttributes = tds.Vec(
-      assert(Enums.AttributeId[MandatoryRecordId(record.data.favored_attributes[1]):titleCase()]),
-      assert(Enums.AttributeId[MandatoryRecordId(record.data.favored_attributes[2]):titleCase()])
+      numberField(Enums.AttributeId[MandatoryRecordId(record.data.favored_attributes[1]):titleCase()]),
+      numberField(Enums.AttributeId[MandatoryRecordId(record.data.favored_attributes[2]):titleCase()])
     )
 
     hash.favoredSkills = tds.Vec(
-      assert(Enums.SkillId[MandatoryRecordId(record.data.favored_skills[1]):titleCase()]),
-      assert(Enums.SkillId[MandatoryRecordId(record.data.favored_skills[2]):titleCase()]),
-      assert(Enums.SkillId[MandatoryRecordId(record.data.favored_skills[3]):titleCase()]),
-      assert(Enums.SkillId[MandatoryRecordId(record.data.favored_skills[4]):titleCase()]),
-      assert(Enums.SkillId[MandatoryRecordId(record.data.favored_skills[5]):titleCase()]),
-      assert(Enums.SkillId[MandatoryRecordId(record.data.favored_skills[6]):titleCase()]),
-      assert(Enums.SkillId[MandatoryRecordId(record.data.favored_skills[7]):titleCase()])
+      numberField(Enums.SkillId[MandatoryRecordId(record.data.favored_skills[1]):titleCase()]),
+      numberField(Enums.SkillId[MandatoryRecordId(record.data.favored_skills[2]):titleCase()]),
+      numberField(Enums.SkillId[MandatoryRecordId(record.data.favored_skills[3]):titleCase()]),
+      numberField(Enums.SkillId[MandatoryRecordId(record.data.favored_skills[4]):titleCase()]),
+      numberField(Enums.SkillId[MandatoryRecordId(record.data.favored_skills[5]):titleCase()]),
+      numberField(Enums.SkillId[MandatoryRecordId(record.data.favored_skills[6]):titleCase()]),
+      numberField(Enums.SkillId[MandatoryRecordId(record.data.favored_skills[7]):titleCase()])
     )
 
     local requirements = record.data.requirements
