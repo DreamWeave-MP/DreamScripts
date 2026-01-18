@@ -1,7 +1,7 @@
 local I = require 'interfaces'
 
 ---@class MWEnums
-return I.tds.Hash {
+local MWEnums = {
   ApparatusType = {
     MortarAndPestle = 0,
     Alembic = 1,
@@ -434,3 +434,7 @@ return I.tds.Hash {
     Stealth = 2,
   }
 }
+
+if I.tds then MWEnums = I.tds.Hash(MWEnums) end
+
+return MWEnums
