@@ -36,7 +36,7 @@ end
 
 ---@param value any
 ---@return RecordId?
-local function RecordId(value)
+local function OptionalRecordId(value)
   local id = lowercase(value)
   if id and id ~= '' then return id end
 end
@@ -153,8 +153,8 @@ local Handlers = {
       local hashBipedObject = tds.Hash()
 
       hashBipedObject.bipedObjectType = assert(Enums.BipedObjectType[bipedObject.biped_object_type])
-      local malePart = RecordId(bipedObject.male_bodypart)
-      local femalePart = RecordId(bipedObject.female_bodypart)
+      local malePart = OptionalRecordId(bipedObject.male_bodypart)
+      local femalePart = OptionalRecordId(bipedObject.female_bodypart)
 
       if malePart then
         hashBipedObject.malePart = malePart
@@ -198,7 +198,7 @@ local Handlers = {
     newSpells:resize(numSpells)
 
     for i, spellId in ipairs(spells) do
-      newSpells[i] = assert(RecordId(spellId))
+      newSpells[i] = assert(OptionalRecordId(spellId))
     end
 
     return newSpells
@@ -214,7 +214,7 @@ local Handlers = {
 
     for i, travelDestination in ipairs(newDestinations) do
       local destination = tds.Hash()
-      destination.cell = assert(RecordId(travelDestination.cell))
+      destination.cell = assert(OptionalRecordId(travelDestination.cell))
       destination.position = transform(travelDestination.position)
       destination.rotation = transform(travelDestination.rotation)
 
@@ -261,26 +261,27 @@ local TypeHandlers = {
     local name = RealString(record.name)
     if name then hash.name = name end
 
-    local script = RecordId(record.script)
+    local script = OptionalRecordId(record.script)
     if script then hash.script = script end
 
     return hash
   end,
   Apparatus = function(record, recordId)
-    local hash = tds.Hash {
-      apparatusType = assert(Enums.ApparatusType[record.data.apparatus_type]),
-      icon = record.icon:normalize(),
-      id = recordId,
-      model = record.mesh:normalize(),
-      name = record.name,
-      objectFlags = record.flags,
-      quality = record.data.quality,
-      weight = record.data.weight,
-      value = record.data.value,
-    }
+    local hash = tds.Hash()
+    hash.id = recordId
+    hash.apparatusType = numberField(Enums.ApparatusType[record.data.apparatus_type])
+    hash.objectFlags = numberField(record.flags)
+    hash.quality = numberField(record.data.quality)
+    hash.weight = numberField(record.data.weight)
+    hash.value = numberField(record.data.value)
+    hash.icon = path(record.icon)
+    hash.model = path(record.mesh)
 
-    local script = lowercase(record.script)
-    if script and script ~= '' then hash.script = script end
+    local name = RealString(record.name)
+    if name then hash.name = name end
+
+    local script = OptionalRecordId(record.script)
+    if script then hash.script = script end
 
     return hash
   end,
@@ -452,10 +453,10 @@ local TypeHandlers = {
 
     if bipedObjects then hash.parts = bipedObjects end
 
-    local enchantment = RecordId(record.enchanting)
+    local enchantment = OptionalRecordId(record.enchanting)
     if enchantment then hash.enchantment = enchantment end
 
-    local script = RecordId(record.script)
+    local script = OptionalRecordId(record.script)
     if script then hash.script = script end
 
     local name = RealString(record.name)
@@ -471,7 +472,7 @@ local TypeHandlers = {
     hash.model = path(record.mesh)
     hash.objectFlags = numberField(record.flags)
 
-    local script = RecordId(record.script)
+    local script = OptionalRecordId(record.script)
     if script then hash.script = script end
 
     local inventory = Handlers.Inventory(record.inventory)
@@ -524,10 +525,10 @@ local TypeHandlers = {
     local creatureScale = tonumber(record.scale)
     if creatureScale and creatureScale ~= 1 then creatureHash.scale = creatureScale end
 
-    local mwScript = RecordId(record.script)
+    local mwScript = OptionalRecordId(record.script)
     if mwScript then creatureHash.script = mwScript end
 
-    local sound = RecordId(record.sound)
+    local sound = OptionalRecordId(record.sound)
     if sound then creatureHash.sound = sound end
 
     local destinations = Handlers.TravelDestination(record.travel_destinations)
