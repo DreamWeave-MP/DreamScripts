@@ -15,6 +15,8 @@ function StringMeta:capitalizeFirstLetter()
   return (self:gsub("^%l", string.upper))
 end
 
+StringMeta.titleCase = StringMeta.capitalizeFirstLetter
+
 function StringMeta:ciEqual(otherString)
   if type(otherString) ~= "string" then return false end
 

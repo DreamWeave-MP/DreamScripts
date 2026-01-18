@@ -48,6 +48,7 @@
 ---@field ciEqual fun(self: string, otherString: string): boolean case-insensitive equality comparison
 ---@field prefixZeroes fun(self: string, desiredLength: integer): string Given a number of zeroes to prefix, returns the original string with N zeroes prepended
 ---@field normalize fun(self: string): string lowercases and converts all backslashes to forward slashes
+---@field titleCase fun(self: string): string
 
 ---@class TES3MPCommand
 ---@field definedBy string path of the script which defined this command. The name of the script which defines a command it kept so that old references to it may be removed.
