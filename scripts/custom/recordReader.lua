@@ -521,59 +521,66 @@ local TypeHandlers = {
     return hash
   end,
   Creature = function(record, recordId)
-    local creatureHash = tds.Hash {
-      AIData = Handlers.AIData(record.ai_data),
-      agility = record.data.agility,
-      attack1Min = record.data.attack1[1],
-      attack1Max = record.data.attack1[2],
-      attack2Min = record.data.attack2[1],
-      attack2Max = record.data.attack2[2],
-      attack3Min = record.data.attack3[1],
-      attack3Max = record.data.attack3[2],
-      baseGold = record.data.gold,
-      bloodType = record.blood_type,
-      creatureFlags = record.creature_flags,
-      creatureType = record.data.creature_type,
-      endurance = record.data.endurance,
-      fatigue = record.data.fatigue,
-      health = record.data.health,
-      id = recordId,
-      intelligence = record.data.intelligence,
-      level = record.data.level,
-      luck = record.data.luck,
-      magicAbility = record.data.magic,
-      magicka = record.data.magicka,
-      model = record.mesh:normalize(),
-      objectFlags = record.flags,
-      personality = record.data.personality,
-      soulValue = record.data.soul,
-      speed = record.data.speed,
-      stealthAbility = record.data.stealth,
-      strength = record.data.strength,
-      willpower = record.data.willpower,
-    }
+    local hash = tds.Hash()
+
+    hash.agility = record.data.agility
+
+    hash.attack = tds.Vec(
+      record.data.attack1[1],
+      record.data.attack1[2],
+      record.data.attack2[1],
+      record.data.attack2[2],
+      record.data.attack3[1],
+      record.data.attack3[2]
+    )
+
+    hash.baseGold = numberField(record.data.gold)
+    hash.bloodType = numberField(record.blood_type)
+    hash.creatureFlags = numberField(record.creature_flags)
+    hash.endurance = numberField(record.data.endurance)
+    hash.fatigue = numberField(record.data.fatigue)
+    hash.health = numberField(record.data.health)
+    hash.id = MandatoryRecordId(recordId)
+    hash.intelligence = numberField(record.data.intelligence)
+    hash.level = numberField(record.data.level)
+    hash.luck = numberField(record.data.luck)
+    hash.magicAbility = numberField(record.data.magic)
+    hash.magicka = numberField(record.data.magicka)
+    hash.model = path(record.mesh)
+    hash.objectFlags = numberField(record.flags)
+    hash.personality = numberField(record.data.personality)
+    hash.soulValue = numberField(record.data.soul)
+    hash.speed = numberField(record.data.speed)
+    hash.stealthAbility = numberField(record.data.stealth)
+    hash.strength = numberField(record.data.strength)
+    hash.willpower = numberField(record.data.willpower)
+
+    -- Convert this to numeric
+    hash.creatureType = assert(record.data.creature_type)
+
+    hash.AIData = Handlers.AIData(record.ai_data)
 
     local creatureScale = tonumber(record.scale)
-    if creatureScale and creatureScale ~= 1 then creatureHash.scale = creatureScale end
+    if creatureScale and creatureScale ~= 1 then hash.scale = creatureScale end
 
     local mwScript = OptionalRecordId(record.script)
-    if mwScript then creatureHash.script = mwScript end
+    if mwScript then hash.script = mwScript end
 
     local sound = OptionalRecordId(record.sound)
-    if sound then creatureHash.sound = sound end
+    if sound then hash.sound = sound end
 
     local destinations = Handlers.TravelDestination(record.travel_destinations)
-    if destinations then creatureHash.travelDestinations = destinations end
+    if destinations then hash.travelDestinations = destinations end
 
     local inventory = Handlers.Inventory(record.inventory)
-    if inventory then creatureHash.inventory = inventory end
+    if inventory then hash.inventory = inventory end
 
     local aiPackages, spells = Handlers.AIPackages(record.ai_packages), Handlers.Spells(record.spells)
 
-    if aiPackages then creatureHash.AIPackages = aiPackages end
-    if spells then creatureHash.spells = spells end
+    if aiPackages then hash.AIPackages = aiPackages end
+    if spells then hash.spells = spells end
 
-    return creatureHash
+    return hash
   end,
 
   Static = function(record, recordId)

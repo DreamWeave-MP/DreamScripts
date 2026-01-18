@@ -451,12 +451,7 @@
 ---@field AIData AIData
 ---@field AIPackages AIPackage[]
 ---@field agility integer
----@field attack1Min integer
----@field attack1Max integer
----@field attack2Min integer
----@field attack2Max integer
----@field attack3Min integer
----@field attack3Max integer
+---@field attack integer[] Consists of six fields, where their values are attack1Min, attack1Max, attack2Min, attack2Max, attack3Min, attack3Max
 ---@field baseGold integer
 ---@field bloodType integer
 ---@field combatAbility integer
