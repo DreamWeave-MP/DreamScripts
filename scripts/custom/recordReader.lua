@@ -284,7 +284,7 @@ local Handlers = {
     local newDestinations = tds.Vec()
     newDestinations:resize(#destinations)
 
-    for i, travelDestination in ipairs(newDestinations) do
+    for i, travelDestination in ipairs(destinations) do
       local destination = tds.Hash()
       destination.cell = MandatoryRecordId(travelDestination.cell)
       destination.position = transform(travelDestination.position)
