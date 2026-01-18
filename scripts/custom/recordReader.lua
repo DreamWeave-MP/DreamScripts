@@ -523,7 +523,7 @@ local TypeHandlers = {
   Creature = function(record, recordId)
     local hash = tds.Hash()
 
-    hash.agility = record.data.agility
+    hash.agility = numberField(record.data.agility)
 
     hash.attack = tds.Vec(
       record.data.attack1[1],
