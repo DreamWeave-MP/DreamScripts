@@ -428,7 +428,6 @@ local TypeHandlers = {
     hash.id = MandatoryRecordId(recordId)
     hash.model = path(record.mesh)
     hash.skill = numberField(Enums.SkillId[record.data.skill])
-    hash.text = assert(RealString(record.text))
     hash.value = numberField(record.data.value)
     hash.weight = numberField(record.data.weight)
 
@@ -440,6 +439,9 @@ local TypeHandlers = {
 
     local script = OptionalRecordId(record.script)
     if script then hash.script = script end
+
+    local text = RealString(record.text)
+    if text then hash.text = text end
 
     return hash
   end,
