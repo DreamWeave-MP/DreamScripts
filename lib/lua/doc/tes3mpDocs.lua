@@ -76,6 +76,8 @@
 ---Add a destination override containing the cell description for the old cell and the new cell.
 ---@field AddDestinationOverride fun(oldCellDescription: CellDescription, newCellDescription: CellDescription)
 ---@field BanAddress fun(ipAddress: string) Given an IP Address string, bans it. Doesn't perform any validation, so caller functions need to do so themselves.
+---Clear the modifier value of a player's attribute.
+---@field ClearAttributeModifier fun(pid: PlayerId, attributeId: integer)
 ---Clear the list of cells which should be reset on the client.
 ---@field ClearCellsToReset fun()
 ---Clear the client globals for the write-only worldstate.
@@ -89,6 +91,8 @@
 ---@field ClearKillChanges fun()
 ---Clear the map changes for the write-only worldstate.
 ---@field ClearMapChanges fun()
+---Clear the modifier value of a player's skill.
+---@field ClearSkillModifier fun(pid: PlayerId, skillId: integer)
 ---Clear the list of script IDs whose variable changes should be sent to the server by clients.
 ---@field ClearSynchronizedClientScriptIds fun()
 ---Clear the list of global IDs whose value changes should be sent to the server by clients.
@@ -101,7 +105,23 @@
 ---@field DoesFilePathExist fun(filePath: string): boolean
 ---Get the architecture type used by the server.
 ---@field GetArchitectureType fun(): string
+---Get the base value of a player's attribute.
+---@field GetAttributeBase fun(pid: PlayerId, attributeId: integer): integer
+---Get the number of attributes.
+---@field GetAttributeCount fun(): integer
+---Get the amount of damage (as caused through the Damage Attribute effect) to a player's attribute.
+---@field GetAttributeDamage fun(pid: PlayerId, attributeId: integer): number
+---Get the numerical ID of an attribute with a certain name.
+---@field GetAttributeId fun(name: string): integer
+---Get the modifier value of a player's attribute.
+---@field GetAttributeModifier fun(pid: PlayerId, attributeId: integer): integer
+---Get the name of the attribute with a certain numerical ID.
+---@field GetAttributeName fun(attributeId: integer): string
 ---@field GetAvgPing fun(pid: PlayerId): integer returns a specific player's average ping
+---Get the birthsign of a player.
+---@field GetBirthsign fun(pid: PlayerId): string
+---Get the bounty of the player.
+---@field GetBounty fun(pid: PlayerId): integer
 ---Searches a subfolder for the first file with a name whose matches `fileName` case-insensitively, and returns its path if found
 ---@field GetCaseInsensitiveFilename fun(folderPath: string, fileName: string): string
 ---Get the number of indexes in the read worldstate's client globals.
@@ -118,8 +138,22 @@
 ---@field GetDataFileEnforcementState fun(): boolean
 ---Get the path of the server's data folder.
 ---@field GetDataPath fun(): string
+---Get the base fatigue of the player.
+---@field GetFatigueBase fun(pid: PlayerId): number
+---Get the current fatigue of the player.
+---@field GetFatigueCurrent fun(pid: PlayerId): number
+---Get the hairstyle mesh used by a player.
+---@field GetHairstyle fun(pid: PlayerId): string
+---Get the head mesh used by a player.
+---@field GetHead fun(pid: PlayerId): string
+---Get the base health of the player.
+---@field GetHealthBase fun(pid: PlayerId): number
+---Get the current health of the player.
+---@field GetHealthCurrent fun(pid: PlayerId): number
 ---Get the IP address of a certain player.
 ---@field GetIP fun(pid: PlayerId): string
+---Check whether a player is male or not.
+---@field GetIsMale fun(pid: PlayerId): integer
 ---Get the number of indexes in the read worldstate's kill changes.
 ---@field GetKillChangesSize fun(): integer
 ---Get the number of kills at a certain index in the read worldstate's kill count changes.
@@ -127,6 +161,14 @@
 ---Get the refId at a certain index in the read worldstate's kill count changes.
 ---@field GetKillRefId fun(index: integer): RecordId
 ---@field GetLastPlayerId fun(): PlayerId returns the last PID which connected to the server
+---Get the character level of a player.
+---@field GetLevel fun(pid: PlayerId): integer
+---Get the player's progress to their next character level.
+---@field GetLevelProgress fun(pid: PlayerId): integer
+---Get the base magicka of the player.
+---@field GetMagickaBase fun(pid: PlayerId): number
+---Get the current magicka of the player.
+---@field GetMagickaCurrent fun(pid: PlayerId): number
 ---Get the number of indexes in the read worldstate's map changes.
 ---@field GetMapChangesSize fun(): integer
 ---Get the X coordinate of the cell corresponding to the map tile at a certain index in the read worldstate's map tiles.
@@ -137,16 +179,38 @@
 ---@field GetMaxPlayers fun(): integer
 ---Get the milliseconds elapsed since the server was started.
 ---@field GetMillisecondsSinceServerStart fun(): integer
+---Get the model of a player.
+---@field GetModel fun(pid: PlayerId): string
+---Get the name of a player.
+---@field GetName fun(pid: PlayerId): string
 ---@field GetOperatingSystemType fun(): OSType
 ---Get the port used by the server.
 ---@field GetPort fun(): integer
 ---Get the protocol version of the server.
 ---@field GetProtocolVersion fun(): string
+---Get the race of a player.
+---@field GetRace fun(pid: PlayerId): string
 ---Get the script error ignoring state of the server.
 ---@field GetScriptErrorIgnoringState fun(): boolean
 ---Get the TES3MP version of the server.
 ---@field GetServerVersion fun(): string
 ---@field GetSHA256Hash fun(input: string): string Given some string input, hashes it
+---Get the base value of a player's skill.
+---@field GetSkillBase fun(pid: PlayerId, skillId: integer): integer
+---Get the number of skills.
+---@field GetSkillCount fun(): integer
+---Get the amount of damage (as caused through the Damage Skill effect) to a player's skill.
+---@field GetSkillDamage fun(pid: PlayerId, skillId: integer): number
+---Get the numerical ID of a skill with a certain name.
+---@field GetSkillId fun(name: string): integer
+---Get the bonus applied to a certain attribute at the next level up as a result of associated skill increases.
+---@field GetSkillIncrease fun(pid: PlayerId, attributeId: integer): integer
+---Get the modifier value of a player's skill.
+---@field GetSkillModifier fun(pid: PlayerId, skillId: integer): integer
+---Get the name of the skill with a certain numerical ID.
+---@field GetSkillName fun(skillId: integer): string
+---Get the progress the player has made towards increasing a certain skill by 1.
+---@field GetSkillProgress fun(pid: PlayerId, skillId: integer): number
 ---Get the current weather in the read worldstate.
 ---@field GetWeatherCurrent fun(): integer
 ---Get the next weather in the read worldstate.
@@ -172,14 +236,26 @@
 ---@field ReadReceivedWorldstate fun()
 ---Save the .png image data of the map tile at a certain index in the read worldstate's map changes.
 ---@field SaveMapTileImageFile fun(index: integer, filePath: string)
+---Send a PlayerAttribute packet with a player's attributes and bonuses to those attributes at the next level up.
+---@field SendAttributes fun(pid: PlayerId)
+---Send a PlayerBaseInfo packet with a player's name, race, head mesh, hairstyle mesh, birthsign and stat reset state.
+---@field SendBaseInfo fun(pid: PlayerId)
+---Send a PlayerBounty packet with a player's bounty.
+---@field SendBounty fun(pid: PlayerId)
 ---Send a CellReset packet with a list of cells.
 ---@field SendCellReset fun(pid: PlayerId, sendToOtherPlayers: boolean)
 ---Send a ClientScriptGlobal packet with the current client script globals in the write-only worldstate.
 ---@field SendClientScriptGlobal fun(pid: PlayerId, sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
 ---Send a ClientScriptSettings packet with the current client script settings in the write-only worldstate.
 ---@field SendClientScriptSettings fun(pid: PlayerId, sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
+---Send a PlayerLevel packet with a player's character level and progress towards the next level up.
+---@field SendLevel fun(pid: PlayerId)
 ---@field SendMessage fun(pid: PlayerId, message: string, sendToAll: boolean?) Emits a chat message to a specific player, optionally relaying it to all players
 ---@field SendSettings fun(pid: PlayerId, sendToAll: boolean, skipAttachedPlayer: boolean) After constructing a settings packet using `SetEnforcedLogLevel`, `SetPhysicsFramerate`, SetGameSettingValue`, `SetVRSettingValue`, or `SetDifficulty`, send it to players, optionally including or omitting all players or just the `pid` provided
+---Send a PlayerSkill packet with a player's skills.
+---@field SendSkills fun(pid: PlayerId)
+---Send a PlayerStatsDynamic packet with a player's dynamic stats (health, magicka and fatigue).
+---@field SendStatsDynamic fun(pid: PlayerId)
 ---Send a WorldCollisionOverride packet with the current collision overrides in the write-only worldstate.
 ---@field SendWorldCollisionOverride fun(pid: PlayerId, sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
 ---Send a WorldDestinationOverride packet with the current destination overrides in the write-only worldstate.
@@ -196,9 +272,19 @@
 ---@field SendWorldWeather fun(pid: PlayerId, sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
 ---Set the collision state for actors in the write-only worldstate stored on the server.
 ---@field SetActorCollisionState fun(state: boolean)
+---Set the base value of a player's attribute.
+---@field SetAttributeBase fun(pid: PlayerId, attributeId: integer, value: integer)
+---Set the amount of damage (as caused through the Damage Attribute effect) to a player's attribute.
+---@field SetAttributeDamage fun(pid: PlayerId, attributeId: integer, value: number)
 ---Set the region affected by the next WorldRegionAuthority packet sent.
 ---@field SetAuthorityRegion fun(authorityRegion: string)
 ---@field SetBedRestAllowed fun(pid: PlayerId, bedAllowed: boolean) Set whether or not a specific player may use beds
+---Set the birthsign of a player.
+---@field SetBirthsign fun(pid: PlayerId, name: string)
+---Set the bounty of a player.
+---@field SetBounty fun(pid: PlayerId, value: integer)
+---Set the current and ending stages of character generation for a player.
+---@field SetCharGenStage fun(pid: PlayerId, currentStage: integer, endStage: integer)
 ---@field SetConsoleAllowed fun(pid: PlayerId, consoleAllowed: boolean) Set whether or not a specific player may use the console
 ---Set the data file enforcement state of the server.
 ---@field SetDataFileEnforcementState fun(state: boolean)
@@ -208,26 +294,64 @@
 ---@field SetDaysPassed fun(daysPassed: integer)
 ---@field SetDifficulty fun(pid: PlayerId, difficulty: integer) Changes the difficulty for a player, but does NOT send a packet. Use SendSettings to notify clients of difficulty changes.--
 ---@field SetEnforcedLogLevel fun(pid: PlayerId, logLevel: LogLevel) Sets the enforced log level for a player. Doesn't send a packet on its own. Log level enforcement is important to prevent players from receiving information about world state they otherwise would not. Use a logLevel of -1 not to enforce this setting.
+---Set the base fatigue of a player.
+---@field SetFatigueBase fun(pid: PlayerId, value: number)
+---Set the current fatigue of a player.
+---@field SetFatigueCurrent fun(pid: PlayerId, value: number)
 ---Set the game mode of the server, as displayed in the server browser.
 ---@field SetGameMode fun(gameMode: string)
 ---@field SetGameSettingValue fun(pid: PlayerId, gameSetting: string, value: any) Override a setting from the `Game` category of settings.cfg. For valid settings and values, refer to here: https://openmw.readthedocs.io/en/openmw-0.47.0_a/reference/modding/settings/game.html
+---Set the hairstyle mesh used by a player.
+---@field SetHairstyle fun(pid: PlayerId, hairstyle: string)
+---Set the head mesh used by a player.
+---@field SetHead fun(pid: PlayerId, head: string)
+---Set the base health of a player.
+---@field SetHealthBase fun(pid: PlayerId, value: number)
+---Set the current health of a player.
+---@field SetHealthCurrent fun(pid: PlayerId, value: number)
 ---Set the name of the server, as displayed in the server browser.
 ---@field SetHostname fun(name: string)
 ---Set the world's hour in the write-only worldstate stored on the server.
 ---@field SetHour fun(hour: number)
+---Set whether a player is male or not.
+---@field SetIsMale fun(pid: PlayerId, state: integer)
+---Set the character level of a player.
+---@field SetLevel fun(pid: PlayerId, value: integer)
+---Set the player's progress to their next character level.
+---@field SetLevelProgress fun(pid: PlayerId, value: integer)
+---Set the base magicka of a player.
+---@field SetMagickaBase fun(pid: PlayerId, value: number)
+---Set the current magicka of a player.
+---@field SetMagickaCurrent fun(pid: PlayerId, value: number)
+---Set the (animation) model of a player.
+---@field SetModel fun(pid: PlayerId, model: string)
 ---Set the world's month in the write-only worldstate stored on the server.
 ---@field SetMonth fun(month: integer)
+---Set the name of a player.
+---@field SetName fun(pid: PlayerId, name: string)
 ---@field SetPhysicsFramerate fun(pid: PlayerId, framerate: integer) Sets the physics framerate for a specific client. Doesn't send a packet. Use SendSettings to notify clients of changes.
 ---Set the collision state for placed objects in the write-only worldstate stored on the server.
 ---@field SetPlacedObjectCollisionState fun(state: boolean)
 ---Set the collision state for other players in the write-only worldstate stored on the server.
 ---@field SetPlayerCollisionState fun(state: boolean)
+---Set the race of a player.
+---@field SetRace fun(pid: PlayerId, race: string)
+---Set whether the player's stats should be reset based on their current race as the result of a PlayerBaseInfo packet.
+---@field SetResetStats fun(pid: PlayerId, resetStats: boolean)
 ---Set a rule string for the server details displayed in the server browser.
 ---@field SetRuleString fun(key: string, value: string)
 ---Set a rule value for the server details displayed in the server browser.
 ---@field SetRuleValue fun(key: string, value: number)
 ---Set the script error ignoring state of the server.
 ---@field SetScriptErrorIgnoringState fun(state: boolean)
+---Set the base value of a player's skill.
+---@field SetSkillBase fun(pid: PlayerId, skillId: integer, value: integer)
+---Set the amount of damage (as caused through the Damage Skill effect) to a player's skill.
+---@field SetSkillDamage fun(pid: PlayerId, skillId: integer, value: number)
+---Set the bonus applied to a certain attribute at the next level up as a result of associated skill increases.
+---@field SetSkillIncrease fun(pid: PlayerId, attributeId: integer, value: integer)
+---Set the progress the player has made towards increasing a certain skill by 1.
+---@field SetSkillProgress fun(pid: PlayerId, skillId: integer, value: number)
 ---Set the password required to join the server.
 ---@field SetServerPassword fun(password: string)
 ---Set the world's time scale in the write-only worldstate stored on the server.
