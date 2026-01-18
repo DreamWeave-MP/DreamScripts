@@ -715,8 +715,6 @@ local TypeHandlers = {
     hash.id = recordId
     hash.objectFlags = record.flags
 
-    print(record)
-
     if record.value.type == 'String' then
       hash.value = assert(tostring(record.value))
     else
