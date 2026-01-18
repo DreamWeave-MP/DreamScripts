@@ -658,6 +658,6 @@
 ---@field LeveledItem table<RecordId, LeveledItemRecord>
 ---@field Light table<RecordId, LightRecord>
 ---@field Lockpick table<RecordId, LockpickRecord>
----@field Miscellaneous table<RecordId, MiscRecord>
+---@field MiscItem table<RecordId, MiscRecord>
 ---@field Probe table<RecordId, ProbeRecord>
 ---@field Static table<RecordId, StaticRecord>
