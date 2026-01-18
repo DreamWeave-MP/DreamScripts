@@ -1,3 +1,4 @@
+local bit = require 'bit'
 local dUtil = require 'dUtil.init'
 local enumerations = require 'tes3mp.enumerations'
 
@@ -900,18 +901,15 @@ local TypeHandlers = {
     hash.disposition = numberField(record.data.disposition)
     hash.head = MandatoryRecordId(record.head)
     hash.id = MandatoryRecordId(recordId)
-    hash.intelligence = numberField(record.data.intelligence)
     hash.level = numberField(record.data.level)
-    hash.luck = numberField(record.data.luck)
     hash.model = path(record.mesh)
     hash.npcFlags = numberField(record.npc_flags)
     hash.objectFlags = numberField(record.flags)
-    hash.personality = numberField(record.data.personality)
     hash.race = MandatoryRecordId(record.race)
     hash.rank = numberField(record.data.rank)
     hash.reputation = numberField(record.data.reputation)
 
-    if record.data.stats then
+    if record.data.stats and not bit.band(Enums.Flags.NPC.AUTO_CALCULATE, hash.npcFlags) then
       local stats = record.data.stats
       assert(#stats.attributes == 8)
       assert(#stats.skills == 27)
