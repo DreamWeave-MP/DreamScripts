@@ -505,7 +505,7 @@
 ---@field spells RecordId[]
 ---@field stealthAbility integer
 ---@field strength integer
----@field travelDestinations TravelDestination[]
+---@field travelDestinations TravelDestination[]?
 ---@field willpower integer
 
 ---@class DoorRecord: BaseRecord
