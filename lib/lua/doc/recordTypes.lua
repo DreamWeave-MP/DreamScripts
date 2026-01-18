@@ -519,6 +519,9 @@
 ---@field reactions FactionReaction[]
 ---@field requirements FactionRequirement[] Length 10
 
+---@class GameSettingRecord: BaseRecord
+---field value number|string
+
 ---@class MagicEffect
 ---@field area integer
 ---@field attribute AttributeId
@@ -562,4 +565,5 @@
 ---@field Door table<RecordId, DoorRecord>
 ---@field Enchanting table<RecordId, EnchantmentRecord>
 ---@field Faction table<RecordId, FactionRecord>
+---@field GameSetting table<RecordId, GameSettingRecord>
 ---@field Static table<RecordId, StaticRecord>

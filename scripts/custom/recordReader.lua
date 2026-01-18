@@ -300,6 +300,7 @@ local RecordStores = tds.Hash {
   Door = tds.Hash(),
   Enchanting = tds.Hash(),
   Faction = tds.Hash(),
+  GameSetting = tds.Hash(),
   Static = tds.Hash(),
 }
 
@@ -704,6 +705,23 @@ local TypeHandlers = {
     if name then hash.name = name end
 
     if rankNames then hash.rankNames = rankNames end
+
+    return hash
+  end,
+
+  GameSetting = function(record, recordId)
+    local hash = tds.Hash()
+
+    hash.id = recordId
+    hash.objectFlags = record.flags
+
+    print(record)
+
+    if record.value.type == 'String' then
+      hash.value = assert(tostring(record.value))
+    else
+      hash.value = numberField(record.value)
+    end
 
     return hash
   end,
