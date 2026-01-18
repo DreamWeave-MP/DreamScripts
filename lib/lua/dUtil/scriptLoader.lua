@@ -434,7 +434,7 @@ end
 --- Tries to flush old interfaces, but if the interface name has changed this isn't possible,
 --- leaving old references dangling.
 ---@param scriptPath string sanitized relative script path for error output
----@param scriptResult table resulting table after invoking a script using dofile
+---@param scriptResult TES3MPScriptRegistration resulting table after invoking a script using dofile
 function DScriptLoader.loadScriptInterface(scriptPath, scriptResult)
   if not scriptResult.interface then
     if scriptResult.interfaceName and Interfaces[scriptResult.interfaceName] then
@@ -463,22 +463,13 @@ function DScriptLoader.loadScriptInterface(scriptPath, scriptResult)
     )
   end
 
-  local customEventHooks = Interfaces.customEventHooks
   local oldInterface = Interfaces[scriptResult.interfaceName]
-  local eventStatus
-  if customEventHooks and oldInterface then
-    eventStatus = customEventHooks.triggerValidators(
-      'OnInterfaceOverride',
-      scriptResult.interfaceName,
-      oldInterface
-    )
-  else
-    eventStatus = dUtil.misc.makeEventStatus()
+  if scriptResult.eventValidators and oldInterface then
+    local interfaceOverrideHandler = scriptResult.eventValidators.OnInterfaceOverride
+    if interfaceOverrideHandler then interfaceOverrideHandler(oldInterface) end
   end
 
-  if eventStatus.validDefaultHandler then
-    Interfaces[scriptResult.interfaceName] = dUtil.misc.makeReadOnly(scriptResult.interface)
-  end
+  Interfaces[scriptResult.interfaceName] = dUtil.misc.makeReadOnly(scriptResult.interface)
 end
 
 --- Given a loaded script and its path, insert chat commands
