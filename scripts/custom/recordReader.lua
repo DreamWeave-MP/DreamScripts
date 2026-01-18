@@ -910,6 +910,11 @@ local function createRecordStores()
         ('Requested to parse a plugin that doesn\'t actually exist: %s!\nThe server will now terminate. Remove %s from the list of plugins to load or place it at %s')
         :format(pluginPath, pluginName, pluginPath)
       )
+    else
+      tes3mp.LogAppend(
+        enumerations.log.INFO,
+        ('Parsing record data from: %s'):format(pluginName)
+      )
     end
 
     for _, object in ipairs(tes3.load_plugin(pluginPath).objects) do
