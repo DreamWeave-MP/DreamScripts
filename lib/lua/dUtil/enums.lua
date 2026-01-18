@@ -1,5 +1,6 @@
 local I = require 'interfaces'
 
+---@class MWEnums
 return I.tds.Hash {
   ApparatusType = {
     MortarAndPestle = 0,
@@ -114,6 +115,133 @@ return I.tds.Hash {
     CastOnStrike = 1,
     CastWhenUsed = 2,
     ConstantEffect = 3,
+  },
+  Flags = {
+    BodyPart = {
+      FEMALE = 0x1,
+      NOT_PLAYABLE = 0x2,
+    },
+    Cell = {
+      IS_INTERIOR = 0x1,
+      HAS_WATER = 0x2,
+      RESTING_IS_ILLEGAL = 0x4,
+      BEHAVES_LIKE_EXTERIOR = 0x80,
+    },
+    Class = {
+      PLAYABLE = 0x1,
+    },
+    Container = {
+      ORGANIC = 0x1,
+      RESPAWNS = 0x2,
+      IS_BASE = 0x8,
+    },
+    Creature = {
+      BIPED = 0x1,
+      RESPAWN = 0x2,
+      WEAPON_AND_SHIELD = 0x4,
+      IS_BASE = 0x8,
+      SWIMS = 0x10,
+      FLIES = 0x20,
+      WALKS = 0x40,
+      ESSENTIAL = 0x80,
+    },
+    Enchant = {
+      AUTO_CALC = 0x1,
+    },
+    Faction = {
+      HIDDEN_FROM_PC = 0x1,
+    },
+    LeveledCreature = {
+      CALCULATE_FROM_ALL_LEVELS = 0x1,
+    },
+    LeveledItem = {
+      CALCULATE_FOR_EACH_ITEM = 0x1,
+      CALCULATE_FROM_ALL_LEVELS = 0x2,
+    },
+    Light = {
+      DYNAMIC = 0x1,
+      CAN_CARRY = 0x2,
+      NEGATIVE = 0x4,
+      FLICKER = 0x8,
+      FIRE = 0x10,
+      OFF_BY_DEFAULT = 0x20,
+      FLICKER_SLOW = 0x40,
+      PULSE = 0x80,
+      PULSE_SLOW = 0x100,
+    },
+    MagicEffect = {
+      TARGET_SKILL = 0x1,
+      TARGET_ATTRIBUTE = 0x2,
+      NO_DURATION = 0x4,
+      NO_MAGNITUDE = 0x8,
+      HARMFUL = 0x10,
+      CONTINUOUS_VFX = 0x20,
+      CAN_CAST_SELF = 0x40,
+      CAN_CAST_TOUCH = 0x80,
+      CAN_CAST_TARGET = 0x100,
+      ALLOW_SPELLMAKING = 0x200,
+      ALLOW_ENCHANTING = 0x400,
+      NEGATIVE_LIGHTING = 0x800,
+      APPLIED_ONCE = 0x1000,
+      UNKNOWN_CHAMELEON = 0x2000,
+      NON_RECASTABLE = 0x4000,
+      ILLEGAL_DAEDRA = 0x8000,
+      UNREFLECTABLE = 0x10000,
+      CASTER_LINKED = 0x20000,
+    },
+    Misc = {
+      KEY = 0x1,
+    },
+    NPC = {
+      FEMALE = 0x1,
+      ESSENTIAL = 0x2,
+      RESPAWN = 0x4,
+      IS_BASE = 0x8,
+      AUTO_CALCULATE = 0x10,
+    },
+    Potion = {
+      AUTO_CALC = 0x1,
+    },
+    Record = {
+      MODIFIED = 0x2,
+      DELETED = 0x20,
+      PERSISTENT = 0x400,
+      IGNORED = 0x1000,
+      BLOCKED = 0x2000,
+    },
+    Race = {
+      PLAYABLE = 0x1,
+      BEAST_RACE = 0x2,
+    },
+    Service = {
+      BARTERS_WEAPONS = 0x1,
+      BARTERS_ARMOR = 0x2,
+      BARTERS_CLOTHING = 0x4,
+      BARTERS_BOOKS = 0x8,
+      BARTERS_INGREDIENTS = 0x10,
+      BARTERS_LOCKPICKS = 0x20,
+      BARTERS_PROBES = 0x40,
+      BARTERS_LIGHTS = 0x80,
+      BARTERS_APPARATUS = 0x100,
+      BARTERS_REPAIR_ITEMS = 0x200,
+      BARTERS_MISC_ITEMS = 0x400,
+      OFFERS_SPELLS = 0x800,
+      BARTERS_ENCHANTED_ITEMS = 0x1000,
+      BARTERS_ALCHEMY = 0x2000,
+      OFFERS_TRAINING = 0x4000,
+      OFFERS_SPELLMAKING = 0x8000,
+      OFFERS_ENCHANTING = 0x10000,
+      OFFERS_REPAIRS = 0x20000,
+    },
+    Spell = {
+      AUTO_CALCULATE = 0x1,
+      PC_START_SPELL = 0x2,
+      ALWAYS_SUCCEEDS = 0x4,
+    },
+    Weapon = {
+      IGNORES_NORMAL_WEAPON_RESISTANCE = 0x1,
+      SILVER = 0x2,
+    },
   },
   MagicEffectId = {
     None = -1,
