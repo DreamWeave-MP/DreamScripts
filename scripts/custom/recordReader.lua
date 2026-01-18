@@ -252,15 +252,17 @@ local RecordStores = tds.Hash {
 
 local TypeHandlers = {
   Activator = function(record, recordId)
-    local hash = tds.Hash {
-      objectFlags = record.flags,
-      id = recordId,
-      model = record.mesh:normalize(),
-      name = record.name,
-    }
+    local hash = tds.Hash()
 
-    local script = lowercase(record.script)
-    if script and script ~= '' then hash.script = script end
+    hash.objectFlags = numberField(record.flags)
+    hash.id = recordId
+    hash.model = path(record.mesh)
+
+    local name = RealString(record.name)
+    if name then hash.name = name end
+
+    local script = RecordId(record.script)
+    if script then hash.script = script end
 
     return hash
   end,
