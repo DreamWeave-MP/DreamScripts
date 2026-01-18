@@ -563,7 +563,7 @@
 ---@field items LeveledItemRef[]
 
 ---@class LightRecord: BaseRecord
----@field color integer[] Length 4, but I think only 3 are used
+---@field color integer[] Length 3
 ---@field icon NormalizedPath
 ---@field lightFlags integer
 ---@field model NormalizedPath

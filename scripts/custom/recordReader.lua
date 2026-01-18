@@ -822,7 +822,6 @@ local TypeHandlers = {
       numberField(tostring(record.data.color[1])),
       numberField(tostring(record.data.color[2])),
       numberField(tostring(record.data.color[3])),
-      numberField(tostring(record.data.color[4]))
     )
     hash.icon = path(record.icon)
     hash.id = recordId
