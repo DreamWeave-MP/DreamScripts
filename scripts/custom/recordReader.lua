@@ -326,6 +326,7 @@ local RecordStores = tds.Hash {
   Ingredient = tds.Hash(),
   LeveledCreature = tds.Hash(),
   LeveledItem = tds.Hash(),
+  Light = tds.Hash(),
   Static = tds.Hash(),
 }
 
@@ -810,6 +811,37 @@ local TypeHandlers = {
 
     local items = Handlers.LeveledEntry(record.items)
     if items then hash.items = items end
+
+    return hash
+  end,
+
+  Light = function(record, recordId)
+    local hash = tds.Hash()
+
+    hash.color = tds.Vec(
+      numberField(record.data.color[1]),
+      numberField(record.data.color[2]),
+      numberField(record.data.color[3]),
+      numberField(record.data.color[4])
+    )
+    hash.icon = path(record.icon)
+    hash.id = recordId
+    hash.lightFlags = numberField(record.data.flags)
+    hash.model = path(record.mesh)
+    hash.objectFlags = numberField(record.flags)
+    hash.radius = numberField(record.data.radius)
+    hash.time = numberField(record.data.value)
+    hash.value = numberField(record.data.value)
+    hash.weight = numberField(record.data.weight)
+
+    local name = RealString(record.name)
+    if name then hash.name = name end
+
+    local script = OptionalRecordId(record.script)
+    if script then hash.script = script end
+
+    local sound = OptionalRecordId(record.sound)
+    if sound then hash.sound = sound end
 
     return hash
   end,

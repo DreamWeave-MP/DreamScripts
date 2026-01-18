@@ -562,6 +562,19 @@
 --- to the level requirement for the list item to spawn.
 ---@field items LeveledItemRef[]
 
+---@class LightRecord: BaseRecord
+---@field color integer[] Length 4, but I think only 3 are used
+---@field icon NormalizedPath
+---@field lightFlags integer
+---@field model NormalizedPath
+---@field name string?
+---@field radius integer
+---@field script RecordId?
+---@field sound RecordId?
+---@field time integer
+---@field weight number
+---@field value integer
+
 ---@class MagicEffect
 ---@field area integer
 ---@field attribute AttributeId
@@ -610,4 +623,5 @@
 ---@field Ingredient table<RecordId, IngredientRecord>
 ---@field LeveledCreature table<RecordId, LeveledCreatureRecord>
 ---@field LeveledItem table<RecordId, LeveledItemRecord>
+---@field Light table<RecordId, LightRecord>
 ---@field Static table<RecordId, StaticRecord>
