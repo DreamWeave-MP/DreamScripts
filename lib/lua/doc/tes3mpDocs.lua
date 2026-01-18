@@ -113,6 +113,8 @@
 ---@field AddItemChange fun(pid: PlayerId, refId: RecordId, count: integer, charge: integer, enchantmentCharge: number, soul: string)
 ---Add a new quick key to the quick key changes for a player.
 ---@field AddQuickKey fun(pid: PlayerId, slot: integer, type: integer, itemId?: RecordId)
+---Add a new topic to the topic changes for a player.
+---@field AddTopic fun(pid: PlayerId, topicId: string)
 ---@field BanAddress fun(ipAddress: string) Given an IP Address string, bans it. Doesn't perform any validation, so caller functions need to do so themselves.
 ---Clear the list of players who will be regarded as being player's allies.
 ---@field ClearAlliedPlayersForPlayer fun(pid: PlayerId)
@@ -155,6 +157,8 @@
 ---@field ClearSynchronizedClientScriptIds fun()
 ---Clear the list of global IDs whose value changes should be sent to the server by clients.
 ---@field ClearSynchronizedClientGlobalIds fun()
+---Clear the last recorded topic changes for a player.
+---@field ClearTopicChanges fun(pid: PlayerId)
 ---@field ClearVRSettingValues fun(pid: PlayerId) Clears VR game setting values for a specific player, undoing changes made by calls to SetGameSetting
 ---Copy the contents of the read-only object list last received by the server from a player to the stored object list that can be sent by the server.
 ---@field CopyReceivedObjectListToStore fun()
@@ -629,6 +633,10 @@
 ---@field GetSpellsActiveId fun(pid: PlayerId, index: integer): RecordId
 ---Get the spell stacking state at a certain index in a player's latest spells active changes.
 ---@field GetSpellsActiveStackingState fun(pid: PlayerId, index: integer): boolean
+---Get the number of indexes in a player's latest topic changes.
+---@field GetTopicChangesSize fun(pid: PlayerId): integer
+---Get the topicId at a certain index in a player's latest topic changes.
+---@field GetTopicId fun(pid: PlayerId, index: integer): string
 ---Get the charge of the item last used by a player.
 ---@field GetUsedItemCharge fun(pid: PlayerId): integer
 ---Get the count of the item last used by a player.
@@ -675,6 +683,8 @@
 ---Display a simple messagebox at the bottom of the screen that vanishes after a few seconds.
 ---@field MessageBox fun(pid: PlayerId, id: integer, label: string)
 ---@field PasswordDialog fun(pid: PlayerId, id: GUIID, label: string, note: string) Displays an input dialog whose inputs are displayed only as asterisks
+---Play a certain animation on a player's character by sending a PlayerAnimation packet.
+---@field PlayAnimation fun(pid: PlayerId, groupname: string, mode: integer, count: integer, persist: boolean)
 ---@field PlaySpeech fun(pid: PlayerId, speechPath: string) Plays a voice file for all players on the server. Intended to be used with speechHelper interface
 ---Use the last object list received by the server as the one being read.
 ---@field ReadReceivedObjectList fun()
@@ -776,6 +786,8 @@
 ---@field SendSpellsActiveChanges fun(pid: PlayerId, sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
 ---Send a PlayerStatsDynamic packet with a player's dynamic stats (health, magicka and fatigue).
 ---@field SendStatsDynamic fun(pid: PlayerId)
+---Send a PlayerTopic packet with a player's recorded topic changes.
+---@field SendTopicChanges fun(pid: PlayerId, sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
 ---Send a VideoPlay packet.
 ---@field SendVideoPlay fun(sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
 ---Send a WorldCollisionOverride packet with the current collision overrides in the write-only worldstate.
