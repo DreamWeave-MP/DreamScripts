@@ -265,12 +265,14 @@ return I.tds.Hash {
     None = -1,
     Block = 0,
     Armorer = 1,
+    ---HACK: Duplicate some of the enums so titleCase works when loading faction records
     MediumArmor = 2,
+    Mediumarmor = 2,
     HeavyArmor = 3,
+    Heavyarmor = 3,
     BluntWeapon = 4,
+    Bluntweapon = 4,
     LongBlade = 5,
-    ---HACK: Duplicate the longblade and shortblade values so titleCase works
-    --- When loading faction records
     Longblade = 5,
     Axe = 6,
     Spear = 7,
@@ -288,12 +290,14 @@ return I.tds.Hash {
     Sneak = 19,
     Acrobatics = 20,
     LightArmor = 21,
+    Lightarmor = 21,
     ShortBlade = 22,
     Shortblade = 22,
     Marksman = 23,
     Mercantile = 24,
     Speechcraft = 25,
     HandToHand = 26,
+    Handtohand = 26,
   },
   Specialization = {
     None = -1,
