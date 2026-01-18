@@ -720,7 +720,7 @@ local TypeHandlers = {
     if record.value.type == 'String' then
       hash.value = assert(tostring(record.value))
     else
-      hash.value = numberField(record.value)
+      hash.value = numberField(tostring(record.value))
     end
 
     return hash
