@@ -150,6 +150,8 @@ function DScriptLoader.loadScript(scriptName, callerPid)
     DScriptLoader[loader](scriptPath, result)
   end
 
+  if result.eventValidators and result.eventValidators.OnLoad then result.eventValidators.OnLoad() end
+
   collectgarbage()
   return true
 end
