@@ -682,10 +682,18 @@ local TypeHandlers = {
       hashRequirement.primarySkill = numberField(requirement.primary_skill)
       hashRequirement.reputation = numberField(requirement.reputation)
 
-      hashRequirement.attributes = tds.Vec(
-        Enums.AttributeId[MandatoryRecordId(requirement.attributes[1])],
-        Enums.AttributeId[MandatoryRecordId(requirement.attributes[2])]
-      )
+      local attributes, numAttributes = nil, #requirement.attributes
+
+      if numAttributes > 0 then
+        attributes = tds.Vec()
+        attributes:resize(numAttributes)
+
+        for j, attribute in ipairs(requirement.attributes) do
+          attributes[j] = numberField(attribute)
+        end
+      end
+
+      if attributes then hashRequirement.attributes = attributes end
 
       hashRequirements[i] = hashRequirement
     end
