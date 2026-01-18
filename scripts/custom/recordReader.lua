@@ -429,7 +429,7 @@ local TypeHandlers = {
     hash.containerFlags = numberField(record.container_flags)
     hash.id = recordId
     hash.model = path(record.mesh)
-    hash.name = numberField(record.name)
+    hash.name = assert(record.name)
     hash.objectFlags = numberField(record.flags)
 
     local script = RecordId(record.script)
