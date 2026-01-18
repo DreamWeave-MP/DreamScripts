@@ -400,16 +400,24 @@ local TypeHandlers = {
     return hash
   end,
   Bodypart = function(record, recordId)
-    return tds.Hash {
-      bodypartFlags = record.data.flags,
-      bodypartType = assert(Enums.BodypartType[record.data.bodypart_type]),
-      id = recordId,
-      isVampire = record.data.vampire,
-      model = record.mesh:normalize(),
-      objectFlags = record.flags,
-      part = assert(Enums.BodypartId[record.data.part]),
-      race = lowercase(record.race),
-    }
+    local hash = tds.Hash()
+
+    hash.bodypartFlags = numberField(record.data.flags)
+    hash.bodypartType = numberField(Enums.BodypartType[record.data.bodypart_type])
+    hash.id = MandatoryRecordId(recordId)
+
+    -- This one's a bool field so we can't just assert on the value itself
+    assert(record.data.vampire ~= nil)
+    hash.isVampire = record.data.vampire
+
+    hash.model = path(record.mesh)
+    hash.objectFlags = numberField(record.flags)
+    hash.part = numberField(Enums.BodypartId[record.data.part])
+
+    local race = OptionalRecordId(record.race)
+    if race then hash.race = race end
+
+    return hash
   end,
   Book = function(record, recordId)
     return tds.Hash {
