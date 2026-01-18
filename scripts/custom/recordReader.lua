@@ -167,6 +167,34 @@ local Handlers = {
       bipedObjects[i] = hashBipedObject
     end
   end,
+  ---@param originalEffects MagicEffect[]?
+  Effects = function(originalEffects)
+    if not originalEffects then return end
+
+    local numItems = #originalEffects
+    if numItems <= 0 then return end
+
+    local newEffects = tds.Vec()
+    newEffects:resize(numItems)
+
+    for i, effect in ipairs(originalEffects) do
+      local hash = tds.Hash()
+      hash.area = numberField(effect.area)
+      hash.attribute = numberField(Enums.AttributeId[effect.attribute])
+      hash.duration = numberField(effect.duration)
+      hash.maxMagnitude = numberField(effect.max_magnitude)
+      hash.minMagnitude = numberField(effect.min_magnitude)
+      hash.range = numberField(effect.range)
+      hash.skill = numberField(Enums.SkillId[effect.skill])
+
+      --- Convert these to int representation
+      hash.magicEffect = assert(effect.magic_effect)
+
+      newEffects[i] = hash
+    end
+
+    return newEffects
+  end,
   ---@param originalInventory InventoryItem[]?
   ---@return InventoryItem[]? hashInventory If the original inventory exists and has items in it, returns it converted to a TDS hashmap
   Inventory = function(originalInventory)
@@ -286,36 +314,23 @@ local TypeHandlers = {
     return hash
   end,
   Alchemy = function(record, recordId)
-    local effects = tds.Vec()
-    effects:resize(#record.effects)
+    local hash = tds.Hash()
+    hash.objectFlags = numberField(record.flags)
+    hash.icon = path(record.icon)
+    hash.id = recordId
+    hash.model = path(record.mesh)
+    hash.potionFlags = numberField(record.data.flags)
+    hash.value = numberField(record.data.value)
+    hash.weight = numberField(record.data.weight)
 
-    for i, effect in ipairs(record.effects) do
-      effects[i] = tds.Hash {
-        area = effect.area,
-        attribute = assert(Enums.AttributeId[effect.attribute]),
-        duration = effect.duration,
-        magicEffect = effect.magic_effect,
-        maxMagnitude = effect.max_magnitude,
-        minMagnitude = effect.min_magnitude,
-        range = effect.range,
-        skill = assert(Enums.SkillId[effect.skill]),
-      }
-    end
+    local name = RealString(record.name)
+    if name then hash.name = name end
 
-    local hash = tds.Hash {
-      effects = effects,
-      objectFlags = record.flags,
-      icon = record.icon:normalize(),
-      id = recordId,
-      model = record.mesh:normalize(),
-      name = record.name,
-      potionFlags = record.data.flags,
-      value = record.data.value,
-      weight = record.data.weight,
-    }
+    local script = OptionalRecordId(record.script)
+    if script then hash.script = script end
 
-    local script = lowercase(record.script)
-    if script and script ~= '' then hash.script = script end
+    local effects = Handlers.Effects(record.effects)
+    if effects then hash.effects = effects end
 
     return hash
   end,
