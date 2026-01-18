@@ -654,8 +654,8 @@ local TypeHandlers = {
     hash.objectFlags = numberField(record.flags)
 
     print(
-      MandatoryRecordId(record.data.favored_attributes[1]),
-      MandatoryRecordId(record.data.favored_attributes[2])
+      Enums.AttributeId[MandatoryRecordId(record.data.favored_attributes[1]):titleCase()],
+      Enums.AttributeId[MandatoryRecordId(record.data.favored_attributes[2]):titleCase()]
     )
 
     hash.favoredAttributes = tds.Vec(
