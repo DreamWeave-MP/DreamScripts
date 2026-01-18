@@ -42,6 +42,14 @@ local function OptionalRecordId(value)
 end
 
 ---@param value any
+---@return RecordId?
+local function MandatoryRecordId(value)
+  local id = lowercase(value)
+  assert(id and id ~= '')
+  return id
+end
+
+---@param value any
 ---@return string? forSure
 local function RealString(value)
   local result = tostring(value)
@@ -241,7 +249,7 @@ local Handlers = {
     newSpells:resize(numSpells)
 
     for i, spellId in ipairs(spells) do
-      newSpells[i] = assert(OptionalRecordId(spellId))
+      newSpells[i] = MandatoryRecordId(spellId)
     end
 
     return newSpells
@@ -257,7 +265,7 @@ local Handlers = {
 
     for i, travelDestination in ipairs(newDestinations) do
       local destination = tds.Hash()
-      destination.cell = assert(OptionalRecordId(travelDestination.cell))
+      destination.cell = MandatoryRecordId(travelDestination.cell)
       destination.position = transform(travelDestination.position)
       destination.rotation = transform(travelDestination.rotation)
 
