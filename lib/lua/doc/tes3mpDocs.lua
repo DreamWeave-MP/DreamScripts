@@ -206,6 +206,18 @@
 ---@field GetBounty fun(pid: PlayerId): integer
 ---Searches a subfolder for the first file with a name whose matches `fileName` case-insensitively, and returns its path if found
 ---@field GetCaseInsensitiveFilename fun(folderPath: string, fileName: string): string
+---Get the description of the custom class used by a player.
+---@field GetClassDesc fun(pid: PlayerId): string
+---Get the ID of one of the two major attributes of a custom class used by a player.
+---@field GetClassMajorAttribute fun(pid: PlayerId, slot: integer): integer
+---Get the ID of one of the five major skills of a custom class used by a player.
+---@field GetClassMajorSkill fun(pid: PlayerId, slot: integer): integer
+---Get the ID of one of the five minor skills of a custom class used by a player.
+---@field GetClassMinorSkill fun(pid: PlayerId, slot: integer): integer
+---Get the name of the custom class used by a player.
+---@field GetClassName fun(pid: PlayerId): string
+---Get the specialization ID of the custom class used by a player.
+---@field GetClassSpecialization fun(pid: PlayerId): integer
 ---Get the number of indexes in the read worldstate's client globals.
 ---@field GetClientGlobalsSize fun(): integer
 ---Get the float value of the global variable at a certain index in the read worldstate's client globals.
@@ -258,6 +270,8 @@
 ---@field GetDataFileEnforcementState fun(): boolean
 ---Get the path of the server's data folder.
 ---@field GetDataPath fun(): string
+---Get the default class used by a player.
+---@field GetDefaultClass fun(pid: PlayerId): RecordId
 ---Get the draw state of a player (0 for nothing, 1 for drawn weapon, 2 for drawn spell).
 ---@field GetDrawState fun(pid: PlayerId): integer
 ---Get the number of indexes in a player's latest equipment changes.
@@ -666,6 +680,8 @@
 ---Checking if the server requires a password to connect.
 ---@field HasPassword fun(): boolean
 ---@field InputDialog fun(pid: PlayerId, id: GUIID, label: string, note: string) Displays an input dialog
+---Check whether the player is using a default class instead of a custom one.
+---@field IsClassDefault fun(pid: PlayerId): integer
 ---Check whether the object at a certain index in the read object list is a player.
 ---@field IsObjectPlayer fun(index: integer): boolean
 ---Check whether the object at a certain index in the read object list has been dropped by a player.
@@ -706,6 +722,8 @@
 ---@field SendBounty fun(pid: PlayerId)
 ---Send a CellReset packet with a list of cells.
 ---@field SendCellReset fun(pid: PlayerId, sendToOtherPlayers: boolean)
+---Send a PlayerCharClass packet about a player.
+---@field SendClass fun(pid: PlayerId)
 ---Send a ClientScriptGlobal packet with the current client script globals in the write-only worldstate.
 ---@field SendClientScriptGlobal fun(pid: PlayerId, sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
 ---Send a ClientScriptLocal packet.
@@ -821,6 +839,18 @@
 ---@field SetBounty fun(pid: PlayerId, value: integer)
 ---Set the current and ending stages of character generation for a player.
 ---@field SetCharGenStage fun(pid: PlayerId, currentStage: integer, endStage: integer)
+---Set the description of the custom class used by a player.
+---@field SetClassDesc fun(pid: PlayerId, desc: string)
+---Set the ID of one of the two major attributes of the custom class used by a player.
+---@field SetClassMajorAttribute fun(pid: PlayerId, slot: integer, attrId: integer)
+---Set the ID of one of the five major skills of the custom class used by a player.
+---@field SetClassMajorSkill fun(pid: PlayerId, slot: integer, skillId: integer)
+---Set the ID of one of the five minor skills of the custom class used by a player.
+---@field SetClassMinorSkill fun(pid: PlayerId, slot: integer, skillId: integer)
+---Set the specialization of the custom class used by a player.
+---@field SetClassSpecialization fun(pid: PlayerId, spec: integer)
+---Set the name of the custom class used by a player.
+---@field SetClassName fun(pid: PlayerId, name: string)
 ---@field SetConsoleAllowed fun(pid: PlayerId, consoleAllowed: boolean) Set whether or not a specific player may use the console
 ---Set the action count of the container item at a certain itemIndex in the container changes of the object at a certain objectIndex in the object list stored on the server.
 ---@field SetContainerItemActionCountByIndex fun(objectIndex: integer, itemIndex: integer, actionCount: integer)
@@ -846,6 +876,8 @@
 ---@field SetDay fun(day: integer)
 ---Set the world's days passed in the write-only worldstate stored on the server.
 ---@field SetDaysPassed fun(daysPassed: integer)
+---Set the default class used by a player.
+---@field SetDefaultClass fun(pid: PlayerId, id: RecordId)
 ---@field SetDifficulty fun(pid: PlayerId, difficulty: integer) Changes the difficulty for a player, but does NOT send a packet. Use SendSettings to notify clients of difficulty changes.--
 ---@field SetEnforcedLogLevel fun(pid: PlayerId, logLevel: LogLevel) Sets the enforced log level for a player. Doesn't send a packet on its own. Log level enforcement is important to prevent players from receiving information about world state they otherwise would not. Use a logLevel of -1 not to enforce this setting.
 ---Set the action type in a player's faction changes.
