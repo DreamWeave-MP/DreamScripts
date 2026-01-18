@@ -329,6 +329,7 @@ local RecordStores = tds.Hash {
   Light = tds.Hash(),
   Lockpick = tds.Hash(),
   MiscItem = tds.Hash(),
+  Npc = tds.Hash(),
   Probe = tds.Hash(),
   Static = tds.Hash(),
 }
