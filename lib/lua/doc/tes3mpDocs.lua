@@ -65,6 +65,12 @@
 ---@field AddCooldownSpell fun(pid: PlayerId, spellId: RecordId, startDay: integer, startHour: number)
 ---Set a rule string for the server details displayed in the server browser.
 ---@field AddDataFileRequirement fun(dataFilename: string, checksumString: string)
+---Add a new journal item of type ENTRY to the journal changes for a player.
+---@field AddJournalEntry fun(pid: PlayerId, quest: string, index: integer, actorRefId: RecordId)
+---Add a new journal item of type ENTRY to the journal changes for a player, with a specific timestamp.
+---@field AddJournalEntryWithTimestamp fun(pid: PlayerId, quest: string, index: integer, actorRefId: RecordId, daysPassed: integer, month: integer, day: integer)
+---Add a new journal item of type INDEX to the journal changes for a player.
+---@field AddJournalIndex fun(pid: PlayerId, quest: string, index: integer)
 ---Add a new kill count to the kill count changes.
 ---@field AddKill fun(refId: RecordId, number: integer)
 ---Add a copy of the server's temporary record of the current specified type to the stored records.
@@ -105,6 +111,8 @@
 ---Clear the list of refIds for which collision should be enforced irrespective of other settings.
 ---@field ClearEnforcedCollisionRefIds fun()
 ---@field ClearGameSettingValues fun(pid: PlayerId) Clears game setting values for a specific player, undoing changes made by calls to SetGameSetting
+---Clear the last recorded journal changes for a player.
+---@field ClearJournalChanges fun(pid: PlayerId)
 ---Clear the kill count changes for the write-only worldstate.
 ---@field ClearKillChanges fun()
 ---Clear the map changes for the write-only worldstate.
@@ -192,6 +200,16 @@
 ---@field GetIP fun(pid: PlayerId): string
 ---Check whether a player is male or not.
 ---@field GetIsMale fun(pid: PlayerId): integer
+---Get the number of indexes in a player's latest journal changes.
+---@field GetJournalChangesSize fun(pid: PlayerId): integer
+---Get the actor refId at a certain index in a player's latest journal changes.
+---@field GetJournalItemActorRefId fun(pid: PlayerId, index: integer): RecordId
+---Get the quest index at a certain index in a player's latest journal changes.
+---@field GetJournalItemIndex fun(pid: PlayerId, index: integer): integer
+---Get the quest at a certain index in a player's latest journal changes.
+---@field GetJournalItemQuest fun(pid: PlayerId, index: integer): string
+---Get the journal item type at a certain index in a player's latest journal changes.
+---@field GetJournalItemType fun(pid: PlayerId, index: integer): integer
 ---Get the number of indexes in the read worldstate's kill changes.
 ---@field GetKillChangesSize fun(): integer
 ---Get the number of kills at a certain index in the read worldstate's kill count changes.
@@ -282,6 +300,8 @@
 ---@field GetRecordValue fun(index: integer): integer
 ---Get the weight of the record at a certain index in the read worldstate's dynamic records of the current type.
 ---@field GetRecordWeight fun(index: integer): number
+---Get the a certain player's reputation.
+---@field GetReputation fun(pid: PlayerId): integer
 ---Get the scale of a player.
 ---@field GetScale fun(pid: PlayerId): number
 ---Get the script error ignoring state of the server.
@@ -382,11 +402,15 @@
 ---@field SendClientScriptSettings fun(pid: PlayerId, sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
 ---Send a PlayerCooldowns packet with a player's recorded cooldown changes.
 ---@field SendCooldownChanges fun(pid: PlayerId)
+---Send a PlayerJournal packet with a player's recorded journal changes.
+---@field SendJournalChanges fun(pid: PlayerId, sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
 ---Send a PlayerLevel packet with a player's character level and progress towards the next level up.
 ---@field SendLevel fun(pid: PlayerId)
 ---@field SendMessage fun(pid: PlayerId, message: string, sendToAll: boolean?) Emits a chat message to a specific player, optionally relaying it to all players
 ---Send a RecordDynamic packet with the current specified record type.
 ---@field SendRecordDynamic fun(pid: PlayerId, sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
+---Send a PlayerReputation packet with a player's recorded reputation.
+---@field SendReputation fun(pid: PlayerId, sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
 ---@field SendSettings fun(pid: PlayerId, sendToAll: boolean, skipAttachedPlayer: boolean) After constructing a settings packet using `SetEnforcedLogLevel`, `SetPhysicsFramerate`, SetGameSettingValue`, `SetVRSettingValue`, or `SetDifficulty`, send it to players, optionally including or omitting all players or just the `pid` provided
 ---Send a PlayerShapeshift packet about a player.
 ---@field SendShapeshift fun(pid: PlayerId)
@@ -632,6 +656,8 @@
 ---@field SetRecordVolume fun(volume: number)
 ---Set the weight of the temporary record stored on the server for the currently specified record type.
 ---@field SetRecordWeight fun(weight: number)
+---Set the reputation of a certain player.
+---@field SetReputation fun(pid: PlayerId, value: integer)
 ---Set whether the player's stats should be reset based on their current race as the result of a PlayerBaseInfo packet.
 ---@field SetResetStats fun(pid: PlayerId, resetStats: boolean)
 ---Set a rule string for the server details displayed in the server browser.
