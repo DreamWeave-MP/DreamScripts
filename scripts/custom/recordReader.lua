@@ -653,14 +653,9 @@ local TypeHandlers = {
     hash.id = MandatoryRecordId(recordId)
     hash.objectFlags = numberField(record.flags)
 
-    print(
-      Enums.AttributeId[MandatoryRecordId(record.data.favored_attributes[1]):titleCase()],
-      Enums.AttributeId[MandatoryRecordId(record.data.favored_attributes[2]):titleCase()]
-    )
-
     hash.favoredAttributes = tds.Vec(
-      assert(Enums.AttributeId[record.data.favored_attributes[1]]),
-      assert(Enums.AttributeId[record.data.favored_attributes[2]])
+      assert(Enums.AttributeId[MandatoryRecordId(record.data.favored_attributes[1]):titleCase()]),
+      assert(Enums.AttributeId[MandatoryRecordId(record.data.favored_attributes[2]):titleCase()])
     )
 
     hash.favoredSkills = tds.Vec(
