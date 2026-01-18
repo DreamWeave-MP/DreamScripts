@@ -663,7 +663,10 @@ local TypeHandlers = {
         MandatoryRecordId(record.data.favored_skills[1]):titleCase()
       ),
       assert(Enums.SkillId[MandatoryRecordId(record.data.favored_skills[2]):titleCase()]),
-      assert(Enums.SkillId[MandatoryRecordId(record.data.favored_skills[3]):titleCase()]),
+      assert(
+        Enums.SkillId[MandatoryRecordId(record.data.favored_skills[3]):titleCase()],
+        MandatoryRecordId(record.data.favored_skills[3]):titleCase()
+      ),
       assert(Enums.SkillId[MandatoryRecordId(record.data.favored_skills[4]):titleCase()]),
       assert(Enums.SkillId[MandatoryRecordId(record.data.favored_skills[5]):titleCase()]),
       assert(Enums.SkillId[MandatoryRecordId(record.data.favored_skills[6]):titleCase()]),
