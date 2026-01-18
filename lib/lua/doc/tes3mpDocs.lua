@@ -107,6 +107,8 @@
 ---@field AddObject fun()
 ---Add an ally to a player's list of allied players.
 ---@field AddAlliedPlayerForPlayer fun(pid: PlayerId, alliedPlayerPid: PlayerId)
+---Add an item change to a player's inventory changes.
+---@field AddItemChange fun(pid: PlayerId, refId: RecordId, count: integer, charge: integer, enchantmentCharge: number, soul: string)
 ---@field BanAddress fun(ipAddress: string) Given an IP Address string, bans it. Doesn't perform any validation, so caller functions need to do so themselves.
 ---Clear the list of players who will be regarded as being player's allies.
 ---@field ClearAlliedPlayersForPlayer fun(pid: PlayerId)
@@ -123,6 +125,8 @@
 ---Clear the list of refIds for which collision should be enforced irrespective of other settings.
 ---@field ClearEnforcedCollisionRefIds fun()
 ---@field ClearGameSettingValues fun(pid: PlayerId) Clears game setting values for a specific player, undoing changes made by calls to SetGameSetting
+---Clear the last recorded inventory changes for a player.
+---@field ClearInventoryChanges fun(pid: PlayerId)
 ---Clear the last recorded journal changes for a player.
 ---@field ClearJournalChanges fun(pid: PlayerId)
 ---Clear the kill count changes for the write-only worldstate.
@@ -163,6 +167,8 @@
 ---@field DoesPlayerHavePlayerKiller fun(pid: PlayerId): boolean
 ---Check whether the spell at a certain index in a player's latest spells active changes has a player as its caster.
 ---@field DoesSpellsActiveHavePlayerCaster fun(pid: PlayerId, index: integer): boolean
+---Equip an item in a certain slot of the equipment of a player.
+---@field EquipItem fun(pid: PlayerId, slot: integer, refId: RecordId, count: integer, charge: integer, enchantmentCharge?: number)
 ---Generate a random string of a particular length that only contains letters and numbers.
 ---@field GenerateRandomString fun(length: integer): string
 ---Get the architecture type used by the server.
@@ -240,6 +246,20 @@
 ---@field GetDataPath fun(): string
 ---Get the draw state of a player (0 for nothing, 1 for drawn weapon, 2 for drawn spell).
 ---@field GetDrawState fun(pid: PlayerId): integer
+---Get the number of indexes in a player's latest equipment changes.
+---@field GetEquipmentChangesSize fun(pid: PlayerId): integer
+---Get the slot used for the equipment item at a specific index in the most recent equipment changes.
+---@field GetEquipmentChangesSlot fun(pid: PlayerId, changeIndex: integer): integer
+---Get the charge of the item in a certain slot of the equipment of a player.
+---@field GetEquipmentItemCharge fun(pid: PlayerId, slot: integer): integer
+---Get the count of the item in a certain slot of the equipment of a player.
+---@field GetEquipmentItemCount fun(pid: PlayerId, slot: integer): integer
+---Get the enchantment charge of the item in a certain slot of the equipment of a player.
+---@field GetEquipmentItemEnchantmentCharge fun(pid: PlayerId, slot: integer): number
+---Get the refId of the item in a certain slot of the equipment of a player.
+---@field GetEquipmentItemRefId fun(pid: PlayerId, slot: integer): RecordId
+---Get the number of slots used for equipment.
+---@field GetEquipmentSize fun(): integer
 ---Get the base fatigue of the player.
 ---@field GetFatigueBase fun(pid: PlayerId): number
 ---Get the current fatigue of the player.
@@ -252,6 +272,20 @@
 ---@field GetHealthBase fun(pid: PlayerId): number
 ---Get the current health of the player.
 ---@field GetHealthCurrent fun(pid: PlayerId): number
+---Get the action type used in a player's latest inventory changes.
+---@field GetInventoryChangesAction fun(pid: PlayerId): integer
+---Get the number of indexes in a player's latest inventory changes.
+---@field GetInventoryChangesSize fun(pid: PlayerId): integer
+---Get the charge of the item at a certain index in a player's latest inventory changes.
+---@field GetInventoryItemCharge fun(pid: PlayerId, index: integer): integer
+---Get the count of the item at a certain index in a player's latest inventory changes.
+---@field GetInventoryItemCount fun(pid: PlayerId, index: integer): integer
+---Get the enchantment charge of the item at a certain index in a player's latest inventory changes.
+---@field GetInventoryItemEnchantmentCharge fun(pid: PlayerId, index: integer): number
+---Get the refId of the item at a certain index in a player's latest inventory changes.
+---@field GetInventoryItemRefId fun(pid: PlayerId, index: integer): RecordId
+---Get the soul of the item at a certain index in a player's latest inventory changes.
+---@field GetInventoryItemSoul fun(pid: PlayerId, index: integer): string
 ---Get the IP address of a certain player.
 ---@field GetIP fun(pid: PlayerId): string
 ---Check whether a player is male or not.
@@ -567,6 +601,16 @@
 ---@field GetSpellsActiveId fun(pid: PlayerId, index: integer): RecordId
 ---Get the spell stacking state at a certain index in a player's latest spells active changes.
 ---@field GetSpellsActiveStackingState fun(pid: PlayerId, index: integer): boolean
+---Get the charge of the item last used by a player.
+---@field GetUsedItemCharge fun(pid: PlayerId): integer
+---Get the count of the item last used by a player.
+---@field GetUsedItemCount fun(pid: PlayerId): integer
+---Get the enchantment charge of the item last used by a player.
+---@field GetUsedItemEnchantmentCharge fun(pid: PlayerId): number
+---Get the refId of the item last used by a player.
+---@field GetUsedItemRefId fun(pid: PlayerId): RecordId
+---Get the soul of the item last used by a player.
+---@field GetUsedItemSoul fun(pid: PlayerId): string
 ---Get the videoFilename of the object at a certain index in the read object list.
 ---@field GetVideoFilename fun(index: integer): string
 ---Get the current weather in the read worldstate.
@@ -579,6 +623,8 @@
 ---@field GetWeatherRegion fun(): string
 ---Get the transition factor of the weather in the read worldstate.
 ---@field GetWeatherTransitionFactor fun(): number
+---Check whether a player has equipped an item with a certain refId in any slot.
+---@field HasItemEquipped fun(pid: PlayerId, refId: RecordId): boolean
 ---Checking if the server requires a password to connect.
 ---@field HasPassword fun(): boolean
 ---@field InputDialog fun(pid: PlayerId, id: GUIID, label: string, note: string) Displays an input dialog
@@ -632,6 +678,12 @@
 ---@field SendDoorDestination fun(sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
 ---Send a DoorState packet.
 ---@field SendDoorState fun(sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
+---Send a PlayerEquipment packet with a player's equipment.
+---@field SendEquipment fun(pid: PlayerId)
+---Send a PlayerInventory packet with a player's recorded inventory changes.
+---@field SendInventoryChanges fun(pid: PlayerId, sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
+---Send a PlayerItemUse causing a player to use their recorded usedItem.
+---@field SendItemUse fun(pid: PlayerId)
 ---Send a PlayerJournal packet with a player's recorded journal changes.
 ---@field SendJournalChanges fun(pid: PlayerId, sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
 ---Send a PlayerLevel packet with a player's character level and progress towards the next level up.
@@ -765,6 +817,8 @@
 ---@field SetHostname fun(name: string)
 ---Set the world's hour in the write-only worldstate stored on the server.
 ---@field SetHour fun(hour: number)
+---Set the action type in a player's inventory changes.
+---@field SetInventoryChangesAction fun(pid: PlayerId, action: integer)
 ---Set whether a player is male or not.
 ---@field SetIsMale fun(pid: PlayerId, state: integer)
 ---Set the character level of a player.
@@ -1081,6 +1135,8 @@
 ---@field SetYear fun(year: integer)
 ---@field StopServer fun(exitCode: integer) Terminate the server with a provided exit code
 ---@field UnbanAddress fun(ipAddress: string) Given an IP Address string, unbans it. Doesn't perform any validation, so caller functions need to do so themselves.
+---Unequip the item in a certain slot of the equipment of a player.
+---@field UnequipItem fun(pid: PlayerId, slot: integer)
 ---Whether placed objects with collision turned on should use actor collision, i.e. whether they should be slippery and prevent players from standing on them.
 ---@field UseActorCollisionForPlacedObjects fun(useActorCollision: boolean)
 tes3mp = tes3mp
