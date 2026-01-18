@@ -734,10 +734,10 @@ local TypeHandlers = {
     hash.weight = numberField(record.data.weight)
 
     hash.effects = tds.Vec(
-      numberField(Enums.MagicEffectId[record.data.effects[1]]),
-      numberField(Enums.MagicEffectId[record.data.effects[2]]),
-      numberField(Enums.MagicEffectId[record.data.effects[3]]),
-      numberField(Enums.MagicEffectId[record.data.effects[4]])
+      numberField(Enums.MagicEffectId[RealString(record.data.effects[1])]),
+      numberField(Enums.MagicEffectId[RealString(record.data.effects[2])]),
+      numberField(Enums.MagicEffectId[RealString(record.data.effects[3])]),
+      numberField(Enums.MagicEffectId[RealString(record.data.effects[4])])
     )
 
     hash.skills = tds.Vec(
