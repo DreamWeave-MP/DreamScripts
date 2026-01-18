@@ -654,8 +654,8 @@ local TypeHandlers = {
     hash.objectFlags = numberField(record.flags)
 
     hash.favoredAttributes = tds.Vec(
-      assert(Enums.AttributeId[numberField(record.data.favored_attributes[1])]),
-      assert(Enums.AttributeId[numberField(record.data.favored_attributes[2])])
+      assert(Enums.AttributeId[numberField(record.data.favored_attributes[1])], record.data.favored_attributes[1]),
+      assert(Enums.AttributeId[numberField(record.data.favored_attributes[2])], record.data.favored_attributes[2])
     )
 
     hash.favoredSkills = tds.Vec(
