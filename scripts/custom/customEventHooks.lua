@@ -126,7 +126,7 @@ function customEventHooks.safeCall(fn, ...)
 end
 
 ---@param event string
----@param ... any[]
+---@param ... any
 ---@return EventStatusTable
 function customEventHooks.triggerValidators(event, ...)
     event = event:lower()
@@ -169,7 +169,7 @@ end
 
 ---@param event string
 ---@param eventStatus EventStatusTable
----@param args any[]
+---@param args any
 function customEventHooks.triggerHandlers(event, eventStatus, args)
     event = event:lower()
     local eventHandlers = customEventHooks.handlers[event]
