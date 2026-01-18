@@ -527,4 +527,5 @@
 ---@field Clothing table<RecordId, ClothingRecord>
 ---@field Container table<RecordId, ContainerRecord>
 ---@field Creature table<RecordId, CreatureRecord>
+---@field Door table<RecordId, DoorRecord>
 ---@field Static table<RecordId, StaticRecord>
