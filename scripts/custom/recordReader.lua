@@ -734,24 +734,24 @@ local TypeHandlers = {
     hash.weight = numberField(record.data.weight)
 
     hash.effects = tds.Vec(
-      assert(Enums.MagicEffectId[numberField(record.data.effects[1])]),
-      assert(Enums.MagicEffectId[numberField(record.data.effects[2])]),
-      assert(Enums.MagicEffectId[numberField(record.data.effects[3])]),
-      assert(Enums.MagicEffectId[numberField(record.data.effects[4])])
+      numberField(Enums.MagicEffectId[record.data.effects[1]]),
+      numberField(Enums.MagicEffectId[record.data.effects[2]]),
+      numberField(Enums.MagicEffectId[record.data.effects[3]]),
+      numberField(Enums.MagicEffectId[record.data.effects[4]])
     )
 
     hash.skills = tds.Vec(
-      assert(Enums.SkillId[numberField(record.data.skills[1])]),
-      assert(Enums.SkillId[numberField(record.data.skills[2])]),
-      assert(Enums.SkillId[numberField(record.data.skills[3])]),
-      assert(Enums.SkillId[numberField(record.data.skills[4])])
+      numberField(Enums.SkillId[record.data.skills[1]]),
+      numberField(Enums.SkillId[record.data.skills[2]]),
+      numberField(Enums.SkillId[record.data.skills[3]]),
+      numberField(Enums.SkillId[record.data.skills[4]])
     )
 
     hash.attributes = tds.Vec(
-      assert(Enums.AttributeId[numberField(record.data.attributes[1])]),
-      assert(Enums.AttributeId[numberField(record.data.attributes[2])]),
-      assert(Enums.AttributeId[numberField(record.data.attributes[3])]),
-      assert(Enums.AttributeId[numberField(record.data.attributes[4])])
+      numberField(Enums.AttributeId[record.data.attributes[1]]),
+      numberField(Enums.AttributeId[record.data.attributes[2]]),
+      numberField(Enums.AttributeId[record.data.attributes[3]]),
+      numberField(Enums.AttributeId[record.data.attributes[4]])
     )
 
     local name = RealString(record.name)
