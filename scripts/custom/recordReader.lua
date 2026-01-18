@@ -73,7 +73,7 @@ local AIPackageHandlers = {
   AiActivatePackage = function(package)
     local hash = tds.Hash()
     hash.reset = numberField(package.reset)
-    hash.target = numberField(package.target)
+    hash.target = assert(package.target)
     hash.type = enumerations.ai.ACTIVATE
   end,
   AiEscortPackage = function(package)
@@ -81,7 +81,7 @@ local AIPackageHandlers = {
 
     hash.duration = numberField(package.duration)
     hash.reset = numberField(package.reset)
-    hash.target = numberField(package.target)
+    hash.target = assert(package.target)
     hash.type = enumerations.ai.ESCORT
 
     local location = transform(package.location)
@@ -97,7 +97,7 @@ local AIPackageHandlers = {
 
     hash.duration = numberField(package.duration)
     hash.reset = numberField(package.reset)
-    hash.target = numberField(package.target)
+    hash.target = assert(package.target)
     hash.type = enumerations.ai.FOLLOW
 
     local location = transform(package.location)
