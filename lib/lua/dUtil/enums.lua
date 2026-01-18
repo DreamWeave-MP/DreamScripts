@@ -1,8 +1,6 @@
-local dUtil = require 'dUtil.init'
-local tableHelper = require 'tes3mp.util.table'
-tableHelper.print(dUtil)
+local I = require 'interfaces'
 
-return dUtil.table(dUtil.tableType.HASH, nil, {
+return I.tds.Hash {
   ApparatusType = {
     MortarAndPestle = 0,
     Alembic = 1,
@@ -110,6 +108,12 @@ return dUtil.table(dUtil.tableType.HASH, nil, {
     OnSelf = 0,
     OnTouch = 1,
     OnTarget = 2,
+  },
+  EnchantType = {
+    CastOnce = 0,
+    CastOnStrike = 1,
+    CastWhenUsed = 2,
+    ConstantEffect = 3,
   },
   MagicEffectId = {
     None = -1,
@@ -293,4 +297,4 @@ return dUtil.table(dUtil.tableType.HASH, nil, {
     Magic = 1,
     Stealth = 2,
   }
-})
+}

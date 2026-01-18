@@ -299,6 +299,7 @@ local RecordStores = tds.Hash {
   Container = tds.Hash(),
   Creature = tds.Hash(),
   Door = tds.Hash(),
+  Enchanting = tds.Hash(),
   Static = tds.Hash(),
 }
 
@@ -600,6 +601,20 @@ local TypeHandlers = {
 
     local script = OptionalRecordId(record.script)
     if script then hash.script = script end
+
+    return hash
+  end,
+
+  Enchanting = function(record, recordId)
+    local hash = tds.Hash()
+
+    hash.cost = numberField(record.data.cost)
+    hash.effects = assert(Handlers.Effects(record.effects))
+    hash.enchantType = numberField(Enums.EnchantType[record.data.enchant_type])
+    hash.enchantFlags = numberField(record.data.flags)
+    hash.id = MandatoryRecordId(recordId)
+    hash.maxCharge = numberField(record.data.max_charge)
+    hash.objectFlags = numberField(record.flags)
 
     return hash
   end,
