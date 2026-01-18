@@ -17,77 +17,175 @@ if not tds or not tes3 then
 end
 
 local Enums = require 'dUtil.enums'
-local RecordPathFormatter = 'custom/recordParser/records/%s/%s.json'
 
----@param string string
+---@param value any
 ---@return string? lowercased
-local function lowercase(string)
-  if string then return tostring(string):lower() end
+local function lowercase(value)
+  if value then return tostring(value):lower() end
+end
+
+local function numberField(value)
+  return assert(tonumber(value))
+end
+
+---@param value any
+---@return NormalizedPath? lowercased
+local function path(value)
+  if value then return assert(tostring(value):normalize()) end
+end
+
+---@param value any
+---@return RecordId?
+local function RecordId(value)
+  local id = lowercase(value)
+  if id and id ~= '' then return id end
+end
+
+---@param ... any
+---@return any[]
+local function vector(...)
+  return tds.Vec(...)
+end
+
+---@param trans number[] array with three numeric values
+local function transform(trans)
+  assert(#trans == 3)
+  return vector(tonumber(trans[1]), tonumber(trans[2]), tonumber(trans[3]))
+end
+
+local function TravelDestination(destinations)
+  if not destinations then return end
+
+  local numDestinations = #destinations
+  if numDestinations <= 0 then return end
+
+  local newDestinations = tds.Vec()
+  newDestinations:resize(#destinations)
+
+  for i, travelDestination in ipairs(newDestinations) do
+    local destination = tds.Hash()
+    destination.cell = assert(RecordId(travelDestination.cell))
+    destination.position = transform(travelDestination.position)
+    destination.rotation = transform(travelDestination.rotation)
+
+    newDestinations[i] = destination
+  end
+
+  return newDestinations
 end
 
 local AIPackageHandlers = {
   AiActivatePackage = function(package)
-    return tds.Hash {
-      reset = package.reset,
-      target = package.target,
-      type = enumerations.ai.ACTIVATE,
-    }
+    local hash = tds.Hash()
+    hash.reset = assert(package.reset)
+    hash.target = assert(package.target)
+    hash.type = enumerations.ai.ACTIVATE
   end,
   AiEscortPackage = function(package)
-    return tds.Hash {
-      cell = lowercase(package.cell),
-      duration = package.duration,
-      location = tds.Vec {
-        tonumber(package.location[1]),
-        tonumber(package.location[2]),
-        tonumber(package.location[3]),
-      },
-      reset = package.reset,
-      target = package.target,
-      type = enumerations.ai.ESCORT,
-    }
+    local hash = tds.Hash()
+
+    hash.cell = assert(lowercase(package.cell))
+    hash.duration = assert(package.duration)
+    hash.reset = assert(package.reset)
+    hash.target = assert(package.target)
+    hash.type = enumerations.ai.ESCORT
+
+    local location = transform(package.location)
+    if location then hash.location = location end
+
+    return hash
   end,
   AiFollowPackage = function(package)
-    return tds.Hash {
-      cell = lowercase(package.cell),
-      duration = package.duration,
-      location = tds.Vec {
-        tonumber(package.location[1]),
-        tonumber(package.location[2]),
-        tonumber(package.location[3]),
-      },
-      reset = package.reset,
-      target = package.target,
-      type = enumerations.ai.FOLLOW,
-    }
+    local hash = tds.Hash()
+
+    hash.cell = assert(lowercase(package.cell))
+    hash.duration = assert(package.duration)
+    hash.reset = assert(package.reset)
+    hash.target = assert(package.target)
+    hash.type = enumerations.ai.FOLLOW
+
+    local location = transform(package.location)
+    if location then hash.location = location end
+
+    return hash
   end,
   AiTravelPackage = function(package)
-    return tds.Hash {
-      location = tds.Vec {
-        tonumber(package.location[1]),
-        tonumber(package.location[2]),
-        tonumber(package.location[3]),
-      },
-      reset = package.reset,
-      type = enumerations.ai.TRAVEL,
-    }
+    local hash = tds.Hash()
+
+    hash.location = assert(transform(package.location))
+    hash.reset = assert(package.reset)
+    hash.type = enumerations.ai.TRAVEL
+
+    return hash
   end,
   AiWanderPackage = function(package)
-    return tds.Hash {
-      distance = package.distance,
-      duration = package.duration,
-      gameHour = package.game_hour,
-      idle2    = package.idle2,
-      idle3    = package.idle3,
-      idle4    = package.idle4,
-      idle5    = package.idle5,
-      idle6    = package.idle6,
-      idle7    = package.idle7,
-      idle8    = package.idle8,
-      idle9    = package.idle9,
-      reset    = package.reset,
-      type     = enumerations.ai.WANDER,
-    }
+    local hash    = tds.hash()
+
+    hash.distance = assert(package.distance)
+    hash.duration = assert(package.duration)
+    hash.gameHour = assert(package.game_hour)
+    hash.idle2    = assert(package.idle2)
+    hash.idle3    = assert(package.idle3)
+    hash.idle4    = assert(package.idle4)
+    hash.idle5    = assert(package.idle5)
+    hash.idle6    = assert(package.idle6)
+    hash.idle7    = assert(package.idle7)
+    hash.idle8    = assert(package.idle8)
+    hash.idle9    = assert(package.idle9)
+    hash.reset    = assert(package.reset)
+    hash.type     = enumerations.ai.WANDER
+
+    return hash
+  end,
+}
+
+local Handlers = {
+  BipedObjects = function(biped_objects)
+    local numObjects, bipedObjects = #biped_objects, nil
+
+    if numObjects <= 0 then return end
+
+    bipedObjects = tds.Vec()
+    bipedObjects:resize(numObjects)
+
+    for i, bipedObject in ipairs(biped_objects) do
+      local hashBipedObject = tds.Hash()
+
+      hashBipedObject.bipedObjectType = assert(Enums.BipedObjectType[bipedObject.biped_object_type])
+      local malePart = RecordId(bipedObject.male_bodypart)
+      local femalePart = RecordId(bipedObject.female_bodypart)
+
+      if malePart then
+        hashBipedObject.malePart = malePart
+      end
+
+      if femalePart then
+        hashBipedObject.femalePart = femalePart
+      end
+
+      bipedObjects[i] = hashBipedObject
+    end
+  end,
+  ---@param originalInventory InventoryItem[]?
+  ---@return InventoryItem[]? hashInventory If the original inventory exists and has items in it, returns it converted to a TDS hashmap
+  Inventory = function(originalInventory)
+    if not originalInventory then return end
+
+    local numItems = #originalInventory
+    if numItems <= 0 then return end
+
+    local inventory = tds.Vec()
+    inventory:resize(numItems)
+
+    for i, item in ipairs(originalInventory) do
+      local inventoryItem = tds.Hash()
+
+      inventoryItem[lowercase(item[2])] = item[1]
+
+      inventory[i] = inventoryItem
+    end
+
+    return inventory
   end,
 }
 
@@ -272,139 +370,87 @@ local TypeHandlers = {
     }
   end,
   Class = function(record, recordId)
-    return tds.Hash {
-      attribute = tds.Vec(
-        assert(Enums.AttributeId[record.data.attribute1]),
-        assert(Enums.AttributeId[record.data.attribute2])
-      ),
-      id = recordId,
-      major = tds.Vec(
-        assert(Enums.SkillId[record.data.major1]),
-        assert(Enums.SkillId[record.data.major2]),
-        assert(Enums.SkillId[record.data.major3]),
-        assert(Enums.SkillId[record.data.major4]),
-        assert(Enums.SkillId[record.data.major5])
-      ),
-      minor = tds.Vec(
-        assert(Enums.SkillId[record.data.minor1]),
-        assert(Enums.SkillId[record.data.minor2]),
-        assert(Enums.SkillId[record.data.minor3]),
-        assert(Enums.SkillId[record.data.minor4]),
-        assert(Enums.SkillId[record.data.minor5])
-      ),
-      objectFlags = record.flags,
-      services = record.data.services,
-      specialization = assert(Enums.Specialization[record.data.specialization]),
-    }
+    local hash = tds.Hash()
+    hash.attribute = tds.Vec(
+      numberField(Enums.AttributeId[record.data.attribute1]),
+      numberField(Enums.AttributeId[record.data.attribute2])
+    )
+
+    hash.id = recordId
+    hash.major = tds.Vec(
+      numberField(Enums.SkillId[record.data.major1]),
+      numberField(Enums.SkillId[record.data.major2]),
+      numberField(Enums.SkillId[record.data.major3]),
+      numberField(Enums.SkillId[record.data.major4]),
+      numberField(Enums.SkillId[record.data.major5])
+    )
+
+    hash.minor = tds.Vec(
+      numberField(Enums.SkillId[record.data.minor1]),
+      numberField(Enums.SkillId[record.data.minor2]),
+      numberField(Enums.SkillId[record.data.minor3]),
+      numberField(Enums.SkillId[record.data.minor4]),
+      numberField(Enums.SkillId[record.data.minor5])
+    )
+
+    hash.objectFlags = numberField(record.flags)
+    hash.services = numberField(record.data.services)
+    hash.specialization = numberField(Enums.Specialization[record.data.specialization])
+
+    return hash
   end,
   Clothing = function(record, recordId)
-    local numObjects, bipedObjects = #record.biped_objects, nil
+    local bipedObjects = Handlers.BipedObjects(record.biped_objects)
 
-    if numObjects > 0 then
-      bipedObjects = tds.Vec()
-      bipedObjects:resize(numObjects)
-
-      for i, bipedObject in ipairs(record.biped_objects) do
-        local hashBipedObject = tds.Hash()
-
-        hashBipedObject.bipedObjectType = assert(Enums.BipedObjectType[bipedObject.biped_object_type])
-        local malePart, femalePart = lowercase(bipedObject.male_bodypart), lowercase(bipedObject.female_bodypart)
-
-        if malePart and malePart ~= '' then
-          hashBipedObject.malePart = malePart
-        end
-
-        if femalePart and femalePart ~= '' then
-          hashBipedObject.femalePart = femalePart
-        end
-
-        bipedObjects[i] = hashBipedObject
-      end
-    end
-
-    local hash = tds.Hash {
-      clothingType = assert(Enums.ClothingType[record.data.clothing_type]),
-      enchantmentValue = record.data.enchantment,
-      icon = record.icon:normalize(),
-      id = recordId,
-      model = record.mesh:normalize(),
-      name = record.name,
-      objectFlags = record.flags,
-      weight = record.data.weight,
-      value = record.data.value,
-    }
+    local hash = tds.Hash()
+    hash.clothingType = numberField(Enums.ClothingType[record.data.clothing_type])
+    hash.enchantmentValue = numberField(record.data.enchantment)
+    hash.icon = path(record.icon)
+    hash.id = recordId
+    hash.model = path(record.mesh)
+    hash.name = numberField(record.name)
+    hash.objectFlags = numberField(record.flags)
+    hash.weight = numberField(record.data.weight)
+    hash.value = numberField(record.data.value)
 
     if bipedObjects then hash.parts = bipedObjects end
 
-    local enchantment = lowercase(record.enchanting)
-    if enchantment and enchantment ~= '' then hash.enchantment = enchantment end
+    local enchantment = RecordId(record.enchanting)
+    if enchantment then hash.enchantment = enchantment end
 
-    local script = lowercase(record.script)
-    if script and script ~= '' then hash.script = script end
+    local script = RecordId(record.script)
+    if script then hash.script = script end
 
     return hash
   end,
   Container = function(record, recordId)
-    local inventory = tds.Vec()
-    inventory:resize(#record.inventory)
+    local hash = tds.Hash()
+    hash.capacity = numberField(record.encumbrance)
+    hash.containerFlags = numberField(record.container_flags)
+    hash.id = recordId
+    hash.model = path(record.mesh)
+    hash.name = numberField(record.name)
+    hash.objectFlags = numberField(record.flags)
 
-    for i, item in ipairs(record.inventory) do
-      inventory[i] = tds.Hash { [lowercase(item[2])] = item[1] }
-    end
+    local script = RecordId(record.script)
+    if script then hash.script = script end
 
-    local hash = tds.Hash {
-      capacity = record.encumbrance,
-      containerFlags = record.container_flags,
-      id = recordId,
-      inventory = inventory,
-      model = record.mesh:normalize(),
-      name = record.name,
-      objectFlags = record.flags,
-    }
-
-    local script = lowercase(record.script)
-    if script and script ~= '' then hash.script = script end
+    local inventory = Handlers.Inventory(record.inventory)
+    if inventory then hash.inventory = inventory end
 
     return hash
   end,
   Creature = function(record, recordId)
-    local aiPackages, destinations, inventory, spells = tds.Vec(), nil, tds.Vec(), tds.Vec()
+    local aiPackages, spells = tds.Vec(), tds.Vec()
 
     aiPackages:resize(#record.ai_packages)
     for i, aiPackage in ipairs(record.ai_packages) do
       aiPackages[i] = AIPackageHandlers[aiPackage.type](aiPackage)
     end
 
-    inventory:resize(#record.inventory)
-    for i, item in ipairs(record.inventory) do
-      inventory[i] = tds.Hash { [lowercase(item[2])] = item[1] }
-    end
-
     spells:resize(#record.spells)
     for i, spellId in ipairs(record.spells) do
-      spells[i] = assert(lowercase(spellId))
-    end
-
-    local numDestinations = #record.travel_destinations
-    if numDestinations > 0 then
-      destinations = tds.Vec()
-      destinations:resize(#record.travel_destinations)
-
-      for i, travelDestination in ipairs(record.travel_destinations) do
-        destinations[i] = tds.Hash {
-          cell = lowercase(travelDestination.cell),
-          position = tds.Vec {
-            tonumber(travelDestination.position[1]),
-            tonumber(travelDestination.position[2]),
-            tonumber(travelDestination.position[3]),
-          },
-          rotation = tds.Vec {
-            tonumber(travelDestination.rotation[1]),
-            tonumber(travelDestination.rotation[2]),
-            tonumber(travelDestination.rotation[3]),
-          },
-        }
-      end
+      spells[i] = assert(RecordId(spellId))
     end
 
     local creatureHash = tds.Hash {
@@ -432,7 +478,6 @@ local TypeHandlers = {
       health = record.data.health,
       id = recordId,
       intelligence = record.data.intelligence,
-      inventory = inventory,
       level = record.data.level,
       luck = record.data.luck,
       magicAbility = record.data.magic,
@@ -457,7 +502,11 @@ local TypeHandlers = {
     local sound = lowercase(record.sound)
     if sound and sound ~= '' then creatureHash.sound = sound end
 
+    local destinations = TravelDestination(record.travel_destinations)
     if destinations then creatureHash.travelDestinations = destinations end
+
+    local inventory = Handlers.Inventory(record.inventory)
+    if inventory then creatureHash.inventory = inventory end
 
     return creatureHash
   end,
