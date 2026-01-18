@@ -107,6 +107,8 @@
 ---@field AddObject fun()
 ---Add an ally to a player's list of allied players.
 ---@field AddAlliedPlayerForPlayer fun(pid: PlayerId, alliedPlayerPid: PlayerId)
+---Add the server's temporary faction to the faction changes for a player.
+---@field AddFaction fun(pid: PlayerId)
 ---Add an item change to a player's inventory changes.
 ---@field AddItemChange fun(pid: PlayerId, refId: RecordId, count: integer, charge: integer, enchantmentCharge: number, soul: string)
 ---Add a new quick key to the quick key changes for a player.
@@ -126,6 +128,8 @@
 ---@field ClearDestinationOverrides fun()
 ---Clear the list of refIds for which collision should be enforced irrespective of other settings.
 ---@field ClearEnforcedCollisionRefIds fun()
+---Clear the last recorded faction changes for a player.
+---@field ClearFactionChanges fun(pid: PlayerId)
 ---@field ClearGameSettingValues fun(pid: PlayerId) Clears game setting values for a specific player, undoing changes made by calls to SetGameSetting
 ---Clear the last recorded inventory changes for a player.
 ---@field ClearInventoryChanges fun(pid: PlayerId)
@@ -264,6 +268,18 @@
 ---@field GetEquipmentItemRefId fun(pid: PlayerId, slot: integer): RecordId
 ---Get the number of slots used for equipment.
 ---@field GetEquipmentSize fun(): integer
+---Get the action type used in a player's latest faction changes.
+---@field GetFactionChangesAction fun(pid: PlayerId): integer
+---Get the number of indexes in a player's latest faction changes.
+---@field GetFactionChangesSize fun(pid: PlayerId): integer
+---Get the expulsion state at a certain index in a player's latest faction changes.
+---@field GetFactionExpulsionState fun(pid: PlayerId, index: integer): boolean
+---Get the factionId at a certain index in a player's latest faction changes.
+---@field GetFactionId fun(pid: PlayerId, index: integer): string
+---Get the rank at a certain index in a player's latest faction changes.
+---@field GetFactionRank fun(pid: PlayerId, index: integer): integer
+---Get the reputation at a certain index in a player's latest faction changes.
+---@field GetFactionReputation fun(pid: PlayerId, index: integer): integer
 ---Get the base fatigue of the player.
 ---@field GetFatigueBase fun(pid: PlayerId): number
 ---Get the current fatigue of the player.
@@ -694,6 +710,8 @@
 ---@field SendDoorDestination fun(sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
 ---Send a DoorState packet.
 ---@field SendDoorState fun(sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
+---Send a PlayerFaction packet with a player's recorded faction changes.
+---@field SendFactionChanges fun(pid: PlayerId, sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
 ---Send a PlayerEquipment packet with a player's equipment.
 ---@field SendEquipment fun(pid: PlayerId)
 ---Send a PlayerInventory packet with a player's recorded inventory changes.
@@ -816,6 +834,16 @@
 ---@field SetDaysPassed fun(daysPassed: integer)
 ---@field SetDifficulty fun(pid: PlayerId, difficulty: integer) Changes the difficulty for a player, but does NOT send a packet. Use SendSettings to notify clients of difficulty changes.--
 ---@field SetEnforcedLogLevel fun(pid: PlayerId, logLevel: LogLevel) Sets the enforced log level for a player. Doesn't send a packet on its own. Log level enforcement is important to prevent players from receiving information about world state they otherwise would not. Use a logLevel of -1 not to enforce this setting.
+---Set the action type in a player's faction changes.
+---@field SetFactionChangesAction fun(pid: PlayerId, action: integer)
+---Set the expulsion state of the temporary faction stored on the server.
+---@field SetFactionExpulsionState fun(expulsionState: boolean)
+---Set the factionId of the temporary faction stored on the server.
+---@field SetFactionId fun(factionId: string)
+---Set the rank of the temporary faction stored on the server.
+---@field SetFactionRank fun(rank: integer)
+---Set the reputation of the temporary faction stored on the server.
+---@field SetFactionReputation fun(reputation: integer)
 ---Set the base fatigue of a player.
 ---@field SetFatigueBase fun(pid: PlayerId, value: number)
 ---Set the current fatigue of a player.
