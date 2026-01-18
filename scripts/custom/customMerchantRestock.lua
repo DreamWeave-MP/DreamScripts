@@ -303,6 +303,8 @@ function RecursiveGetLeveledItem(comparatorLevel, leveledList)
   end
 end
 
+loadMerchants()
+
 ---@type TES3MPScriptRegistration
 return {
   interfaceName = 'customMerchantRestock',
@@ -319,7 +321,6 @@ return {
   },
   eventValidators = {
     OnObjectMiscellaneous = getInitialGold,
-    OnLoad = loadMerchants,
   },
   chatCommands = {
     reloadMerchants = {

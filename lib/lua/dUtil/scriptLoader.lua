@@ -150,8 +150,6 @@ function DScriptLoader.loadScript(scriptName, callerPid)
     DScriptLoader[loader](scriptPath, result)
   end
 
-  if result.eventValidators and result.eventValidators.OnLoad then result.eventValidators.OnLoad() end
-
   collectgarbage()
   return true
 end
@@ -572,14 +570,10 @@ function DScriptLoader.loadScriptHandlers(scriptPath, scriptRegistration)
   for eventName, eventValidator in pairs(scriptRegistration.eventValidators or {}) do
     assert(type(eventName) == 'string' and type(eventValidator) == 'function')
 
-    if eventName:lower() == 'onload' then goto CONTINUE end
-
     customEventHooks.registerValidator(eventName, {
       definedBy = scriptPath,
       callback = eventValidator,
     })
-
-    ::CONTINUE::
   end
 end
 
