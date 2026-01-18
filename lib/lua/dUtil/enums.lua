@@ -88,6 +88,18 @@ return dUtil.table(dUtil.tableType.HASH, nil, {
     Book = 0,
     Scroll = 1,
   },
+  ClothingType = {
+    Pants = 0,
+    Shoes = 1,
+    Shirt = 2,
+    Belt = 3,
+    Robe = 4,
+    RightGlove = 5,
+    LeftGlove = 6,
+    Skirt = 7,
+    Ring = 8,
+    Amulet = 9,
+  },
   SkillId = {
     None = -1,
     Block = 0,

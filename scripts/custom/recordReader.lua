@@ -285,7 +285,7 @@ local TypeHandlers = {
     end
 
     return tds.Hash {
-      clothingType = record.data.clothing_type,
+      clothingType = assert(Enums.ClothingType[record.data.clothing_type]),
       enchantment = lowercase(record.enchanting),
       enchantmentValue = record.data.enchantment,
       icon = record.icon:normalize(),

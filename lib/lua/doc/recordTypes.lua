@@ -93,16 +93,16 @@
 ---| 1 # Scroll
 
 ---@alias ClothingType
----| 'Pants' # 0
----| 'Shoes' # 1
----| 'Shirt' # 2
----| 'Belt' # 3
----| 'Robe' # 4
----| 'RightGlove' # 5
----| 'LeftGlove' # 6
----| 'Skirt' # 7
----| 'Ring' # 8
----| 'Amulet' # 9
+---| 0 # Pants
+---| 1 # Shoes
+---| 2 # Shirt
+---| 3 # Belt
+---| 4 # Robe
+---| 5 # RightGlove
+---| 6 # LeftGlove
+---| 7 # Skirt
+---| 8 # Ring
+---| 9 # Amulet
 
 ---@alias CreatureType
 ---| 'Normal' # 0
