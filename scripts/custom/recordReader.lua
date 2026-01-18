@@ -118,16 +118,20 @@ local RecordStores = tds.Hash {
 
 local TypeHandlers = {
   Activator = function(record, recordId)
-    return tds.Hash {
+    local hash = tds.Hash {
       objectFlags = record.flags,
       id = recordId,
       model = record.mesh:normalize(),
       name = record.name,
-      script = lowercase(record.script),
     }
+
+    local script = lowercase(record.script)
+    if script and script ~= '' then hash.script = script end
+
+    return hash
   end,
   Apparatus = function(record, recordId)
-    return tds.Hash {
+    local hash = tds.Hash {
       apparatusType = assert(Enums.ApparatusType[record.data.apparatus_type]),
       icon = record.icon:normalize(),
       id = recordId,
@@ -135,10 +139,48 @@ local TypeHandlers = {
       name = record.name,
       objectFlags = record.flags,
       quality = record.data.quality,
-      script = lowercase(record.script),
       weight = record.data.weight,
       value = record.data.value,
     }
+
+    local script = lowercase(record.script)
+    if script and script ~= '' then hash.script = script end
+
+    return hash
+  end,
+  Alchemy = function(record, recordId)
+    local effects = tds.Vec()
+    effects:resize(#record.effects)
+
+    for i, effect in ipairs(record.effects) do
+      effects[i] = tds.Hash {
+        area = effect.area,
+        attribute = assert(Enums.AttributeId[effect.attribute]),
+        duration = effect.duration,
+        magicEffect = effect.magic_effect,
+        maxMagnitude = effect.max_magnitude,
+        minMagnitude = effect.min_magnitude,
+        range = effect.range,
+        skill = assert(Enums.SkillId[effect.skill]),
+      }
+    end
+
+    local hash = tds.Hash {
+      effects = effects,
+      objectFlags = record.flags,
+      icon = record.icon:normalize(),
+      id = recordId,
+      model = record.mesh:normalize(),
+      name = record.name,
+      potionFlags = record.data.flags,
+      value = record.data.value,
+      weight = record.data.weight,
+    }
+
+    local script = lowercase(record.script)
+    if script and script ~= '' then hash.script = script end
+
+    return hash
   end,
   Armor = function(record, recordId)
     local bipedObjects = tds.Vec()
@@ -161,11 +203,10 @@ local TypeHandlers = {
       bipedObjects[i] = hashBipedObject
     end
 
-    return tds.Hash {
+    local hash = tds.Hash {
       armorRating = record.data.armor_rating,
       armorType = assert(Enums.ArmorType[record.data.armor_type]),
       durability = record.data.health,
-      enchantment = lowercase(record.enchanting),
       enchantmentValue = record.data.enchantment,
       icon = record.icon:normalize(),
       id = recordId,
@@ -173,42 +214,17 @@ local TypeHandlers = {
       name = record.name,
       objectFlags = record.flags,
       parts = bipedObjects,
-      script = lowercase(record.script),
       weight = record.data.weight,
       value = record.data.value,
     }
-  end,
-  Alchemy = function(record, recordId)
-    local effects = tds.Vec()
-    effects:resize(#record.effects)
 
-    for i, effect in ipairs(record.effects) do
-      local skill = record.data.skill and assert(Enums.SkillId[record.data.skill]) or nil
+    local script = lowercase(record.script)
+    if script and script ~= '' then hash.script = script end
 
-      effects[i] = tds.Hash {
-        area = effect.area,
-        attribute = assert(Enums.AttributeId[effect.attribute]),
-        duration = effect.duration,
-        magicEffect = effect.magic_effect,
-        maxMagnitude = effect.max_magnitude,
-        minMagnitude = effect.min_magnitude,
-        range = effect.range,
-        skill = skill,
-      }
-    end
+    local enchantment = lowercase(record.enchanting)
+    if enchantment and enchantment ~= '' then hash.enchantment = enchantment end
 
-    return tds.Hash {
-      effects = effects,
-      objectFlags = record.flags,
-      icon = record.icon:normalize(),
-      id = recordId,
-      model = record.mesh:normalize(),
-      name = record.name,
-      potionFlags = record.data.flags,
-      script = lowercase(record.script),
-      value = record.data.value,
-      weight = record.data.weight,
-    }
+    return hash
   end,
   Birthsign = function(record, recordId)
     local spells = tds.Vec()
@@ -282,40 +298,51 @@ local TypeHandlers = {
     }
   end,
   Clothing = function(record, recordId)
-    local bipedObjects = tds.Vec()
-    bipedObjects:resize(#record.biped_objects)
+    local numObjects, bipedObjects = #record.biped_objects, nil
 
-    for i, bipedObject in ipairs(record.biped_objects) do
-      local hashBipedObject = tds.Hash()
+    if numObjects > 0 then
+      bipedObjects = tds.Vec()
+      bipedObjects:resize(numObjects)
 
-      hashBipedObject.bipedObjectType = assert(Enums.BipedObjectType[bipedObject.biped_object_type])
-      local malePart, femalePart = lowercase(bipedObject.male_bodypart), lowercase(bipedObject.female_bodypart)
+      for i, bipedObject in ipairs(record.biped_objects) do
+        local hashBipedObject = tds.Hash()
 
-      if malePart and malePart ~= '' then
-        hashBipedObject.malePart = malePart
+        hashBipedObject.bipedObjectType = assert(Enums.BipedObjectType[bipedObject.biped_object_type])
+        local malePart, femalePart = lowercase(bipedObject.male_bodypart), lowercase(bipedObject.female_bodypart)
+
+        if malePart and malePart ~= '' then
+          hashBipedObject.malePart = malePart
+        end
+
+        if femalePart and femalePart ~= '' then
+          hashBipedObject.femalePart = femalePart
+        end
+
+        bipedObjects[i] = hashBipedObject
       end
-
-      if femalePart and femalePart ~= '' then
-        hashBipedObject.femalePart = femalePart
-      end
-
-      bipedObjects[i] = hashBipedObject
     end
 
-    return tds.Hash {
+    local hash = tds.Hash {
       clothingType = assert(Enums.ClothingType[record.data.clothing_type]),
-      enchantment = lowercase(record.enchanting),
       enchantmentValue = record.data.enchantment,
       icon = record.icon:normalize(),
       id = recordId,
       model = record.mesh:normalize(),
       name = record.name,
       objectFlags = record.flags,
-      parts = bipedObjects,
-      script = lowercase(record.script),
       weight = record.data.weight,
       value = record.data.value,
     }
+
+    if bipedObjects then hash.parts = bipedObjects end
+
+    local enchantment = lowercase(record.enchanting)
+    if enchantment and enchantment ~= '' then hash.enchantment = enchantment end
+
+    local script = lowercase(record.script)
+    if script and script ~= '' then hash.script = script end
+
+    return hash
   end,
   Container = function(record, recordId)
     local inventory = tds.Vec()
@@ -325,7 +352,7 @@ local TypeHandlers = {
       inventory[i] = tds.Hash { [lowercase(item[2])] = item[1] }
     end
 
-    return tds.Hash {
+    local hash = tds.Hash {
       capacity = record.encumbrance,
       containerFlags = record.container_flags,
       id = recordId,
@@ -333,8 +360,12 @@ local TypeHandlers = {
       model = record.mesh:normalize(),
       name = record.name,
       objectFlags = record.flags,
-      script = lowercase(record.script),
     }
+
+    local script = lowercase(record.script)
+    if script and script ~= '' then hash.script = script end
+
+    return hash
   end,
   Creature = function(record, recordId)
     local aiPackages, destinations, inventory, spells = tds.Vec(), nil, tds.Vec(), tds.Vec()
