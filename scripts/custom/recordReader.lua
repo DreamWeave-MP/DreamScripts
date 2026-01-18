@@ -890,6 +890,110 @@ local TypeHandlers = {
     return hash
   end,
 
+  Npc = function(record, recordId)
+    local hash = tds.Hash()
+
+    hash.baseGold = numberField(record.data.gold)
+    hash.bloodType = numberField(record.blood_type)
+    hash.class = MandatoryRecordId(record.class)
+    hash.disposition = numberField(record.data.disposition)
+    hash.head = MandatoryRecordId(record.head)
+    hash.id = MandatoryRecordId(recordId)
+    hash.intelligence = numberField(record.data.intelligence)
+    hash.level = numberField(record.data.level)
+    hash.luck = numberField(record.data.luck)
+    hash.model = path(record.mesh)
+    hash.npcFlags = numberField(record.npc_flags)
+    hash.objectFlags = numberField(record.flags)
+    hash.personality = numberField(record.data.personality)
+    hash.race = MandatoryRecordId(record.race)
+    hash.rank = numberField(record.data.rank)
+    hash.reputation = numberField(record.data.reputation)
+
+    if record.data.stats then
+      local stats = record.data.stats
+      assert(#stats.attributes == 8)
+      assert(#stats.skills == 27)
+
+      local statHash = tds.Hash()
+
+      statHash.health = stats.health
+      statHash.magicka = stats.magicka
+      statHash.fatigue = stats.fatigue
+
+      statHash.attributes = tds.Vec(
+        numberField(tostring(stats.attributes[1])),
+        numberField(tostring(stats.attributes[2])),
+        numberField(tostring(stats.attributes[3])),
+        numberField(tostring(stats.attributes[4])),
+        numberField(tostring(stats.attributes[5])),
+        numberField(tostring(stats.attributes[6])),
+        numberField(tostring(stats.attributes[7])),
+        numberField(tostring(stats.attributes[8]))
+      )
+
+      statHash.skills = tds.Vec(
+        numberField(tostring(stats.skills[1])),
+        numberField(tostring(stats.skills[2])),
+        numberField(tostring(stats.skills[3])),
+        numberField(tostring(stats.skills[4])),
+        numberField(tostring(stats.skills[5])),
+        numberField(tostring(stats.skills[6])),
+        numberField(tostring(stats.skills[7])),
+        numberField(tostring(stats.skills[8])),
+        numberField(tostring(stats.skills[9])),
+        numberField(tostring(stats.skills[10])),
+        numberField(tostring(stats.skills[11])),
+        numberField(tostring(stats.skills[12])),
+        numberField(tostring(stats.skills[13])),
+        numberField(tostring(stats.skills[14])),
+        numberField(tostring(stats.skills[15])),
+        numberField(tostring(stats.skills[16])),
+        numberField(tostring(stats.skills[17])),
+        numberField(tostring(stats.skills[18])),
+        numberField(tostring(stats.skills[19])),
+        numberField(tostring(stats.skills[20])),
+        numberField(tostring(stats.skills[21])),
+        numberField(tostring(stats.skills[22])),
+        numberField(tostring(stats.skills[23])),
+        numberField(tostring(stats.skills[24])),
+        numberField(tostring(stats.skills[25])),
+        numberField(tostring(stats.skills[26])),
+        numberField(tostring(stats.skills[27]))
+      )
+
+      hash.stats = statHash
+      stats = nil
+    end
+
+    hash.AIData = Handlers.AIData(record.ai_data)
+
+    local hair = OptionalRecordId(record.hair)
+    if hair then hash.hair = hair end
+
+    local faction = OptionalRecordId(record.faction)
+    if faction then hash.faction = faction end
+
+    local mwScript = OptionalRecordId(record.script)
+    if mwScript then hash.script = mwScript end
+
+    local destinations = Handlers.TravelDestination(record.travel_destinations)
+    if destinations then hash.travelDestinations = destinations end
+
+    local inventory = Handlers.Inventory(record.inventory)
+    if inventory then hash.inventory = inventory end
+
+    local aiPackages, spells = Handlers.AIPackages(record.ai_packages), Handlers.Spells(record.spells)
+
+    if aiPackages then hash.AIPackages = aiPackages end
+    if spells then hash.spells = spells end
+
+    local name = RealString(record.name)
+    if name then hash.name = name end
+
+    return hash
+  end,
+
   Probe = function(record, recordId)
     local hash = tds.Hash()
 

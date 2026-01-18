@@ -13,6 +13,14 @@
 ---| 4096   # Ignored (0x1000)
 ---| 8192   # Blocked (0x2000)
 
+---@alias NPCFlags
+---| 0 # None
+---| 1 # Female
+---| 2 # Essential
+---| 4 # Respawn
+---| 8 # Base
+---| 16 # AutoCalc
+
 ---@alias AIPackage
 ---| AIActivate
 ---| AIEscort
@@ -598,6 +606,32 @@
 ---@field minMagnitude integer
 ---@field range EffectRange
 ---@field skill SkillId
+
+---@class NPCStats
+---@field attributes integer[] Array indices correspond to AttributeId enum. Length 8
+---@field skills integer[] Array indices correspond to SkillId enum. Length 27
+---@field magicka integer
+---@field health integer
+---@ifled fatigue integer
+
+---@class NPCRecord: BaseRecord
+---@field AIData AIData
+---@field AIPackages AIPackage[]?
+---@field baseGold integer
+---@field bloodType integer
+---@field class RecordId
+---@field faction RecordId?
+---@field inventory InventoryItem[]?
+---@field model NormalizedPath
+---@field name string?
+---@field npcFlags NPCFlags
+---@field race RecordId
+---@field scale number?
+---@field script RecordId?
+---@field sound RecordId
+---@field spells RecordId[]?
+---@field stats NPCStats?
+---@field travelDestinations TravelDestination[]?
 
 ---@class PotionRecord: BaseRecord
 ---@field effects MagicEffect[]
