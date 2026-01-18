@@ -57,6 +57,12 @@
 ---@field rankRequirement integer? optional rank requirement to run a command
 
 ---@class TES3MPModule
+---Add a copy of the server's temporary actor to the server's temporary actor list.
+---@field AddActor fun()
+---Add a new active spell to the spells active changes for the temporary actor stored on the server, using the temporary effect values stored so far.
+---@field AddActorSpellActive fun(spellId: RecordId, displayName: string, stackingState: boolean)
+---Add a new effect to the next active spell that will be added to the temporary actor stored on the server.
+---@field AddActorSpellActiveEffect fun(effectId: integer, magnitude: number, duration: number, timeLeft: number, arg: integer)
 ---Add a new book to the book changes for a player.
 ---@field AddBook fun(pid: PlayerId, bookId: RecordId)
 ---Add a new client global integer to the client globals.
@@ -120,6 +126,8 @@
 ---@field BanAddress fun(ipAddress: string) Given an IP Address string, bans it. Doesn't perform any validation, so caller functions need to do so themselves.
 ---Remove all messages from chat for a certain player.
 ---@field CleanChatForPid fun(playerId: PlayerId)
+---Clear the data from the actor list stored on the server.
+---@field ClearActorList fun()
 ---Clear the list of players who will be regarded as being player's allies.
 ---@field ClearAlliedPlayersForPlayer fun(pid: PlayerId)
 ---Clear the modifier value of a player's attribute.
@@ -166,11 +174,21 @@
 ---Clear the last recorded topic changes for a player.
 ---@field ClearTopicChanges fun(pid: PlayerId)
 ---@field ClearVRSettingValues fun(pid: PlayerId) Clears VR game setting values for a specific player, undoing changes made by calls to SetGameSetting
+---Copy the contents of the read-only actor list last received by the server from a player to the stored object list that can be sent by the server.
+---@field CopyReceivedActorListToStore fun()
 ---Copy the contents of the read-only object list last received by the server from a player to the stored object list that can be sent by the server.
 ---@field CopyReceivedObjectListToStore fun()
 ---Take the contents of the read-only worldstate last received by the server from a player and move its contents to the stored worldstate that can be sent by the server.
 ---@field CopyReceivedWorldstateToStore fun()
 ---@field CustomMessageBox fun(pid: PlayerId, id: integer, label: string, items: string) Displays a multiple-choice message box to the target PID
+---Check whether the killer of the actor at a certain index in the read actor list is a player.
+---@field DoesActorHavePlayerKiller fun(index: integer): boolean
+---Check whether there is any positional data for the actor at a certain index in the read actor list.
+---@field DoesActorHavePosition fun(index: integer): boolean
+---Check whether there is any dynamic stats data for the actor at a certain index in the read actor list.
+---@field DoesActorHaveStatsDynamic fun(index: integer): boolean
+---Check whether the spell at a certain index in an actor's latest spells active changes has a player as its caster.
+---@field DoesActorSpellsActiveHavePlayerCaster fun(actorIndex: integer, spellIndex: integer): boolean
 ---Check whether a certain file path exists.
 ---@field DoesFilePathExist fun(filePath: string): boolean
 ---Check whether the object at a certain index in the read object list has a container.
@@ -185,10 +203,104 @@
 ---@field DoesPlayerHavePlayerKiller fun(pid: PlayerId): boolean
 ---Check whether the spell at a certain index in a player's latest spells active changes has a player as its caster.
 ---@field DoesSpellsActiveHavePlayerCaster fun(pid: PlayerId, index: integer): boolean
+---Equip an item in a certain slot of the equipment of the temporary actor stored on the server.
+---@field EquipActorItem fun(slot: integer, refId: RecordId, count: integer, charge: integer, enchantmentCharge?: number)
 ---Equip an item in a certain slot of the equipment of a player.
 ---@field EquipItem fun(pid: PlayerId, slot: integer, refId: RecordId, count: integer, charge: integer, enchantmentCharge?: number)
 ---Generate a random string of a particular length that only contains letters and numbers.
 ---@field GenerateRandomString fun(length: integer): string
+---Get the cell description of the actor at a certain index in the read actor list.
+---@field GetActorCell fun(index: integer): CellDescription
+---Get the deathState of the actor at a certain index in the read actor list.
+---@field GetActorDeathState fun(index: integer): integer
+---Get the charge of the item in a certain slot of the equipment of the actor at a certain index in the read actor list.
+---@field GetActorEquipmentItemCharge fun(index: integer, slot: integer): integer
+---Get the count of the item in a certain slot of the equipment of the actor at a certain index in the read actor list.
+---@field GetActorEquipmentItemCount fun(index: integer, slot: integer): integer
+---Get the enchantment charge of the item in a certain slot of the equipment of the actor at a certain index in the read actor list.
+---@field GetActorEquipmentItemEnchantmentCharge fun(index: integer, slot: integer): number
+---Get the refId of the item in a certain slot of the equipment of the actor at a certain index in the read actor list.
+---@field GetActorEquipmentItemRefId fun(index: integer, slot: integer): RecordId
+---Get the base fatigue of the actor at a certain index in the read actor list.
+---@field GetActorFatigueBase fun(index: integer): number
+---Get the current fatigue of the actor at a certain index in the read actor list.
+---@field GetActorFatigueCurrent fun(index: integer): number
+---Get the modified fatigue of the actor at a certain index in the read actor list.
+---@field GetActorFatigueModified fun(index: integer): number
+---Get the base health of the actor at a certain index in the read actor list.
+---@field GetActorHealthBase fun(index: integer): number
+---Get the current health of the actor at a certain index in the read actor list.
+---@field GetActorHealthCurrent fun(index: integer): number
+---Get the modified health of the actor at a certain index in the read actor list.
+---@field GetActorHealthModified fun(index: integer): number
+---Get the player ID of the killer of the actor at a certain index in the read actor list.
+---@field GetActorKillerPid fun(index: integer): integer
+---Get the mpNum of the actor killer of the actor at a certain index in the read actor list.
+---@field GetActorKillerMpNum fun(index: integer): integer
+---Get the name of the actor killer of the actor at a certain index in the read actor list.
+---@field GetActorKillerName fun(index: integer): string
+---Get the refId of the actor killer of the actor at a certain index in the read actor list.
+---@field GetActorKillerRefId fun(index: integer): RecordId
+---Get the refNum of the actor killer of the actor at a certain index in the read actor list.
+---@field GetActorKillerRefNum fun(index: integer): integer
+---Get the action type used in the read actor list.
+---@field GetActorListAction fun(): integer
+---Get the number of indexes in the read actor list.
+---@field GetActorListSize fun(): integer
+---Get the base magicka of the actor at a certain index in the read actor list.
+---@field GetActorMagickaBase fun(index: integer): number
+---Get the current magicka of the actor at a certain index in the read actor list.
+---@field GetActorMagickaCurrent fun(index: integer): number
+---Get the modified magicka of the actor at a certain index in the read actor list.
+---@field GetActorMagickaModified fun(index: integer): number
+---Get the mpNum of the actor at a certain index in the read actor list.
+---@field GetActorMpNum fun(index: integer): integer
+---Get the X position of the actor at a certain index in the read actor list.
+---@field GetActorPosX fun(index: integer): number
+---Get the Y position of the actor at a certain index in the read actor list.
+---@field GetActorPosY fun(index: integer): number
+---Get the Z position of the actor at a certain index in the read actor list.
+---@field GetActorPosZ fun(index: integer): number
+---Get the refId of the actor at a certain index in the read actor list.
+---@field GetActorRefId fun(index: integer): RecordId
+---Get the refNum of the actor at a certain index in the read actor list.
+---@field GetActorRefNum fun(index: integer): integer
+---Get the X rotation of the actor at a certain index in the read actor list.
+---@field GetActorRotX fun(index: integer): number
+---Get the Y rotation of the actor at a certain index in the read actor list.
+---@field GetActorRotY fun(index: integer): number
+---Get the Z rotation of the actor at a certain index in the read actor list.
+---@field GetActorRotZ fun(index: integer): number
+---Get the action type used in an actor's latest spells active changes.
+---@field GetActorSpellsActiveChangesAction fun(actorIndex: integer): integer
+---Get the number of indexes in an actor's latest spells active changes.
+---@field GetActorSpellsActiveChangesSize fun(actorIndex: integer): integer
+---Get the player ID of the caster of the spell at a certain index in an actor's latest spells active changes.
+---@field GetActorSpellsActiveCasterPid fun(actorIndex: integer, spellIndex: integer): integer
+---Get the mpNum of the actor caster of the spell at a certain index in an actor's latest spells active changes.
+---@field GetActorSpellsActiveCasterMpNum fun(actorIndex: integer, spellIndex: integer): integer
+---Get the refId of the actor caster of the spell at a certain index in an actor's latest spells active changes.
+---@field GetActorSpellsActiveCasterRefId fun(actorIndex: integer, spellIndex: integer): RecordId
+---Get the refNum of the actor caster of the spell at a certain index in an actor's latest spells active changes.
+---@field GetActorSpellsActiveCasterRefNum fun(actorIndex: integer, spellIndex: integer): integer
+---Get the spell display name at a certain index in an actor's latest spells active changes.
+---@field GetActorSpellsActiveDisplayName fun(actorIndex: integer, spellIndex: integer): string
+---Get the arg for an effect index at a spell index in an actor's latest spells active changes.
+---@field GetActorSpellsActiveEffectArg fun(actorIndex: integer, spellIndex: integer, effectIndex: integer): integer
+---Get the number of effects at an index in an actor's latest spells active changes.
+---@field GetActorSpellsActiveEffectCount fun(actorIndex: integer, spellIndex: integer): integer
+---Get the duration for an effect index at a spell index in an actor's latest spells active changes.
+---@field GetActorSpellsActiveEffectDuration fun(actorIndex: integer, spellIndex: integer, effectIndex: integer): number
+---Get the id for an effect index at a spell index in an actor's latest spells active changes.
+---@field GetActorSpellsActiveEffectId fun(actorIndex: integer, spellIndex: integer, effectIndex: integer): integer
+---Get the magnitude for an effect index at a spell index in an actor's latest spells active changes.
+---@field GetActorSpellsActiveEffectMagnitude fun(actorIndex: integer, spellIndex: integer, effectIndex: integer): number
+---Get the time left for an effect index at a spell index in an actor's latest spells active changes.
+---@field GetActorSpellsActiveEffectTimeLeft fun(actorIndex: integer, spellIndex: integer, effectIndex: integer): number
+---Get the spell id at a certain index in an actor's latest spells active changes.
+---@field GetActorSpellsActiveId fun(actorIndex: integer, spellIndex: integer): RecordId
+---Get the spell stacking state at a certain index in an actor's latest spells active changes.
+---@field GetActorSpellsActiveStackingState fun(actorIndex: integer, spellIndex: integer): boolean
 ---Get the architecture type used by the server.
 ---@field GetArchitectureType fun(): string
 ---Get the base value of a player's attribute.
@@ -730,6 +842,10 @@
 ---Play a certain animation on a player's character by sending a PlayerAnimation packet.
 ---@field PlayAnimation fun(pid: PlayerId, groupname: string, mode: integer, count: integer, persist: boolean)
 ---@field PlaySpeech fun(pid: PlayerId, speechPath: string) Plays a voice file for all players on the server. Intended to be used with speechHelper interface
+---Use the temporary actor list stored for a cell as the one being read.
+---@field ReadCellActorList fun(cellDescription: CellDescription)
+---Use the last actor list received by the server as the one being read.
+---@field ReadReceivedActorList fun()
 ---Use the last object list received by the server as the one being read.
 ---@field ReadReceivedObjectList fun()
 ---Use the last worldstate received by the server as the one being read.
@@ -738,6 +854,26 @@
 ---@field Resurrect fun(pid: PlayerId, type: integer)
 ---Save the .png image data of the map tile at a certain index in the read worldstate's map changes.
 ---@field SaveMapTileImageFile fun(index: integer, filePath: string)
+---Send an ActorAI packet.
+---@field SendActorAI fun(sendToOtherVisitors: boolean, skipAttachedPlayer: boolean)
+---Send an ActorAuthority packet.
+---@field SendActorAuthority fun()
+---Send an ActorCellChange packet.
+---@field SendActorCellChange fun(sendToOtherVisitors: boolean, skipAttachedPlayer: boolean)
+---Send an ActorDeath packet.
+---@field SendActorDeath fun(sendToOtherVisitors: boolean, skipAttachedPlayer: boolean)
+---Send an ActorEquipment packet.
+---@field SendActorEquipment fun(sendToOtherVisitors: boolean, skipAttachedPlayer: boolean)
+---Send an ActorList packet.
+---@field SendActorList fun()
+---Send an ActorPosition packet.
+---@field SendActorPosition fun(sendToOtherVisitors: boolean, skipAttachedPlayer: boolean)
+---Send an ActorSpellsActive packet.
+---@field SendActorSpellsActiveChanges fun(sendToOtherVisitors: boolean, skipAttachedPlayer: boolean)
+---Send an ActorSpeech packet.
+---@field SendActorSpeech fun(sendToOtherVisitors: boolean, skipAttachedPlayer: boolean)
+---Send an ActorStatsDynamic packet.
+---@field SendActorStatsDynamic fun(sendToOtherVisitors: boolean, skipAttachedPlayer: boolean)
 ---Send a PlayerMiscellaneous packet with a list of team member IDs to a player.
 ---@field SendAlliedPlayers fun(pid: PlayerId, sendToOtherPlayers: boolean)
 ---Send a PlayerAttribute packet with a player's attributes and bonuses to those attributes at the next level up.
@@ -854,8 +990,66 @@
 ---@field SendWorldTime fun(pid: PlayerId, sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
 ---Send a WorldWeather packet with the current weather in the write-only worldstate.
 ---@field SendWorldWeather fun(pid: PlayerId, sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
+---Set the pid attached to the ActorList.
+---@field SetActorListPid fun(pid: PlayerId)
+---Set the action type of the temporary actor list stored on the server.
+---@field SetActorListAction fun(action: integer)
+---Set the cell of the temporary actor list stored on the server.
+---@field SetActorListCell fun(cellDescription: CellDescription)
+---Set the AI action of the temporary actor stored on the server.
+---@field SetActorAIAction fun(action: integer)
+---Set the coordinates for the AI package associated with the current AI action.
+---@field SetActorAICoordinates fun(x: number, y: number, z: number)
+---Set the distance of the AI package associated with the current AI action.
+---@field SetActorAIDistance fun(distance: integer)
+---Set the duration of the AI package associated with the current AI action.
+---@field SetActorAIDuration fun(duration: integer)
+---Set whether the current AI package should be repeated.
+---@field SetActorAIRepetition fun(shouldRepeat: boolean)
+---Set another object as the AI target of the temporary actor stored on the server.
+---@field SetActorAITargetToObject fun(refNum: integer, mpNum: integer)
+---Set a player as the AI target of the temporary actor stored on the server.
+---@field SetActorAITargetToPlayer fun(pid: PlayerId)
+---Set the cell of the temporary actor stored on the server.
+---@field SetActorCell fun(cellDescription: CellDescription)
 ---Set the collision state for actors in the write-only worldstate stored on the server.
 ---@field SetActorCollisionState fun(state: boolean)
+---Set the deathState of the temporary actor stored on the server.
+---@field SetActorDeathState fun(deathState: integer)
+---Set whether the death of the temporary actor stored on the server should be instant or not.
+---@field SetActorDeathInstant fun(isInstant: boolean)
+---Set the base fatigue of the temporary actor stored on the server.
+---@field SetActorFatigueBase fun(value: number)
+---Set the current fatigue of the temporary actor stored on the server.
+---@field SetActorFatigueCurrent fun(value: number)
+---Set the modified fatigue of the temporary actor stored on the server.
+---@field SetActorFatigueModified fun(value: number)
+---Set the base health of the temporary actor stored on the server.
+---@field SetActorHealthBase fun(value: number)
+---Set the current health of the temporary actor stored on the server.
+---@field SetActorHealthCurrent fun(value: number)
+---Set the modified health of the temporary actor stored on the server.
+---@field SetActorHealthModified fun(value: number)
+---Set the base magicka of the temporary actor stored on the server.
+---@field SetActorMagickaBase fun(value: number)
+---Set the current magicka of the temporary actor stored on the server.
+---@field SetActorMagickaCurrent fun(value: number)
+---Set the modified magicka of the temporary actor stored on the server.
+---@field SetActorMagickaModified fun(value: number)
+---Set the mpNum of the temporary actor stored on the server.
+---@field SetActorMpNum fun(mpNum: integer)
+---Set the position of the temporary actor stored on the server.
+---@field SetActorPosition fun(x: number, y: number, z: number)
+---Set the refId of the temporary actor stored on the server.
+---@field SetActorRefId fun(refId: RecordId)
+---Set the refNum of the temporary actor stored on the server.
+---@field SetActorRefNum fun(refNum: integer)
+---Set the rotation of the temporary actor stored on the server.
+---@field SetActorRotation fun(x: number, y: number, z: number)
+---Set the sound of the temporary actor stored on the server.
+---@field SetActorSound fun(sound: string)
+---Set the action type in the spells active changes of the temporary actor stored on the server.
+---@field SetActorSpellsActiveAction fun(action: integer)
 ---Set the base value of a player's attribute.
 ---@field SetAttributeBase fun(pid: PlayerId, attributeId: integer, value: integer)
 ---Set the amount of damage (as caused through the Damage Attribute effect) to a player's attribute.
@@ -1261,6 +1455,8 @@
 ---@field SetYear fun(year: integer)
 ---@field StopServer fun(exitCode: integer) Terminate the server with a provided exit code
 ---@field UnbanAddress fun(ipAddress: string) Given an IP Address string, unbans it. Doesn't perform any validation, so caller functions need to do so themselves.
+---Unequip the item in a certain slot of the equipment of the temporary actor stored on the server.
+---@field UnequipActorItem fun(slot: integer)
 ---Unequip the item in a certain slot of the equipment of a player.
 ---@field UnequipItem fun(pid: PlayerId, slot: integer)
 ---Whether placed objects with collision turned on should use actor collision, i.e. whether they should be slippery and prevent players from standing on them.
