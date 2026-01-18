@@ -158,6 +158,10 @@
 ---@field GetCooldownStartDay fun(pid: PlayerId, index: integer): integer
 ---Get the starting hour of the cooldown at a certain index in a player's latest cooldown changes.
 ---@field GetCooldownStartHour fun(pid: PlayerId, index: integer): number
+---Check whether a player's name is replaced by that of the creature they are disguised as when other players hover over them.
+---@field GetCreatureNameDisplayState fun(pid: PlayerId): boolean
+---Get the refId of the creature the player is disguised as.
+---@field GetCreatureRefId fun(pid: PlayerId): RecordId
 ---Get the data file enforcement state of the server.
 ---@field GetDataFileEnforcementState fun(): boolean
 ---Get the path of the server's data folder.
@@ -214,6 +218,8 @@
 ---@field GetProtocolVersion fun(): string
 ---Get the race of a player.
 ---@field GetRace fun(pid: PlayerId): string
+---Get the scale of a player.
+---@field GetScale fun(pid: PlayerId): number
 ---Get the script error ignoring state of the server.
 ---@field GetScriptErrorIgnoringState fun(): boolean
 ---Get the TES3MP version of the server.
@@ -284,6 +290,8 @@
 ---Checking if the server requires a password to connect.
 ---@field HasPassword fun(): boolean
 ---@field InputDialog fun(pid: PlayerId, id: GUIID, label: string, note: string) Displays an input dialog
+---Check whether a player is a werewolf.
+---@field IsWerewolf fun(pid: PlayerId): boolean
 ---Kick a certain player from the server.
 ---@field Kick fun(pid: PlayerId)
 ---Load a .png file as the image data for a map tile and add it to the write-only worldstate stored on the server.
@@ -314,6 +322,8 @@
 ---@field SendLevel fun(pid: PlayerId)
 ---@field SendMessage fun(pid: PlayerId, message: string, sendToAll: boolean?) Emits a chat message to a specific player, optionally relaying it to all players
 ---@field SendSettings fun(pid: PlayerId, sendToAll: boolean, skipAttachedPlayer: boolean) After constructing a settings packet using `SetEnforcedLogLevel`, `SetPhysicsFramerate`, SetGameSettingValue`, `SetVRSettingValue`, or `SetDifficulty`, send it to players, optionally including or omitting all players or just the `pid` provided
+---Send a PlayerShapeshift packet about a player.
+---@field SendShapeshift fun(pid: PlayerId)
 ---Send a PlayerSkill packet with a player's skills.
 ---@field SendSkills fun(pid: PlayerId)
 ---Send a PlayerSpellbook packet with a player's recorded spellbook changes.
@@ -352,6 +362,10 @@
 ---Set the current and ending stages of character generation for a player.
 ---@field SetCharGenStage fun(pid: PlayerId, currentStage: integer, endStage: integer)
 ---@field SetConsoleAllowed fun(pid: PlayerId, consoleAllowed: boolean) Set whether or not a specific player may use the console
+---Set whether a player's name is replaced by that of the creature they are disguised as when other players hover over them.
+---@field SetCreatureNameDisplayState fun(pid: PlayerId, displayState: boolean)
+---Set the refId of the creature a player is disguised as.
+---@field SetCreatureRefId fun(pid: PlayerId, refId: RecordId)
 ---Set the data file enforcement state of the server.
 ---@field SetDataFileEnforcementState fun(state: boolean)
 ---Set the world's day in the write-only worldstate stored on the server.
@@ -408,6 +422,8 @@
 ---@field SetRuleString fun(key: string, value: string)
 ---Set a rule value for the server details displayed in the server browser.
 ---@field SetRuleValue fun(key: string, value: number)
+---Set the scale of a player.
+---@field SetScale fun(pid: PlayerId, scale: number)
 ---Set the script error ignoring state of the server.
 ---@field SetScriptErrorIgnoringState fun(state: boolean)
 ---Set the base value of a player's skill.
@@ -440,6 +456,8 @@
 ---@field SetWeatherRegion fun(region: string)
 ---Set the transition factor for the weather in the write-only worldstate stored on the server.
 ---@field SetWeatherTransitionFactor fun(transitionFactor: number)
+---Set the werewolf state of a player.
+---@field SetWerewolfState fun(pid: PlayerId, isWerewolf: boolean)
 ---@field SetWildernessRestAllowed fun(pid: PlayerId, wildernessRestAllowed: boolean) Set whether or not a specific player may rest in the wilderness
 ---Set the world's year in the write-only worldstate stored on the server.
 ---@field SetYear fun(year: integer)
