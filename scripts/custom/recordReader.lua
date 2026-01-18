@@ -363,21 +363,18 @@ local TypeHandlers = {
     return hash
   end,
   Birthsign = function(record, recordId)
-    local spells = tds.Vec()
+    local hash = tds.Hash()
 
-    spells:resize(#record.spells)
-    for i, spellId in ipairs(record.spells) do
-      spells[i] = lowercase(spellId)
-    end
+    hash.description = assert(RealString(record.description))
+    hash.id = recordId
+    hash.name = assert(RealString(record.name))
+    hash.objectFlags = numberField(record.flags)
+    hash.texture = path(record.texture)
 
-    return tds.Hash {
-      description = record.description,
-      id = recordId,
-      name = record.name,
-      objectFlags = record.flags,
-      spells = spells,
-      texture = record.texture:normalize(),
-    }
+    local spells = Handlers.Spells(record.spells)
+    if spells then hash.spells = spells end
+
+    return hash
   end,
   Bodypart = function(record, recordId)
     return tds.Hash {
