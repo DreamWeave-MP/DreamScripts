@@ -70,7 +70,6 @@ local AIPackageHandlers = {
   AiEscortPackage = function(package)
     local hash = tds.Hash()
 
-    hash.cell = assert(OptionalRecordId(package.cell))
     hash.duration = assert(package.duration)
     hash.reset = assert(package.reset)
     hash.target = assert(package.target)
@@ -78,6 +77,9 @@ local AIPackageHandlers = {
 
     local location = transform(package.location)
     if location then hash.location = location end
+
+    local cell = OptionalRecordId(package.cell)
+    if cell then hash.cell = cell end
 
     return hash
   end,
