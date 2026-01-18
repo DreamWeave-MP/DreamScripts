@@ -520,7 +520,10 @@
 ---@field requirements FactionRequirement[] Length 10
 
 ---@class GameSettingRecord: BaseRecord
----field value number|string
+---@field value number|string
+
+---@class GlobalVariableRecord: BaseRecord
+---@field value number
 
 ---@class MagicEffect
 ---@field area integer
@@ -566,4 +569,5 @@
 ---@field Enchanting table<RecordId, EnchantmentRecord>
 ---@field Faction table<RecordId, FactionRecord>
 ---@field GameSetting table<RecordId, GameSettingRecord>
+---@field GlobalVariable table<RecordId, GlobalVariableRecord>
 ---@field Static table<RecordId, StaticRecord>

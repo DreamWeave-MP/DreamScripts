@@ -301,6 +301,7 @@ local RecordStores = tds.Hash {
   Enchanting = tds.Hash(),
   Faction = tds.Hash(),
   GameSetting = tds.Hash(),
+  GlobalVariable = tds.Hash(),
   Static = tds.Hash(),
 }
 
@@ -720,6 +721,16 @@ local TypeHandlers = {
     else
       hash.value = numberField(tostring(record.value))
     end
+
+    return hash
+  end,
+
+  GlobalVariable = function(record, recordId)
+    local hash = tds.Hash()
+
+    hash.id = recordId
+    hash.objectFlags = record.flags
+    hash.value = numberField(tostring(record.value))
 
     return hash
   end,
