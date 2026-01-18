@@ -654,18 +654,18 @@ local TypeHandlers = {
     hash.objectFlags = numberField(record.flags)
 
     hash.favoredAttributes = tds.Vec(
-      numberField(Enums.AttributeId[record.data.favored_attributes[1]]),
-      numberField(Enums.AttributeId[record.data.favored_attributes[2]])
+      assert(Enums.AttributeId[numberField(record.data.favored_attributes[1])]),
+      assert(Enums.AttributeId[numberField(record.data.favored_attributes[2])])
     )
 
     hash.favoredSkills = tds.Vec(
-      numberField(Enums.SkillId[record.data.favored_skills[1]]),
-      numberField(Enums.SkillId[record.data.favored_skills[2]]),
-      numberField(Enums.SkillId[record.data.favored_skills[3]]),
-      numberField(Enums.SkillId[record.data.favored_skills[4]]),
-      numberField(Enums.SkillId[record.data.favored_skills[5]]),
-      numberField(Enums.SkillId[record.data.favored_skills[6]]),
-      numberField(Enums.SkillId[record.data.favored_skills[7]])
+      assert(Enums.SkillId[numberField(record.data.favored_skills[1])]),
+      assert(Enums.SkillId[numberField(record.data.favored_skills[2])]),
+      assert(Enums.SkillId[numberField(record.data.favored_skills[3])]),
+      assert(Enums.SkillId[numberField(record.data.favored_skills[4])]),
+      assert(Enums.SkillId[numberField(record.data.favored_skills[5])]),
+      assert(Enums.SkillId[numberField(record.data.favored_skills[6])]),
+      assert(Enums.SkillId[numberField(record.data.favored_skills[7])])
     )
 
     local requirements = record.data.requirements
