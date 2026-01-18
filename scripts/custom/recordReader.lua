@@ -616,11 +616,7 @@ local TypeHandlers = {
     hash.objectFlags = numberField(record.flags)
 
     local effects = Handlers.Effects(record.effects)
-    if not effects then
-      error(tostring(effects) .. ' ' .. recordId)
-    else
-      hash.effects = effects
-    end
+    if effects then hash.effects = effects end
 
     return hash
   end,
