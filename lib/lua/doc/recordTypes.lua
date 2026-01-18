@@ -610,8 +610,8 @@
 ---@field weight number
 
 ---@class MiscRecord: BaseRecord
----@field flags MiscItemFlags
 ---@field icon NormalizedPath
+---@field miscFlags MiscItemFlags
 ---@field model NormalizedPath
 ---@field name string?
 ---@field script RecordId?
