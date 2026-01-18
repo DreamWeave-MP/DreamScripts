@@ -689,8 +689,7 @@ local TypeHandlers = {
         attributes:resize(numAttributes)
 
         for j, attribute in ipairs(requirement.attributes) do
-          print(attribute, type(attribute), tonumber(attribute), tostring(attribute))
-          attributes[j] = numberField(attribute)
+          attributes[j] = numberField(tostring(attribute))
         end
       end
 
