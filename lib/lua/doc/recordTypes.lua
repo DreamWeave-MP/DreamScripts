@@ -400,14 +400,14 @@
 
 ---@class BookRecord: BaseRecord
 ---@field bookType BookType
----@field enchantment RecordId
+---@field enchantment RecordId?
 ---@field enchantmentValue integer
 ---@field icon NormalizedPath
 ---@field model NormalizedPath
 ---@field name string
 ---@field script RecordId?
----@field skill SkillId
----@field text string
+---@field skill SkillId?
+---@field text string?
 ---@field value integer
 ---@field weight number
 
