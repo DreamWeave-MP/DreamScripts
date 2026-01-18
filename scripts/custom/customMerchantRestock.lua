@@ -316,7 +316,7 @@ return {
   },
   eventHandlers = {
     OnObjectDialogueChoice = resetMerchantData,
-    OnServerPostInit = loadMerchants,
+    OnLoad = loadMerchants,
   },
   eventValidators = {
     OnObjectMiscellaneous = getInitialGold,
