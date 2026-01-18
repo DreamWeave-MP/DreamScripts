@@ -299,6 +299,7 @@ local RecordStores = tds.Hash {
   Creature = tds.Hash(),
   Door = tds.Hash(),
   Enchanting = tds.Hash(),
+  Faction = tds.Hash(),
   Static = tds.Hash(),
 }
 
@@ -616,6 +617,85 @@ local TypeHandlers = {
 
     local effects = Handlers.Effects(record.effects)
     if effects then hash.effects = effects end
+
+    return hash
+  end,
+
+  Faction = function(record, recordId)
+    local hash = tds.Hash()
+
+    local numRanks, rankNames = #record.rank_names, nil
+
+    if numRanks > 0 then
+      rankNames = tds.Vec()
+      rankNames:resize(numRanks)
+
+      for i, rankName in ipairs(record.rank_names) do
+        rankNames[i] = assert(RealString(rankName))
+      end
+    end
+
+    local numReactions, reactions = #record.reactions, nil
+    if numReactions > 0 then
+      reactions = tds.Vec()
+      reactions:resize(numReactions)
+
+      for i, reactionData in ipairs(record.reactions) do
+        local reaction = tds.Hash()
+
+        reaction[MandatoryRecordId(reactionData.faction)] = numberField(reactionData.reaction)
+
+        reactions[i] = reaction
+      end
+    end
+
+    hash.factionFlags = numberField(record.data.flags)
+    hash.id = MandatoryRecordId(recordId)
+    hash.objectFlags = numberField(record.flags)
+
+    hash.favoredAttributes = tds.Vec(
+      numberField(Enums.AttributeId[record.data.favored_attributes[1]]),
+      numberField(Enums.AttributeId[record.data.favored_attributes[2]])
+    )
+
+    hash.favoredSkills = tds.Vec(
+      numberField(Enums.SkillId[record.data.favored_skills[1]]),
+      numberField(Enums.SkillId[record.data.favored_skills[2]]),
+      numberField(Enums.SkillId[record.data.favored_skills[3]]),
+      numberField(Enums.SkillId[record.data.favored_skills[4]]),
+      numberField(Enums.SkillId[record.data.favored_skills[5]]),
+      numberField(Enums.SkillId[record.data.favored_skills[6]]),
+      numberField(Enums.SkillId[record.data.favored_skills[7]])
+    )
+
+    local requirements = record.data.requirements
+
+    local numReqs = #requirements
+    assert(numReqs == 10)
+
+    local hashRequirements = tds.Vec()
+    hashRequirements:resize(10)
+
+    for i, requirement in ipairs(requirements) do
+      local hashRequirement = tds.Hash()
+      hashRequirement.favoredSkill = numberField(requirement.favored_skill)
+      hashRequirement.primarySkill = numberField(requirement.primary_skill)
+      hashRequirement.reputation = numberField(requirement.reputation)
+
+      hashRequirement.attributes = tds.Vec(
+        numberField(requirement.attributes[1]),
+        numberField(requirement.attributes[2])
+      )
+
+      hashRequirements[i] = hashRequirement
+    end
+
+    hash.requirements = hashRequirements
+
+    local name = RealString(record.name)
+    if name then hash.name = name end
+
+    if rankNames then hash.rankNames = rankNames end
 
     return hash
   end,

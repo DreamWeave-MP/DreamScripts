@@ -126,6 +126,10 @@
 --- Rather it is a vector of maps from recordIds to instance counts.
 ---@alias InventoryItem table<string, integer>
 
+--- Maps the relationship of one faction to another
+--- Tuple-style single-length tables, since they are not unique within a faction record
+---@alias FactionReaction table<RecordId, integer>
+
 ---@alias MagicEffectId
 ---| -1  # "None"
 ---| 0   # "WaterBreathing"
@@ -500,6 +504,21 @@
 ---@field enchantType EnchantType
 ---@field maxCharge integer
 
+---@class FactionRequirement
+---@field attributes integer[] Length 2. Attribute requirements for this specific faction rank.
+---@field favoredSkill integer Favored skill requirement for this rank.
+---@field primarySkill integer Primary skill requirement for this rank.
+---@field reputation integer reputation requirement for this rank
+
+---@class FactionRecord: BaseRecord
+---@field name string?
+---@field factionFlags integer
+---@field favoredAttributes AttributeId[] Length 2
+---@field favoredSkills SkillId[] Length 7
+---@field rankNames string[]?
+---@field reactions FactionReaction[]
+---@field requirements FactionRequirement[] Length 10
+
 ---@class MagicEffect
 ---@field area integer
 ---@field attribute AttributeId
@@ -542,4 +561,5 @@
 ---@field Creature table<RecordId, CreatureRecord>
 ---@field Door table<RecordId, DoorRecord>
 ---@field Enchanting table<RecordId, EnchantmentRecord>
+---@field Faction table<RecordId, FactionRecord>
 ---@field Static table<RecordId, StaticRecord>
