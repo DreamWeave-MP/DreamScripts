@@ -335,46 +335,30 @@ local TypeHandlers = {
     return hash
   end,
   Armor = function(record, recordId)
-    local bipedObjects = tds.Vec()
-    bipedObjects:resize(#record.biped_objects)
+    local hash = tds.Hash()
 
-    for i, bipedObject in ipairs(record.biped_objects) do
-      local hashBipedObject = tds.Hash()
+    hash.armorRating = numberField(record.data.armor_rating)
+    hash.armorType = numberField(Enums.ArmorType[record.data.armor_type])
+    hash.durability = numberField(record.data.health)
+    hash.enchantmentValue = numberField(record.data.enchantment)
+    hash.icon = path(record.icon)
+    hash.id = recordId
+    hash.model = path(record.mesh)
+    hash.objectFlags = numberField(record.flags)
+    hash.weight = numberField(record.data.weight)
+    hash.value = numberField(record.data.value)
 
-      hashBipedObject.bipedObjectType = assert(Enums.BipedObjectType[bipedObject.biped_object_type])
-      local malePart, femalePart = lowercase(bipedObject.male_bodypart), lowercase(bipedObject.female_bodypart)
+    local bipedObjects = Handlers.BipedObjects(record.biped_objects)
+    if bipedObjects then hash.bipedObjects = bipedObjects end
 
-      if malePart and malePart ~= '' then
-        hashBipedObject.malePart = malePart
-      end
+    local name = RealString(record.name)
+    if name then hash.name = name end
 
-      if femalePart and femalePart ~= '' then
-        hashBipedObject.femalePart = femalePart
-      end
+    local script = OptionalRecordId(record.script)
+    if script then hash.script = script end
 
-      bipedObjects[i] = hashBipedObject
-    end
-
-    local hash = tds.Hash {
-      armorRating = record.data.armor_rating,
-      armorType = assert(Enums.ArmorType[record.data.armor_type]),
-      durability = record.data.health,
-      enchantmentValue = record.data.enchantment,
-      icon = record.icon:normalize(),
-      id = recordId,
-      model = record.mesh:normalize(),
-      name = record.name,
-      objectFlags = record.flags,
-      parts = bipedObjects,
-      weight = record.data.weight,
-      value = record.data.value,
-    }
-
-    local script = lowercase(record.script)
-    if script and script ~= '' then hash.script = script end
-
-    local enchantment = lowercase(record.enchanting)
-    if enchantment and enchantment ~= '' then hash.enchantment = enchantment end
+    local enchantment = OptionalRecordId(record.enchanting)
+    if enchantment then hash.enchantment = enchantment end
 
     return hash
   end,
