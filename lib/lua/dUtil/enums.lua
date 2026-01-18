@@ -84,6 +84,10 @@ return dUtil.table(dUtil.tableType.HASH, nil, {
     Clothing = 1,
     Armor = 2,
   },
+  BookType = {
+    Book = 0,
+    Scrol = 1,
+  },
   SkillId = {
     None = -1,
     Block = 0,

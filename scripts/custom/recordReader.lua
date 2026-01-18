@@ -232,7 +232,7 @@ local TypeHandlers = {
   end,
   Book = function(record, recordId)
     return tds.Hash {
-      bookType = record.data.book_type,
+      bookType = assert(Enums.BookType[record.data.book_type]),
       enchantment = lowercase(record.enchanting),
       enchantmentValue = record.data.enchantment,
       icon = record.icon:normalize(),

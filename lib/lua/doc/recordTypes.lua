@@ -89,8 +89,8 @@
 ---| 2 # 'Armor'
 
 ---@alias BookType
----| 'Book' # 0
----| 'Scroll' # 1
+---| 0 # Book
+---| 1 # Scroll
 
 ---@alias ClothingType
 ---| 'Pants' # 0
