@@ -57,6 +57,8 @@
 ---@field rankRequirement integer? optional rank requirement to run a command
 
 ---@class TES3MPModule
+---Add a new book to the book changes for a player.
+---@field AddBook fun(pid: PlayerId, bookId: RecordId)
 ---Add a new client global integer to the client globals.
 ---@field AddClientGlobalInteger fun(id: RecordId, intValue: integer, variableType?: integer)
 ---Add a new client global float to the client globals.
@@ -122,6 +124,8 @@
 ---@field ClearAlliedPlayersForPlayer fun(pid: PlayerId)
 ---Clear the modifier value of a player's attribute.
 ---@field ClearAttributeModifier fun(pid: PlayerId, attributeId: integer)
+---Clear the last recorded book changes for a player.
+---@field ClearBookChanges fun(pid: PlayerId)
 ---Clear the list of cells which should be reset on the client.
 ---@field ClearCellsToReset fun()
 ---Clear the client globals for the write-only worldstate.
@@ -202,6 +206,10 @@
 ---@field GetAvgPing fun(pid: PlayerId): integer returns a specific player's average ping
 ---Get the birthsign of a player.
 ---@field GetBirthsign fun(pid: PlayerId): string
+---Get the bookId at a certain index in a player's latest book changes.
+---@field GetBookId fun(pid: PlayerId, index: integer): RecordId
+---Get the number of indexes in a player's latest book changes.
+---@field GetBookChangesSize fun(pid: PlayerId): integer
 ---Get the bounty of the player.
 ---@field GetBounty fun(pid: PlayerId): integer
 ---Searches a subfolder for the first file with a name whose matches `fileName` case-insensitively, and returns its path if found
@@ -736,6 +744,8 @@
 ---@field SendAttributes fun(pid: PlayerId)
 ---Send a PlayerBaseInfo packet with a player's name, race, head mesh, hairstyle mesh, birthsign and stat reset state.
 ---@field SendBaseInfo fun(pid: PlayerId)
+---Send a PlayerBook packet with a player's recorded book changes.
+---@field SendBookChanges fun(pid: PlayerId, sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
 ---Send a PlayerBounty packet with a player's bounty.
 ---@field SendBounty fun(pid: PlayerId)
 ---Send a PlayerCellChange packet about a player.
