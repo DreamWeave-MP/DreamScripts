@@ -60,27 +60,6 @@ local function transform(trans)
   return vector(tonumber(trans[1]), tonumber(trans[2]), tonumber(trans[3]))
 end
 
-local function TravelDestination(destinations)
-  if not destinations then return end
-
-  local numDestinations = #destinations
-  if numDestinations <= 0 then return end
-
-  local newDestinations = tds.Vec()
-  newDestinations:resize(#destinations)
-
-  for i, travelDestination in ipairs(newDestinations) do
-    local destination = tds.Hash()
-    destination.cell = assert(RecordId(travelDestination.cell))
-    destination.position = transform(travelDestination.position)
-    destination.rotation = transform(travelDestination.rotation)
-
-    newDestinations[i] = destination
-  end
-
-  return newDestinations
-end
-
 local AIPackageHandlers = {
   AiActivatePackage = function(package)
     local hash = tds.Hash()
@@ -147,6 +126,21 @@ local AIPackageHandlers = {
 }
 
 local Handlers = {
+  AIPackages = function(aiPackages)
+    if not aiPackages then return end
+
+    local numPackages = #aiPackages
+    if numPackages <= 0 then return end
+
+    local newPackages = tds.Vec()
+
+    newPackages:resize(numPackages)
+    for i, aiPackage in ipairs(aiPackages) do
+      newPackages[i] = assert(AIPackageHandlers[aiPackage.type](aiPackage))
+    end
+
+    return newPackages
+  end,
   BipedObjects = function(biped_objects)
     local numObjects, bipedObjects = #biped_objects, nil
 
@@ -194,6 +188,41 @@ local Handlers = {
 
     return inventory
   end,
+  Spells = function(spells)
+    if not spells then return end
+
+    local numSpells = #spells
+    if numSpells <= 0 then return end
+
+    local newSpells = tds.Vec()
+    newSpells:resize(numSpells)
+
+    for i, spellId in ipairs(spells) do
+      newSpells[i] = assert(RecordId(spellId))
+    end
+
+    return newSpells
+  end,
+  TravelDestination = function(destinations)
+    if not destinations then return end
+
+    local numDestinations = #destinations
+    if numDestinations <= 0 then return end
+
+    local newDestinations = tds.Vec()
+    newDestinations:resize(#destinations)
+
+    for i, travelDestination in ipairs(newDestinations) do
+      local destination = tds.Hash()
+      destination.cell = assert(RecordId(travelDestination.cell))
+      destination.position = transform(travelDestination.position)
+      destination.rotation = transform(travelDestination.rotation)
+
+      newDestinations[i] = destination
+    end
+
+    return newDestinations
+  end
 }
 
 local RequiredDataFiles = dUtil.getRequiredDataFiles()
@@ -452,18 +481,6 @@ local TypeHandlers = {
     return hash
   end,
   Creature = function(record, recordId)
-    local aiPackages, spells = tds.Vec(), tds.Vec()
-
-    aiPackages:resize(#record.ai_packages)
-    for i, aiPackage in ipairs(record.ai_packages) do
-      aiPackages[i] = AIPackageHandlers[aiPackage.type](aiPackage)
-    end
-
-    spells:resize(#record.spells)
-    for i, spellId in ipairs(record.spells) do
-      spells[i] = assert(RecordId(spellId))
-    end
-
     local creatureHash = tds.Hash {
       AIData = tds.Hash {
         alarm = record.ai_data.alarm,
@@ -472,7 +489,6 @@ local TypeHandlers = {
         hello = record.ai_data.hello,
         services = record.ai_data.services,
       },
-      AIPackages = aiPackages,
       agility = record.data.agility,
       attack1Min = record.data.attack1[1],
       attack1Max = record.data.attack1[2],
@@ -498,7 +514,6 @@ local TypeHandlers = {
       personality = record.data.personality,
       soulValue = record.data.soul,
       speed = record.data.speed,
-      spells = spells,
       stealthAbility = record.data.stealth,
       strength = record.data.strength,
       willpower = record.data.willpower,
@@ -507,27 +522,34 @@ local TypeHandlers = {
     local creatureScale = tonumber(record.scale)
     if creatureScale and creatureScale ~= 1 then creatureHash.scale = creatureScale end
 
-    local mwScript = lowercase(record.script)
-    if mwScript and mwScript ~= '' then creatureHash.script = mwScript end
+    local mwScript = RecordId(record.script)
+    if mwScript then creatureHash.script = mwScript end
 
-    local sound = lowercase(record.sound)
-    if sound and sound ~= '' then creatureHash.sound = sound end
+    local sound = RecordId(record.sound)
+    if sound then creatureHash.sound = sound end
 
-    local destinations = TravelDestination(record.travel_destinations)
+    local destinations = Handlers.TravelDestination(record.travel_destinations)
     if destinations then creatureHash.travelDestinations = destinations end
 
     local inventory = Handlers.Inventory(record.inventory)
     if inventory then creatureHash.inventory = inventory end
 
+    local aiPackages, spells = Handlers.AIPackages(record.ai_packages), Handlers.Spells(record.spells)
+
+    if aiPackages then creatureHash.AIPackages = aiPackages end
+    if spells then creatureHash.spells = spells end
+
     return creatureHash
   end,
 
   Static = function(record, recordId)
-    return tds.Hash {
-      id = recordId,
-      model = record.mesh:normalize(),
-      objectFlags = record.flags,
-    }
+    local hash = tds.Hash()
+
+    hash.id = recordId
+    hash.model = path(record.mesh)
+    hash.objectFlags = numberField(record.flags)
+
+    return hash
   end,
 }
 
