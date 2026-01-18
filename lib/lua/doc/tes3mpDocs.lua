@@ -206,6 +206,14 @@
 ---@field GetBounty fun(pid: PlayerId): integer
 ---Searches a subfolder for the first file with a name whose matches `fileName` case-insensitively, and returns its path if found
 ---@field GetCaseInsensitiveFilename fun(folderPath: string, fileName: string): string
+---Get the cell description of a player's cell.
+---@field GetCell fun(pid: PlayerId): CellDescription
+---Get the number of indexes in a player's latest cell state changes.
+---@field GetCellStateChangesSize fun(pid: PlayerId): integer
+---Get the cell description at a certain index in a player's latest cell state changes.
+---@field GetCellStateDescription fun(pid: PlayerId, index: integer): CellDescription
+---Get the cell state type at a certain index in a player's latest cell state changes.
+---@field GetCellStateType fun(pid: PlayerId, index: integer): integer
 ---Get the description of the custom class used by a player.
 ---@field GetClassDesc fun(pid: PlayerId): string
 ---Get the ID of one of the two major attributes of a custom class used by a player.
@@ -288,6 +296,10 @@
 ---@field GetEquipmentItemRefId fun(pid: PlayerId, slot: integer): RecordId
 ---Get the number of slots used for equipment.
 ---@field GetEquipmentSize fun(): integer
+---Get the X coordinate of the player's exterior cell.
+---@field GetExteriorX fun(pid: PlayerId): integer
+---Get the Y coordinate of the player's exterior cell.
+---@field GetExteriorY fun(pid: PlayerId): integer
 ---Get the action type used in a player's latest faction changes.
 ---@field GetFactionChangesAction fun(pid: PlayerId): integer
 ---Get the number of indexes in a player's latest faction changes.
@@ -580,6 +592,8 @@
 ---@field GetRecordValue fun(index: integer): integer
 ---Get the weight of the record at a certain index in the read worldstate's dynamic records of the current type.
 ---@field GetRecordWeight fun(index: integer): number
+---Get the region of the player's exterior cell.
+---@field GetRegion fun(pid: PlayerId): string
 ---Get the a certain player's reputation.
 ---@field GetReputation fun(pid: PlayerId): integer
 ---Get the X rotation of a player.
@@ -680,8 +694,12 @@
 ---Checking if the server requires a password to connect.
 ---@field HasPassword fun(): boolean
 ---@field InputDialog fun(pid: PlayerId, id: GUIID, label: string, note: string) Displays an input dialog
+---Check whether the player's last cell change has involved a region change.
+---@field IsChangingRegion fun(pid: PlayerId): boolean
 ---Check whether the player is using a default class instead of a custom one.
 ---@field IsClassDefault fun(pid: PlayerId): integer
+---Check whether the player is in an exterior cell or not.
+---@field IsInExterior fun(pid: PlayerId): boolean
 ---Check whether the object at a certain index in the read object list is a player.
 ---@field IsObjectPlayer fun(index: integer): boolean
 ---Check whether the object at a certain index in the read object list has been dropped by a player.
@@ -720,6 +738,8 @@
 ---@field SendBaseInfo fun(pid: PlayerId)
 ---Send a PlayerBounty packet with a player's bounty.
 ---@field SendBounty fun(pid: PlayerId)
+---Send a PlayerCellChange packet about a player.
+---@field SendCell fun(pid: PlayerId)
 ---Send a CellReset packet with a list of cells.
 ---@field SendCellReset fun(pid: PlayerId, sendToOtherPlayers: boolean)
 ---Send a PlayerCharClass packet about a player.
@@ -837,6 +857,8 @@
 ---@field SetBirthsign fun(pid: PlayerId, name: string)
 ---Set the bounty of a player.
 ---@field SetBounty fun(pid: PlayerId, value: integer)
+---Set the cell of a player.
+---@field SetCell fun(pid: PlayerId, cellDescription: CellDescription)
 ---Set the current and ending stages of character generation for a player.
 ---@field SetCharGenStage fun(pid: PlayerId, currentStage: integer, endStage: integer)
 ---Set the description of the custom class used by a player.
@@ -880,6 +902,8 @@
 ---@field SetDefaultClass fun(pid: PlayerId, id: RecordId)
 ---@field SetDifficulty fun(pid: PlayerId, difficulty: integer) Changes the difficulty for a player, but does NOT send a packet. Use SendSettings to notify clients of difficulty changes.--
 ---@field SetEnforcedLogLevel fun(pid: PlayerId, logLevel: LogLevel) Sets the enforced log level for a player. Doesn't send a packet on its own. Log level enforcement is important to prevent players from receiving information about world state they otherwise would not. Use a logLevel of -1 not to enforce this setting.
+---Set the cell of a player to an exterior cell.
+---@field SetExteriorCell fun(pid: PlayerId, x: integer, y: integer)
 ---Set the action type in a player's faction changes.
 ---@field SetFactionChangesAction fun(pid: PlayerId, action: integer)
 ---Set the expulsion state of the temporary faction stored on the server.
