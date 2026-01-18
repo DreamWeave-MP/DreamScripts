@@ -115,6 +115,12 @@
 ---| 1 # OnTouch
 ---| 2 # OnTarget
 
+---@alias EnchantType
+---| 0 # CastOnce
+---| 1 # CastOnStrike
+---| 2 # CastWhenUsed
+---| 3 # ConstantEffect
+
 --- Awkward table representation of an inventory tuple
 --- Inventory items are not unique, so, the inventory itself cannot be a hashmap,
 --- Rather it is a vector of maps from recordIds to instance counts.
@@ -415,9 +421,9 @@
 ---@field bodypartType BodypartType
 ---@field bodypartFlags integer
 ---@field part BodypartId
----@field race RecordId
+---@field race RecordId?
 ---@field model NormalizedPath
----@field isVampire boolean?
+---@field isVampire boolean
 
 ---@class ClassRecord: BaseRecord
 ---@field attribute AttributeId[]
