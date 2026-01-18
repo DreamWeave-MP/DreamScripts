@@ -930,7 +930,7 @@ local function createRecordStores()
 
         --- Since we iterate in reverse, skip records in
         --- this store which have already been defined
-        if not recordId[recordId] then
+        if not recordStore[recordId] then
           recordStore[recordId] = typeHandler(object, recordId)
           loadedRecords = loadedRecords + 1
         else
