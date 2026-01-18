@@ -683,8 +683,8 @@ local TypeHandlers = {
       hashRequirement.reputation = numberField(requirement.reputation)
 
       hashRequirement.attributes = tds.Vec(
-        numberField(requirement.attributes[1]),
-        numberField(requirement.attributes[2])
+        Enums.AttributeId[MandatoryRecordId(requirement.attributes[1])],
+        Enums.AttributeId[MandatoryRecordId(requirement.attributes[2])]
       )
 
       hashRequirements[i] = hashRequirement
