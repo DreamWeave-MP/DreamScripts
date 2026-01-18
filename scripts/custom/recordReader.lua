@@ -710,29 +710,16 @@ local TypeHandlers = {
     return hash
   end,
 
-  GameSetting = function(record, recordId)
-    local hash = tds.Hash()
-
-    hash.id = recordId
-    hash.objectFlags = record.flags
-
+  GameSetting = function(record, _)
     if record.value.type == 'String' then
-      hash.value = assert(tostring(record.value))
+      return assert(tostring(record.value))
     else
-      hash.value = numberField(tostring(record.value))
+      return numberField(tostring(record.value))
     end
-
-    return hash
   end,
 
-  GlobalVariable = function(record, recordId)
-    local hash = tds.Hash()
-
-    hash.id = recordId
-    hash.objectFlags = record.flags
-    hash.value = numberField(tostring(record.value))
-
-    return hash
+  GlobalVariable = function(record, _)
+    return numberField(tostring(record.value))
   end,
 
   Static = function(record, recordId)
