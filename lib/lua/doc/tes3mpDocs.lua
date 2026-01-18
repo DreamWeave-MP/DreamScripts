@@ -116,6 +116,8 @@
 ---Add a new topic to the topic changes for a player.
 ---@field AddTopic fun(pid: PlayerId, topicId: string)
 ---@field BanAddress fun(ipAddress: string) Given an IP Address string, bans it. Doesn't perform any validation, so caller functions need to do so themselves.
+---Remove all messages from chat for a certain player.
+---@field CleanChatForPid fun(playerId: PlayerId)
 ---Clear the list of players who will be regarded as being player's allies.
 ---@field ClearAlliedPlayersForPlayer fun(pid: PlayerId)
 ---Clear the modifier value of a player's attribute.
