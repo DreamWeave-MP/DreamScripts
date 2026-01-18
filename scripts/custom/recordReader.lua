@@ -337,7 +337,7 @@ local TypeHandlers = {
     }
   end,
   Creature = function(record, recordId)
-    local aiPackages, destinations, inventory, spells = tds.Vec(), tds.Vec(), tds.Vec(), tds.Vec()
+    local aiPackages, destinations, inventory, spells = tds.Vec(), nil, tds.Vec(), tds.Vec()
 
     aiPackages:resize(#record.ai_packages)
     for i, aiPackage in ipairs(record.ai_packages) do
@@ -354,21 +354,26 @@ local TypeHandlers = {
       spells[i] = assert(lowercase(spellId))
     end
 
-    destinations:resize(#record.travel_destinations)
-    for i, travelDestination in ipairs(record.travel_destinations) do
-      destinations[i] = tds.Hash {
-        cell = lowercase(travelDestination.cell),
-        position = tds.Vec {
-          tonumber(travelDestination.position[1]),
-          tonumber(travelDestination.position[2]),
-          tonumber(travelDestination.position[3]),
-        },
-        rotation = tds.Vec {
-          tonumber(travelDestination.rotation[1]),
-          tonumber(travelDestination.rotation[2]),
-          tonumber(travelDestination.rotation[3]),
-        },
-      }
+    local numDestinations = #record.travel_destinations
+    if numDestinations > 0 then
+      destinations = tds.Vec()
+      destinations:resize(#record.travel_destinations)
+
+      for i, travelDestination in ipairs(record.travel_destinations) do
+        destinations[i] = tds.Hash {
+          cell = lowercase(travelDestination.cell),
+          position = tds.Vec {
+            tonumber(travelDestination.position[1]),
+            tonumber(travelDestination.position[2]),
+            tonumber(travelDestination.position[3]),
+          },
+          rotation = tds.Vec {
+            tonumber(travelDestination.rotation[1]),
+            tonumber(travelDestination.rotation[2]),
+            tonumber(travelDestination.rotation[3]),
+          },
+        }
+      end
     end
 
     local creatureHash = tds.Hash {
@@ -409,7 +414,6 @@ local TypeHandlers = {
       spells = spells,
       stealthAbility = record.data.stealth,
       strength = record.data.strength,
-      travelDestinations = destinations,
       willpower = record.data.willpower,
     }
 
@@ -421,6 +425,8 @@ local TypeHandlers = {
 
     local sound = lowercase(record.sound)
     if sound and sound ~= '' then creatureHash.sound = sound end
+
+    if destinations then creatureHash.travelDestinations = destinations end
 
     return creatureHash
   end,
