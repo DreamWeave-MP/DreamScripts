@@ -480,6 +480,13 @@
 ---@field travelDestinations TravelDestination[]
 ---@field willpower integer
 
+---@class DoorRecord: BaseRecord
+---@field closeSound string?
+---@field model NormalizedPath
+---@field name string?
+---@field openSound string?
+---@field script RecordId?
+
 ---@class MagicEffect
 ---@field area integer
 ---@field attribute AttributeId

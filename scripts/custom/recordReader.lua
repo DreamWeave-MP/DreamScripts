@@ -298,6 +298,7 @@ local RecordStores = tds.Hash {
   Clothing = tds.Hash(),
   Container = tds.Hash(),
   Creature = tds.Hash(),
+  Door = tds.Hash(),
   Static = tds.Hash(),
 }
 
@@ -578,6 +579,27 @@ local TypeHandlers = {
 
     if aiPackages then hash.AIPackages = aiPackages end
     if spells then hash.spells = spells end
+
+    return hash
+  end,
+
+  Door = function(record, recordId)
+    local hash = tds.Hash()
+
+    hash.id = recordId
+    hash.model = path(record.mesh)
+    hash.objectFlags = numberField(record.flags)
+
+    local name = RealString(record.name)
+    if name then hash.name = name end
+
+    local openSound, closeSound = RealString(record.open_sound), RealString(record.close_sound)
+
+    if openSound then hash.openSound = openSound end
+    if closeSound then hash.closeSound = closeSound end
+
+    local script = OptionalRecordId(record.script)
+    if script then hash.script = script end
 
     return hash
   end,
