@@ -316,10 +316,10 @@ return {
   },
   eventHandlers = {
     OnObjectDialogueChoice = resetMerchantData,
-    OnLoad = loadMerchants,
   },
   eventValidators = {
     OnObjectMiscellaneous = getInitialGold,
+    OnLoad = loadMerchants,
   },
   chatCommands = {
     reloadMerchants = {
