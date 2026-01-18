@@ -67,6 +67,14 @@
 ---@field AddDataFileRequirement fun(dataFilename: string, checksumString: string)
 ---Add a new kill count to the kill count changes.
 ---@field AddKill fun(refId: RecordId, number: integer)
+---Add a copy of the server's temporary record of the current specified type to the stored records.
+---@field AddRecord fun()
+---Add a copy of the server's temporary body part to the temporary record of the current specified type.
+---@field AddRecordBodyPart fun()
+---Add a copy of the server's temporary effect to the temporary record of the current specified type.
+---@field AddRecordEffect fun()
+---Add a copy of the server's temporary inventory item to the temporary record of the current specified type.
+---@field AddRecordInventoryItem fun()
 ---Add a new spell to the spellbook changes for a player.
 ---@field AddSpell fun(pid: PlayerId, spellId: RecordId)
 ---Add a new active spell to the spells active changes for a player, using the temporary effect values stored so far.
@@ -101,6 +109,8 @@
 ---@field ClearKillChanges fun()
 ---Clear the map changes for the write-only worldstate.
 ---@field ClearMapChanges fun()
+---Clear the data from the records stored on the server.
+---@field ClearRecords fun()
 ---Clear the modifier value of a player's skill.
 ---@field ClearSkillModifier fun(pid: PlayerId, skillId: integer)
 ---Clear the last recorded spellbook changes for a player.
@@ -218,6 +228,60 @@
 ---@field GetProtocolVersion fun(): string
 ---Get the race of a player.
 ---@field GetRace fun(pid: PlayerId): string
+---Get the auto-calculation flag value of the record at a certain index in the read worldstate's dynamic records of the current type.
+---@field GetRecordAutoCalc fun(index: integer): integer
+---Get the base id (i.e. the id this record should inherit default values from) of the record at a certain index in the read worldstate's dynamic records of the current type.
+---@field GetRecordBaseId fun(index: integer): RecordId
+---Get the charge of the record at a certain index in the read worldstate's dynamic records of the current type.
+---@field GetRecordCharge fun(index: integer): integer
+---Get the cost of the record at a certain index in the read worldstate's dynamic records of the current type.
+---@field GetRecordCost fun(index: integer): integer
+---Get the number of records in the read worldstate's dynamic records.
+---@field GetRecordCount fun(): integer
+---Get the area of the effect at a certain index in the read worldstate's current records.
+---@field GetRecordEffectArea fun(recordIndex: integer, effectIndex: integer): integer
+---Get the ID of the attribute modified by the effect at a certain index in the read worldstate's current records.
+---@field GetRecordEffectAttribute fun(recordIndex: integer, effectIndex: integer): integer
+---Get the number of effects for the record at a certain index in the read worldstate's current records.
+---@field GetRecordEffectCount fun(recordIndex: integer): integer
+---Get the duration of the effect at a certain index in the read worldstate's current records.
+---@field GetRecordEffectDuration fun(recordIndex: integer, effectIndex: integer): integer
+---Get the ID of the effect at a certain index in the read worldstate's current records.
+---@field GetRecordEffectId fun(recordIndex: integer, effectIndex: integer): integer
+---Get the maximum magnitude of the effect at a certain index in the read worldstate's current records.
+---@field GetRecordEffectMagnitudeMax fun(recordIndex: integer, effectIndex: integer): integer
+---Get the minimum magnitude of the effect at a certain index in the read worldstate's current records.
+---@field GetRecordEffectMagnitudeMin fun(recordIndex: integer, effectIndex: integer): integer
+---Get the range type of the effect at a certain index in the read worldstate's current records.
+---@field GetRecordEffectRangeType fun(recordIndex: integer, effectIndex: integer): integer
+---Get the ID of the skill modified by the effect at a certain index in the read worldstate's current records.
+---@field GetRecordEffectSkill fun(recordIndex: integer, effectIndex: integer): integer
+---Get the enchantment charge of the record at a certain index in the read worldstate's dynamic records of the current type.
+---@field GetRecordEnchantmentCharge fun(index: integer): integer
+---Get the enchantment id of the record at a certain index in the read worldstate's dynamic records of the current type.
+---@field GetRecordEnchantmentId fun(index: integer): RecordId
+---Get the flags of the record at a certain index in the read worldstate's dynamic records of the current type.
+---@field GetRecordFlags fun(index: integer): integer
+---Get the icon of the record at a certain index in the read worldstate's dynamic records of the current type.
+---@field GetRecordIcon fun(index: integer): string
+---Get the id of the record at a certain index in the read worldstate's dynamic records of the current type.
+---@field GetRecordId fun(index: integer): RecordId
+---Get the model of the record at a certain index in the read worldstate's dynamic records of the current type.
+---@field GetRecordModel fun(index: integer): string
+---Get the name of the record at a certain index in the read worldstate's dynamic records of the current type.
+---@field GetRecordName fun(index: integer): string
+---Get the quantity of the record at a certain index in the read worldstate's dynamic records of the current type.
+---@field GetRecordQuantity fun(index: integer): integer
+---Get the script of the record at a certain index in the read worldstate's dynamic records of the current type.
+---@field GetRecordScript fun(index: integer): string
+---Get the subtype of the record at a certain index in the read worldstate's dynamic records of the current type.
+---@field GetRecordSubtype fun(index: integer): integer
+---Get the type of records in the read worldstate's dynamic records.
+---@field GetRecordType fun(): integer
+---Get the value of the record at a certain index in the read worldstate's dynamic records of the current type.
+---@field GetRecordValue fun(index: integer): integer
+---Get the weight of the record at a certain index in the read worldstate's dynamic records of the current type.
+---@field GetRecordWeight fun(index: integer): number
 ---Get the scale of a player.
 ---@field GetScale fun(pid: PlayerId): number
 ---Get the script error ignoring state of the server.
@@ -321,6 +385,8 @@
 ---Send a PlayerLevel packet with a player's character level and progress towards the next level up.
 ---@field SendLevel fun(pid: PlayerId)
 ---@field SendMessage fun(pid: PlayerId, message: string, sendToAll: boolean?) Emits a chat message to a specific player, optionally relaying it to all players
+---Send a RecordDynamic packet with the current specified record type.
+---@field SendRecordDynamic fun(pid: PlayerId, sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
 ---@field SendSettings fun(pid: PlayerId, sendToAll: boolean, skipAttachedPlayer: boolean) After constructing a settings packet using `SetEnforcedLogLevel`, `SetPhysicsFramerate`, SetGameSettingValue`, `SetVRSettingValue`, or `SetDifficulty`, send it to players, optionally including or omitting all players or just the `pid` provided
 ---Send a PlayerShapeshift packet about a player.
 ---@field SendShapeshift fun(pid: PlayerId)
@@ -416,6 +482,156 @@
 ---@field SetPlayerCollisionState fun(state: boolean)
 ---Set the race of a player.
 ---@field SetRace fun(pid: PlayerId, race: string)
+---Set the AI alarm value of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordAIAlarm fun(aiAlarm: integer)
+---Set the AI fight value of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordAIFight fun(aiFight: integer)
+---Set the AI flee value of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordAIFlee fun(aiFlee: integer)
+---Set the AI services value of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordAIServices fun(aiServices: integer)
+---Set the armor rating of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordArmorRating fun(armorRating: integer)
+---Set the auto-calculation flag value of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordAutoCalc fun(autoCalc: integer)
+---Set the base id (i.e. the id this record should inherit default values from) of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordBaseId fun(baseId: RecordId)
+---Set the blood type of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordBloodType fun(bloodType: integer)
+---Set the body part type of the temporary body part stored on the server.
+---@field SetRecordBodyPartType fun(partType: integer)
+---Set the id of the female version of the temporary body part stored on the server.
+---@field SetRecordBodyPartIdForFemale fun(partId: RecordId)
+---Set the id of the male version of the temporary body part stored on the server.
+---@field SetRecordBodyPartIdForMale fun(partId: RecordId)
+---Set the character class of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordClass fun(charClass: string)
+---Set the closing sound of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordCloseSound fun(sound: string)
+---Set the color of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordColor fun(red: integer, green: integer, blue: integer)
+---Set the charge of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordCharge fun(charge: integer)
+---Set the cost of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordCost fun(cost: integer)
+---Set the chop damage of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordDamageChop fun(minDamage: integer, maxDamage: integer)
+---Set the slash damage of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordDamageSlash fun(minDamage: integer, maxDamage: integer)
+---Set the thrust damage of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordDamageThrust fun(minDamage: integer, maxDamage: integer)
+---Set the area of the temporary effect stored on the server.
+---@field SetRecordEffectArea fun(area: integer)
+---Set the ID of the attribute modified by the temporary effect stored on the server.
+---@field SetRecordEffectAttribute fun(attributeId: integer)
+---Set the duration of the temporary effect stored on the server.
+---@field SetRecordEffectDuration fun(duration: integer)
+---Set the ID of the temporary effect stored on the server.
+---@field SetRecordEffectId fun(effectId: integer)
+---Set the maximum magnitude of the temporary effect stored on the server.
+---@field SetRecordEffectMagnitudeMax fun(magnitudeMax: integer)
+---Set the minimum magnitude of the temporary effect stored on the server.
+---@field SetRecordEffectMagnitudeMin fun(magnitudeMin: integer)
+---Set the range type of the temporary effect stored on the server.
+---@field SetRecordEffectRangeType fun(rangeType: integer)
+---Set the ID of the skill modified by the temporary effect stored on the server.
+---@field SetRecordEffectSkill fun(skillId: integer)
+---Set the enchantment charge of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordEnchantmentCharge fun(enchantmentCharge: integer)
+---Set the enchantment id of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordEnchantmentId fun(enchantmentId: RecordId)
+---Set the enchantment id of the record at a certain index in the records stored on the server.
+---@field SetRecordEnchantmentIdByIndex fun(index: integer, enchantmentId: RecordId)
+---Set the faction of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordFaction fun(faction: string)
+---Set the fatigue of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordFatigue fun(fatigue: integer)
+---Set the flags of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordFlags fun(flags: integer)
+---Set the float variable of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordFloatVariable fun(floatVar: number)
+---Set the gender of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordGender fun(gender: integer)
+---Set the hair of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordHair fun(hair: string)
+---Set the head of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordHead fun(head: string)
+---Set the health of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordHealth fun(health: integer)
+---Set the icon of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordIcon fun(icon: string)
+---Set the id of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordId fun(id: RecordId)
+---Set the id of the record at a certain index in the records stored on the server.
+---@field SetRecordIdByIndex fun(index: integer, id: RecordId)
+---Set the inventory base id of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordInventoryBaseId fun(inventoryBaseId: RecordId)
+---Set the count of the temporary inventory item stored on the server.
+---@field SetRecordInventoryItemCount fun(count: integer)
+---Set the id of the temporary inventory item stored on the server.
+---@field SetRecordInventoryItemId fun(itemId: RecordId)
+---Set the integer variable of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordIntegerVariable fun(intVar: integer)
+---Set whether the temporary record stored on the server for the currently specified record type is a key.
+---@field SetRecordKeyState fun(keyState: boolean)
+---Set the level of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordLevel fun(level: integer)
+---Set the magicka of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordMagicka fun(magicka: integer)
+---Set the maximum range of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordMaxRange fun(maxRange: number)
+---Set the minimum range of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordMinRange fun(minRange: number)
+---Set the model of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordModel fun(model: string)
+---Set the name of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordName fun(name: string)
+---Set the opening sound of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordOpenSound fun(sound: string)
+---Set the quality of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordQuality fun(quality: number)
+---Set the race of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordRace fun(race: string)
+---Set the radius of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordRadius fun(radius: integer)
+---Set the reach of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordReach fun(reach: number)
+---Set whether the temporary record stored on the server for the currently specified record type is a scroll.
+---@field SetRecordScrollState fun(scrollState: boolean)
+---Set the scale of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordScale fun(scale: number)
+---Set the script of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordScript fun(script: string)
+---Set the script text of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordScriptText fun(scriptText: string)
+---Set the skill ID of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordSkillId fun(skillId: integer)
+---Set the soul value of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordSoulValue fun(soulValue: integer)
+---Set the sound of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordSound fun(sound: string)
+---Set the speed of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordSpeed fun(speed: number)
+---Set the string variable of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordStringVariable fun(stringVar: string)
+---Set the subtype of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordSubtype fun(subtype: integer)
+---Set the text of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordText fun(text: string)
+---Set the time of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordTime fun(time: integer)
+---Set the type of records in the read worldstate's dynamic records.
+---@field SetRecordType fun(type: integer)
+---Set the number of uses of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordUses fun(uses: integer)
+---Set the value of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordValue fun(value: integer)
+---Set the vampire state of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordVampireState fun(vampireState: boolean)
+---Set the volume of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordVolume fun(volume: number)
+---Set the weight of the temporary record stored on the server for the currently specified record type.
+---@field SetRecordWeight fun(weight: number)
 ---Set whether the player's stats should be reset based on their current race as the result of a PlayerBaseInfo packet.
 ---@field SetResetStats fun(pid: PlayerId, resetStats: boolean)
 ---Set a rule string for the server details displayed in the server browser.
