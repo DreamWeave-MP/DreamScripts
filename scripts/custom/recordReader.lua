@@ -328,7 +328,7 @@ local RecordStores = tds.Hash {
   LeveledItem = tds.Hash(),
   Light = tds.Hash(),
   Lockpick = tds.Hash(),
-  Miscellaneous = tds.Hash(),
+  MiscItem = tds.Hash(),
   Probe = tds.Hash(),
   Static = tds.Hash(),
 }
@@ -867,7 +867,7 @@ local TypeHandlers = {
     return hash
   end,
 
-  Miscellaneous = function(record, recordId)
+  MiscItem = function(record, recordId)
     local hash = tds.Hash()
 
     hash.icon = path(record.icon)
