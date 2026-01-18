@@ -287,7 +287,8 @@ local Handlers = {
     for i, travelDestination in ipairs(destinations) do
       local destination = tds.Hash()
 
-      destination.cell = MandatoryRecordId(travelDestination.cell)
+      local cell = OptionalRecordId(travelDestination.cell)
+      if cell then destination.cell = cell end
 
       if travelDestination.position then
         destination.position = transform(travelDestination.position)
