@@ -653,7 +653,11 @@ local TypeHandlers = {
     hash.id = MandatoryRecordId(recordId)
     hash.objectFlags = numberField(record.flags)
 
-    print(Enums.AttributeId[record.data.favored_attributes[1]], Enums.AttributeId[record.data.favored_attributes[2]])
+    print(
+      Enums.AttributeId[MandatoryRecordId(record.data.favored_attributes[1])],
+      Enums.AttributeId[MandatoryRecordId(record.data.favored_attributes[2])]
+    )
+
     hash.favoredAttributes = tds.Vec(
       assert(Enums.AttributeId[record.data.favored_attributes[1]]),
       assert(Enums.AttributeId[record.data.favored_attributes[2]])
