@@ -493,6 +493,13 @@
 ---@field openSound RecordId?
 ---@field script RecordId?
 
+---@class EnchantmentRecord: BaseRecord
+---@field cost integer
+---@field effects MagicEffect[]
+---@field enchantFlags integer
+---@field enchantType EnchantType
+---@field maxCharge integer
+
 ---@class MagicEffect
 ---@field area integer
 ---@field attribute AttributeId
@@ -534,4 +541,5 @@
 ---@field Container table<RecordId, ContainerRecord>
 ---@field Creature table<RecordId, CreatureRecord>
 ---@field Door table<RecordId, DoorRecord>
+---@field Enchanting table<RecordId, EnchantmentRecord>
 ---@field Static table<RecordId, StaticRecord>
