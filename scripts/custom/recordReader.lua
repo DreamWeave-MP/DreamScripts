@@ -72,16 +72,16 @@ end
 local AIPackageHandlers = {
   AiActivatePackage = function(package)
     local hash = tds.Hash()
-    hash.reset = assert(package.reset)
-    hash.target = assert(package.target)
+    hash.reset = numberField(package.reset)
+    hash.target = numberField(package.target)
     hash.type = enumerations.ai.ACTIVATE
   end,
   AiEscortPackage = function(package)
     local hash = tds.Hash()
 
-    hash.duration = assert(package.duration)
-    hash.reset = assert(package.reset)
-    hash.target = assert(package.target)
+    hash.duration = numberField(package.duration)
+    hash.reset = numberField(package.reset)
+    hash.target = numberField(package.target)
     hash.type = enumerations.ai.ESCORT
 
     local location = transform(package.location)
@@ -95,9 +95,9 @@ local AIPackageHandlers = {
   AiFollowPackage = function(package)
     local hash = tds.Hash()
 
-    hash.duration = assert(package.duration)
-    hash.reset = assert(package.reset)
-    hash.target = assert(package.target)
+    hash.duration = numberField(package.duration)
+    hash.reset = numberField(package.reset)
+    hash.target = numberField(package.target)
     hash.type = enumerations.ai.FOLLOW
 
     local location = transform(package.location)
@@ -112,7 +112,7 @@ local AIPackageHandlers = {
     local hash = tds.Hash()
 
     hash.location = assert(transform(package.location))
-    hash.reset = assert(package.reset)
+    hash.reset = numberField(package.reset)
     hash.type = enumerations.ai.TRAVEL
 
     return hash
@@ -176,7 +176,7 @@ local Handlers = {
     for i, bipedObject in ipairs(biped_objects) do
       local hashBipedObject = tds.Hash()
 
-      hashBipedObject.bipedObjectType = assert(Enums.BipedObjectType[bipedObject.biped_object_type])
+      hashBipedObject.bipedObjectType = numberField(Enums.BipedObjectType[bipedObject.biped_object_type])
       local malePart = OptionalRecordId(bipedObject.male_bodypart)
       local femalePart = OptionalRecordId(bipedObject.female_bodypart)
 
