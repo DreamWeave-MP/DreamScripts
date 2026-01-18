@@ -286,9 +286,16 @@ local Handlers = {
 
     for i, travelDestination in ipairs(destinations) do
       local destination = tds.Hash()
+
       destination.cell = MandatoryRecordId(travelDestination.cell)
-      destination.position = transform(travelDestination.position)
-      destination.rotation = transform(travelDestination.rotation)
+
+      if travelDestination.position then
+        destination.position = transform(travelDestination.position)
+      end
+
+      if travelDestination.rotation then
+        destination.rotation = transform(travelDestination.rotation)
+      end
 
       newDestinations[i] = destination
     end
