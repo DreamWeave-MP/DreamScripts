@@ -575,6 +575,16 @@
 ---@field weight number
 ---@field value integer
 
+---@class LockpickRecord: BaseRecord
+---@field icon NormalizedPath
+---@field model NormalizedPath
+---@field name string?
+---@field quality integer
+---@field script RecordId?
+---@field uses integer
+---@field value integer
+---@field weight number
+
 ---@class MagicEffect
 ---@field area integer
 ---@field attribute AttributeId
@@ -624,4 +634,5 @@
 ---@field LeveledCreature table<RecordId, LeveledCreatureRecord>
 ---@field LeveledItem table<RecordId, LeveledItemRecord>
 ---@field Light table<RecordId, LightRecord>
+---@field Lockpick table<RecordId, LockpickRecord>
 ---@field Static table<RecordId, StaticRecord>

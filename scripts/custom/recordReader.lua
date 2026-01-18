@@ -327,6 +327,7 @@ local RecordStores = tds.Hash {
   LeveledCreature = tds.Hash(),
   LeveledItem = tds.Hash(),
   Light = tds.Hash(),
+  Lockpick = tds.Hash(),
   Static = tds.Hash(),
 }
 
@@ -841,6 +842,25 @@ local TypeHandlers = {
 
     local sound = OptionalRecordId(record.sound)
     if sound then hash.sound = sound end
+
+    return hash
+  end,
+
+  Lockpick = function(record, recordId)
+    local hash = tds.Hash()
+
+    hash.icon = path(record.icon)
+    hash.id = MandatoryRecordId(recordId)
+    hash.model = path(record.mesh)
+    hash.objectFlags = numberField(record.flags)
+    hash.quality = numberField(record.data.quality)
+    hash.uses = numberField(record.data.uses)
+    hash.value = numberField(record.data.value)
+    hash.weight = numberField(record.data.weight)
+
+    local script, name = OptionalRecordId(record.script), RealString(record.name)
+    if script then hash.script = script end
+    if name then hash.name = name end
 
     return hash
   end,
