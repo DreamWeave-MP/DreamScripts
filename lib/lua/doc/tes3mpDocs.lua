@@ -109,6 +109,8 @@
 ---@field AddAlliedPlayerForPlayer fun(pid: PlayerId, alliedPlayerPid: PlayerId)
 ---Add an item change to a player's inventory changes.
 ---@field AddItemChange fun(pid: PlayerId, refId: RecordId, count: integer, charge: integer, enchantmentCharge: number, soul: string)
+---Add a new quick key to the quick key changes for a player.
+---@field AddQuickKey fun(pid: PlayerId, slot: integer, type: integer, itemId?: RecordId)
 ---@field BanAddress fun(ipAddress: string) Given an IP Address string, bans it. Doesn't perform any validation, so caller functions need to do so themselves.
 ---Clear the list of players who will be regarded as being player's allies.
 ---@field ClearAlliedPlayersForPlayer fun(pid: PlayerId)
@@ -135,6 +137,8 @@
 ---@field ClearMapChanges fun()
 ---Clear the data from the object list stored on the server.
 ---@field ClearObjectList fun()
+---Clear the last recorded quick key changes for a player.
+---@field ClearQuickKeyChanges fun(pid: PlayerId)
 ---Clear the data from the records stored on the server.
 ---@field ClearRecords fun()
 ---Clear the modifier value of a player's skill.
@@ -476,6 +480,14 @@
 ---@field GetPreviousCellPosZ fun(pid: PlayerId): number
 ---Get the protocol version of the server.
 ---@field GetProtocolVersion fun(): string
+---Get the number of indexes in a player's latest quick key changes.
+---@field GetQuickKeyChangesSize fun(pid: PlayerId): integer
+---Get the itemId at a certain index in a player's latest quick key changes.
+---@field GetQuickKeyItemId fun(pid: PlayerId, index: integer): RecordId
+---Get the slot of the quick key at a certain index in a player's latest quick key changes.
+---@field GetQuickKeySlot fun(pid: PlayerId, index: integer): integer
+---Get the type of the quick key at a certain index in a player's latest quick key changes.
+---@field GetQuickKeyType fun(pid: PlayerId, index: integer): integer
 ---Get the race of a player.
 ---@field GetRace fun(pid: PlayerId): string
 ---Get the auto-calculation flag value of the record at a certain index in the read worldstate's dynamic records of the current type.
@@ -638,10 +650,14 @@
 ---@field Jail fun(pid: PlayerId, jailDays: integer, ignoreJailTeleportation: boolean, ignoreJailSkillIncreases: boolean, jailProgressText: string, jailEndText: string)
 ---Kick a certain player from the server.
 ---@field Kick fun(pid: PlayerId)
+---Display a listbox at the center of the screen where each item takes up a row and is selectable.
+---@field ListBox fun(pid: PlayerId, id: integer, label: string, items: string)
 ---Load a .png file as the image data for a map tile and add it to the write-only worldstate stored on the server.
 ---@field LoadMapTileImageFile fun(cellX: integer, cellY: integer, filePath: string)
 ---@field LogMessage fun(logLevel: LogLevel, logMessage: string) Emits a message to the server log & stdout at the provided log level
 ---@field LogAppend fun(logLevel: LogLevel, logMessage: string) Emits a message to the server log & stdout at the provided log level
+---Display a simple messagebox at the bottom of the screen that vanishes after a few seconds.
+---@field MessageBox fun(pid: PlayerId, id: integer, label: string)
 ---@field PasswordDialog fun(pid: PlayerId, id: GUIID, label: string, note: string) Displays an input dialog whose inputs are displayed only as asterisks
 ---@field PlaySpeech fun(pid: PlayerId, speechPath: string) Plays a voice file for all players on the server. Intended to be used with speechHelper interface
 ---Use the last object list received by the server as the one being read.
@@ -723,6 +739,8 @@
 ---@field SendObjectTrap fun(sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
 ---Send a PlayerPosition packet about a player.
 ---@field SendPos fun(pid: PlayerId)
+---Send a PlayerQuickKeys packet with a player's recorded quick key changes.
+---@field SendQuickKeyChanges fun(pid: PlayerId)
 ---Send a RecordDynamic packet with the current specified record type.
 ---@field SendRecordDynamic fun(pid: PlayerId, sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
 ---Send a PlayerReputation packet with a player's recorded reputation.
