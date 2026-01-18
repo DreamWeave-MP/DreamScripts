@@ -351,7 +351,7 @@ local TypeHandlers = {
 
     spells:resize(#record.spells)
     for i, spellId in ipairs(record.spells) do
-      spells[i] = lowercase(spellId)
+      spells[i] = assert(lowercase(spellId))
     end
 
     destinations:resize(#record.travel_destinations)
