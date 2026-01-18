@@ -111,9 +111,9 @@
 ---| 'Humanoid' # 3
 
 ---@alias EffectRange
----| 'OnSelf' # 0
----| 'OnTouch' # 1
----| 'OnTarget' 2
+---| 0 # OnSelf
+---| 1 # OnTouch
+---| 2 # OnTarget
 
 --- Awkward table representation of an inventory tuple
 --- Inventory items are not unique, so, the inventory itself cannot be a hashmap,

@@ -212,7 +212,7 @@ local Handlers = {
 
       --- Convert these to int representation
       hash.magicEffect = assert(effect.magic_effect)
-      hash.range = assert(effect.range)
+      hash.range = numberField(Enums.EffectRange[effect.range])
 
       newEffects[i] = hash
     end

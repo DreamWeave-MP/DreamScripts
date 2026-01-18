@@ -100,6 +100,11 @@ return dUtil.table(dUtil.tableType.HASH, nil, {
     Ring = 8,
     Amulet = 9,
   },
+  EffectRange = {
+    OnSelf = 0,
+    OnTouch = 1,
+    OnTarget = 2,
+  },
   SkillId = {
     None = -1,
     Block = 0,
