@@ -70,22 +70,7 @@ banList = {}
 --- of files which the server is meant to save.
 ---@type table<string, SaveSubscriptionData>
 ---@global
-BufferedDiskPaths = {
-    ['custom/testFile.json'] = {
-        filePath = 'custom/testFile.json',
-        delay = 30,
-        data = {
-            playerId = 15,
-            data = {
-                inventory = { {
-                    refId = 'Big Pantalones',
-                    count = 1,
-                } },
-            },
-        },
-        persistent = true,
-    }
-}
+BufferedDiskPaths = {}
 
 local DiskBufferTimerId
 -- local PlayerSaveDelay, CellSaveDelay, WorldSaveDelay = 15, 30, 45
