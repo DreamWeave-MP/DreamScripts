@@ -9,6 +9,10 @@
 ---| 4096   # Ignored (0x1000)
 ---| 8192   # Blocked (0x2000)
 
+---@alias MiscItemFlags
+---| 0 # None
+---| 1 # Key
+
 ---@alias AIPackage
 ---| AIActivate
 ---| AIEscort
@@ -605,6 +609,15 @@
 ---@field value integer
 ---@field weight number
 
+---@class MiscRecord: BaseRecord
+---@field flags MiscItemFlags
+---@field icon NormalizedPath
+---@field model NormalizedPath
+---@field name string?
+---@field script RecordId?
+---@field value integer
+---@field weight number
+
 ---@class ProbeRecord: BaseRecord
 ---@field icon NormalizedPath
 ---@field model NormalizedPath
@@ -645,5 +658,6 @@
 ---@field LeveledItem table<RecordId, LeveledItemRecord>
 ---@field Light table<RecordId, LightRecord>
 ---@field Lockpick table<RecordId, LockpickRecord>
+---@field Miscellaneous table<RecordId, MiscRecord>
 ---@field Probe table<RecordId, ProbeRecord>
 ---@field Static table<RecordId, StaticRecord>

@@ -328,6 +328,7 @@ local RecordStores = tds.Hash {
   LeveledItem = tds.Hash(),
   Light = tds.Hash(),
   Lockpick = tds.Hash(),
+  Miscellaneous = tds.Hash(),
   Probe = tds.Hash(),
   Static = tds.Hash(),
 }
@@ -862,6 +863,26 @@ local TypeHandlers = {
     local script, name = OptionalRecordId(record.script), RealString(record.name)
     if script then hash.script = script end
     if name then hash.name = name end
+
+    return hash
+  end,
+
+  Miscellaneous = function(record, recordId)
+    local hash = tds.Hash()
+
+    hash.icon = path(record.icon)
+    hash.id = MandatoryRecordId(recordId)
+    hash.miscFlags = numberField(record.data.flags)
+    hash.model = path(record.mesh)
+    hash.objectFlags = numberField(record.flags)
+    hash.value = numberField(record.data.value)
+    hash.weight = numberField(record.data.weight)
+
+    local name = RealString(record.name)
+    if name then hash.name = name end
+
+    local script = OptionalRecordId(record.script)
+    if script then hash.script = script end
 
     return hash
   end,
