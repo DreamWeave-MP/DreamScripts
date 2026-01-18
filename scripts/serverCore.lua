@@ -131,6 +131,7 @@ function SaveBufferedPaths()
         BufferedDiskPaths[removePath] = nil
     end
 
+    collectgarbage()
     tes3mp.StartTimer(DiskBufferTimerId)
 end
 
