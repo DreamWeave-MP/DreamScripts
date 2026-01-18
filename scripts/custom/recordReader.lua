@@ -41,6 +41,13 @@ local function RecordId(value)
   if id and id ~= '' then return id end
 end
 
+---@param value any
+---@return string? forSure
+local function RealString(value)
+  local result = tostring(value)
+  if result and result ~= '' then return result end
+end
+
 ---@param ... any
 ---@return any[]
 local function vector(...)
@@ -408,7 +415,6 @@ local TypeHandlers = {
     hash.icon = path(record.icon)
     hash.id = recordId
     hash.model = path(record.mesh)
-    hash.name = numberField(record.name)
     hash.objectFlags = numberField(record.flags)
     hash.weight = numberField(record.data.weight)
     hash.value = numberField(record.data.value)
@@ -421,6 +427,9 @@ local TypeHandlers = {
     local script = RecordId(record.script)
     if script then hash.script = script end
 
+    local name = RealString(record.name)
+    if name then hash.name = name end
+
     return hash
   end,
   Container = function(record, recordId)
@@ -429,7 +438,6 @@ local TypeHandlers = {
     hash.containerFlags = numberField(record.container_flags)
     hash.id = recordId
     hash.model = path(record.mesh)
-    hash.name = assert(record.name)
     hash.objectFlags = numberField(record.flags)
 
     local script = RecordId(record.script)
@@ -437,6 +445,9 @@ local TypeHandlers = {
 
     local inventory = Handlers.Inventory(record.inventory)
     if inventory then hash.inventory = inventory end
+
+    local name = RealString(record.name)
+    if name then hash.name = name end
 
     return hash
   end,
