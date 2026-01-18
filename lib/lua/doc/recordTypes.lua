@@ -105,10 +105,10 @@
 ---| 9 # Amulet
 
 ---@alias CreatureType
----| 'Normal' # 0
----| 'Daedra' # 1
----| 'Undead' # 2
----| 'Humanoid' # 3
+---| 0 # Normal
+---| 1 # Daedra
+---| 2 # Undead
+---| 3 # Humanoid
 
 ---@alias EffectRange
 ---| 0 # OnSelf

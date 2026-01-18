@@ -100,6 +100,12 @@ return dUtil.table(dUtil.tableType.HASH, nil, {
     Ring = 8,
     Amulet = 9,
   },
+  CreatureType = {
+    Normal = 0,
+    Daedra = 1,
+    Undead = 2,
+    Humanoid = 3,
+  },
   EffectRange = {
     OnSelf = 0,
     OnTouch = 1,

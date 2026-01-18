@@ -538,6 +538,7 @@ local TypeHandlers = {
     hash.baseGold = numberField(record.data.gold)
     hash.bloodType = numberField(record.blood_type)
     hash.creatureFlags = numberField(record.creature_flags)
+    hash.creatureType = numberField(Enums.CreatureType[record.data.creature_type])
     hash.endurance = numberField(record.data.endurance)
     hash.fatigue = numberField(record.data.fatigue)
     hash.health = numberField(record.data.health)
@@ -556,8 +557,6 @@ local TypeHandlers = {
     hash.strength = numberField(record.data.strength)
     hash.willpower = numberField(record.data.willpower)
 
-    -- Convert this to numeric
-    hash.creatureType = assert(record.data.creature_type)
 
     hash.AIData = Handlers.AIData(record.ai_data)
 
