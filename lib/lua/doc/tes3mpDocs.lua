@@ -61,6 +61,8 @@
 ---@field AddClientGlobalInteger fun(id: RecordId, intValue: integer, variableType?: integer)
 ---Add a new client global float to the client globals.
 ---@field AddClientGlobalFloat fun(id: RecordId, floatValue: number)
+---Set a rule string for the server details displayed in the server browser.
+---@field AddDataFileRequirement fun(dataFilename: string, checksumString: string)
 ---Add a new kill count to the kill count changes.
 ---@field AddKill fun(refId: RecordId, number: integer)
 ---Add an ID to the list of script IDs whose variable changes should be sent to the server by clients.
@@ -95,7 +97,13 @@
 ---Take the contents of the read-only worldstate last received by the server from a player and move its contents to the stored worldstate that can be sent by the server.
 ---@field CopyReceivedWorldstateToStore fun()
 ---@field CustomMessageBox fun(pid: PlayerId, id: integer, label: string, items: string) Displays a multiple-choice message box to the target PID
+---Check whether a certain file path exists.
+---@field DoesFilePathExist fun(filePath: string): boolean
+---Get the architecture type used by the server.
+---@field GetArchitectureType fun(): string
 ---@field GetAvgPing fun(pid: PlayerId): integer returns a specific player's average ping
+---Searches a subfolder for the first file with a name whose matches `fileName` case-insensitively, and returns its path if found
+---@field GetCaseInsensitiveFilename fun(folderPath: string, fileName: string): string
 ---Get the number of indexes in the read worldstate's client globals.
 ---@field GetClientGlobalsSize fun(): integer
 ---Get the float value of the global variable at a certain index in the read worldstate's client globals.
@@ -106,6 +114,12 @@
 ---@field GetClientGlobalId fun(index: integer): RecordId
 ---Get the type of the global variable at a certain index in the read worldstate's client globals.
 ---@field GetClientGlobalVariableType fun(index: integer): integer
+---Get the data file enforcement state of the server.
+---@field GetDataFileEnforcementState fun(): boolean
+---Get the path of the server's data folder.
+---@field GetDataPath fun(): string
+---Get the IP address of a certain player.
+---@field GetIP fun(pid: PlayerId): string
 ---Get the number of indexes in the read worldstate's kill changes.
 ---@field GetKillChangesSize fun(): integer
 ---Get the number of kills at a certain index in the read worldstate's kill count changes.
@@ -119,7 +133,19 @@
 ---@field GetMapTileCellX fun(index: integer): integer
 ---Get the Y coordinate of the cell corresponding to the map tile at a certain index in the read worldstate's map tiles.
 ---@field GetMapTileCellY fun(index: integer): integer
+---Get the maximum number of players.
+---@field GetMaxPlayers fun(): integer
+---Get the milliseconds elapsed since the server was started.
+---@field GetMillisecondsSinceServerStart fun(): integer
 ---@field GetOperatingSystemType fun(): OSType
+---Get the port used by the server.
+---@field GetPort fun(): integer
+---Get the protocol version of the server.
+---@field GetProtocolVersion fun(): string
+---Get the script error ignoring state of the server.
+---@field GetScriptErrorIgnoringState fun(): boolean
+---Get the TES3MP version of the server.
+---@field GetServerVersion fun(): string
 ---@field GetSHA256Hash fun(input: string): string Given some string input, hashes it
 ---Get the current weather in the read worldstate.
 ---@field GetWeatherCurrent fun(): integer
@@ -131,7 +157,11 @@
 ---@field GetWeatherRegion fun(): string
 ---Get the transition factor of the weather in the read worldstate.
 ---@field GetWeatherTransitionFactor fun(): number
+---Checking if the server requires a password to connect.
+---@field HasPassword fun(): boolean
 ---@field InputDialog fun(pid: PlayerId, id: GUIID, label: string, note: string) Displays an input dialog
+---Kick a certain player from the server.
+---@field Kick fun(pid: PlayerId)
 ---Load a .png file as the image data for a map tile and add it to the write-only worldstate stored on the server.
 ---@field LoadMapTileImageFile fun(cellX: integer, cellY: integer, filePath: string)
 ---@field LogMessage fun(logLevel: LogLevel, logMessage: string) Emits a message to the server log & stdout at the provided log level
@@ -170,13 +200,19 @@
 ---@field SetAuthorityRegion fun(authorityRegion: string)
 ---@field SetBedRestAllowed fun(pid: PlayerId, bedAllowed: boolean) Set whether or not a specific player may use beds
 ---@field SetConsoleAllowed fun(pid: PlayerId, consoleAllowed: boolean) Set whether or not a specific player may use the console
+---Set the data file enforcement state of the server.
+---@field SetDataFileEnforcementState fun(state: boolean)
 ---Set the world's day in the write-only worldstate stored on the server.
 ---@field SetDay fun(day: integer)
 ---Set the world's days passed in the write-only worldstate stored on the server.
 ---@field SetDaysPassed fun(daysPassed: integer)
 ---@field SetDifficulty fun(pid: PlayerId, difficulty: integer) Changes the difficulty for a player, but does NOT send a packet. Use SendSettings to notify clients of difficulty changes.--
 ---@field SetEnforcedLogLevel fun(pid: PlayerId, logLevel: LogLevel) Sets the enforced log level for a player. Doesn't send a packet on its own. Log level enforcement is important to prevent players from receiving information about world state they otherwise would not. Use a logLevel of -1 not to enforce this setting.
+---Set the game mode of the server, as displayed in the server browser.
+---@field SetGameMode fun(gameMode: string)
 ---@field SetGameSettingValue fun(pid: PlayerId, gameSetting: string, value: any) Override a setting from the `Game` category of settings.cfg. For valid settings and values, refer to here: https://openmw.readthedocs.io/en/openmw-0.47.0_a/reference/modding/settings/game.html
+---Set the name of the server, as displayed in the server browser.
+---@field SetHostname fun(name: string)
 ---Set the world's hour in the write-only worldstate stored on the server.
 ---@field SetHour fun(hour: number)
 ---Set the world's month in the write-only worldstate stored on the server.
@@ -186,6 +222,14 @@
 ---@field SetPlacedObjectCollisionState fun(state: boolean)
 ---Set the collision state for other players in the write-only worldstate stored on the server.
 ---@field SetPlayerCollisionState fun(state: boolean)
+---Set a rule string for the server details displayed in the server browser.
+---@field SetRuleString fun(key: string, value: string)
+---Set a rule value for the server details displayed in the server browser.
+---@field SetRuleValue fun(key: string, value: number)
+---Set the script error ignoring state of the server.
+---@field SetScriptErrorIgnoringState fun(state: boolean)
+---Set the password required to join the server.
+---@field SetServerPassword fun(password: string)
 ---Set the world's time scale in the write-only worldstate stored on the server.
 ---@field SetTimeScale fun(timeScale: number)
 ---@field SetVRSettingValue fun(pid: PlayerId, vrSetting: string, value: any) Override a setting from the `VR` category of settings.cfg. For valid settings and values, refer to here: https://openmw.readthedocs.io/en/openmw-0.47.0_a/reference/modding/settings/game.html
