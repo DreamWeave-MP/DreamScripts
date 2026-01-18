@@ -65,7 +65,7 @@ function customEventHooks.clearEventsFromScript(scriptPath)
         for _, eventRegistrations in pairs(handlersTable) do
             for eventIndex = #eventRegistrations, 1, -1 do
                 if eventRegistrations[eventIndex].definedBy == lowercasePath then
-                    eventRegistrations[eventIndex] = nil
+                    table.remove(eventRegistrations, eventIndex)
                 end
             end
         end
