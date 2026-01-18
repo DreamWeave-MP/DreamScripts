@@ -196,7 +196,7 @@ local Handlers = {
     if not originalEffects then return end
 
     local numItems = #originalEffects
-    if numItems <= 0 then error(tostring(originalEffects)) end
+    if numItems <= 0 then return end
 
     local newEffects = tds.Vec()
     newEffects:resize(numItems)
@@ -609,12 +609,18 @@ local TypeHandlers = {
     local hash = tds.Hash()
 
     hash.cost = numberField(record.data.cost)
-    hash.effects = assert(Handlers.Effects(record.effects))
     hash.enchantType = numberField(Enums.EnchantType[record.data.enchant_type])
     hash.enchantFlags = numberField(record.data.flags)
     hash.id = MandatoryRecordId(recordId)
     hash.maxCharge = numberField(record.data.max_charge)
     hash.objectFlags = numberField(record.flags)
+
+    local effects = Handlers.Effects(record.effects)
+    if not effects then
+      error(tostring(effects) .. ' ' .. recordId)
+    else
+      hash.effects = effects
+    end
 
     return hash
   end,
