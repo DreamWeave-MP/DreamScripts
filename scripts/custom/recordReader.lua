@@ -231,12 +231,33 @@ local Handlers = {
     for i, item in ipairs(originalInventory) do
       local inventoryItem = tds.Hash()
 
-      inventoryItem[lowercase(item[2])] = item[1]
+      inventoryItem[MandatoryRecordId(item[2])] = item[1]
 
       inventory[i] = inventoryItem
     end
 
     return inventory
+  end,
+  ---@param originalItems LeveledItemRef[]?
+  ---@return LeveledItemRef[]? hashItems If the original inventory exists and has items in it, returns it converted to a TDS hashmap
+  LeveledEntry = function(originalItems)
+    if not originalItems then return end
+
+    local numItems = #originalItems
+    if numItems <= 0 then return end
+
+    local list = tds.Vec()
+    list:resize(numItems)
+
+    for i, item in ipairs(originalItems) do
+      local listItem = tds.Hash()
+
+      listItem[MandatoryRecordId(item[1])] = item[2]
+
+      list[i] = listItem
+    end
+
+    return list
   end,
   Spells = function(spells)
     if not spells then return end
@@ -303,6 +324,7 @@ local RecordStores = tds.Hash {
   GameSetting = tds.Hash(),
   GlobalVariable = tds.Hash(),
   Ingredient = tds.Hash(),
+  LeveledCreature = tds.Hash(),
   Static = tds.Hash(),
 }
 
@@ -759,6 +781,20 @@ local TypeHandlers = {
 
     local script = OptionalRecordId(record.script)
     if script then hash.script = script end
+
+    return hash
+  end,
+
+  LeveledCreature = function(record, recordId)
+    local hash = tds.Hash()
+
+    hash.chanceNone = numberField(record.chance_none)
+    hash.id = recordId
+    hash.leveledCreatureFlags = numberField(record.leveled_creature_flags)
+    hash.objectFlags = numberField(record.flags)
+
+    local creatures = Handlers.LeveledEntry(record.creatures)
+    if creatures then hash.creatures = creatures end
 
     return hash
   end,

@@ -1,11 +1,13 @@
 ---@meta
 
+--- Bitmask of object state flags
 ---@alias ObjectFlags
----| 0x2    # Modified
----| 0x20   # Deleted
----| 0x400  # Persistent
----| 0x1000 # Ignored
----| 0x2000 # Blocked
+---| 0      # None (0x0)
+---| 2      # Modified (0x2)
+---| 32     # Deleted (0x20)
+---| 1024   # Persistent (0x400)
+---| 4096   # Ignored (0x1000)
+---| 8192   # Blocked (0x2000)
 
 ---@alias AIPackage
 ---| AIActivate
@@ -136,6 +138,11 @@
 --- Maps the relationship of one faction to another
 --- Tuple-style single-length tables, since they are not unique within a faction record
 ---@alias FactionReaction table<RecordId, integer>
+
+--- Similarly to inventory items, represents a single entry in a leveled list
+--- Not quite the same type as inventory item generation flips the first and second fields
+--- Whereas for leveled items they don't need to be inverted
+---@alias LeveledItemRef table<RecordId, integer>
 
 ---@alias MagicEffectId
 ---| -1  # "None"
@@ -537,6 +544,15 @@
 ---@field value integer
 ---@field weight number
 
+---@class LeveledCreatureRecord
+---@field leveldCreatureFlags integer
+---@field chanceNone integer
+--- Not literally inventory items, but,
+--- handled as such since the fields are the same.
+--- In this case the second field refers not to a count but
+--- to the level requirement for the list item to spawn.
+---@field creatures LeveledItemRef[]
+
 ---@class MagicEffect
 ---@field area integer
 ---@field attribute AttributeId
@@ -583,4 +599,5 @@
 ---@field GameSetting table<RecordId, number|string>
 ---@field GlobalVariable table<RecordId, number>
 ---@field Ingredient table<RecordId, IngredientRecord>
+---@field LeveledCreature table<RecordId, LeveledCreatureRecord>
 ---@field Static table<RecordId, StaticRecord>
