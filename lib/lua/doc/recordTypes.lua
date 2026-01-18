@@ -481,10 +481,10 @@
 ---@field willpower integer
 
 ---@class DoorRecord: BaseRecord
----@field closeSound string?
+---@field closeSound RecordId?
 ---@field model NormalizedPath
 ---@field name string?
----@field openSound string?
+---@field openSound RecordId?
 ---@field script RecordId?
 
 ---@class MagicEffect

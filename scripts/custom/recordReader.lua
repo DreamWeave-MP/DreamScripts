@@ -593,7 +593,7 @@ local TypeHandlers = {
     local name = RealString(record.name)
     if name then hash.name = name end
 
-    local openSound, closeSound = RealString(record.open_sound), RealString(record.close_sound)
+    local openSound, closeSound = OptionalRecordId(record.open_sound), OptionalRecordId(record.close_sound)
 
     if openSound then hash.openSound = openSound end
     if closeSound then hash.closeSound = closeSound end
