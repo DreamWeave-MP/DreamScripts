@@ -85,7 +85,6 @@ function DScriptLoader.loadScript(scriptName, callerPid)
     end
   end
 
-  tableHelper.print(DScriptLoader.Interfaces)
   if DScriptLoader.Interfaces.customEventHooks then
     DScriptLoader.Interfaces.customEventHooks.clearEventsFromScript(scriptPath)
   end
