@@ -341,7 +341,6 @@ local TypeHandlers = {
 
     aiPackages:resize(#record.ai_packages)
     for i, aiPackage in ipairs(record.ai_packages) do
-      assert(AIPackageHandlers[aiPackage.type])
       aiPackages[i] = AIPackageHandlers[aiPackage.type](aiPackage)
     end
 
