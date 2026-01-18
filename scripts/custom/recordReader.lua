@@ -900,7 +900,9 @@ local TypeHandlers = {
 local function createRecordStores()
   local loadedRecords = 0
 
-  for _, pluginName in ipairs(loadOrder) do
+  local _, numPlugins = nil, #loadOrder
+  for i = numPlugins, 1, -1 do
+    local pluginName = loadOrder[i]
     local pluginPath = PluginPathFormatter:format(pluginName)
 
     if not dUtil.io.fileExists(pluginPath) then
@@ -911,13 +913,30 @@ local function createRecordStores()
     end
 
     for _, object in ipairs(tes3.load_plugin(pluginPath).objects) do
+      if object.type == 'Cell' then
+        -- if not cellCache[i] then
+        --   cellCache[i] = { name = pluginName, cells = {} }
+        -- end
+        --
+        -- cellCache[i].cells[MandatoryRecordId(object.id)] = object
+
+        goto CONTINUE
+      end
+
       local recordStore, typeHandler = RecordStores[object.type], TypeHandlers[object.type]
 
       if recordStore and typeHandler then
         local recordId = object.id:lower()
+
+        --- Since we iterate in reverse, skip records in
+        --- this store which have already been defined
+        if recordId[recordId] then goto CONTINUE end
+
         recordStore[recordId] = typeHandler(object, recordId)
         loadedRecords = loadedRecords + 1
       end
+
+      ::CONTINUE::
     end
   end
 
