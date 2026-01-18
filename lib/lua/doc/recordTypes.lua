@@ -1,5 +1,12 @@
 ---@meta
 
+---@alias ObjectFlags
+---| 0x2    # Modified
+---| 0x20   # Deleted
+---| 0x400  # Persistent
+---| 0x1000 # Ignored
+---| 0x2000 # Blocked
+
 ---@alias AIPackage
 ---| AIActivate
 ---| AIEscort
@@ -364,7 +371,7 @@
 ---@field type AIState
 
 ---@class BaseRecord
----@field objectFlags integer Numeric flags with default value 0
+---@field objectFlags ObjectFlags Numeric flags with default value 0
 ---@field id RecordId Record editor identifier. Always lowercase.
 
 --- Representation of an individual slot used by a clothing or armor
