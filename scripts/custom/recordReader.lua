@@ -368,6 +368,7 @@ local RecordStores = tds.Hash {
   Script = tds.Hash(),
   Skill = tds.Hash(),
   Sound = tds.Hash(),
+  SoundGen = tds.Hash(),
   Static = tds.Hash(),
 }
 
@@ -1300,6 +1301,18 @@ local TypeHandlers = {
       numberField(tostring(record.data.range[2]))
     )
     hash.volume = numberField(record.data.volume)
+
+    objectFlags(record, hash)
+    return hash
+  end,
+
+  SoundGen = function(record, recordId)
+    local hash = tds.Hash()
+
+    hash.creature = MandatoryRecordId(record.creature)
+    hash.id = MandatoryRecordId(recordId)
+    hash.sound = MandatoryRecordId(record.creature)
+    hash.soundGenType = numberField(Enums.SoundGenType[tostring(record.sound_gen_type)])
 
     objectFlags(record, hash)
     return hash

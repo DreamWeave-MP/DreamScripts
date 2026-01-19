@@ -427,6 +427,16 @@ local MWEnums = {
     HandToHand = 26,
     Handtohand = 26,
   },
+  SoundGenType = {
+    LeftFoot = 0,
+    RightFoot = 1,
+    SwimLeft = 2,
+    SwimRight = 3,
+    Moan = 4,
+    Roar = 5,
+    Scream = 6,
+    Land = 7,
+  },
   Specialization = {
     None = -1,
     Combat = 0,
