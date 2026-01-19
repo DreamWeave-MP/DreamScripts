@@ -6,7 +6,6 @@
 
 --- Bitmask of object state flags
 ---@alias ObjectFlags
----| 0      # None (0x0)
 ---| 2      # Modified (0x2)
 ---| 32     # Deleted (0x20)
 ---| 1024   # Persistent (0x400)
@@ -395,7 +394,7 @@
 ---@field type AIState
 
 ---@class BaseRecord
----@field objectFlags ObjectFlags Numeric flags with default value 0
+---@field objectFlags ObjectFlags? If no special flags are set, objectFlags is nil.
 ---@field id RecordId Record editor identifier. Always lowercase.
 
 --- Representation of an individual slot used by a clothing or armor
@@ -751,4 +750,5 @@
 ---@field Npc table<RecordId, NPCRecord>
 ---@field Probe table<RecordId, ProbeRecord>
 ---@field Race  table<RecordId, RaceRecord>
+---@field RepairItem table<RecordId, RepairRecord>
 ---@field Static table<RecordId, StaticRecord>
