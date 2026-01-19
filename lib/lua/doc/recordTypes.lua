@@ -96,10 +96,6 @@
 ---| 1 # 'Clothing'
 ---| 2 # 'Armor'
 
----@alias BookType
----| 0 # Book
----| 1 # Scroll
-
 ---@alias ClothingType
 ---| 0 # Pants
 ---| 1 # Shoes
@@ -377,8 +373,8 @@
 ---@field type AIState
 
 ---@class BaseRecord
----@field isModified boolean
----@field isDeleted boolean
+---@field isModified boolean?
+---@field isDeleted boolean?
 ---@field id RecordId Record editor identifier. Always lowercase.
 
 --- Representation of an individual slot used by a clothing or armor
@@ -423,13 +419,13 @@
 ---@field spells RecordId[]
 
 ---@class BookRecord: BaseRecord
----@field bookType BookType
 ---@field enchantment RecordId?
 ---@field enchantmentValue integer
 ---@field icon NormalizedPath
 ---@field model NormalizedPath
 ---@field name string
 ---@field script RecordId?
+---@field scrollOrBook boolean
 ---@field skill SkillId?
 ---@field text string?
 ---@field value integer
