@@ -1309,12 +1309,16 @@ local TypeHandlers = {
   end,
 
   SoundGen = function(record, recordId)
+    local creature = OptionalRecordId(record.creature)
+    local thisId = recordId or creature
+
+    if not thisId then return end
+
     local hash = tds.Hash()
 
-    local creature = OptionalRecordId(record.creature)
     if creature then hash.creature = creature end
+    hash.id = thisId
 
-    hash.id = recordId or creature
     hash.sound = MandatoryRecordId(record.sound)
     hash.soundGenType = numberField(Enums.SoundGenType[tostring(record.sound_gen_type)])
 
@@ -1405,11 +1409,12 @@ local function createRecordStores()
         --- Technically this isn't good enough as we should do a placeable check as well
         if not recordId or not recordStore[recordId] then
           local resultRecord = typeHandler(object, recordId)
-
           local inputId = recordId or resultRecord.id
 
-          recordStore[inputId] = resultRecord
-          loadedRecords = loadedRecords + 1
+          if inputId and resultRecord then
+            recordStore[inputId] = resultRecord
+            loadedRecords = loadedRecords + 1
+          end
         end
       end
     end
