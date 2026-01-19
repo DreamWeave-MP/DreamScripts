@@ -1491,14 +1491,15 @@ local function createRecordStores()
       local recordId = OptionalRecordId(object.id)
       local recordStore, typeHandler = RecordStores[object.type], TypeHandlers[object.type]
 
-      if idIsFree(recordId, object.type) and recordStore and typeHandler then
+      if recordStore and typeHandler then
         assert(recordId)
 
         --- Since we iterate in reverse, skip records in
         --- this store which have already been defined
         local resultRecord = typeHandler(object, recordId)
+        recordId = recordId or resultRecord.id
 
-        if resultRecord then
+        if resultRecord and idIsFree(recordId, object.type) then
           recordStore[recordId] = resultRecord
           loadedRecords = loadedRecords + 1
         else
