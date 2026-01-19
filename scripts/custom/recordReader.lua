@@ -1313,7 +1313,7 @@ local TypeHandlers = {
     if creature then hash.creature = creature end
 
     hash.id = MandatoryRecordId(recordId)
-    hash.sound = MandatoryRecordId(record.creature)
+    hash.sound = MandatoryRecordId(record.sound)
     hash.soundGenType = numberField(Enums.SoundGenType[tostring(record.sound_gen_type)])
 
     objectFlags(record, hash)
