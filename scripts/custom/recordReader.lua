@@ -40,11 +40,10 @@ local function OptionalRecordId(value)
 end
 
 ---@param value any
----@return RecordId?
+---@return RecordId
 local function MandatoryRecordId(value)
   local id = lowercase(value)
-  assert(id and id ~= '')
-  return id
+  return id ~= '' and id or error('Invalid recordId!', 2)
 end
 
 ---@param value any
@@ -1435,6 +1434,10 @@ local ReferenceableTypes = {
   Spell = true,
 }
 
+local FieldsForTypesWithoutIds = {
+  Skill = 'skill_id',
+}
+
 --- ID Usage rules are slightly more complex than
 --- being a simple typed hashmap.
 --- Referenceable types are considered to be things that
@@ -1446,16 +1449,23 @@ local ReferenceableTypes = {
 --- number of cell entries, so typical ID usage rules don't apply at all.
 --- Sourced from: https://github.com/Greatness7/merge_to_master/blob/main/src/types/plugin.rs#L82
 ---@param recordId RecordId?
----@param recordType string
-local function idIsFree(recordId, recordType)
+---@param object table<string, any>
+local function idIsFree(recordId, object)
+  local recordType = object.type
+
+  assert(recordType)
+
+  -- We don't necessarily save everything, so skip object generation for those
+  if not RecordStores[recordType] then return false end
+
   --- Cells are an exception to this rule
   --- As they must merge, so the id is always considered 'free'
   if recordType == 'Cell' then
     return true
   end
 
-  if not recordId or not recordType or not RecordStores[recordType] then
-    return false
+  if not recordId then
+    recordId = MandatoryRecordId(object[FieldsForTypesWithoutIds[recordType]])
   end
 
   local recordOfSameTypeAndIdExists = RecordStores[recordType][recordId] ~= nil
@@ -1498,22 +1508,24 @@ local function createRecordStores()
 
     for j, object in ipairs(tes3.load_plugin(pluginPath).objects) do
       local recordId = OptionalRecordId(object.id)
-      local recordStore, typeHandler = RecordStores[object.type], TypeHandlers[object.type]
+      if idIsFree(recordId, object) then
+        local recordStore, typeHandler = RecordStores[object.type], TypeHandlers[object.type]
 
-      if recordStore and typeHandler then
-        assert(recordId, tostring(object) .. '\n' .. object.type)
-        local resultRecord = typeHandler(object, recordId)
-        recordId = recordId or resultRecord.id
+        if recordStore and typeHandler then
+          assert(recordId, tostring(object) .. '\n' .. object.type)
+          local resultRecord = typeHandler(object, recordId)
+          recordId = recordId or resultRecord.id
 
-        if resultRecord and idIsFree(recordId, object.type) then
-          recordStore[recordId] = resultRecord
-          loadedRecords = loadedRecords + 1
-        elseif LogSkippedRecords then
-          tes3mp.LogAppend(
-            enumerations.log.WARN,
-            ('Skipping record at index %d of plugin %s: %s')
-            :format(j, pluginName, recordId or tostring(object))
-          )
+          if resultRecord then
+            recordStore[recordId] = resultRecord
+            loadedRecords = loadedRecords + 1
+          elseif LogSkippedRecords then
+            tes3mp.LogAppend(
+              enumerations.log.WARN,
+              ('Skipping record at index %d of plugin %s: %s')
+              :format(j, pluginName, recordId or tostring(object))
+            )
+          end
         end
       end
     end
