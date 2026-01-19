@@ -553,10 +553,7 @@ local TypeHandlers = {
     end
 
     local existingCell = RecordStores.Cell[cellType][cellId]
-    if not existingCell then
-      print('cell', cellId, 'doesn\'t exist')
-      LoadedRecords = LoadedRecords + 1
-    end
+    if not existingCell then LoadedRecords = LoadedRecords + 1 end
 
     local cell = existingCell or tds.Hash()
     cell.id = cell.id or cellId
@@ -1607,7 +1604,6 @@ local function createRecordStores()
 
           if resultRecord then
             recordStore[recordId or resultRecord.id] = resultRecord
-            LoadedRecords = LoadedRecords + 1
           elseif object.type ~= 'Cell' and LogSkippedRecords then
             tes3mp.LogAppend(
               enumerations.log.WARN,
