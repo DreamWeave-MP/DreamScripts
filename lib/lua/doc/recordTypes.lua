@@ -1,9 +1,5 @@
 ---@meta
 
----@alias MiscItemFlags
----| 0 # None
----| 1 # Key
-
 --- Bitmask of object state flags
 ---@alias ObjectFlags
 ---| 2      # Modified (0x2)
@@ -654,7 +650,7 @@
 
 ---@class MiscRecord: BaseRecord
 ---@field icon NormalizedPath
----@field miscFlags MiscItemFlags
+---@field isKey boolean
 ---@field model NormalizedPath
 ---@field name string?
 ---@field script RecordId?

@@ -907,6 +907,7 @@ local TypeHandlers = {
 
     hash.icon = path(record.icon)
     hash.id = MandatoryRecordId(recordId)
+    hash.isKey = numberField(record.data.flags) == 1
     hash.miscFlags = numberField(record.data.flags)
     hash.model = path(record.mesh)
     local flags = numberField(record.flags)
