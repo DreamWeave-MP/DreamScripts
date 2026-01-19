@@ -625,39 +625,39 @@ local TypeHandlers = {
 
     objectFlags(record, cell)
 
-    local references = record.references
-    cell.references = cell.references or tds.Hash()
-
-    for _, referenceData in ipairs(references) do
-      print(i, referenceData)
-      local masterIndex, referenceIndex =
-          numberField(tostring(referenceData.mast_index)), numberField(tostring(referenceData.refr_index))
-
-      local LiveRefIndex = PluginLoadIndex
-
-      local referenceKey = ('%d-%d'):format(LiveRefIndex, referenceIndex)
-
-      if masterIndex == 0 then
-        local hashRef = tds.Hash()
-
-        hashRef.id = referenceKey
-        hashRef.recordId = MandatoryRecordId(referenceData.id)
-
-        hashRef.transform = tds.Hash()
-        hashRef.transform.position = tds.Vec(
-          numberField(tostring(referenceData.translation[1])),
-          numberField(tostring(referenceData.translation[2])),
-          numberField(tostring(referenceData.translation[3]))
-        )
-        hashRef.transform.rotation = tds.Vec(
-          numberField(tostring(referenceData.rotation[1])),
-          numberField(tostring(referenceData.rotation[2])),
-          numberField(tostring(referenceData.rotation[3]))
-        )
-
-        cell.references[referenceKey] = hashRef
-      end
-    end
+    -- local references = record.references
+    -- cell.references = cell.references or tds.Hash()
+    --
+    -- for _, referenceData in ipairs(references) do
+    --   print(i, referenceData)
+    --   local masterIndex, referenceIndex =
+    --       numberField(tostring(referenceData.mast_index)), numberField(tostring(referenceData.refr_index))
+    --
+    --   local LiveRefIndex = PluginLoadIndex
+    --
+    --   local referenceKey = ('%d-%d'):format(LiveRefIndex, referenceIndex)
+    --
+    --   if masterIndex == 0 then
+    --     local hashRef = tds.Hash()
+    --
+    --     hashRef.id = referenceKey
+    --     hashRef.recordId = MandatoryRecordId(referenceData.id)
+    --
+    --     hashRef.transform = tds.Hash()
+    --     hashRef.transform.position = tds.Vec(
+    --       numberField(tostring(referenceData.translation[1])),
+    --       numberField(tostring(referenceData.translation[2])),
+    --       numberField(tostring(referenceData.translation[3]))
+    --     )
+    --     hashRef.transform.rotation = tds.Vec(
+    --       numberField(tostring(referenceData.rotation[1])),
+    --       numberField(tostring(referenceData.rotation[2])),
+    --       numberField(tostring(referenceData.rotation[3]))
+    --     )
+    --
+    --     cell.references[referenceKey] = hashRef
+    --   end
+    -- end
 
     -- print(cell)
     RecordStores.Cell[cellType][cellId] = cell
