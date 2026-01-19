@@ -715,7 +715,10 @@ local TypeHandlers = {
       end
     end
 
-    hash.factionFlags = numberField(record.data.flags)
+    if record.data.flags ~= 0 then
+      hash.isHidden = hasFlag(record.data.flags, Enums.Flags.Faction.HIDDEN_FROM_PC)
+    end
+
     hash.id = MandatoryRecordId(recordId)
     local flags = numberField(record.flags)
     if flags ~= 0 then hash.objectFlags = flags end

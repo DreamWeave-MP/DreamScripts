@@ -525,9 +525,9 @@
 
 ---@class FactionRecord: BaseRecord
 ---@field name string?
----@field factionFlags integer
 ---@field favoredAttributes AttributeId[] Length 2
 ---@field favoredSkills SkillId[] Length 7
+---@field isHidden boolean?
 ---@field rankNames string[]?
 ---@field reactions FactionReaction[]
 ---@field requirements FactionRequirement[] Length 10
