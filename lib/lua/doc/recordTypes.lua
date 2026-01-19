@@ -1,13 +1,5 @@
 ---@meta
 
---- Bitmask of object state flags
----@alias ObjectFlags
----| 2      # Modified (0x2)
----| 32     # Deleted (0x20)
----| 1024   # Persistent (0x400)
----| 4096   # Ignored (0x1000)
----| 8192   # Blocked (0x2000)
-
 ---@alias AIPackage
 ---| AIActivate
 ---| AIEscort
