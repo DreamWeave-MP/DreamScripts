@@ -717,6 +717,11 @@
 ---@field value integer
 ---@field weight number
 
+---@class SoundRecord: BaseRecord
+---@field path NormalizedPath
+---@field range integer[] Length 2. Min/Max range.
+---@field volume integer
+
 ---@class StaticRecord: BaseRecord
 ---@field model NormalizedPath
 
@@ -754,4 +759,5 @@
 ---@field Region table<RecordId, RegionRecord>
 ---@field RepairItem table<RecordId, RepairRecord>
 ---@field Script table<RecordId, string>
+---@field Sound table<RecordId, SoundRecord>
 ---@field Static table<RecordId, StaticRecord>

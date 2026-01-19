@@ -366,6 +366,7 @@ local RecordStores = tds.Hash {
   Region = tds.Hash(),
   RepairItem = tds.Hash(),
   Script = tds.Hash(),
+  Sound = tds.Hash(),
   Static = tds.Hash(),
 }
 
@@ -1262,6 +1263,21 @@ local TypeHandlers = {
 
     hash.id = MandatoryRecordId(recordId)
     hash.text = MandatoryRecordId(record.text)
+
+    objectFlags(record, hash)
+    return hash
+  end,
+
+  Sound = function(record, recordId)
+    local hash = tds.Hash()
+
+    hash.id = MandatoryRecordId(recordId)
+    hash.path = path(record.sound_path)
+    hash.range = tds.Vec(
+      numberField(tostring(record.data.range[1])),
+      numberField(tostring(record.data.range[2]))
+    )
+    hash.volume = numberField(record.data.volume)
 
     objectFlags(record, hash)
     return hash
