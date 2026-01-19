@@ -378,6 +378,7 @@ local RecordStores = tds.Hash {
 }
 
 local TypeHandlers = {
+
   Activator = function(record, recordId)
     local hash = tds.Hash()
 
@@ -393,6 +394,7 @@ local TypeHandlers = {
     objectFlags(record, hash)
     return hash
   end,
+
   Apparatus = function(record, recordId)
     local hash = tds.Hash()
     hash.id = recordId
@@ -412,6 +414,7 @@ local TypeHandlers = {
     objectFlags(record, hash)
     return hash
   end,
+
   Alchemy = function(record, recordId)
     local hash = tds.Hash()
     hash.icon = path(record.icon)
@@ -433,6 +436,7 @@ local TypeHandlers = {
     objectFlags(record, hash)
     return hash
   end,
+
   Armor = function(record, recordId)
     local hash = tds.Hash()
 
@@ -461,6 +465,7 @@ local TypeHandlers = {
     objectFlags(record, hash)
     return hash
   end,
+
   Birthsign = function(record, recordId)
     local hash = tds.Hash()
 
@@ -475,6 +480,7 @@ local TypeHandlers = {
     objectFlags(record, hash)
     return hash
   end,
+
   Bodypart = function(record, recordId)
     local hash = tds.Hash()
 
@@ -497,6 +503,7 @@ local TypeHandlers = {
     objectFlags(record, hash)
     return hash
   end,
+
   Book = function(record, recordId)
     local hash = tds.Hash()
 
@@ -560,6 +567,7 @@ local TypeHandlers = {
     objectFlags(record, hash)
     return hash
   end,
+
   Clothing = function(record, recordId)
     local bipedObjects = Handlers.BipedObjects(record.biped_objects)
 
@@ -586,6 +594,7 @@ local TypeHandlers = {
     objectFlags(record, hash)
     return hash
   end,
+
   Container = function(record, recordId)
     local hash = tds.Hash()
     hash.capacity = numberField(record.encumbrance)
@@ -606,6 +615,7 @@ local TypeHandlers = {
     objectFlags(record, hash)
     return hash
   end,
+
   Creature = function(record, recordId)
     local hash = tds.Hash()
 
@@ -649,7 +659,6 @@ local TypeHandlers = {
     hash.strength = numberField(record.data.strength)
     if hasFlag(record.creature_flags, Enums.Flags.Creature.WEAPON_AND_SHIELD) then hash.usesWeapons = true end
     hash.willpower = numberField(record.data.willpower)
-
 
     hash.AIData = Handlers.AIData(record.ai_data)
 
@@ -1440,8 +1449,8 @@ local function createRecordStores()
           else
             tes3mp.LogAppend(
               enumerations.log.WARN,
-              ('Skipping record at index %d of plugin %s')
-              :format(j, pluginName)
+              ('Skipping record at index %d of plugin %s:\n%s')
+              :format(j, pluginName, tostring(object))
             )
           end
         end
