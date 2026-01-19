@@ -1512,7 +1512,6 @@ local function createRecordStores()
         local recordStore, typeHandler = RecordStores[object.type], TypeHandlers[object.type]
 
         if recordStore and typeHandler then
-          assert(recordId, tostring(object) .. '\n' .. object.type)
           local resultRecord = typeHandler(object, recordId)
           recordId = recordId or resultRecord.id
 
