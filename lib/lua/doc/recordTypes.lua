@@ -742,6 +742,11 @@
 ---@field range integer[] Length 2. Min/Max range.
 ---@field volume integer
 
+---@class SoundGenRecord: BaseRecord
+---@field creature RecordId
+---@field sound RecordId
+---@field soundGenType SoundGenType
+
 ---@class StaticRecord: BaseRecord
 ---@field model NormalizedPath
 
