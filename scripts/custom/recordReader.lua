@@ -1308,13 +1308,13 @@ local TypeHandlers = {
     return hash
   end,
 
-  SoundGen = function(record, recordId)
+  SoundGen = function(record, _)
     local hash = tds.Hash()
 
     local creature = OptionalRecordId(record.creature)
     if creature then hash.creature = creature end
 
-    hash.id = MandatoryRecordId(recordId)
+    hash.id = MandatoryRecordId(record.id)
     hash.sound = MandatoryRecordId(record.sound)
     hash.soundGenType = numberField(Enums.SoundGenType[tostring(record.sound_gen_type)])
 
