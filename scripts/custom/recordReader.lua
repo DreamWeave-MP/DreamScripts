@@ -1374,6 +1374,7 @@ local TypeHandlers = {
     local enchantment = OptionalRecordId(record.enchanting)
     if enchantment then hash.enchantment = enchantment end
 
+    objectFlags(record, hash)
     return hash
   end,
 }
