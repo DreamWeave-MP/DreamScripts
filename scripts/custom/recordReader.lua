@@ -1272,7 +1272,7 @@ local TypeHandlers = {
     return hash
   end,
 
-  Skill = function(record, recordId)
+  Skill = function(record, _)
     local hash = tds.Hash()
 
     hash.actions = tds.Vec(
@@ -1282,7 +1282,7 @@ local TypeHandlers = {
       numberField(tostring(record.data.actions[4]))
     )
     hash.governingAttribute = numberField(record.data.governing_attribute)
-    hash.id = MandatoryRecordId(recordId)
+    hash.id = MandatoryRecordId(tostring(record.skill_id))
     hash.skillId = numberField(Enums.SkillId[tostring(record.skill_id)])
     hash.specialization = numberField(record.data.specialization)
 
@@ -1397,17 +1397,19 @@ local function createRecordStores()
 
     for _, object in ipairs(tes3.load_plugin(pluginPath).objects) do
       local recordId = OptionalRecordId(object.id)
-      if recordId then
-        local recordStore, typeHandler = RecordStores[object.type], TypeHandlers[object.type]
+      local recordStore, typeHandler = RecordStores[object.type], TypeHandlers[object.type]
 
-        if recordStore and typeHandler then
-          --- Since we iterate in reverse, skip records in
-          --- this store which have already been defined
-          --- Technically this isn't good enough as we should do a placeable check as well
-          if not recordStore[recordId] then
-            recordStore[recordId] = typeHandler(object, recordId)
-            loadedRecords = loadedRecords + 1
-          end
+      if recordStore and typeHandler then
+        --- Since we iterate in reverse, skip records in
+        --- this store which have already been defined
+        --- Technically this isn't good enough as we should do a placeable check as well
+        if not recordStore[recordId] then
+          local resultRecord = typeHandler(object, recordId)
+
+          local inputId = recordId or resultRecord.id
+
+          recordStore[inputId] = resultRecord
+          loadedRecords = loadedRecords + 1
         end
       end
     end
