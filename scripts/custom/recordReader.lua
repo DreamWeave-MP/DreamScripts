@@ -553,7 +553,10 @@ local TypeHandlers = {
     end
 
     local existingCell = RecordStores.Cell[cellType][cellId]
-    if not existingCell then LoadedRecords = LoadedRecords + 1 end
+    if not existingCell then
+      print('cell', cellId, 'doesn\'t exist')
+      LoadedRecords = LoadedRecords + 1
+    end
 
     local cell = existingCell or tds.Hash()
     cell.id = cell.id or cellId
