@@ -1465,7 +1465,8 @@ local function idIsFree(recordId, object)
   end
 
   if not recordId then
-    recordId = MandatoryRecordId(object[FieldsForTypesWithoutIds[recordType]])
+    recordId = OptionalRecordId(object[FieldsForTypesWithoutIds[recordType]])
+    if not recordId then error(tostring(object)) end
   end
 
   local recordOfSameTypeAndIdExists = RecordStores[recordType][recordId] ~= nil
