@@ -1036,8 +1036,8 @@ local TypeHandlers = {
     if spells then hash.spells = spells end
 
     hash.agility = tds.Vec(
-      numberField(record.data.agility[1]),
-      numberField(record.data.agility[2])
+      numberField(tostring(record.data.agility[1])),
+      numberField(tostring(record.data.agility[2]))
     )
 
     hash.endurance = tds.Vec(
