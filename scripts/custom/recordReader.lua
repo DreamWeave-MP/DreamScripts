@@ -1503,8 +1503,8 @@ local function createRecordStores()
         else
           tes3mp.LogAppend(
             enumerations.log.WARN,
-            ('Skipping record at index %d of plugin %s:\n%s')
-            :format(j, pluginName, tostring(object))
+            ('Skipping record at index %d of plugin %s: %s')
+            :format(j, pluginName, recordId or 'ID NOT FOUND')
           )
         end
       end
