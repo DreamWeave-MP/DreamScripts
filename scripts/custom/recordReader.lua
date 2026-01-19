@@ -932,7 +932,7 @@ local TypeHandlers = {
   Header = function(record, _, currentPluginName)
     local masters = record.masters
     local masterLength = #masters
-    if #masterLength == 0 then return end
+    if masterLength == 0 then return end
 
     local masterList = tds.Vec()
     masterList:resize(masterLength)
