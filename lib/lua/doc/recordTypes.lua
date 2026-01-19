@@ -468,14 +468,19 @@
 ---@field attack integer[] Consists of six fields, where their values are attack1Min, attack1Max, attack2Min, attack2Max, attack3Min, attack3Max
 ---@field baseGold integer
 ---@field bloodType integer
+---@field canFly boolean?
+---@field canSwim boolean?
+---@field canWalk boolean?
 ---@field combatAbility integer
----@field creatureFlags integer
 ---@field creatureType CreatureType
 ---@field endurance integer
 ---@field fatigue integer
 ---@field health integer
 ---@field intelligence integer
 ---@field inventory InventoryItem[]
+---@field isBiped boolean?
+---@field isEssential boolean?
+---@field isRespawning boolean?
 ---@field level integer
 ---@field luck integer
 ---@field magicAbility integer
@@ -492,6 +497,7 @@
 ---@field stealthAbility integer
 ---@field strength integer
 ---@field travelDestinations TravelDestination[]?
+---@field usesWeapons boolean?
 ---@field willpower integer
 
 ---@class DoorRecord: BaseRecord

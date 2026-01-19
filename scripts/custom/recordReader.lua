@@ -606,13 +606,18 @@ local TypeHandlers = {
 
     hash.baseGold = numberField(record.data.gold)
     hash.bloodType = numberField(record.blood_type)
-    hash.creatureFlags = numberField(record.creature_flags)
+    if hasFlag(record.creature_flags, Enums.Flags.Creature.FLIES) then hash.canFly = true end
+    if hasFlag(record.creature_flags, Enums.Flags.Creature.SWIMS) then hash.canSwim = true end
+    if hasFlag(record.creature_flags, Enums.Flags.Creature.WALKS) then hash.canWalk = true end
     hash.creatureType = numberField(Enums.CreatureType[record.data.creature_type])
     hash.endurance = numberField(record.data.endurance)
     hash.fatigue = numberField(record.data.fatigue)
     hash.health = numberField(record.data.health)
     hash.id = MandatoryRecordId(recordId)
     hash.intelligence = numberField(record.data.intelligence)
+    if hasFlag(record.creature_flags, Enums.Flags.Creature.BIPED) then hash.isBiped = true end
+    if hasFlag(record.creature_flags, Enums.Flags.Creature.ESSENTIAL) then hash.isEssential = true end
+    if hasFlag(record.creature_flags, Enums.Flags.Creature.RESPAWN) then hash.isRespawning = true end
     hash.level = numberField(record.data.level)
     hash.luck = numberField(record.data.luck)
     hash.magicAbility = numberField(record.data.magic)
@@ -624,6 +629,7 @@ local TypeHandlers = {
     hash.speed = numberField(record.data.speed)
     hash.stealthAbility = numberField(record.data.stealth)
     hash.strength = numberField(record.data.strength)
+    if hasFlag(record.creature_flags, Enums.Flags.Creature.WEAPON_AND_SHIELD) then hash.usesWeapons = true end
     hash.willpower = numberField(record.data.willpower)
 
 
