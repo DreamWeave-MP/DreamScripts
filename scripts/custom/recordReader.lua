@@ -960,10 +960,10 @@ local TypeHandlers = {
     hash.model = path(record.mesh)
 
     if record.npc_flags ~= 0 then
-      hash.isAutoCalc = hasFlag(record.npc_flags, Enums.Flags.NPC.AUTO_CALCULATE)
-      hash.isEssential = hasFlag(record.npc_flags, Enums.Flags.NPC.ESSENTIAL)
-      hash.isFemale = hasFlag(record.npc_flags, Enums.Flags.NPC.FEMALE)
-      hash.isRespawning = hasFlag(record.npc_flags, Enums.Flags.NPC.RESPAWN)
+      if hasFlag(record.npc_flags, Enums.Flags.NPC.AUTO_CALCULATE) then hash.isAutoCalc = true end
+      if hasFlag(record.npc_flags, Enums.Flags.NPC.ESSENTIAL) then hash.isEssential = true end
+      if hasFlag(record.npc_flags, Enums.Flags.NPC.FEMALE) then hash.isFemale = true end
+      if hasFlag(record.npc_flags, Enums.Flags.NPC.RESPAWN) then hash.isRespawning = true end
     end
 
     hash.race = MandatoryRecordId(record.race)
