@@ -1597,12 +1597,11 @@ local function createRecordStores()
 
         if recordStore and typeHandler then
           local resultRecord = typeHandler(object, recordId)
-          recordId = recordId or resultRecord.id
 
           if resultRecord then
-            recordStore[recordId] = resultRecord
+            recordStore[recordId or resultRecord.id] = resultRecord
             loadedRecords = loadedRecords + 1
-          elseif LogSkippedRecords then
+          elseif object.type ~= 'Cell' and LogSkippedRecords then
             tes3mp.LogAppend(
               enumerations.log.WARN,
               ('Skipping record at index %d of plugin %s: %s')
