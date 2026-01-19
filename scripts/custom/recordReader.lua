@@ -1441,6 +1441,15 @@ local ReferenceableTypes = {
   Spell = true,
 }
 
+--- ID Usage rules are slightly more complex than
+--- being a simple typed hashmap.
+--- Referenceable types are considered to be things that
+--- can be placed in the game world -> books, weapons, people, monsters, doors, etc.
+--- We don't really know why enchantments and spells share
+--- this namespace, but, TESCS will complain about it.
+--- Non-referenceable types are just simple hashmaps.
+--- However, cells are an exception as N plugins may write to the same
+--- number of cell entries, so typical ID usage rules don't apply at all.
 ---@param recordId RecordId?
 ---@param recordType string
 local function idIsFree(recordId, recordType)
@@ -1497,8 +1506,6 @@ local function createRecordStores()
       local recordStore, typeHandler = RecordStores[object.type], TypeHandlers[object.type]
 
       if recordStore and typeHandler then
-        --- Since we iterate in reverse, skip records in
-        --- this store which have already been defined
         local resultRecord = typeHandler(object, recordId)
         recordId = recordId or resultRecord.id
 
