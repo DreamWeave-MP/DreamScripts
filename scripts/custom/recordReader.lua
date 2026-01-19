@@ -1458,7 +1458,7 @@ local function idIsFree(recordId, object)
   -- We don't necessarily save everything, so skip object generation for those
   -- Also there are some dumb edge cases where records have ids defined
   -- But they are empty, we're just gonna reject those because they're stupid
-  if recordId == '' or not RecordStores[recordType] then return false end
+  if object.id == '' or not RecordStores[recordType] then return false end
 
   --- Cells are an exception to this rule
   --- As they must merge, so the id is always considered 'free'
