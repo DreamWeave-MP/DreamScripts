@@ -1345,6 +1345,7 @@ local function createRecordStores()
 
         --- Since we iterate in reverse, skip records in
         --- this store which have already been defined
+        --- Technically this isn't good enough as we should do a placeable check as well
         if not recordStore[recordId] then
           recordStore[recordId] = typeHandler(object, recordId)
           loadedRecords = loadedRecords + 1
