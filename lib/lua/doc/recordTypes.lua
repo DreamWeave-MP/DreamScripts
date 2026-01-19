@@ -425,7 +425,8 @@
 
 ---@class BodypartRecord: BaseRecord
 ---@field bodypartType BodypartType
----@field bodypartFlags integer
+---@field isFemale boolean?
+---@field isUnplayable boolean?
 ---@field part BodypartId
 ---@field race RecordId?
 ---@field model NormalizedPath

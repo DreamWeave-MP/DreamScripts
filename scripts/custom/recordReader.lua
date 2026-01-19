@@ -468,13 +468,15 @@ local TypeHandlers = {
   Bodypart = function(record, recordId)
     local hash = tds.Hash()
 
-    hash.bodypartFlags = numberField(record.data.flags)
     hash.bodypartType = numberField(Enums.BodypartType[record.data.bodypart_type])
     hash.id = MandatoryRecordId(recordId)
 
     -- This one's a bool field so we can't just assert on the value itself
-    assert(record.data.vampire ~= nil)
-    hash.isVampire = record.data.vampire
+    assert(record.data.vampire ~= nil and type(record.data.vampire) == 'boolean')
+    if record.data.vampire then hash.isVampire = true end
+
+    if hasFlag(record.data.flags, Enums.Flags.BodyPart.FEMALE) then hash.isFemale = true end
+    if hasFlag(record.data.flags, Enums.Flags.BodyPart.NOT_PLAYABLE) then hash.isUnplayable = true end
 
     hash.model = path(record.mesh)
     hash.part = numberField(Enums.BodypartId[record.data.part])
