@@ -369,7 +369,9 @@ local RecordStores = tds.Hash {
   Skill = tds.Hash(),
   Sound = tds.Hash(),
   SoundGen = tds.Hash(),
+  StartScript = tds.Hash(),
   Static = tds.Hash(),
+  Weapon = tds.Hash(),
 }
 
 local TypeHandlers = {
@@ -1320,6 +1322,16 @@ local TypeHandlers = {
     return hash
   end,
 
+  StartScript = function(record, recordId)
+    local hash = tds.Hash()
+
+    hash.id = recordId
+    hash.script = MandatoryRecordId(record.script)
+    objectFlags(record, hash)
+
+    return hash
+  end,
+
   Static = function(record, recordId)
     local hash = tds.Hash()
 
@@ -1327,6 +1339,37 @@ local TypeHandlers = {
     hash.model = path(record.mesh)
 
     objectFlags(record, hash)
+    return hash
+  end,
+
+  Weapon = function(record, recordId)
+    local hash = tds.Hash()
+
+    hash.chop = tds.Vec(numberField(record.data.chop_min), numberField(record.data.chop_max))
+    hash.durability = numberField(record.data.health)
+    hash.enchantmentValue = numberField(record.data.enchantment)
+    hash.icon = path(record.icon)
+    hash.id = recordId
+    if hasFlag(record.data.flags, Enums.Flags.Weapon.IGNORES_NORMAL_WEAPON_RESISTANCE) then hash.ignoresNormalResistance = true end
+    if hasFlag(record.data.flags, Enums.Flags.Weapon.SILVER) then hash.isSilver = true end
+    hash.model = path(record.mesh)
+    hash.reach = numberField(record.data.reach)
+    hash.slash = tds.Vec(numberField(record.data.slash_min), numberField(record.data.slash_max))
+    hash.speed = numberField(record.data.speed)
+    hash.thrust = tds.Vec(numberField(record.data.thrust_min), numberField(record.data.thrust_max))
+    hash.value = numberField(record.data.value)
+    hash.weaponType = numberField(Enums.WeaponType[tostring(record.data.weapon_type)])
+    hash.weight = numberField(record.data.weight)
+
+    local name = RealString(record.name)
+    if name then hash.name = name end
+
+    local script = OptionalRecordId(record.script)
+    if script then hash.script = script end
+
+    local enchantment = OptionalRecordId(record.enchanting)
+    if enchantment then hash.enchantment = enchantment end
+
     return hash
   end,
 }

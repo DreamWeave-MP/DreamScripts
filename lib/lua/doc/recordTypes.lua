@@ -323,6 +323,22 @@
 ---| 1 # Magic
 ---| 2 # Stealth
 
+---@alias WeaponType
+---| 0  # ShortBladeOneHand
+---| 1  # LongBladeOneHand
+---| 2  # LongBladeTwoClose
+---| 3  # BluntOneHand
+---| 4  # BluntTwoClose
+---| 5  # BluntTwoWide
+---| 6  # SpearTwoWide
+---| 7  # AxeOneHand
+---| 8  # AxeTwoHand
+---| 9  # MarksmanBow
+---| 10 # MarksmanCrossbow
+---| 11 # MarksmanThrown
+---| 12 # Arrow
+---| 13 # Bolt
+
 ---@alias NormalizedPath string Lowercased string with unix-style paths
 ---@alias RecordId string 32-character limited string. Always lowercase.
 
@@ -747,6 +763,9 @@
 ---@field sound RecordId
 ---@field soundGenType SoundGenType
 
+---@class StartScriptRecord: BaseRecord
+---@field script RecordId
+
 ---@class StaticRecord: BaseRecord
 ---@field model NormalizedPath
 
@@ -754,6 +773,25 @@
 ---@field cell RecordId
 ---@field position number[]
 ---@field rotation number[]
+
+---@class WeaponRecord
+---@field chop integer[] Length 2. Min/max
+---@field durability integer
+---@field enchantment RecordId?
+---@field enchantmentValue integer
+---@field icon NormalizedPath
+---@field ignoresNormalResistance boolean?
+---@field isSilver boolean?
+---@field model NormalizedPath
+---@field name string?
+---@field reach number
+---@field script RecordId?
+---@field slash integer[] Length 2. Min/max
+---@field speed number
+---@field thrust integer[] Length 2. Min/max
+---@field value integer
+---@field weaponType WeaponType
+---@field weight number
 
 ---@class RecordStores
 ---@field Activator table<RecordId, ActivatorRecord>
@@ -786,4 +824,7 @@
 ---@field Script table<RecordId, ScriptRecord>
 ---@field Skill table<RecordId, SkillId>
 ---@field Sound table<RecordId, SoundRecord>
+---@field SoundGen table<RecordId, SoundGenRecord>
+---@field StartScript table<RecordId, StartScriptRecord>
 ---@field Static table<RecordId, StaticRecord>
+---@field Weapon table<RecordId, WeaponRecord>

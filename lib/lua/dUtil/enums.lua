@@ -442,7 +442,23 @@ local MWEnums = {
     Combat = 0,
     Magic = 1,
     Stealth = 2,
-  }
+  },
+  WeaponType = {
+    ShortBladeOneHand = 0,
+    LongBladeOneHand = 1,
+    LongBladeTwoClose = 2,
+    BluntOneHand = 3,
+    BluntTwoClose = 4,
+    BluntTwoWide = 5,
+    SpearTwoWide = 6,
+    AxeOneHand = 7,
+    AxeTwoHand = 8,
+    MarksmanBow = 9,
+    MarksmanCrossbow = 10,
+    MarksmanThrown = 11,
+    Arrow = 12,
+    Bolt = 13,
+  },
 }
 
 if I.tds then MWEnums = I.tds.Hash(MWEnums) end
