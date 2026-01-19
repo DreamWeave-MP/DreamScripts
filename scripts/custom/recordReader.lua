@@ -595,7 +595,7 @@ local TypeHandlers = {
     if maybeRegion then cell.region = maybeRegion end
 
     if record.water_height then
-      cell.waterHeight = numberField(record.water_height)
+      cell.waterHeight = numberField(tostring(record.water_height))
     end
 
     --- One plugin might change certain cell flags, so,
