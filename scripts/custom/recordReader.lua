@@ -20,6 +20,29 @@ local LoadCellTypes = tds.hash { Exterior = false, Interior = true, }
 
 local Enums = require 'dUtil.enums'
 
+local RequiredDataFiles = dUtil.getRequiredDataFiles()
+
+local loadOrder = tds.Vec()
+loadOrder:resize(#RequiredDataFiles)
+
+local foundPlugins = tds.Hash()
+
+for i, loadOrderData in ipairs(RequiredDataFiles) do
+  local pluginName = loadOrderData.name:lower()
+
+  assert(
+    not foundPlugins[pluginName],
+    ('%s was already loaded and cannot be loaded a second time.')
+    :format(pluginName)
+  )
+
+  loadOrder[i] = pluginName
+
+  foundPlugins[pluginName] = true
+end
+
+foundPlugins = nil
+
 ---@param value any
 ---@return string? lowercased
 local function lowercase(value)
@@ -328,15 +351,6 @@ local Handlers = {
   end
 }
 
-local RequiredDataFiles = dUtil.getRequiredDataFiles()
-
-local loadOrder = tds.Vec()
-loadOrder:resize(#RequiredDataFiles)
-
-for i, loadOrderData in ipairs(RequiredDataFiles) do
-  loadOrder[i] = loadOrderData.name
-end
-
 ---@type RecordStores
 local RecordStores = tds.Hash {
   Alchemy = tds.Hash(),
@@ -356,6 +370,7 @@ local RecordStores = tds.Hash {
   Faction = tds.Hash(),
   GameSetting = tds.Hash(),
   GlobalVariable = tds.Hash(),
+  Header = tds.Hash(),
   Ingredient = tds.Hash(),
   LeveledCreature = tds.Hash(),
   LeveledItem = tds.Hash(),
@@ -535,7 +550,7 @@ local TypeHandlers = {
     return hash
   end,
 
-  Cell = function(record, _)
+  Cell = function(record, _, currentPluginName)
     local isInterior = hasFlag(record.data.flags, Enums.Flags.Cell.IS_INTERIOR)
     local gridX, gridY = numberField(record.data.grid[1]), numberField(record.data.grid[2])
 
@@ -608,6 +623,14 @@ local TypeHandlers = {
     cell.restingIsIllegal = hasFlag(record.data.flags, Enums.Flags.Cell.RESTING_IS_ILLEGAL)
 
     objectFlags(record, cell)
+
+    local references = record.references
+    cell.references = cell.references or tds.Hash()
+
+    for indices, referenceData in pairs(references) do
+      local masterIndex, referenceIndex = numberField(indices[1]), numberField(tostring(indices[2]))
+      -- For local references
+    end
 
     print(cell)
     RecordStores.Cell[cellType][cellId] = cell
@@ -903,6 +926,21 @@ local TypeHandlers = {
 
   GlobalVariable = function(record, _)
     return numberField(tostring(record.value))
+  end,
+
+  Header = function(record, _, currentPluginName)
+    local masters = record.masters
+    local masterLength = #masters
+    if #masterLength == 0 then return end
+
+    local masterList = tds.Vec()
+    masterList:resize(masterLength)
+
+    for i, masterInfo in ipairs(masters) do
+      masterList[i] = MandatoryRecordId(masterInfo[1])
+    end
+
+    RecordStores.Header[currentPluginName] = masterList
   end,
 
   Ingredient = function(record, recordId)
@@ -1546,7 +1584,8 @@ local function idIsFree(recordId, object)
 
   --- Cells are an exception to this rule
   --- As they must merge, so the id is always considered 'free'
-  if recordType == 'Cell' then
+  --- Headers are also unique as they're expected not to be duplicated.
+  if recordType == 'Cell' or recordType == 'Header' then
     return true
   end
 
@@ -1594,13 +1633,15 @@ local function createRecordStores()
       )
     end
 
+    local lowerPluginName = pluginName:lower()
+
     for j, object in ipairs(tes3.load_plugin(pluginPath).objects) do
       local recordId = OptionalRecordId(object.id)
       if idIsFree(recordId, object) then
         local recordStore, typeHandler = RecordStores[object.type], TypeHandlers[object.type]
 
         if recordStore and typeHandler then
-          local resultRecord = typeHandler(object, recordId)
+          local resultRecord = typeHandler(object, recordId, lowerPluginName)
 
           if resultRecord then
             recordStore[recordId or resultRecord.id] = resultRecord

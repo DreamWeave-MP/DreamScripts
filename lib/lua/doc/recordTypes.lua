@@ -466,6 +466,8 @@
 ---@field model NormalizedPath
 ---@field isVampire boolean
 
+---@class CellRecord: BaseRecord
+
 ---@class ClassRecord: BaseRecord
 ---@field attribute AttributeId[]
 ---@field isPlayable boolean?
@@ -826,6 +828,12 @@
 ---@field Faction table<RecordId, FactionRecord>
 ---@field GameSetting table<RecordId, number|string>
 ---@field GlobalVariable table<RecordId, number>
+--- Plugin headers are loaded for the purpose of reference loading
+--- Modifications to cell references not defined by a specific plugin
+--- Refer to the index of a given plugin in the header.
+--- For plugins which somehow have no dependencies, they will not exist in this table.
+--- Keys in this table are lowercased plugin names, as are the values
+---@field Header table <RecordId, RecordId[]>
 ---@field Ingredient table<RecordId, IngredientRecord>
 ---@field LeveledCreature table<RecordId, LeveledCreatureRecord>
 ---@field LeveledItem table<RecordId, LeveledItemRecord>
