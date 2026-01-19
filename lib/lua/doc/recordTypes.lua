@@ -632,9 +632,9 @@
 ---@class PotionRecord: BaseRecord
 ---@field effects MagicEffect[]
 ---@field icon NormalizedPath
+---@field isAutoCalc boolean
 ---@field name string
 ---@field model NormalizedPath
----@field potionFlags integer
 ---@field script RecordId?
 ---@field value integer
 ---@field weight number

@@ -396,7 +396,7 @@ local TypeHandlers = {
     hash.icon = path(record.icon)
     hash.id = recordId
     hash.model = path(record.mesh)
-    hash.potionFlags = numberField(record.data.flags)
+    hash.isAutoCalc = hasFlag(record.data.flags, Enums.Flags.Potion.AUTO_CALC)
     hash.value = numberField(record.data.value)
     hash.weight = numberField(record.data.weight)
 
