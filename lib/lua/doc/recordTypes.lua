@@ -698,5 +698,6 @@
 ---@field Light table<RecordId, LightRecord>
 ---@field Lockpick table<RecordId, LockpickRecord>
 ---@field MiscItem table<RecordId, MiscRecord>
+---@field Npc table<RecordId, NPCRecord>
 ---@field Probe table<RecordId, ProbeRecord>
 ---@field Static table<RecordId, StaticRecord>
