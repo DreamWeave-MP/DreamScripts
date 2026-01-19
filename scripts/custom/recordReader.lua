@@ -43,7 +43,7 @@ end
 ---@return RecordId
 local function MandatoryRecordId(value)
   local id = lowercase(value)
-  return id ~= '' and id or error('Invalid recordId!', 2)
+  return id ~= '' and id or error('Invalid recordId: ' .. tostring(value), 2)
 end
 
 ---@param value any
@@ -1465,7 +1465,7 @@ local function idIsFree(recordId, object)
   end
 
   if not recordId then
-    recordId = MandatoryRecordId(object[FieldsForTypesWithoutIds[recordType]])
+    recordId = MandatoryRecordId(object[FieldsForTypesWithoutIds[recordType]] or object)
   end
 
   local recordOfSameTypeAndIdExists = RecordStores[recordType][recordId] ~= nil
