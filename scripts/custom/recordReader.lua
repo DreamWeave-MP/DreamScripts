@@ -1053,25 +1053,17 @@ local function createRecordStores()
     end
 
     for _, object in ipairs(tes3.load_plugin(pluginPath).objects) do
-      if object.type ~= 'Cell' then
-        local recordStore, typeHandler = RecordStores[object.type], TypeHandlers[object.type]
+      local recordStore, typeHandler = RecordStores[object.type], TypeHandlers[object.type]
 
-        if recordStore and typeHandler then
-          local recordId = object.id:lower()
+      if recordStore and typeHandler then
+        local recordId = object.id:lower()
 
-          --- Since we iterate in reverse, skip records in
-          --- this store which have already been defined
-          if not recordStore[recordId] then
-            recordStore[recordId] = typeHandler(object, recordId)
-            loadedRecords = loadedRecords + 1
-          end
+        --- Since we iterate in reverse, skip records in
+        --- this store which have already been defined
+        if not recordStore[recordId] then
+          recordStore[recordId] = typeHandler(object, recordId)
+          loadedRecords = loadedRecords + 1
         end
-      else
-        -- if not cellCache[i] then
-        --   cellCache[i] = { name = pluginName, cells = {} }
-        -- end
-        --
-        -- cellCache[i].cells[MandatoryRecordId(object.id)] = object
       end
     end
   end
