@@ -816,6 +816,7 @@
 ---@field Birthsign table<RecordId, BirthsignRecord>
 ---@field BodyPart table<RecordId, BodypartRecord>
 ---@field Book table<RecordId, BookRecord>
+---@field Cell table<RecordId, CellRecord>
 ---@field Class table<RecordId, ClassRecord>
 ---@field Clothing table<RecordId, ClothingRecord>
 ---@field Container table<RecordId, ContainerRecord>

@@ -9,16 +9,10 @@ local PluginPathFormatter = tes3mp.GetDataPath() .. '/custom/recordParser/%s'
 ---@type DefaultInterfaces
 local I = require 'interfaces'
 
-local tds = I.tds
-local tes3 = I.tes3
+local tds = assert(I.tds)
+local tes3 = assert(I.tes3)
 
-if not tds or not tes3 then
-  tes3mp.LogAppend(
-    enumerations.log.ERROR,
-    'Either TDS or TES3_lua was missing.'
-  )
-  return {}
-end
+local LoadCellTypes = tds.hash { Exterior = true, Interior = false, }
 
 local Enums = require 'dUtil.enums'
 
