@@ -83,15 +83,12 @@ local function objectFlags(record, hash)
   local flags = numberField(record.flags)
   if flags == 0 then return end
 
-  local isDeleted, isModified = hasFlag(record.flags, Enums.Flags.Record.DELETED),
-      hasFlag(record.flags, Enums.Flags.Record.MODIFIED)
-
-  if isDeleted then
-    hash.isDeleted = isDeleted
+  if hasFlag(record.flags, Enums.Flags.Record.DELETED) then
+    hash.isDeleted = true
   end
 
-  if isModified then
-    hash.isModified = isModified
+  if hasFlag(record.flags, Enums.Flags.Record.MODIFIED) then
+    hash.isModified = true
   end
 end
 
@@ -410,7 +407,7 @@ local TypeHandlers = {
     hash.icon = path(record.icon)
     hash.id = recordId
     hash.model = path(record.mesh)
-    hash.isAutoCalc = hasFlag(record.data.flags, Enums.Flags.Potion.AUTO_CALC)
+    if hasFlag(record.data.flags, Enums.Flags.Potion.AUTO_CALC) then hash.isAutoCalc = true end
     hash.value = numberField(record.data.value)
     hash.weight = numberField(record.data.weight)
 
@@ -720,9 +717,7 @@ local TypeHandlers = {
       end
     end
 
-    if record.data.flags ~= 0 then
-      hash.isHidden = hasFlag(record.data.flags, Enums.Flags.Faction.HIDDEN_FROM_PC)
-    end
+    if hasFlag(record.data.flags, Enums.Flags.Faction.HIDDEN_FROM_PC) then hash.isHidden = true end
 
     hash.id = MandatoryRecordId(recordId)
     objectFlags(record, hash)
@@ -840,10 +835,12 @@ local TypeHandlers = {
     hash.chanceNone = numberField(record.chance_none)
     hash.id = recordId
 
-    hash.calculateFromAllLevels = hasFlag(
-      record.leveled_creature_flags,
-      Enums.Flags.LeveledCreature.CALCULATE_FROM_ALL_LEVELS
-    )
+    if hasFlag(
+          record.leveled_creature_flags,
+          Enums.Flags.LeveledCreature.CALCULATE_FROM_ALL_LEVELS
+        ) then
+      hash.calculateFromAllLevels = true
+    end
 
     local creatures = Handlers.LeveledEntry(record.creatures)
     if creatures then hash.creatures = creatures end
@@ -855,15 +852,19 @@ local TypeHandlers = {
   LeveledItem = function(record, recordId)
     local hash = tds.Hash()
 
-    hash.calculateForEachItem = hasFlag(
-      record.leveled_item_flags,
-      Enums.Flags.LeveledItem.CALCULATE_FOR_EACH_ITEM
-    )
+    if hasFlag(
+          record.leveled_item_flags,
+          Enums.Flags.LeveledItem.CALCULATE_FOR_EACH_ITEM
+        ) then
+      hash.calculateForEachItem = true
+    end
 
-    hash.calculateFromAllLevels = hasFlag(
-      record.leveled_item_flags,
-      Enums.Flags.LeveledItem.CALCULATE_FROM_ALL_LEVELS
-    )
+    if hasFlag(
+          record.leveled_item_flags,
+          Enums.Flags.LeveledItem.CALCULATE_FROM_ALL_LEVELS
+        ) then
+      hash.calculateFromAllLevels = true
+    end
 
     hash.chanceNone = numberField(record.chance_none)
     hash.id = recordId
@@ -959,12 +960,10 @@ local TypeHandlers = {
     hash.level = numberField(record.data.level)
     hash.model = path(record.mesh)
 
-    if record.npc_flags ~= 0 then
-      if hasFlag(record.npc_flags, Enums.Flags.NPC.AUTO_CALCULATE) then hash.isAutoCalc = true end
-      if hasFlag(record.npc_flags, Enums.Flags.NPC.ESSENTIAL) then hash.isEssential = true end
-      if hasFlag(record.npc_flags, Enums.Flags.NPC.FEMALE) then hash.isFemale = true end
-      if hasFlag(record.npc_flags, Enums.Flags.NPC.RESPAWN) then hash.isRespawning = true end
-    end
+    if hasFlag(record.npc_flags, Enums.Flags.NPC.AUTO_CALCULATE) then hash.isAutoCalc = true end
+    if hasFlag(record.npc_flags, Enums.Flags.NPC.ESSENTIAL) then hash.isEssential = true end
+    if hasFlag(record.npc_flags, Enums.Flags.NPC.FEMALE) then hash.isFemale = true end
+    if hasFlag(record.npc_flags, Enums.Flags.NPC.RESPAWN) then hash.isRespawning = true end
 
     hash.race = MandatoryRecordId(record.race)
     hash.rank = numberField(record.data.rank)
@@ -1079,15 +1078,12 @@ local TypeHandlers = {
 
     hash.id = MandatoryRecordId(recordId)
 
-    local isBeastRace, isPlayable = hasFlag(record.data.flags, Enums.Flags.Race.BEAST_RACE),
-        hasFlag(record.data.flags, Enums.Flags.Race.PLAYABLE)
-
-    if isBeastRace then
-      hash.isBeastRace = isBeastRace
+    if hasFlag(record.data.flags, Enums.Flags.Race.BEAST_RACE) then
+      hash.isBeastRace = true
     end
 
-    if isPlayable then
-      hash.isPlayable = isPlayable
+    if hasFlag(record.data.flags, Enums.Flags.Race.PLAYABLE) then
+      hash.isPlayable = true
     end
 
     local name = RealString(record.name)
