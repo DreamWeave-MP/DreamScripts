@@ -1444,6 +1444,7 @@ local ReferenceableTypes = {
 --- Non-referenceable types are just simple hashmaps.
 --- However, cells are an exception as N plugins may write to the same
 --- number of cell entries, so typical ID usage rules don't apply at all.
+--- Sourced from: https://github.com/Greatness7/merge_to_master/blob/main/src/types/plugin.rs#L82
 ---@param recordId RecordId?
 ---@param recordType string
 local function idIsFree(recordId, recordType)
