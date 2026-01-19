@@ -1337,13 +1337,6 @@ return {
       end
 
       tes3mp.LogAppend(enumerations.log.INFO, logStr)
-
-      for storeType, recordStore in pairs(RecordStores) do
-        for recordId, recordData in pairs(recordStore) do
-          print(storeType, '\n', recordId, '\n', recordData, '\n')
-          break
-        end
-      end
     end
   }
 }
