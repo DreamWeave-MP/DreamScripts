@@ -717,6 +717,13 @@
 ---@field value integer
 ---@field weight number
 
+---@class SkillRecord: BaseRecord
+---@field actions number[] Length 4
+---@field description string?
+---@field goveringAttribute AttributeId
+---@field skillId SkillId
+---@field specialization Specialization
+
 ---@class SoundRecord: BaseRecord
 ---@field path NormalizedPath
 ---@field range integer[] Length 2. Min/Max range.

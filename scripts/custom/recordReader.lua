@@ -366,6 +366,7 @@ local RecordStores = tds.Hash {
   Region = tds.Hash(),
   RepairItem = tds.Hash(),
   Script = tds.Hash(),
+  Skill = tds.Hash(),
   Sound = tds.Hash(),
   Static = tds.Hash(),
 }
@@ -1263,6 +1264,27 @@ local TypeHandlers = {
 
     hash.id = MandatoryRecordId(recordId)
     hash.text = MandatoryRecordId(record.text)
+
+    objectFlags(record, hash)
+    return hash
+  end,
+
+  Skill = function(record, recordId)
+    local hash = tds.Hash()
+
+    hash.actions = tds.Vec(
+      numberField(tostring(record.data.actions[1])),
+      numberField(tostring(record.data.actions[2])),
+      numberField(tostring(record.data.actions[3])),
+      numberField(tostring(record.data.actions[4]))
+    )
+    hash.governingAttribute = numberField(record.data.governing_attribute)
+    hash.id = MandatoryRecordId(recordId)
+    hash.skillId = numberField(Enums.SkillId[tostring(record.skill_id)])
+    hash.specialization = numberField(record.data.specialization)
+
+    local description = RealString(record.description)
+    if description then hash.description = description end
 
     objectFlags(record, hash)
     return hash
