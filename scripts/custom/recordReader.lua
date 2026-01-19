@@ -1024,7 +1024,6 @@ local TypeHandlers = {
   Race = function(record, recordId)
     local hash = tds.Hash()
 
-    hash.description = assert(RealString(record.description))
     hash.id = MandatoryRecordId(recordId)
     hash.objectFlags = numberField(record.flags)
     hash.raceFlags = numberField(record.data.flags)
@@ -1084,6 +1083,9 @@ local TypeHandlers = {
       numberField(tostring(record.data.willpower[1])),
       numberField(tostring(record.data.willpower[2]))
     )
+
+    local description = RealString(record.description)
+    if description then hash.description = description end
 
     local bonuses = tds.Hash()
     bonuses.skill1 = numberField(Enums.SkillId[record.data.skill_bonuses.skill_0])
