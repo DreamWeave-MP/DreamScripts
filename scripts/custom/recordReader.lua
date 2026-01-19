@@ -833,7 +833,12 @@ local TypeHandlers = {
 
     hash.chanceNone = numberField(record.chance_none)
     hash.id = recordId
-    hash.leveledCreatureFlags = numberField(record.leveled_creature_flags)
+
+    hash.calculateFromAllLevels = hasFlag(
+      record.leveled_creature_flags,
+      Enums.Flags.LeveledCreature.CALCULATE_FROM_ALL_LEVELS
+    )
+
     local flags = numberField(record.flags)
     if flags ~= 0 then hash.objectFlags = flags end
 
@@ -846,9 +851,18 @@ local TypeHandlers = {
   LeveledItem = function(record, recordId)
     local hash = tds.Hash()
 
+    hash.calculateForEachItem = hasFlag(
+      record.leveled_item_flags,
+      Enums.Flags.LeveledItem.CALCULATE_FOR_EACH_ITEM
+    )
+
+    hash.calculateFromAllLevels = hasFlag(
+      record.leveled_item_flags,
+      Enums.Flags.LeveledItem.CALCULATE_FROM_ALL_LEVELS
+    )
+
     hash.chanceNone = numberField(record.chance_none)
     hash.id = recordId
-    hash.leveledItemFlags = numberField(record.leveled_item_flags)
     local flags = numberField(record.flags)
     if flags ~= 0 then hash.objectFlags = flags end
 

@@ -544,7 +544,7 @@
 ---@field weight number
 
 ---@class LeveledCreatureRecord: BaseRecord
----@field leveledCreatureFlags integer
+---@field calculateFromAllLevels boolean
 ---@field chanceNone integer
 --- Not literally inventory items, but,
 --- handled as such since the fields are the same.
@@ -553,7 +553,8 @@
 ---@field creatures LeveledItemRef[]
 
 ---@class LeveledItemRecord: BaseRecord
----@field leveledItemFlags integer
+---@field calculateFromAllLevels boolean
+---@field calculateForEachItem boolean
 ---@field chanceNone integer
 --- Not literally inventory items, but,
 --- handled as such since the fields are the same.
