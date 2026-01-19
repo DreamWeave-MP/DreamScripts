@@ -454,8 +454,9 @@
 
 ---@class ContainerRecord: BaseRecord
 ---@field capacity number
----@field containerFlags integer
 ---@field inventory InventoryItem[]
+---@field isOrganic boolean?
+---@field isRespawning boolean?
 ---@field model NormalizedPath
 ---@field name string
 ---@field script RecordId?

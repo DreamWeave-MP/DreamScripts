@@ -573,8 +573,9 @@ local TypeHandlers = {
   Container = function(record, recordId)
     local hash = tds.Hash()
     hash.capacity = numberField(record.encumbrance)
-    hash.containerFlags = numberField(record.container_flags)
     hash.id = recordId
+    if hasFlag(record.container_flags, Enums.Flags.Container.ORGANIC) then hash.isOrganic = true end
+    if hasFlag(record.container_flags, Enums.Flags.Container.RESPAWNS) then hash.isRespawning = true end
     hash.model = path(record.mesh)
 
     local script = OptionalRecordId(record.script)
