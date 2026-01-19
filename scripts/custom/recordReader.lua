@@ -655,7 +655,7 @@ local TypeHandlers = {
           numberField(tostring(referenceData.rotation[3]))
         )
 
-        references[referenceKey] = hashRef
+        cell.references[referenceKey] = hashRef
       end
       -- For local references
     end
