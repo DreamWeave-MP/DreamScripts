@@ -970,7 +970,7 @@ local TypeHandlers = {
     hash.rank = numberField(record.data.rank)
     hash.reputation = numberField(record.data.reputation)
 
-    if hash.isAutoCalc then
+    if hash.isAutoCalc and record.data.stats then
       local stats = record.data.stats
       assert(#stats.attributes == 8)
       assert(#stats.skills == 27)
