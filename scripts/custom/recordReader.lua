@@ -1410,6 +1410,60 @@ local TypeHandlers = {
   end,
 }
 
+--- Certain record types share a global namespace
+--- This is used to check if the id is in the shared namespace or not
+local ReferenceableTypes = {
+  Activator = true,
+  Apparatus = true,
+  Alchemy = true,
+  Armor = true,
+  Birthsign = true,
+  Bodypart = true,
+  Book = true,
+  Clothing = true,
+  Container = true,
+  Creature = true,
+  Door = true,
+  Ingredient = true,
+  Light = true,
+  Lockpick = true,
+  MiscItem = true,
+  Npc = true,
+  Probe = true,
+  RepairItem = true,
+  Static = true,
+  Weapon = true,
+  -- These apparently are an exception to the placeable rule
+  -- :todd:
+  Enchanting = true,
+  Spell = true,
+}
+
+---@param recordId RecordId?
+---@param recordType string
+local function idIsFree(recordId, recordType)
+  if not recordId or not recordType then
+    return false
+    --- Cells are an exception to this rule
+    --- As they must merge, so the id is always considered 'free'
+  elseif recordType == 'Cell' then
+    return true
+  end
+
+  local recordOfSameTypeAndIdExists = RecordStores[recordType][recordId] == nil
+  if not ReferenceableTypes[recordType] or recordOfSameTypeAndIdExists then
+    return recordOfSameTypeAndIdExists
+  end
+
+  --- For referenceable types, if another record of the same type
+  --- And id does not exist, ensure that no other placeable type bears the same id
+  for checkedRecordType in pairs(ReferenceableTypes) do
+    if RecordStores[checkedRecordType][recordId] ~= nil then return false end
+  end
+
+  return true
+end
+
 ---@return integer numRecords
 local function createRecordStores()
   local loadedRecords = 0
@@ -1435,24 +1489,22 @@ local function createRecordStores()
       local recordId = OptionalRecordId(object.id)
       local recordStore, typeHandler = RecordStores[object.type], TypeHandlers[object.type]
 
-      if recordStore and typeHandler then
+      if idIsFree(recordId, object.type) and recordStore and typeHandler then
+        assert(recordId)
+
         --- Since we iterate in reverse, skip records in
         --- this store which have already been defined
-        --- Technically this isn't good enough as we should do a placeable check as well
-        if not recordId or not recordStore[recordId] then
-          local resultRecord = typeHandler(object, recordId)
-          local inputId = recordId or resultRecord.id
+        local resultRecord = typeHandler(object, recordId)
 
-          if inputId and resultRecord then
-            recordStore[inputId] = resultRecord
-            loadedRecords = loadedRecords + 1
-          else
-            tes3mp.LogAppend(
-              enumerations.log.WARN,
-              ('Skipping record at index %d of plugin %s:\n%s')
-              :format(j, pluginName, tostring(object))
-            )
-          end
+        if resultRecord then
+          recordStore[recordId] = resultRecord
+          loadedRecords = loadedRecords + 1
+        else
+          tes3mp.LogAppend(
+            enumerations.log.WARN,
+            ('Skipping record at index %d of plugin %s:\n%s')
+            :format(j, pluginName, tostring(object))
+          )
         end
       end
     end
