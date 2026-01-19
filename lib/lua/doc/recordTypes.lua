@@ -307,6 +307,16 @@
 ---| 25 # 'Speechcraft'
 ---| 26 # 'HandToHand'
 
+---@alias SoundGenType
+---| 0 # LeftFoot
+---| 1 # RightFoot
+---| 2 # SwimLeft
+---| 3 # SwimRight
+---| 4 # Moan
+---| 5 # Roar
+---| 6 # Scream
+---| 7 # Land
+
 ---@alias Specialization
 ---| -1 # None
 ---| 0 # Combat
@@ -717,6 +727,9 @@
 ---@field value integer
 ---@field weight number
 
+---@class ScriptRecord: BaseRecord
+---@field text string lowercased script text
+
 ---@class SkillRecord: BaseRecord
 ---@field actions number[] Length 4
 ---@field description string?
@@ -765,6 +778,7 @@
 ---@field Race  table<RecordId, RaceRecord>
 ---@field Region table<RecordId, RegionRecord>
 ---@field RepairItem table<RecordId, RepairRecord>
----@field Script table<RecordId, string>
+---@field Script table<RecordId, ScriptRecord>
+---@field Skill table<RecordId, SkillId>
 ---@field Sound table<RecordId, SoundRecord>
 ---@field Static table<RecordId, StaticRecord>
