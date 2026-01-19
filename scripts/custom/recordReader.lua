@@ -1353,7 +1353,7 @@ local function createRecordStores()
     for _, object in ipairs(tes3.load_plugin(pluginPath).objects) do
       local recordStore, typeHandler = RecordStores[object.type], TypeHandlers[object.type]
 
-      if recordStore and typeHandler then
+      if object.id and recordStore and typeHandler then
         local recordId = object.id:lower()
 
         --- Since we iterate in reverse, skip records in
