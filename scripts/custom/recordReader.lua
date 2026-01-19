@@ -3,7 +3,7 @@ local dUtil = require 'dUtil.init'
 local enumerations = require 'tes3mp.enumerations'
 
 local LogSkippedRecords = false
-local LoadedRecords = 0
+local LoadedRecords, PluginLoadIndex = 0, 0
 
 local PluginPathFormatter = tes3mp.GetDataPath() .. '/custom/recordParser/%s'
 
@@ -629,12 +629,38 @@ local TypeHandlers = {
     cell.references = cell.references or tds.Hash()
 
     for i, referenceData in ipairs(references) do
-      print(i, referenceData)
-      -- local masterIndex, referenceIndex = numberField(indices[1]), numberField(tostring(indices[2]))
+      -- print(i, referenceData)
+      local masterIndex, referenceIndex =
+          numberField(tostring(referenceData.mast_index)), numberField(tostring(referenceData.refr_index))
+
+      local LiveRefIndex = PluginLoadIndex
+
+      local referenceKey = ('%d-%d'):format(LiveRefIndex, referenceIndex)
+
+      if masterIndex == 0 then
+        local hashRef = tds.Hash()
+
+        hashRef.id = referenceKey
+        hashRef.recordId = MandatoryRecordId(referenceData.id)
+
+        hashRef.transform = tds.Hash()
+        hashRef.transform.position = tds.Vec(
+          numberField(tostring(referenceData.translation[1])),
+          numberField(tostring(referenceData.translation[2])),
+          numberField(tostring(referenceData.translation[3]))
+        )
+        hashRef.transform.rotation = tds.Vec(
+          numberField(tostring(referenceData.rotation[1])),
+          numberField(tostring(referenceData.rotation[2])),
+          numberField(tostring(referenceData.rotation[3]))
+        )
+
+        references[referenceKey] = hashRef
+      end
       -- For local references
     end
 
-    print(cell)
+    -- print(cell)
     RecordStores.Cell[cellType][cellId] = cell
   end,
 
@@ -1620,6 +1646,7 @@ local function createRecordStores()
 
   local _, numPlugins = nil, #loadOrder
   for i = numPlugins, 1, -1 do
+    PluginLoadIndex = i
     local pluginName = loadOrder[i]
     local pluginPath = PluginPathFormatter:format(pluginName)
 
