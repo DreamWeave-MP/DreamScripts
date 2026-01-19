@@ -9,7 +9,6 @@
 ---| 8192   # Blocked (0x2000)
 
 ---@alias NPCFlags
----| 0 # None
 ---| 1 # Female
 ---| 2 # Essential
 ---| 4 # Respawn

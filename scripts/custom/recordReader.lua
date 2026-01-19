@@ -935,7 +935,8 @@ local TypeHandlers = {
     hash.id = MandatoryRecordId(recordId)
     hash.level = numberField(record.data.level)
     hash.model = path(record.mesh)
-    hash.npcFlags = numberField(record.npc_flags)
+    local npcFlags = numberField(record.npc_flags)
+    if npcFlags ~= 0 then hash.npcFlags = npcFlags end
     local flags = numberField(record.flags)
     if flags ~= 0 then hash.objectFlags = flags end
     hash.race = MandatoryRecordId(record.race)
