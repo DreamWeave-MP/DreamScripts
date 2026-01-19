@@ -1492,8 +1492,6 @@ local function createRecordStores()
       local recordStore, typeHandler = RecordStores[object.type], TypeHandlers[object.type]
 
       if recordStore and typeHandler then
-        assert(recordId)
-
         --- Since we iterate in reverse, skip records in
         --- this store which have already been defined
         local resultRecord = typeHandler(object, recordId)
