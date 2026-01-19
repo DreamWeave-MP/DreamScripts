@@ -341,6 +341,7 @@ local RecordStores = tds.Hash {
   Npc = tds.Hash(),
   Probe = tds.Hash(),
   Race = tds.Hash(),
+  RepairItem = tds.Hash(),
   Static = tds.Hash(),
 }
 
@@ -1103,6 +1104,27 @@ local TypeHandlers = {
     bonuses.skill7 = numberField(Enums.SkillId[record.data.skill_bonuses.skill_6])
     bonuses.bonus7 = numberField(record.data.skill_bonuses.bonus_6)
     hash.bonuses = bonuses
+
+    return hash
+  end,
+
+  RepairItem = function(record, recordId)
+    local hash = tds.Hash()
+
+    hash.icon = path(record.icon)
+    hash.id = MandatoryRecordId(recordId)
+    hash.model = path(record.mesh)
+    hash.objectFlags = numberField(record.flags)
+    hash.uses = numberField(record.data.uses)
+    hash.value = numberField(record.data.value)
+    hash.weight = numberField(record.data.weight)
+    hash.quality = numberField(record.data.quality)
+
+    local name = RealString(record.name)
+    if name then hash.name = name end
+
+    local script = OptionalRecordId(record.script)
+    if script then hash.script = script end
 
     return hash
   end,

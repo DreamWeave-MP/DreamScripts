@@ -707,6 +707,16 @@
 ---@field weight GenderedStatValue
 ---@field willpower GenderedStatValue
 
+---@class RepairRecord: BaseRecord
+---@field icon NormalizedPath
+---@field model NormalizedPath
+---@field name string?
+---@field quality number
+---@field script RecordId
+---@field uses integer
+---@field value integer
+---@field weight number
+
 ---@class StaticRecord: BaseRecord
 ---@field model NormalizedPath
 
