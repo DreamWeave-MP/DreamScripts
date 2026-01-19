@@ -70,6 +70,13 @@ local function transform(trans)
   return vector(tonumber(trans[1]), tonumber(trans[2]), tonumber(trans[3]))
 end
 
+---@param flags integer
+---@param checkFlags integer
+---@return boolean
+local function hasFlag(flags, checkFlags)
+  return bit.band(flags, checkFlags) ~= 0
+end
+
 local AIPackageHandlers = {
   AiActivatePackage = function(package)
     local hash = tds.Hash()
@@ -1053,7 +1060,8 @@ local TypeHandlers = {
     hash.id = MandatoryRecordId(recordId)
     local flags = numberField(record.flags)
     if flags ~= 0 then hash.objectFlags = flags end
-    hash.raceFlags = numberField(record.data.flags)
+    hash.isBeastRace = hasFlag(record.data.flags, Enums.Flags.Race.BEAST_RACE)
+    hash.isPlayable = hasFlag(record.data.flags, Enums.Flags.Race.PLAYABLE)
 
     local name = RealString(record.name)
     if name then hash.name = name end

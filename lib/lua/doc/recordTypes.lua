@@ -15,11 +15,6 @@
 ---| 8 # Base
 ---| 16 # AutoCalc
 
----@alias RaceFlags
----| 0 # None
----| 1 # Playable
----| 2 # Beast
-
 ---@alias AIPackage
 ---| AIActivate
 ---| AIEscort
@@ -689,11 +684,12 @@
 ---@field description string
 ---@field endurance GenderedStatValue
 ---@field intelligence GenderedStatValue
+---@field isBeastRace boolean
+---@field isPlayable boolean
 ---@field height GenderedStatValue
 ---@field luck GenderedStatValue
 ---@field name string
 ---@field personality GenderedStatValue
----@field raceFlags RaceFlags
 ---@field skillBonuses RacialSkillBonus
 ---@field speed GenderedStatValue
 ---@field spells RecordId[]
