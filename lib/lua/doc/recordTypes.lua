@@ -21,6 +21,11 @@
 ---| 8 # Base
 ---| 16 # AutoCalc
 
+---@alias RaceFlags
+---| 0 # None
+---| 1 # Playable
+---| 2 # Beast
+
 ---@alias AIPackage
 ---| AIActivate
 ---| AIEscort
@@ -667,6 +672,41 @@
 ---@field value integer
 ---@field weight number
 
+---@alias GenderedStatValue integer[] Two-length array representing male and female racial values or attribute bonuses. Index 1 is male.
+
+---@class RacialSkillBonus
+---@field skill1 SkillId
+---@field bonus1 integer
+---@field skill2 SkillId
+---@field bonus2 integer
+---@field skill3 SkillId
+---@field bonus3 integer
+---@field skill4 SkillId
+---@field bonus4 integer
+---@field skill5 SkillId
+---@field bonus5 integer
+---@field skill6 SkillId
+---@field bonus6 integer
+---@field skill7 SkillId
+---@field bonus7 integer
+
+---@class RaceRecord: BaseRecord
+---@field agility GenderedStatValue
+---@field description string
+---@field endurance GenderedStatValue
+---@field intelligence GenderedStatValue
+---@field height GenderedStatValue
+---@field luck GenderedStatValue
+---@field name string
+---@field personality GenderedStatValue
+---@field raceFlags RaceFlags
+---@field skillBonuses RacialSkillBonus
+---@field speed GenderedStatValue
+---@field spells RecordId[]
+---@field strength GenderedStatValue
+---@field weight GenderedStatValue
+---@field willpower GenderedStatValue
+
 ---@class StaticRecord: BaseRecord
 ---@field model NormalizedPath
 
@@ -700,4 +740,5 @@
 ---@field MiscItem table<RecordId, MiscRecord>
 ---@field Npc table<RecordId, NPCRecord>
 ---@field Probe table<RecordId, ProbeRecord>
+---@field Race  table<RecordId, RaceRecord>
 ---@field Static table<RecordId, StaticRecord>

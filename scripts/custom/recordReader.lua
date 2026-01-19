@@ -340,6 +340,7 @@ local RecordStores = tds.Hash {
   MiscItem = tds.Hash(),
   Npc = tds.Hash(),
   Probe = tds.Hash(),
+  Race = tds.Hash(),
   Static = tds.Hash(),
 }
 
@@ -1016,6 +1017,90 @@ local TypeHandlers = {
     local script, name = OptionalRecordId(record.script), RealString(record.name)
     if script then hash.script = script end
     if name then hash.name = name end
+
+    return hash
+  end,
+
+  Race = function(record, recordId)
+    local hash = tds.Hash()
+
+    hash.description = assert(RealString(record.description))
+    hash.id = MandatoryRecordId(recordId)
+    hash.objectFlags = numberField(record.flags)
+    hash.raceFlags = numberField(record.data.flags)
+
+    local name = RealString(record.name)
+    if name then hash.name = name end
+
+    local spells = Handlers.Spells(record.spells)
+    if spells then hash.spells = spells end
+
+    hash.agility = tds.Vec(
+      numberField(record.data.agility[1]),
+      numberField(record.data.agility[2])
+    )
+
+    hash.endurance = tds.Vec(
+      numberField(record.data.endurance[1]),
+      numberField(record.data.endurance[2])
+    )
+
+    hash.height = tds.Vec(
+      numberField(record.data.height[1]),
+      numberField(record.data.height[2])
+    )
+
+    hash.intelligence = tds.Vec(
+      numberField(record.data.intelligence[1]),
+      numberField(record.data.intelligence[2])
+    )
+
+    hash.luck = tds.Vec(
+      numberField(record.data.luck[1]),
+      numberField(record.data.luck[2])
+    )
+
+    hash.personality = tds.Vec(
+      numberField(record.data.personality[1]),
+      numberField(record.data.personality[2])
+    )
+
+    hash.speed = tds.Vec(
+      numberField(record.data.speed[1]),
+      numberField(record.data.speed[2])
+    )
+
+    hash.strength = tds.Vec(
+      numberField(record.data.strength[1]),
+      numberField(record.data.strength[2])
+    )
+
+    hash.weight = tds.Vec(
+      numberField(record.data.weight[1]),
+      numberField(record.data.weight[2])
+    )
+
+    hash.willpower = tds.Vec(
+      numberField(record.data.willpower[1]),
+      numberField(record.data.willpower[2])
+    )
+
+    local bonuses = tds.Hash()
+    bonuses.skill1 = record.data.skill_bonuses.skill_0
+    bonuses.bonus1 = record.data.bonus_bonuses.bonus_0
+    bonuses.skill2 = record.data.skill_bonuses.skill_1
+    bonuses.bonus2 = record.data.bonus_bonuses.bonus_1
+    bonuses.skill3 = record.data.skill_bonuses.skill_2
+    bonuses.bonus3 = record.data.bonus_bonuses.bonus_2
+    bonuses.skill4 = record.data.skill_bonuses.skill_3
+    bonuses.bonus4 = record.data.bonus_bonuses.bonus_3
+    bonuses.skill5 = record.data.skill_bonuses.skill_4
+    bonuses.bonus5 = record.data.bonus_bonuses.bonus_4
+    bonuses.skill6 = record.data.skill_bonuses.skill_5
+    bonuses.bonus6 = record.data.bonus_bonuses.bonus_5
+    bonuses.skill7 = record.data.skill_bonuses.skill_6
+    bonuses.bonus7 = record.data.bonus_bonuses.bonus_6
+    hash.bonuses = bonuses
 
     return hash
   end,
