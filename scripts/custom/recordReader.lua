@@ -690,8 +690,9 @@ local TypeHandlers = {
 
     hash.cost = numberField(record.data.cost)
     hash.enchantType = numberField(Enums.EnchantType[record.data.enchant_type])
-    hash.enchantFlags = numberField(record.data.flags)
     hash.id = MandatoryRecordId(recordId)
+    --- Surely this has some implication for parsing the effect array?
+    if hasFlag(record.data.flags, Enums.Flags.Enchant.AUTO_CALC) then hash.isAutoCalc = true end
     hash.maxCharge = numberField(record.data.max_charge)
     objectFlags(record, hash)
 

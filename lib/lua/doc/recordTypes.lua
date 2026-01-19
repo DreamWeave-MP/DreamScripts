@@ -510,8 +510,8 @@
 ---@class EnchantmentRecord: BaseRecord
 ---@field cost integer
 ---@field effects MagicEffect[]
----@field enchantFlags integer
 ---@field enchantType EnchantType
+---@field isAutoCalc boolean?
 ---@field maxCharge integer
 
 ---@class FactionRequirement
