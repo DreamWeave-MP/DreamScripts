@@ -1408,6 +1408,7 @@ local function createRecordStores()
           local resultRecord = typeHandler(object, recordId)
 
           local inputId = recordId or resultRecord.id
+          assert(inputId, object)
 
           recordStore[inputId] = resultRecord
           loadedRecords = loadedRecords + 1
