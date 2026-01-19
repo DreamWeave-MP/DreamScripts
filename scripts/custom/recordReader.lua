@@ -1451,8 +1451,8 @@ local function idIsFree(recordId, recordType)
   end
 
   local recordOfSameTypeAndIdExists = RecordStores[recordType][recordId] ~= nil
-  if not ReferenceableTypes[recordType] or recordOfSameTypeAndIdExists then
-    return recordOfSameTypeAndIdExists
+  if not ReferenceableTypes[recordType] or not recordOfSameTypeAndIdExists then
+    return not recordOfSameTypeAndIdExists
   end
 
   --- For referenceable types, if another record of the same type
