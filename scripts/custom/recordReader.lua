@@ -1399,7 +1399,7 @@ local function createRecordStores()
       )
     end
 
-    for _, object in ipairs(tes3.load_plugin(pluginPath).objects) do
+    for j, object in ipairs(tes3.load_plugin(pluginPath).objects) do
       local recordId = OptionalRecordId(object.id)
       local recordStore, typeHandler = RecordStores[object.type], TypeHandlers[object.type]
 
@@ -1414,6 +1414,12 @@ local function createRecordStores()
           if inputId and resultRecord then
             recordStore[inputId] = resultRecord
             loadedRecords = loadedRecords + 1
+          else
+            tes3mp.LogAppend(
+              enumerations.log.WARN,
+              ('Skipping record at index %d of plugin %s')
+              :format(j, pluginName)
+            )
           end
         end
       end
