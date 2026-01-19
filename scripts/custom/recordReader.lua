@@ -1444,12 +1444,14 @@ local ReferenceableTypes = {
 ---@param recordId RecordId?
 ---@param recordType string
 local function idIsFree(recordId, recordType)
+  --- Cells are an exception to this rule
+  --- As they must merge, so the id is always considered 'free'
+  if recordType == 'Cell' then
+    return true
+  end
+
   if not recordId or not recordType or not RecordStores[recordType] then
     return false
-    --- Cells are an exception to this rule
-    --- As they must merge, so the id is always considered 'free'
-  elseif recordType == 'Cell' then
-    return true
   end
 
   local recordOfSameTypeAndIdExists = RecordStores[recordType][recordId] ~= nil
