@@ -2,6 +2,8 @@ local bit = require 'bit'
 local dUtil = require 'dUtil.init'
 local enumerations = require 'tes3mp.enumerations'
 
+local LogSkippedRecords = false
+
 local PluginPathFormatter = tes3mp.GetDataPath() .. '/custom/recordParser/%s'
 
 ---@type DefaultInterfaces
@@ -1500,7 +1502,7 @@ local function createRecordStores()
         if resultRecord and idIsFree(recordId, object.type) then
           recordStore[recordId] = resultRecord
           loadedRecords = loadedRecords + 1
-        else
+        elseif LogSkippedRecords then
           tes3mp.LogAppend(
             enumerations.log.WARN,
             ('Skipping record at index %d of plugin %s: %s')
