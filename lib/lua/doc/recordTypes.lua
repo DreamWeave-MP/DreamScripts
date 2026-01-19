@@ -8,13 +8,6 @@
 ---| 4096   # Ignored (0x1000)
 ---| 8192   # Blocked (0x2000)
 
----@alias NPCFlags
----| 1 # Female
----| 2 # Essential
----| 4 # Respawn
----| 8 # Base
----| 16 # AutoCalc
-
 ---@alias AIPackage
 ---| AIActivate
 ---| AIEscort
@@ -619,10 +612,13 @@
 ---@field head RecordId
 ---@field hair RecordId?
 ---@field inventory InventoryItem[]?
+---@field isAutoCalc boolean? This value will be nil if the npc's flag value is 0 for optimization reasons.
+---@field isEssential boolean? This value will be nil if the npc's flag value is 0 for optimization reasons.
+---@field isFemale boolean? This value will be nil if the npc's flag value is 0 for optimization reasons.
+---@field isRespawning boolean? This value will be nil if the npc's flag value is 0 for optimization reasons.
 ---@field level integer
 ---@field model NormalizedPath
 ---@field name string?
----@field npcFlags NPCFlags
 ---@field race RecordId
 ---@field rank integer
 ---@field reputation integer

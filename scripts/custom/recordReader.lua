@@ -942,8 +942,14 @@ local TypeHandlers = {
     hash.id = MandatoryRecordId(recordId)
     hash.level = numberField(record.data.level)
     hash.model = path(record.mesh)
-    local npcFlags = numberField(record.npc_flags)
-    if npcFlags ~= 0 then hash.npcFlags = npcFlags end
+
+    if record.npc_flags ~= 0 then
+      hash.isAutoCalc = hasFlag(record.npc_flags, Enums.Flags.NPC.AUTO_CALCULATE)
+      hash.isEssential = hasFlag(record.npc_flags, Enums.Flags.NPC.ESSENTIAL)
+      hash.isFemale = hasFlag(record.npc_flags, Enums.Flags.NPC.FEMALE)
+      hash.isRespawning = hasFlag(record.npc_flags, Enums.Flags.NPC.RESPAWN)
+    end
+
     local flags = numberField(record.flags)
     if flags ~= 0 then hash.objectFlags = flags end
     hash.race = MandatoryRecordId(record.race)
