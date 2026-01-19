@@ -969,8 +969,6 @@ local TypeHandlers = {
     hash.race = MandatoryRecordId(record.race)
     hash.rank = numberField(record.data.rank)
     hash.reputation = numberField(record.data.reputation)
-    hash.value = numberField(record.data.value)
-    hash.weight = numberField(record.data.weight)
 
     if record.data.stats and not bit.band(Enums.Flags.NPC.AUTO_CALCULATE, hash.npcFlags) then
       local stats = record.data.stats
