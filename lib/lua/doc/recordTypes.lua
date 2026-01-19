@@ -434,7 +434,7 @@
 
 ---@class ClassRecord: BaseRecord
 ---@field attribute AttributeId[]
----@field classFlags integer
+---@field isPlayable boolean?
 ---@field major SkillId[]
 ---@field minor SkillId[]
 ---@field services integer

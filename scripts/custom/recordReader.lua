@@ -519,6 +519,9 @@ local TypeHandlers = {
   end,
   Class = function(record, recordId)
     local hash = tds.Hash()
+
+    if hasFlag(record.data.flags, Enums.Flags.Class.PLAYABLE) then hash.isPlayable = true end
+
     hash.attribute = tds.Vec(
       numberField(Enums.AttributeId[record.data.attribute1]),
       numberField(Enums.AttributeId[record.data.attribute2])
