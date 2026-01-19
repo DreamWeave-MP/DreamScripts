@@ -629,7 +629,7 @@ local TypeHandlers = {
     cell.references = cell.references or tds.Hash()
 
     for _, referenceData in ipairs(references) do
-      -- print(i, referenceData)
+      print(i, referenceData)
       local masterIndex, referenceIndex =
           numberField(tostring(referenceData.mast_index)), numberField(tostring(referenceData.refr_index))
 
