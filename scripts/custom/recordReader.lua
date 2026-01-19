@@ -365,6 +365,7 @@ local RecordStores = tds.Hash {
   Race = tds.Hash(),
   Region = tds.Hash(),
   RepairItem = tds.Hash(),
+  Script = tds.Hash(),
   Static = tds.Hash(),
 }
 
@@ -1251,6 +1252,16 @@ local TypeHandlers = {
 
     local script = OptionalRecordId(record.script)
     if script then hash.script = script end
+
+    objectFlags(record, hash)
+    return hash
+  end,
+
+  Script = function(record, recordId)
+    local hash = tds.Hash()
+
+    hash.id = MandatoryRecordId(recordId)
+    hash.text = MandatoryRecordId(record.text)
 
     objectFlags(record, hash)
     return hash

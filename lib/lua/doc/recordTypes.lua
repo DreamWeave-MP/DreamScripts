@@ -751,5 +751,7 @@
 ---@field Npc table<RecordId, NPCRecord>
 ---@field Probe table<RecordId, ProbeRecord>
 ---@field Race  table<RecordId, RaceRecord>
+---@field Region table<RecordId, RegionRecord>
 ---@field RepairItem table<RecordId, RepairRecord>
+---@field Script table<RecordId, string>
 ---@field Static table<RecordId, StaticRecord>
