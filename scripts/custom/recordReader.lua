@@ -1353,17 +1353,18 @@ local function createRecordStores()
     end
 
     for _, object in ipairs(tes3.load_plugin(pluginPath).objects) do
-      local recordStore, typeHandler = RecordStores[object.type], TypeHandlers[object.type]
+      local recordId = OptionalRecordId(object.id)
+      if recordId then
+        local recordStore, typeHandler = RecordStores[object.type], TypeHandlers[object.type]
 
-      if object.id and recordStore and typeHandler then
-        local recordId = object.id:lower()
-
-        --- Since we iterate in reverse, skip records in
-        --- this store which have already been defined
-        --- Technically this isn't good enough as we should do a placeable check as well
-        if not recordStore[recordId] then
-          recordStore[recordId] = typeHandler(object, recordId)
-          loadedRecords = loadedRecords + 1
+        if recordStore and typeHandler then
+          --- Since we iterate in reverse, skip records in
+          --- this store which have already been defined
+          --- Technically this isn't good enough as we should do a placeable check as well
+          if not recordStore[recordId] then
+            recordStore[recordId] = typeHandler(object, recordId)
+            loadedRecords = loadedRecords + 1
+          end
         end
       end
     end
