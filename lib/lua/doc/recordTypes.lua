@@ -377,7 +377,8 @@
 ---@field type AIState
 
 ---@class BaseRecord
----@field objectFlags ObjectFlags? If no special flags are set, objectFlags is nil.
+---@field isModified boolean
+---@field isDeleted boolean
 ---@field id RecordId Record editor identifier. Always lowercase.
 
 --- Representation of an individual slot used by a clothing or armor

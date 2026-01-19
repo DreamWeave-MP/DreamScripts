@@ -77,6 +77,24 @@ local function hasFlag(flags, checkFlags)
   return bit.band(flags, checkFlags) ~= 0
 end
 
+---@param record table<string, any>
+---@param hash table<string, any>
+local function objectFlags(record, hash)
+  local flags = numberField(record.flags)
+  if flags == 0 then return end
+
+  local isDeleted, isModified = hasFlag(record.flags, Enums.Flags.Record.DELETED),
+      hasFlag(record.flags, Enums.Flags.Record.MODIFIED)
+
+  if isDeleted then
+    hash.isDeleted = isDeleted
+  end
+
+  if isModified then
+    hash.isModified = isModified
+  end
+end
+
 local AIPackageHandlers = {
   AiActivatePackage = function(package)
     local hash = tds.Hash()
@@ -356,8 +374,6 @@ local TypeHandlers = {
   Activator = function(record, recordId)
     local hash = tds.Hash()
 
-    local flags = numberField(record.flags)
-    if flags ~= 0 then hash.objectFlags = flags end
     hash.id = recordId
     hash.model = path(record.mesh)
 
@@ -367,14 +383,13 @@ local TypeHandlers = {
     local script = OptionalRecordId(record.script)
     if script then hash.script = script end
 
+    objectFlags(record, hash)
     return hash
   end,
   Apparatus = function(record, recordId)
     local hash = tds.Hash()
     hash.id = recordId
     hash.apparatusType = numberField(Enums.ApparatusType[record.data.apparatus_type])
-    local flags = numberField(record.flags)
-    if flags ~= 0 then hash.objectFlags = flags end
     hash.quality = numberField(record.data.quality)
     hash.weight = numberField(record.data.weight)
     hash.value = numberField(record.data.value)
@@ -387,12 +402,11 @@ local TypeHandlers = {
     local script = OptionalRecordId(record.script)
     if script then hash.script = script end
 
+    objectFlags(record, hash)
     return hash
   end,
   Alchemy = function(record, recordId)
     local hash = tds.Hash()
-    local flags = numberField(record.flags)
-    if flags ~= 0 then hash.objectFlags = flags end
     hash.icon = path(record.icon)
     hash.id = recordId
     hash.model = path(record.mesh)
@@ -409,6 +423,7 @@ local TypeHandlers = {
     local effects = Handlers.Effects(record.effects)
     if effects then hash.effects = effects end
 
+    objectFlags(record, hash)
     return hash
   end,
   Armor = function(record, recordId)
@@ -421,8 +436,6 @@ local TypeHandlers = {
     hash.icon = path(record.icon)
     hash.id = recordId
     hash.model = path(record.mesh)
-    local flags = numberField(record.flags)
-    if flags ~= 0 then hash.objectFlags = flags end
     hash.weight = numberField(record.data.weight)
     hash.value = numberField(record.data.value)
 
@@ -438,6 +451,7 @@ local TypeHandlers = {
     local enchantment = OptionalRecordId(record.enchanting)
     if enchantment then hash.enchantment = enchantment end
 
+    objectFlags(record, hash)
     return hash
   end,
   Birthsign = function(record, recordId)
@@ -446,13 +460,12 @@ local TypeHandlers = {
     hash.description = assert(RealString(record.description))
     hash.id = recordId
     hash.name = assert(RealString(record.name))
-    local flags = numberField(record.flags)
-    if flags ~= 0 then hash.objectFlags = flags end
     hash.texture = path(record.texture)
 
     local spells = Handlers.Spells(record.spells)
     if spells then hash.spells = spells end
 
+    objectFlags(record, hash)
     return hash
   end,
   Bodypart = function(record, recordId)
@@ -467,13 +480,12 @@ local TypeHandlers = {
     hash.isVampire = record.data.vampire
 
     hash.model = path(record.mesh)
-    local flags = numberField(record.flags)
-    if flags ~= 0 then hash.objectFlags = flags end
     hash.part = numberField(Enums.BodypartId[record.data.part])
 
     local race = OptionalRecordId(record.race)
     if race then hash.race = race end
 
+    objectFlags(record, hash)
     return hash
   end,
   Book = function(record, recordId)
@@ -484,8 +496,6 @@ local TypeHandlers = {
     hash.icon = path(record.icon)
     hash.id = MandatoryRecordId(recordId)
     hash.model = path(record.mesh)
-    local flags = numberField(record.flags)
-    if flags ~= 0 then hash.objectFlags = flags end
     hash.skill = numberField(Enums.SkillId[record.data.skill])
     hash.value = numberField(record.data.value)
     hash.weight = numberField(record.data.weight)
@@ -502,6 +512,7 @@ local TypeHandlers = {
     local text = RealString(record.text)
     if text then hash.text = text end
 
+    objectFlags(record, hash)
     return hash
   end,
   Class = function(record, recordId)
@@ -528,11 +539,10 @@ local TypeHandlers = {
       numberField(Enums.SkillId[record.data.minor5])
     )
 
-    local flags = numberField(record.flags)
-    if flags ~= 0 then hash.objectFlags = flags end
     hash.services = numberField(record.data.services)
     hash.specialization = numberField(Enums.Specialization[record.data.specialization])
 
+    objectFlags(record, hash)
     return hash
   end,
   Clothing = function(record, recordId)
@@ -544,8 +554,6 @@ local TypeHandlers = {
     hash.icon = path(record.icon)
     hash.id = recordId
     hash.model = path(record.mesh)
-    local flags = numberField(record.flags)
-    if flags ~= 0 then hash.objectFlags = flags end
     hash.weight = numberField(record.data.weight)
     hash.value = numberField(record.data.value)
 
@@ -560,6 +568,7 @@ local TypeHandlers = {
     local name = RealString(record.name)
     if name then hash.name = name end
 
+    objectFlags(record, hash)
     return hash
   end,
   Container = function(record, recordId)
@@ -568,8 +577,6 @@ local TypeHandlers = {
     hash.containerFlags = numberField(record.container_flags)
     hash.id = recordId
     hash.model = path(record.mesh)
-    local flags = numberField(record.flags)
-    if flags ~= 0 then hash.objectFlags = flags end
 
     local script = OptionalRecordId(record.script)
     if script then hash.script = script end
@@ -580,6 +587,7 @@ local TypeHandlers = {
     local name = RealString(record.name)
     if name then hash.name = name end
 
+    objectFlags(record, hash)
     return hash
   end,
   Creature = function(record, recordId)
@@ -610,8 +618,7 @@ local TypeHandlers = {
     hash.magicAbility = numberField(record.data.magic)
     hash.magicka = numberField(record.data.magicka)
     hash.model = path(record.mesh)
-    local flags = numberField(record.flags)
-    if flags ~= 0 then hash.objectFlags = flags end
+    objectFlags(record, hash)
     hash.personality = numberField(record.data.personality)
     hash.soulValue = numberField(record.data.soul)
     hash.speed = numberField(record.data.speed)
@@ -653,8 +660,7 @@ local TypeHandlers = {
 
     hash.id = recordId
     hash.model = path(record.mesh)
-    local flags = numberField(record.flags)
-    if flags ~= 0 then hash.objectFlags = flags end
+    objectFlags(record, hash)
 
     local name = RealString(record.name)
     if name then hash.name = name end
@@ -678,8 +684,7 @@ local TypeHandlers = {
     hash.enchantFlags = numberField(record.data.flags)
     hash.id = MandatoryRecordId(recordId)
     hash.maxCharge = numberField(record.data.max_charge)
-    local flags = numberField(record.flags)
-    if flags ~= 0 then hash.objectFlags = flags end
+    objectFlags(record, hash)
 
     local effects = Handlers.Effects(record.effects)
     if effects then hash.effects = effects end
@@ -720,8 +725,7 @@ local TypeHandlers = {
     end
 
     hash.id = MandatoryRecordId(recordId)
-    local flags = numberField(record.flags)
-    if flags ~= 0 then hash.objectFlags = flags end
+    objectFlags(record, hash)
 
     hash.favoredAttributes = tds.Vec(
       numberField(Enums.AttributeId[MandatoryRecordId(record.data.favored_attributes[1]):titleCase()]),
@@ -795,8 +799,7 @@ local TypeHandlers = {
 
     hash.icon = path(record.icon)
     hash.id = MandatoryRecordId(recordId)
-    local flags = numberField(record.flags)
-    if flags ~= 0 then hash.objectFlags = flags end
+    objectFlags(record, hash)
     hash.model = path(record.mesh)
     hash.value = numberField(record.data.value)
     hash.weight = numberField(record.data.weight)
@@ -842,12 +845,10 @@ local TypeHandlers = {
       Enums.Flags.LeveledCreature.CALCULATE_FROM_ALL_LEVELS
     )
 
-    local flags = numberField(record.flags)
-    if flags ~= 0 then hash.objectFlags = flags end
-
     local creatures = Handlers.LeveledEntry(record.creatures)
     if creatures then hash.creatures = creatures end
 
+    objectFlags(record, hash)
     return hash
   end,
 
@@ -866,12 +867,11 @@ local TypeHandlers = {
 
     hash.chanceNone = numberField(record.chance_none)
     hash.id = recordId
-    local flags = numberField(record.flags)
-    if flags ~= 0 then hash.objectFlags = flags end
 
     local items = Handlers.LeveledEntry(record.items)
     if items then hash.items = items end
 
+    objectFlags(record, hash)
     return hash
   end,
 
@@ -887,8 +887,7 @@ local TypeHandlers = {
     hash.id = recordId
     hash.lightFlags = numberField(record.data.flags)
     hash.model = path(record.mesh)
-    local flags = numberField(record.flags)
-    if flags ~= 0 then hash.objectFlags = flags end
+
     hash.radius = numberField(record.data.radius)
     hash.time = numberField(record.data.value)
     hash.value = numberField(record.data.value)
@@ -903,6 +902,7 @@ local TypeHandlers = {
     local sound = OptionalRecordId(record.sound)
     if sound then hash.sound = sound end
 
+    objectFlags(record, hash)
     return hash
   end,
 
@@ -912,8 +912,7 @@ local TypeHandlers = {
     hash.icon = path(record.icon)
     hash.id = MandatoryRecordId(recordId)
     hash.model = path(record.mesh)
-    local flags = numberField(record.flags)
-    if flags ~= 0 then hash.objectFlags = flags end
+
     hash.quality = numberField(record.data.quality)
     hash.uses = numberField(record.data.uses)
     hash.value = numberField(record.data.value)
@@ -923,6 +922,7 @@ local TypeHandlers = {
     if script then hash.script = script end
     if name then hash.name = name end
 
+    objectFlags(record, hash)
     return hash
   end,
 
@@ -934,8 +934,6 @@ local TypeHandlers = {
     hash.isKey = numberField(record.data.flags) == 1
     hash.miscFlags = numberField(record.data.flags)
     hash.model = path(record.mesh)
-    local flags = numberField(record.flags)
-    if flags ~= 0 then hash.objectFlags = flags end
     hash.value = numberField(record.data.value)
     hash.weight = numberField(record.data.weight)
 
@@ -945,6 +943,7 @@ local TypeHandlers = {
     local script = OptionalRecordId(record.script)
     if script then hash.script = script end
 
+    objectFlags(record, hash)
     return hash
   end,
 
@@ -967,11 +966,11 @@ local TypeHandlers = {
       hash.isRespawning = hasFlag(record.npc_flags, Enums.Flags.NPC.RESPAWN)
     end
 
-    local flags = numberField(record.flags)
-    if flags ~= 0 then hash.objectFlags = flags end
     hash.race = MandatoryRecordId(record.race)
     hash.rank = numberField(record.data.rank)
     hash.reputation = numberField(record.data.reputation)
+    hash.value = numberField(record.data.value)
+    hash.weight = numberField(record.data.weight)
 
     if record.data.stats and not bit.band(Enums.Flags.NPC.AUTO_CALCULATE, hash.npcFlags) then
       local stats = record.data.stats
@@ -1054,6 +1053,7 @@ local TypeHandlers = {
     local name = RealString(record.name)
     if name then hash.name = name end
 
+    objectFlags(record, hash)
     return hash
   end,
 
@@ -1063,8 +1063,6 @@ local TypeHandlers = {
     hash.icon = path(record.icon)
     hash.id = MandatoryRecordId(recordId)
     hash.model = path(record.mesh)
-    local flags = numberField(record.flags)
-    if flags ~= 0 then hash.objectFlags = flags end
     hash.quality = numberField(record.data.quality)
     hash.uses = numberField(record.data.uses)
     hash.value = numberField(record.data.value)
@@ -1074,6 +1072,7 @@ local TypeHandlers = {
     if script then hash.script = script end
     if name then hash.name = name end
 
+    objectFlags(record, hash)
     return hash
   end,
 
@@ -1081,10 +1080,17 @@ local TypeHandlers = {
     local hash = tds.Hash()
 
     hash.id = MandatoryRecordId(recordId)
-    local flags = numberField(record.flags)
-    if flags ~= 0 then hash.objectFlags = flags end
-    hash.isBeastRace = hasFlag(record.data.flags, Enums.Flags.Race.BEAST_RACE)
-    hash.isPlayable = hasFlag(record.data.flags, Enums.Flags.Race.PLAYABLE)
+
+    local isBeastRace, isPlayable = hasFlag(record.data.flags, Enums.Flags.Race.BEAST_RACE),
+        hasFlag(record.data.flags, Enums.Flags.Race.PLAYABLE)
+
+    if isBeastRace then
+      hash.isBeastRace = isBeastRace
+    end
+
+    if isPlayable then
+      hash.isPlayable = isPlayable
+    end
 
     local name = RealString(record.name)
     if name then hash.name = name end
@@ -1162,6 +1168,7 @@ local TypeHandlers = {
     bonuses.bonus7 = numberField(record.data.skill_bonuses.bonus_6)
     hash.bonuses = bonuses
 
+    objectFlags(record, hash)
     return hash
   end,
 
@@ -1171,8 +1178,6 @@ local TypeHandlers = {
     hash.icon = path(record.icon)
     hash.id = MandatoryRecordId(recordId)
     hash.model = path(record.mesh)
-    local flags = numberField(record.flags)
-    if flags ~= 0 then hash.objectFlags = flags end
     hash.uses = numberField(record.data.uses)
     hash.value = numberField(record.data.value)
     hash.weight = numberField(record.data.weight)
@@ -1184,6 +1189,7 @@ local TypeHandlers = {
     local script = OptionalRecordId(record.script)
     if script then hash.script = script end
 
+    objectFlags(record, hash)
     return hash
   end,
 
@@ -1192,9 +1198,8 @@ local TypeHandlers = {
 
     hash.id = recordId
     hash.model = path(record.mesh)
-    local flags = numberField(record.flags)
-    if flags ~= 0 then hash.objectFlags = flags end
 
+    objectFlags(record, hash)
     return hash
   end,
 }
