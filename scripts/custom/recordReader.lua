@@ -1087,19 +1087,19 @@ local TypeHandlers = {
 
     local bonuses = tds.Hash()
     bonuses.skill1 = numberField(Enums.SkillId[record.data.skill_bonuses.skill_0])
-    bonuses.bonus1 = numberField(record.data.bonus_bonuses.bonus_0)
+    bonuses.bonus1 = numberField(tostring(record.data.bonus_bonuses.bonus_0))
     bonuses.skill2 = numberField(Enums.SkillId[record.data.skill_bonuses.skill_1])
-    bonuses.bonus2 = numberField(record.data.bonus_bonuses.bonus_1)
+    bonuses.bonus2 = numberField(tostring(record.data.bonus_bonuses.bonus_1))
     bonuses.skill3 = numberField(Enums.SkillId[record.data.skill_bonuses.skill_2])
-    bonuses.bonus3 = numberField(record.data.bonus_bonuses.bonus_2)
+    bonuses.bonus3 = numberField(tostring(record.data.bonus_bonuses.bonus_2))
     bonuses.skill4 = numberField(Enums.SkillId[record.data.skill_bonuses.skill_3])
-    bonuses.bonus4 = numberField(record.data.bonus_bonuses.bonus_3)
+    bonuses.bonus4 = numberField(tostring(record.data.bonus_bonuses.bonus_3))
     bonuses.skill5 = numberField(Enums.SkillId[record.data.skill_bonuses.skill_4])
-    bonuses.bonus5 = numberField(record.data.bonus_bonuses.bonus_4)
+    bonuses.bonus5 = numberField(tostring(record.data.bonus_bonuses.bonus_4))
     bonuses.skill6 = numberField(Enums.SkillId[record.data.skill_bonuses.skill_5])
-    bonuses.bonus6 = numberField(record.data.bonus_bonuses.bonus_5)
+    bonuses.bonus6 = numberField(tostring(record.data.bonus_bonuses.bonus_5))
     bonuses.skill7 = numberField(Enums.SkillId[record.data.skill_bonuses.skill_6])
-    bonuses.bonus7 = numberField(record.data.bonus_bonuses.bonus_6)
+    bonuses.bonus7 = numberField(tostring(record.data.bonus_bonuses.bonus_6))
     hash.bonuses = bonuses
 
     return hash
