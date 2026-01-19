@@ -466,7 +466,7 @@
 ---@field AIPackages AIPackage[]
 ---@field agility integer
 ---@field attack integer[] Consists of six fields, where their values are attack1Min, attack1Max, attack2Min, attack2Max, attack3Min, attack3Max
----@field baseGold integer
+---@field baseGold integer? Nil if zero
 ---@field bloodType integer
 ---@field canFly boolean?
 ---@field canSwim boolean?
@@ -602,7 +602,7 @@
 ---@class NPCRecord: BaseRecord
 ---@field AIData AIData
 ---@field AIPackages AIPackage[]?
----@field baseGold integer
+---@field baseGold integer? Nil if zero
 ---@field bloodType integer
 ---@field class RecordId
 ---@field disposition integer

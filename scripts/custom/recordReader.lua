@@ -611,7 +611,9 @@ local TypeHandlers = {
       record.data.attack3[2]
     )
 
-    hash.baseGold = numberField(record.data.gold)
+    local baseGold = numberField(record.data.gold)
+    if baseGold > 0 then hash.baseGold = baseGold end
+
     hash.bloodType = numberField(record.blood_type)
     if hasFlag(record.creature_flags, Enums.Flags.Creature.FLIES) then hash.canFly = true end
     if hasFlag(record.creature_flags, Enums.Flags.Creature.SWIMS) then hash.canSwim = true end
@@ -968,7 +970,9 @@ local TypeHandlers = {
   Npc = function(record, recordId)
     local hash = tds.Hash()
 
-    hash.baseGold = numberField(record.data.gold)
+    local baseGold = numberField(record.data.gold)
+    if baseGold > 0 then hash.baseGold = baseGold end
+
     hash.bloodType = numberField(record.blood_type)
     hash.class = MandatoryRecordId(record.class)
     hash.disposition = numberField(record.data.disposition)
