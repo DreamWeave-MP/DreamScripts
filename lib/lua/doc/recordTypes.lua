@@ -323,6 +323,14 @@
 ---| 1 # Magic
 ---| 2 # Stealth
 
+---@alias SpellType
+---| 0 # Spell
+---| 1 # Ability
+---| 2 # Blight
+---| 3 # Disease
+---| 4 # Curse
+---| 5 # Power
+
 ---@alias WeaponType
 ---| 0  # ShortBladeOneHand
 ---| 1  # LongBladeOneHand
@@ -613,8 +621,7 @@
 ---@field attribute AttributeId
 ---@field duration integer
 ---@field magicEffect MagicEffectId
----@field maxMagnitude integer
----@field minMagnitude integer
+---@field magnitude integer[] Always length 2. Min/max
 ---@field range EffectRange
 ---@field skill SkillId
 
@@ -763,6 +770,14 @@
 ---@field sound RecordId
 ---@field soundGenType SoundGenType
 
+---@class SpellRecord: BaseRecord
+---@field alwaysSucceeds boolean?
+---@field cost integer
+---@field isAutoCalc boolean?
+---@field isStartSpell boolean?
+---@field name string?
+---@field effects MagicEffect[]
+
 ---@class StartScriptRecord: BaseRecord
 ---@field script RecordId
 
@@ -825,6 +840,7 @@
 ---@field Skill table<RecordId, SkillId>
 ---@field Sound table<RecordId, SoundRecord>
 ---@field SoundGen table<RecordId, SoundGenRecord>
+---@field Spell table<RecordId, SpellRecord>
 ---@field StartScript table<RecordId, StartScriptRecord>
 ---@field Static table<RecordId, StaticRecord>
 ---@field Weapon table<RecordId, WeaponRecord>

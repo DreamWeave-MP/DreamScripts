@@ -230,8 +230,10 @@ local Handlers = {
       hash.attribute = numberField(Enums.AttributeId[effect.attribute])
       hash.duration = numberField(effect.duration)
       hash.magicEffect = numberField(Enums.MagicEffectId[effect.magic_effect])
-      hash.maxMagnitude = numberField(effect.max_magnitude)
-      hash.minMagnitude = numberField(effect.min_magnitude)
+      hash.magnitude = tds.Vec(
+        numberField(effect.max_magnitude),
+        numberField(effect.min_magnitude)
+      )
       hash.range = numberField(Enums.EffectRange[effect.range])
       hash.skill = numberField(Enums.SkillId[effect.skill])
 
@@ -369,6 +371,7 @@ local RecordStores = tds.Hash {
   Skill = tds.Hash(),
   Sound = tds.Hash(),
   SoundGen = tds.Hash(),
+  Spell = tds.Hash(),
   StartScript = tds.Hash(),
   Static = tds.Hash(),
   Weapon = tds.Hash(),
@@ -1321,6 +1324,25 @@ local TypeHandlers = {
 
     hash.sound = MandatoryRecordId(record.sound)
     hash.soundGenType = numberField(Enums.SoundGenType[tostring(record.sound_gen_type)])
+
+    objectFlags(record, hash)
+    return hash
+  end,
+
+  Spell = function(record, recordId)
+    local hash = tds.Hash()
+
+    if hasFlag(record.data.flags, Enums.Flags.Spell.ALWAYS_SUCCEEDS) then hash.alwaysSucceeds = true end
+    hash.cost = numberField(record.data.cost)
+    hash.id = MandatoryRecordId(recordId)
+    if hasFlag(record.data.flags, Enums.Flags.Spell.AUTO_CALCULATE) then hash.isAutoCalc = true end
+    if hasFlag(record.data.flags, Enums.Flags.Spell.PC_START_SPELL) then hash.isStartSpell = true end
+
+    local name = RealString(record.name)
+    if name then hash.name = name end
+
+    local effects = Handlers.Effects(record.effects)
+    if effects then hash.effects = effects end
 
     objectFlags(record, hash)
     return hash
