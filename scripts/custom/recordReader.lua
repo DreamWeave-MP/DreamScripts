@@ -12,6 +12,9 @@ local I = require 'interfaces'
 local tds = assert(I.tds)
 local tes3 = assert(I.tes3)
 
+---@class CellLoadConfig
+---@field Exterior boolean
+---@field Interior boolean
 local LoadCellTypes = tds.hash { Exterior = true, Interior = false, }
 
 local Enums = require 'dUtil.enums'
@@ -342,6 +345,7 @@ local RecordStores = tds.Hash {
   Birthsign = tds.Hash(),
   Bodypart = tds.Hash(),
   Book = tds.Hash(),
+  Cell = tds.Hash { Interior = tds.Hash(), Exterior = tds.Hash(), },
   Class = tds.Hash(),
   Clothing = tds.Hash(),
   Container = tds.Hash(),
@@ -529,6 +533,84 @@ local TypeHandlers = {
     objectFlags(record, hash)
     return hash
   end,
+
+  Cell = function(record, _)
+    local isInterior = hasFlag(record.data.flags, Enums.Flags.Cell.IS_INTERIOR)
+    local gridX, gridY = numberField(record.data.grid[1]), numberField(record.data.grid[2])
+
+    local cellId, cellType
+    if isInterior and LoadCellTypes.Interior then
+      cellId = MandatoryRecordId(record.name)
+
+      cellType = 'Interior'
+    elseif not isInterior and LoadCellTypes.Exterior then
+      cellId = ('%d, %d'):format(gridX, gridY)
+
+      cellType = 'Exterior'
+    else
+      return
+    end
+
+    local existingCell = RecordStores.Cell[cellType][cellId]
+
+    local cell = existingCell or tds.Hash()
+    cell.id = cell.id or cellId
+
+    if isInterior then
+      cell.isInterior = true
+    else
+      cell.gridX, cell.gridY = gridX, gridY
+    end
+
+    local cellName = RealString(record.name)
+    if cellName then cell.name = cellName end
+
+    if record.atmosphere_data then
+      local atmo = record.atmosphere_data
+      cell.fogDensity = atmo.fog_density
+
+      cell.ambientColor = tds.Vec(
+        numberField(tostring(atmo.ambient_color[1])),
+        numberField(tostring(atmo.ambient_color[2])),
+        numberField(tostring(atmo.ambient_color[3])),
+        numberField(tostring(atmo.ambient_color[4]))
+      )
+
+      cell.fogColor = tds.Vec(
+        numberField(tostring(atmo.fog_color[1])),
+        numberField(tostring(atmo.fog_color[2])),
+        numberField(tostring(atmo.fog_color[3])),
+        numberField(tostring(atmo.fog_color[4]))
+      )
+
+      cell.sunlightColor = tds.Vec(
+        numberField(tostring(atmo.sunlight_color[1])),
+        numberField(tostring(atmo.sunlight_color[2])),
+        numberField(tostring(atmo.sunlight_color[3])),
+        numberField(tostring(atmo.sunlight_color[4]))
+      )
+    end
+
+    local maybeRegion = OptionalRecordId(record.region)
+    if maybeRegion then cell.region = maybeRegion end
+
+    if record.water_height then
+      cell.waterHeight = numberField(record.water_height)
+    end
+
+    --- One plugin might change certain cell flags, so,
+    --- unfortunately to account for this possibility some parameters
+    --- of the cell type are not optional
+    cell.hasWater = hasFlag(record.data.flags, Enums.Flags.Cell.HAS_WATER)
+    cell.isFakeExterior = hasFlag(record.data.flags, Enums.Flags.Cell.BEHAVES_LIKE_EXTERIOR)
+    cell.restingIsIllegal = hasFlag(record.data.flags, Enums.Flags.Cell.RESTING_IS_ILLEGAL)
+
+    objectFlags(record, cell)
+
+    print(cell)
+    RecordStores.Cell[cellType][cellId] = cell
+  end,
+
   Class = function(record, recordId)
     local hash = tds.Hash()
 
