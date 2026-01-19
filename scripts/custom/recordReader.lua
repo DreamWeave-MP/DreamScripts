@@ -3,6 +3,7 @@ local dUtil = require 'dUtil.init'
 local enumerations = require 'tes3mp.enumerations'
 
 local LogSkippedRecords = false
+local LoadedRecords = 0
 
 local PluginPathFormatter = tes3mp.GetDataPath() .. '/custom/recordParser/%s'
 
@@ -552,6 +553,7 @@ local TypeHandlers = {
     end
 
     local existingCell = RecordStores.Cell[cellType][cellId]
+    if not existingCell then LoadedRecords = LoadedRecords + 1 end
 
     local cell = existingCell or tds.Hash()
     cell.id = cell.id or cellId
@@ -1555,6 +1557,7 @@ local function idIsFree(recordId, object)
   local recordOfSameTypeAndIdExists = RecordStores[recordType][recordId] ~= nil
 
   if not ReferenceableTypes[recordType] then
+    if not recordOfSameTypeAndIdExists then LoadedRecords = LoadedRecords + 1 end
     return not recordOfSameTypeAndIdExists
   end
 
@@ -1566,12 +1569,13 @@ local function idIsFree(recordId, object)
     if RecordStores[checkedRecordType][recordId] ~= nil then return false end
   end
 
+  LoadedRecords = LoadedRecords + 1
   return true
 end
 
 ---@return integer numRecords
 local function createRecordStores()
-  local loadedRecords = 0
+  LoadedRecords = 0
 
   local _, numPlugins = nil, #loadOrder
   for i = numPlugins, 1, -1 do
@@ -1600,7 +1604,7 @@ local function createRecordStores()
 
           if resultRecord then
             recordStore[recordId or resultRecord.id] = resultRecord
-            loadedRecords = loadedRecords + 1
+            LoadedRecords = LoadedRecords + 1
           elseif object.type ~= 'Cell' and LogSkippedRecords then
             tes3mp.LogAppend(
               enumerations.log.WARN,
@@ -1613,7 +1617,7 @@ local function createRecordStores()
     end
   end
 
-  return loadedRecords
+  return LoadedRecords
 end
 
 ---@type TES3MPScriptRegistration
