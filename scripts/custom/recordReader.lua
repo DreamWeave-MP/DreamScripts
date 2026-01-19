@@ -1314,8 +1314,7 @@ local TypeHandlers = {
     local creature = OptionalRecordId(record.creature)
     if creature then hash.creature = creature end
 
-    if recordId then hash.id = recordId end
-
+    hash.id = recordId or creature
     hash.sound = MandatoryRecordId(record.sound)
     hash.soundGenType = numberField(Enums.SoundGenType[tostring(record.sound_gen_type)])
 
@@ -1408,7 +1407,6 @@ local function createRecordStores()
           local resultRecord = typeHandler(object, recordId)
 
           local inputId = recordId or resultRecord.id
-          assert(inputId, object)
 
           recordStore[inputId] = resultRecord
           loadedRecords = loadedRecords + 1
