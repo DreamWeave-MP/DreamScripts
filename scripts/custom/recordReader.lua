@@ -1635,7 +1635,14 @@ return {
           :format(createRecordStores(), os.clock() - startClock)
 
       for k, v in pairs(I.recordStores.records) do
-        logStr = logStr .. ('%s %s Records loaded.\n'):format(#v, k)
+        local length = 0
+        if k ~= 'Cell' then
+          length = #v
+        else
+          length = #v.Exterior + #v.Interior
+        end
+
+        logStr = logStr .. ('%s %s Records loaded.\n'):format(length, k)
       end
 
       tes3mp.LogAppend(enumerations.log.INFO, logStr)
