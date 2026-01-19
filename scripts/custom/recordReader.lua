@@ -660,7 +660,7 @@ local TypeHandlers = {
       -- For local references
     end
 
-    -- print(cell)
+    print(cell)
     RecordStores.Cell[cellType][cellId] = cell
   end,
 
