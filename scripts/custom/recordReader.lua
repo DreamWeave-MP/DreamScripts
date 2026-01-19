@@ -28,17 +28,18 @@ loadOrder:resize(#RequiredDataFiles)
 local foundPlugins = tds.Hash()
 
 for i, loadOrderData in ipairs(RequiredDataFiles) do
-  local pluginName = loadOrderData.name:lower()
+  local pluginName = loadOrderData.name
+  local lowerPluginName = pluginName:lower()
 
   assert(
-    not foundPlugins[pluginName],
+    not foundPlugins[lowerPluginName],
     ('%s was already loaded and cannot be loaded a second time.')
     :format(pluginName)
   )
 
   loadOrder[i] = pluginName
 
-  foundPlugins[pluginName] = true
+  foundPlugins[lowerPluginName] = true
 end
 
 foundPlugins = nil
