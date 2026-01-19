@@ -490,7 +490,10 @@ local TypeHandlers = {
   Book = function(record, recordId)
     local hash = tds.Hash()
 
-    hash.scrollOrBook = Enums.BookType[record.data.book_type] == Enums.BookType.Book
+    if Enums.BookType[record.data.book_type] == Enums.BookType.Book then
+      hash.isBook = true
+    end
+
     hash.enchantmentValue = numberField(record.data.enchantment)
     hash.icon = path(record.icon)
     hash.id = MandatoryRecordId(recordId)

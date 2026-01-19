@@ -414,10 +414,10 @@
 ---@field enchantment RecordId?
 ---@field enchantmentValue integer
 ---@field icon NormalizedPath
+---@field isBook boolean? If nil, is a scroll
 ---@field model NormalizedPath
 ---@field name string
 ---@field script RecordId?
----@field scrollOrBook boolean
 ---@field skill SkillId?
 ---@field text string?
 ---@field value integer
