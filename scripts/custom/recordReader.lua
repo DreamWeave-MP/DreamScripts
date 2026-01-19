@@ -363,6 +363,7 @@ local RecordStores = tds.Hash {
   Npc = tds.Hash(),
   Probe = tds.Hash(),
   Race = tds.Hash(),
+  Region = tds.Hash(),
   RepairItem = tds.Hash(),
   Static = tds.Hash(),
 }
@@ -1177,6 +1178,54 @@ local TypeHandlers = {
     bonuses.skill7 = numberField(Enums.SkillId[record.data.skill_bonuses.skill_6])
     bonuses.bonus7 = numberField(record.data.skill_bonuses.bonus_6)
     hash.bonuses = bonuses
+
+    objectFlags(record, hash)
+    return hash
+  end,
+
+  Region = function(record, recordId)
+    local chances       = record.weather_chances
+    local hash          = tds.Hash()
+
+    hash.ashChance      = numberField(chances.ash)
+    hash.blightChance   = numberField(chances.blight)
+    hash.blizzardChance = numberField(chances.blizzard)
+    hash.clearChance    = numberField(chances.clear)
+    hash.cloudyChance   = numberField(chances.cloudy)
+    hash.foggyChance    = numberField(chances.foggy)
+    hash.id             = MandatoryRecordId(recordId)
+    hash.mapColor       = tds.Vec(
+      numberField(tostring(record.map_color[1])),
+      numberField(tostring(record.map_color[2])),
+      numberField(tostring(record.map_color[3])),
+      numberField(tostring(record.map_color[4]))
+    )
+    hash.overcastChance = numberField(chances.overcast)
+    hash.rainChance     = numberField(chances.rain)
+    hash.snowChance     = numberField(chances.snow)
+    hash.thunderChance  = numberField(chances.thunder)
+
+    local name          = RealString(record.name)
+    if name then hash.name = name end
+
+    local sleepCreature = OptionalRecordId(record.sleep_creature)
+    if sleepCreature then hash.sleepCreature = sleepCreature end
+
+    local numSounds, sounds = #record.sounds, nil
+    if numSounds > 0 then
+      sounds = tds.Vec()
+      sounds:resize(numSounds)
+
+      for i, soundData in ipairs(record.sounds) do
+        local soundHash = tds.Hash()
+
+        soundHash[MandatoryRecordId(soundData[1])] = numberField(soundData[2])
+
+        sounds[i] = soundHash
+      end
+
+      hash.sounds = sounds
+    end
 
     objectFlags(record, hash)
     return hash

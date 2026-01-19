@@ -691,6 +691,22 @@
 ---@field weight GenderedStatValue
 ---@field willpower GenderedStatValue
 
+---@class RegionRecord: BaseRecord
+---@field ashChance integer
+---@field blightChance integer
+---@field blizzardChance integer
+---@field clearChance integer
+---@field cloudyChance integer
+---@field foggyChance integer
+---@field mapColor integer[] Length 4. Map background color.
+---@field name string?
+---@field overcastChance integer
+---@field rainChance integer
+---@field sleepCreature RecordId?
+---@field sounds table<RecordId, integer>[] Array of single-length tables mapping record ids to playback chances
+---@field snowChance integer
+---@field thunderChance integer
+
 ---@class RepairRecord: BaseRecord
 ---@field icon NormalizedPath
 ---@field model NormalizedPath
