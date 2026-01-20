@@ -6,8 +6,7 @@ local logicHandler = require 'tes3mp.logicHandler'
 ---@param uniqueIndex string
 ---@param state boolean
 local function localSendObjectState(pid, cellDescription, uniqueIndex, state)
-    local splitIndex = uniqueIndex:split("-")
-    local refNum, mpNum = math.floor(assert(tonumber(splitIndex[1]))), math.floor(assert(tonumber(splitIndex[2])))
+    local refNum, mpNum = uniqueIndex:splitUniqueIndex()
 
     tes3mp.ClearObjectList()
     tes3mp.SetObjectListPid(pid)

@@ -50,6 +50,7 @@
 ---@field normalize fun(self: string): string lowercases and converts all backslashes to forward slashes
 ---@field scriptPath fun(self: string): string Replaces native path separators with dots and removes leading, trailing, and duplicate separators
 ---@field titleCase fun(self: string): string
+---@field splitUniqueIndex fun(self: string): integer, integer Splits a unique index string into refNum, mpNum
 
 ---@class TES3MPCommand
 ---@field definedBy string path of the script which defined this command. The name of the script which defines a command it kept so that old references to it may be removed.
