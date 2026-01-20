@@ -338,7 +338,7 @@ local ModuleCache, ScriptDirectories =
 function DScriptLoader.requireShim(scriptName)
   assert(scriptName and type(scriptName) == 'string')
 
-  scriptName = scriptName:gsub('[\\/]+', '.'):gsub('^%.', ''):gsub('%.$', ''):gsub('%.%.+', '.')
+  scriptName = scriptName:scriptPath()
 
   local lowerName = scriptName:lower()
   if ModuleCache[lowerName] then
@@ -348,7 +348,8 @@ function DScriptLoader.requireShim(scriptName)
   local ok, chunk, err, result = false, nil, nil, nil
 
   for _, prefix in ipairs(ScriptDirectories) do
-    local checkPath = ('server/%s%s.lua'):format(prefix, scriptName:gsub('%.', PathSeparator))
+    local checkPath = ('server%s%s%s.lua')
+        :format(PathSeparator, prefix, scriptName:gsub('%.', PathSeparator))
 
     chunk, err = loadfile(checkPath)
 

@@ -38,6 +38,10 @@ function StringMeta:normalize()
   return self:lower():gsub('\\', '/')
 end
 
+function StringMeta:scriptPath()
+  return self:gsub('[\\/]+', '.'):gsub('^%.', ''):gsub('%.$', ''):gsub('%.%.+', '.')
+end
+
 do
   local hasResty, result = pcall(require, 'table.isempty')
   if hasResty then
