@@ -430,7 +430,7 @@ config.cellPacketTypes = { 'delete', 'place', 'spawn', 'lock', 'trap', 'scale', 
 
 --- Whether the server should log all script outputs from each loaded customScript.
 --- This setting can be useful, but, extremely verbose.
-config.debugScriptRegistrations = true
+config.debugScriptRegistrations = false
 
 --- Whether the server should enforce that all clients connect with a specific list of data files
 --- defined in data/requiredDataFiles.json
