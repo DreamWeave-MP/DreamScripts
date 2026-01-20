@@ -20,6 +20,8 @@ local logicHandler = require 'tes3mp.logicHandler'
 local tableHelper = require 'tes3mp.util.table'
 local yamlInterface = require 'yamlInterface'
 
+tableHelper.print(assert(yamlInterface('l10n/test/en.yaml')))
+
 ---@type LFSFFIModule
 local lfs = require 'lfs'
 
