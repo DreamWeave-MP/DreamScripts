@@ -473,12 +473,24 @@ local function loadAllScripts(pid, _)
     Players[pid]:Message(('Successfully reloaded all scripts!\n'))
 end
 
+local LoadedScriptPaths = {}
+
+for _, scriptPath in ipairs(config.customScripts) do
+    LoadedScriptPaths[scriptPath:scriptPath():lower()] = true
+end
+
 ---@type CommandHandler
 local function loadScript(pid, cmd)
     local scriptName, player = cmd[2], Players[pid]
 
     if not scriptName then
         return player:Message('Use /load <scriptName>\n')
+    end
+
+    if LoadedScriptPaths[scriptName:scriptPath():lower()] then
+        return player:Message(
+            'For load order reasons, you may only reload scripts which were not already defined by config.lua. To reload an existing script, reload the entire environment with /reloadlua.\n'
+        )
     end
 
     if I.scriptLoader.loadScript(scriptName, pid) then
