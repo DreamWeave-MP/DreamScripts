@@ -1,6 +1,7 @@
 local bit = require 'bit'
 local dUtil = require 'dUtil.init'
 local enumerations = require 'tes3mp.enumerations'
+local lfs = require 'lfs'
 
 local LogSkippedRecords = false
 local LoadedRecords, PluginLoadIndex = 0, 0
@@ -1649,7 +1650,7 @@ local function createRecordStores()
     local pluginName = loadOrder[i]
     local pluginPath = PluginPathFormatter:format(pluginName)
 
-    if not dUtil.io.fileExists(pluginPath) then
+    if not lfs.attributes(pluginPath) then
       error(
         ('Requested to parse a plugin that doesn\'t actually exist: %s!\nThe server will now terminate. Remove %s from the list of plugins to load or place it at %s')
         :format(pluginPath, pluginName, pluginPath)
