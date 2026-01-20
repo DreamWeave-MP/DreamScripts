@@ -328,7 +328,7 @@ end
 
 local ModuleCache, ScriptDirectories =
     DScriptLoader.defaultModuleCache(),
-    { 'scripts/', 'lib/', 'lib/lua/', }
+    { 'scripts/', 'lib/lua/', }
 
 --- Small shim for overriding require statements in curated script environment
 ---@param scriptName string
