@@ -270,7 +270,6 @@ local hasTES3, tes3 = pcall(require, 'tes3_lua')
 local ScriptLoaderInterface = dUtil.misc.makeReadOnly {
   loadScript = DScriptLoader.loadScript,
   loadAllScripts = DScriptLoader.loadAllScripts,
-
 }
 
 ---@type StorageModule
