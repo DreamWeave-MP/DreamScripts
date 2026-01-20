@@ -1,6 +1,6 @@
 local config = require 'tes3mp.config'
 local enumerations = require 'tes3mp.enumerations'
-local tinyYaml = require 'tinyyaml'
+local tinyYaml = require 'l10n.tinyyaml'
 
 ---@type LFSFFIModule
 local lfs = require 'lfs'
