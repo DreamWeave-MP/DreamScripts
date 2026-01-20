@@ -221,7 +221,7 @@ enumerations.inventory = { SET = 0, ADD = 1, REMOVE = 2 }
 enumerations.journal = { ENTRY = 0, INDEX = 1 }
 
 ---@enum LogLevel
-enumerations.log = { VERBOSE = 0, INFO = 1, WARN = 2, ERROR = 3, FATAL = 4 }
+enumerations.log = { NONE = -1, VERBOSE = 0, INFO = 1, WARN = 2, ERROR = 3, FATAL = 4 }
 
 ---@enum MiscEnum
 enumerations.miscellaneous = { MARK_LOCATION = 0, SELECTED_SPELL = 1 }

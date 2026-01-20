@@ -1,4 +1,5 @@
 local color = require 'color'
+local enumerations = require 'tes3mp.enumerations'
 
 ---@class TES3MPConfig
 local config = {}
@@ -340,7 +341,8 @@ config.pingDifferenceRequiredForAuthority = 40
 --- Note 2: If you set this to 0 or 1, clients will be able to read about the movements
 ---         and actions of other players that they would otherwise not know about,
 ---         while also incurring a framerate loss on highly populated servers
-config.enforcedLogLevel = -1
+---@type LogLevel
+config.enforcedLogLevel = enumerations.log.ERROR
 
 --- The physics framerate used by default
 --- Note: In OpenMW, the physics framerate is 60 by default
