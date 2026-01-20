@@ -16,14 +16,21 @@ local config = require 'tes3mp.config'
 local dUtil = require 'dUtil.init'
 local enumerations = require 'tes3mp.enumerations'
 local jsonInterface = require 'jsonInterface'
+local l10n = require 'l10n.core'
 local logicHandler = require 'tes3mp.logicHandler'
 local tableHelper = require 'tes3mp.util.table'
 local yamlInterface = require 'yamlInterface'
 
-tableHelper.print(assert(yamlInterface('l10n/test/en.yaml')))
-
 ---@type LFSFFIModule
 local lfs = require 'lfs'
+
+local testl10n = l10n('test')
+print(testl10n('FreshPrince1'))
+print(testl10n('ShrekQuote1'))
+print(testl10n('FreshPrince1'))
+print(testl10n('FreshPrince1'))
+print(testl10n('EdgeCases'))
+print(testl10n('FinalMessage'))
 
 local ScriptPathFormatter = 'server.scripts.custom.%s'
 local SaveDataTable = BufferedDiskPaths

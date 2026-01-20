@@ -4,6 +4,13 @@ local enumerations = require 'tes3mp.enumerations'
 ---@class TES3MPConfig
 local config = {}
 
+--- Language used for the localization module.
+--- Requires that you use one of the two-character
+--- Language codes defined here:
+--- https://www.loc.gov/standards/iso639-2/ISO-639-2_utf-8.txt
+--- Defaults to english if not defined or the preferred locale cannot be located.
+config.preferredLocale = 'en'
+
 --- The path used by the server for its data folder
 config.dataPath = tes3mp.GetDataPath()
 

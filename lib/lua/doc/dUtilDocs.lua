@@ -1,5 +1,8 @@
 ---@meta
 
+--- L10N searcher function that retains a cached reference to a localization context, and returns matching values from that localization context when called.
+---@alias L10NSearchFunction fun(keyName: string): string
+
 ---@alias Vector3Constructor fun(x: number, y: number, z: number): Vector3
 
 ---@class tablelib
