@@ -6,18 +6,20 @@ local logicHandler = require 'tes3mp.logicHandler'
 ---@param uniqueIndex string
 ---@param state boolean
 local function localSendObjectState(pid, cellDescription, uniqueIndex, state)
+    local splitIndex = uniqueIndex:split("-")
+    local refNum, mpNum = math.floor(assert(tonumber(splitIndex[1]))), math.floor(assert(tonumber(splitIndex[2])))
+
     tes3mp.ClearObjectList()
     tes3mp.SetObjectListPid(pid)
     tes3mp.SetObjectListCell(cellDescription)
-    local splitIndex = uniqueIndex:split("-")
-    tes3mp.SetObjectRefNum(splitIndex[1])
-    tes3mp.SetObjectMpNum(splitIndex[2])
+    tes3mp.SetObjectRefNum(refNum)
+    tes3mp.SetObjectMpNum(mpNum)
     tes3mp.SetObjectState(state)
     tes3mp.AddObject()
     tes3mp.SendObjectState(false)
 end
 
----@param _ EventStatustable
+---@param _ EventStatusTable
 ---@param pid PlayerId
 ---@param playerPacket table
 local function toggleFollowerActorStates(_, pid, playerPacket, _)
@@ -30,7 +32,7 @@ local function toggleFollowerActorStates(_, pid, playerPacket, _)
     for _, uniqueIndex in ipairs(cellData.packets.ai) do
         local AI = objectData[uniqueIndex]
 
-        if AI.action and AI.action == enumerations.ai.AIFollow and AI.targetPlayer:lower() == playerName then
+        if AI.action and AI.action == enumerations.ai.FOLLOW and AI.targetPlayer:lower() == playerName then
             localSendObjectState(pid, cellDescription, uniqueIndex, false)
             localSendObjectState(pid, cellDescription, uniqueIndex, true)
         end
@@ -49,11 +51,12 @@ local function reapplyFollowAI(playerId, actorIndex, cellDescription)
         logicHandler.LoadCell(newCellDescription)
         loadTemporarily = true
     end
+
     local newCell = LoadedCells[newCellDescription]
 
     if not newCell.isExterior then
         newCell:SetAuthority(playerId)
-        logicHandler.SetAIForActor(newCell, uniqueIndex, enumerations.ai.AIFollow, playerId)
+        logicHandler.SetAIForActor(newCell, uniqueIndex, enumerations.ai.FOLLOW, playerId)
     end
 
     if loadTemporarily == true then
@@ -62,7 +65,7 @@ local function reapplyFollowAI(playerId, actorIndex, cellDescription)
 end
 
 ---@param _ EventStatusTable
----@param pi PlayerId
+---@param pid PlayerId
 ---@param cellDescription CellDescription
 local function reapplyFollowAIToAllActors(_, pid, cellDescription)
     tes3mp.ReadReceivedActorList()
