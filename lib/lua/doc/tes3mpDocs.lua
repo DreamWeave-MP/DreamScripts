@@ -963,7 +963,7 @@
 ---@field SendReputation fun(pid: PlayerId, sendToOtherPlayers?: boolean, skipAttachedPlayer?: boolean)
 ---Send a PlayerMiscellaneous packet with a selected spell ID to a player.
 ---@field SendSelectedSpell fun(pid: PlayerId)
----@field SendSettings fun(pid: PlayerId, sendToAll: boolean, skipAttachedPlayer: boolean) After constructing a settings packet using `SetEnforcedLogLevel`, `SetPhysicsFramerate`, SetGameSettingValue`, `SetVRSettingValue`, or `SetDifficulty`, send it to players, optionally including or omitting all players or just the `pid` provided
+---@field SendSettings fun(pid: PlayerId, sendToAll: boolean?, skipAttachedPlayer: boolean?) After constructing a settings packet using `SetEnforcedLogLevel`, `SetPhysicsFramerate`, SetGameSettingValue`, `SetVRSettingValue`, or `SetDifficulty`, send it to players, optionally including or omitting all players or just the `pid` provided
 ---Send a PlayerShapeshift packet about a player.
 ---@field SendShapeshift fun(pid: PlayerId)
 ---Send a PlayerSkill packet with a player's skills.
