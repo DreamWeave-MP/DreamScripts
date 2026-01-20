@@ -6,7 +6,7 @@ local yamlInterface = require 'yamlInterface'
 ---@type LFSFFIModule
 local lfs = require 'lfs'
 
-local LocalizationPathFormatter = config.dataPath .. '/l10n/%s/%s.%s'
+local LocalizationPathFormatter = 'l10n/%s/%s.%s'
 local ValidYAMLExtensions = { 'yml', 'yaml' }
 
 ---@param contextName string name of the directory in which localization files live, relative to the configured server data directory's l10n folder, eg, `test`, would default to `server/data/test/en.yaml`
