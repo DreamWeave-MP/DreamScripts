@@ -27,7 +27,7 @@ local jsonInterface = {
     pathSeparator = OperatingSystem == 'Windows' and '\\' or '/',
 }
 
-assert(jsonInterface.ioLibary)
+assert(jsonInterface.ioLibrary)
 
 -- Remove all text from before the actual JSON content starts
 function jsonInterface.removeHeader(content)
