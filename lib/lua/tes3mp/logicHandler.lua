@@ -562,30 +562,38 @@ logicHandler.CreateObjectAtPlayer = function(pid, objectData, packetType)
     return objectUniqueIndex
 end
 
-logicHandler.DeleteObject = function(pid, cellDescription, uniqueIndex, forEveryone)
+---@param pid PlayerId
+---@param cellDescription CellDescription
+---@param uniqueIndex string
+---@param forEveryone boolean
+function logicHandler.DeleteObject(pid, cellDescription, uniqueIndex, forEveryone)
     tes3mp.ClearObjectList()
     tes3mp.SetObjectListPid(pid)
     tes3mp.SetObjectListCell(cellDescription)
     packetBuilder.AddObjectDelete(uniqueIndex, {})
     tes3mp.SendObjectDelete(forEveryone)
 
-    if forEveryone then
-        local unloadCellAtEnd = false
-        -- If the desired cell is not loaded, load it temporarily
-        if LoadedCells[cellDescription] == nil then
-            logicHandler.LoadCell(cellDescription)
-            unloadCellAtEnd = true
-        end
+    if not forEveryone then return end
 
-        LoadedCells[cellDescription]:DeleteObjectData(uniqueIndex)
+    local unloadCellAtEnd, cell = false, LoadedCells[cellDescription]
 
-        if tonumber(uniqueIndex:split("-")[1]) > 0 then
-            table.insert(LoadedCells[cellDescription].data.packets.delete, uniqueIndex)
-        end
+    -- If the desired cell is not loaded, load it temporarily
+    if not cell then
+        logicHandler.LoadCell(cellDescription)
+        cell = LoadedCells[cellDescription]
+        unloadCellAtEnd = true
+    end
 
-        if unloadCellAtEnd then
-            logicHandler.UnloadCell(cellDescription)
-        end
+    cell:DeleteObjectData(uniqueIndex)
+
+    local refNum = uniqueIndex:splitUniqueIndex()
+
+    if refNum > 0 then
+        table.insert(cell.data.packets.delete, uniqueIndex)
+    end
+
+    if unloadCellAtEnd then
+        logicHandler.UnloadCell(cellDescription)
     end
 end
 
