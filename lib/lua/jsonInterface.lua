@@ -4,13 +4,8 @@ local enumerations = require 'tes3mp.enumerations'
 
 local cjsonExists, cjson = pcall(require, 'cjson')
 
-local LocalDataPath = tes3mp.GetDataPath()
-
----@type LFSFFIModule
-local lfs = require 'lfs'
-
 if cjsonExists then
-    cjson = require("cjson")
+    cjson = cjson
     cjson.encode_sparse_array(true)
     cjson.encode_invalid_numbers("null")
     cjson.encode_empty_table_as_object(false)
@@ -20,13 +15,19 @@ else
         "Could not find Lua CJSON! The decoding and encoding of JSON files will always use dkjson and be slower as a result.")
 end
 
-local jsonInterface = {}
+---@type LFSFFIModule
+local lfs = require 'lfs'
 
-jsonInterface.libraryMissingMessage = "No input/output library selected for JSON interface!"
+local OperatingSystem = tes3mp.GetOperatingSystemType()
 
-function jsonInterface.setLibrary(ioLibrary)
-    jsonInterface.ioLibrary = ioLibrary
-end
+-- Lua's default io library for input/output can't open Unicode filenames on Windows,
+-- which is why on Windows it's replaced by TES3MP's io2 (https://github.com/TES3MP/Lua-io2)
+local jsonInterface = {
+    ioLibary = OperatingSystem == "Windows" and require 'io2' or io,
+    pathSeparator = OperatingSystem == 'Windows' and '\\' or '/',
+}
+
+assert(jsonInterface.ioLibary)
 
 -- Remove all text from before the actual JSON content starts
 function jsonInterface.removeHeader(content)
@@ -45,11 +46,6 @@ function jsonInterface.removeHeader(content)
 end
 
 function jsonInterface.load(fileName)
-    if jsonInterface.ioLibrary == nil then
-        tes3mp.LogMessage(enumerations.log.ERROR, jsonInterface.libraryMissingMessage)
-        return nil
-    end
-
     local home = config.dataPath .. "/"
     local file = jsonInterface.ioLibrary.open(home .. fileName, 'r')
 
@@ -82,20 +78,14 @@ function jsonInterface.load(fileName)
     end
 end
 
-local PathSeparator = tes3mp.GetOperatingSystemType() == 'Windows' and '\\' or '/'
 function jsonInterface.writeToFile(fileName, content)
-    if jsonInterface.ioLibrary == nil then
-        tes3mp.LogMessage(enumerations.log.ERROR, jsonInterface.libraryMissingMessage)
-        return false
-    end
-
     local filePath = string.format("%s/%s", config.dataPath, fileName)
 
     local dir = fileName:match("(.*[/\\])")
     local attributes = dir and lfs.attributes(dir) or nil
 
     if dir and not attributes then
-        local currentPath = config.dataPath .. PathSeparator
+        local currentPath = config.dataPath .. jsonInterface.pathSeparator
 
         for segment in dir:gmatch("[^/\\]+") do
             if segment == '.' or segment == '..' then goto CONTINUE end
@@ -122,7 +112,7 @@ function jsonInterface.writeToFile(fileName, content)
 
     local file = assert(jsonInterface.ioLibrary.open(filePath, 'w+b'))
 
-    if file ~= nil then
+    if file then
         file:write(content)
         file:close()
         return true
@@ -148,14 +138,6 @@ function jsonInterface.quicksave(fileName, data)
     else
         return jsonInterface.save(fileName, data)
     end
-end
-
--- Lua's default io library for input/output can't open Unicode filenames on Windows,
--- which is why on Windows it's replaced by TES3MP's io2 (https://github.com/TES3MP/Lua-io2)
-if tes3mp.GetOperatingSystemType() == "Windows" then
-    jsonInterface.setLibrary(require("io2"))
-else
-    jsonInterface.setLibrary(io)
 end
 
 return jsonInterface
