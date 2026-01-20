@@ -449,6 +449,9 @@ function BaseCell:SaveObjectsPlaced(objects)
                 self.data.objectData[uniqueIndex].goldValue = goldValue
             end
 
+            self.data.objectData[uniqueIndex].scale = 1
+            tableHelper.insertValueIfMissing(self.data.packets.scale, uniqueIndex)
+
             self.data.objectData[uniqueIndex].location = location
 
             tes3mp.LogAppend(enumerations.log.INFO, "- " .. uniqueIndex .. ", refId: " .. refId ..
