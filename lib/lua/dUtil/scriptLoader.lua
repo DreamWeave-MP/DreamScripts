@@ -31,6 +31,12 @@ print(testl10n('FreshPrince1'))
 print(testl10n('FreshPrince1'))
 print(testl10n('EdgeCases'))
 print(testl10n('FinalMessage'))
+print(
+  testl10n(
+    'SubMessage',
+    { param = 'LOCALIZATION', thing = 'WOOT', }
+  )
+)
 
 local ScriptPathFormatter = 'server.scripts.custom.%s'
 local SaveDataTable = BufferedDiskPaths

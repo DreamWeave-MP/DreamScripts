@@ -158,3 +158,6 @@ FinalMessage: >
   2. Fresh Prince of Bel Air Theme
   3. Shrek 1
   4. All Star by Smash Mouth
+
+SubMessage: >
+  {param} replacement is now a {thing}

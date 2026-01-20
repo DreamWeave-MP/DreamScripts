@@ -55,14 +55,26 @@ return function(contextName)
 
   local localizationResult = assert(yamlInterface(yamlInterfacePath))
 
-  local function searcher(fieldName)
-    if localizationResult[fieldName] and type(localizationResult[fieldName]) ~= 'string' then
-      error(
-        'Invalid field type for localization key ' .. fieldName
-      )
+  local function searcher(fieldName, params)
+    if type(localizationResult[fieldName]) ~= 'string' then return fieldName end
+
+    local template = localizationResult[fieldName] or fieldName
+
+    if not params or type(params) ~= 'table' or not template:match('{.-}') then
+      return template
     end
 
-    return localizationResult[fieldName] or fieldName
+    return template:gsub('{(.-)}', function(key)
+      local cleanKey = key:match('^%s*(.-)%s*$')
+
+      local foundParam = params[cleanKey]
+
+      if foundParam then
+        return tostring(foundParam)
+      end
+
+      return ('{%s}'):format(key)
+    end)
   end
 
   return searcher
