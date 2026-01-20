@@ -6,6 +6,12 @@ local tableHelper = require 'tes3mp.util.table'
 
 require 'doc.menuHelper'
 
+local MinMenuId, MaxMenuId = 50000, 100000
+local StartingMenuId = math.random(
+    math.random(MinMenuId / 2, MinMenuId),
+    math.random(MinMenuId + 1, MaxMenuId)
+)
+
 local Menus = {}
 
 --- Stateful helper module for building interfaces.
@@ -659,6 +665,12 @@ function menuHelper.registerMenu(menuName, menuContent)
     end
 
     Menus[menuName] = menuContent
+end
+
+function menuHelper.getMenuId()
+    local menuId = StartingMenuId
+    StartingMenuId = StartingMenuId + 1
+    return menuId
 end
 
 ---@type TES3MPScriptRegistration
