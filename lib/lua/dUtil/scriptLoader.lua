@@ -335,6 +335,8 @@ function DScriptLoader.defaultModuleCache()
     ffi = ffi,
     interfaces = DScriptLoader.Interfaces,
     jsoninterface = jsonInterface,
+    ['l10n.core'] = function() error('Incorrect l10n module path. use \'l10n\' instead.') end,
+    l10n = l10n,
     lfs = lfs,
     yamlinterface = yamlInterface,
   }
