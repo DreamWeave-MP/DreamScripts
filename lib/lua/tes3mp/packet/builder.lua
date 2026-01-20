@@ -36,11 +36,20 @@ function packetBuilder.AddPlayerSpellsActive(pid, spellsActive, action)
     end
 end
 
+---@param uniqueIndex string
+---@param objectData table
 function packetBuilder.AddObjectDelete(uniqueIndex, objectData)
-    local splitIndex = uniqueIndex:split("-")
-    tes3mp.SetObjectRefNum(splitIndex[1])
-    tes3mp.SetObjectMpNum(splitIndex[2])
-    if objectData.refId ~= nil then tes3mp.SetObjectRefId(objectData.refId) end
+    local refNum, mpNum = uniqueIndex:splitUniqueIndex()
+    tes3mp.SetObjectRefNum(refNum)
+    tes3mp.SetObjectMpNum(mpNum)
+
+    if objectData.refId
+        and type(objectData.refId) == 'string'
+        and objectData.refId ~= ''
+    then
+        tes3mp.SetObjectRefId(objectData.refId)
+    end
+
     tes3mp.AddObject()
 end
 
