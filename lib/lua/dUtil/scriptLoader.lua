@@ -273,12 +273,15 @@ local StorageInterface = dUtil.misc.makeReadOnly {
 
 ---@return DefaultInterfaces
 function DScriptLoader.originalInterfaces()
-  return {
+  local interfaces = {
     storage = StorageInterface,
     scriptLoader = ScriptLoaderInterface,
-    tds = hasTDS and tds or nil,
-    tes3 = hasTES3 and tes3 or nil,
   }
+
+  if hasTDS then interfaces.tds = tds end
+  if hasTES3 then interfaces.tes3 = tes3 end
+
+  return interfaces
 end
 
 local Interfaces = DScriptLoader.originalInterfaces()
