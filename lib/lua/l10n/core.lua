@@ -64,7 +64,7 @@ return function(contextName)
       return template
     end
 
-    return template:gsub('{(.-)}', function(key)
+    local result, _ = template:gsub('{(.-)}', function(key)
       local cleanKey = key:match('^%s*(.-)%s*$')
 
       local foundParam = params[cleanKey]
@@ -75,6 +75,8 @@ return function(contextName)
 
       return ('{%s}'):format(key)
     end)
+
+    return result
   end
 
   return searcher
