@@ -61,6 +61,7 @@ config.customScripts = {
     -- 'balanceAdjustments',
     --- Heavily modified version of a tool by learwolf to hot-update mwscripts
     'mwscriptConverter',
+    'decorateHelp',
 }
 
 --- The game mode displayed for this server in the server browser
