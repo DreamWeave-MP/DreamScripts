@@ -305,6 +305,8 @@ end
 
 loadMerchants()
 
+jsonInterface.quicksave('data/custom/some/fake/totally/bullshit/path/name.txt', { data = 'real, totally', })
+
 ---@type TES3MPScriptRegistration
 return {
   interfaceName = 'customMerchantRestock',
