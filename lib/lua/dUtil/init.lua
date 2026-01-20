@@ -124,8 +124,6 @@ local Module = {
 
     return clientDataFiles
   end,
-  ---@type DUtilIO
-  io = require 'dUtil.io',
   ---@type DUtilMisc
   misc = require 'dUtil.miscellaneous',
   ---@type Vector3Constructor

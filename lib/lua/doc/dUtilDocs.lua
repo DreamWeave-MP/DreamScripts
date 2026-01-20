@@ -37,7 +37,6 @@
 ---@class DUtilModule
 ---@field getRequiredDataFiles fun(): DataFileRequirements Safer version of below function which doesn't modify global server state
 ---@field loadRequiredDataFiles fun(writeLog: boolean): DataFileRequirements Loads the required data files, whilst also initializing the server connection requirements. ONLY Call this once!
----@field io DUtilIO
 ---@field misc DUtilMisc
 ---@field vector3 Vector3Constructor
 
