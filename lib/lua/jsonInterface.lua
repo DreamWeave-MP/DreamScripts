@@ -45,6 +45,8 @@ function jsonInterface.removeHeader(content)
     return content:sub(closestBracketIndex)
 end
 
+---@param fileName string
+---@return any
 function jsonInterface.load(fileName)
     local home = config.dataPath .. "/"
     local file = jsonInterface.ioLibrary.open(home .. fileName, 'r')
