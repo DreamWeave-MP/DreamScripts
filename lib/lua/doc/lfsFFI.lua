@@ -1,0 +1,65 @@
+---@meta
+
+---@alias LFSFileMode
+---| 'file'
+---| 'directory'
+---| 'link'
+---| 'socket'
+---| 'named pipe'
+---| 'char device'
+---| 'block device'
+---| 'other'
+
+---@class LFSAttributes
+---@field dev integer On Unix: device containing inode. On Windows: drive number of disk containing file
+---@field ino integer On Unix: inode number. On Windows: meaningless
+---@field mode LFSFileMode String representing associated protection mode
+---@field nlink integer Number of hard links to the file
+---@field uid integer User-id of owner (Unix only, always 0 on Windows)
+---@field gid integer Group-id of owner (Unix only, always 0 on Windows)
+---@field rdev integer On Unix: device type for special file inodes. On Windows: same as dev
+---@field access integer Time of last access (seconds, os.time reference)
+---@field modification integer Time of last data modification (seconds, os.time reference)
+---@field change integer Time of last file status change (seconds, os.time reference)
+---@field size integer File size in bytes
+---@field permissions string File permissions string
+---@field blocks integer? Block allocated for file (Unix only)
+---@field blksize integer? Optimal file system I/O blocksize (Unix only)
+
+---@class LFSSymlinkAttributes : LFSAttributes
+---@field target string File name that the symlink points to
+
+---@class LFSDirIterator
+---@field close fun(self: LFSDirIterator) Close directory before iteration finished
+---@field next fun(self: LFSDirIterator): string? Returns next directory entry name or nil
+
+---@class LFSLock
+---@field free fun(self: LFSLock) Free the lock
+
+---@class LFSFFIModule
+---Get file or directory attributes. If filepath is a symbolic link, follows it recursively.
+---@field attributes fun(filepath: string, requestNameOrResultTable?: string|table): LFSAttributes|string|nil, string?, integer?
+---Changes the current working directory to the given path.
+---@field chdir fun(path: string): boolean?, string?
+---Creates a lockfile (lockfile.lfs) in path. Checks if existing lock is stale.
+---@field lock_dir fun(path: string, seconds_stale?: integer): LFSLock|nil, string?
+---Returns current working directory.
+---@field currentdir fun(): string?, string?
+---Lua iterator over directory entries. Raises error if path is not a directory.
+---@field dir fun(path: string): fun():string?, LFSDirIterator
+---Locks a file or part of it. mode: 'r' for read/shared, 'w' for write/exclusive.
+---@field lock fun(filehandle: userdata, mode: 'r'|'w', start?: integer, length?: integer): boolean?, string?
+---Creates a link. If symlink is true, creates symbolic link (default: hard link).
+---@field link fun(old: string, new: string, symlink?: boolean): boolean?, string?, integer?
+---Creates a new directory.
+---@field mkdir fun(dirname: string): boolean?, string?, integer?
+---Removes an existing directory.
+---@field rmdir fun(dirname: string): boolean?, string?, integer?
+---Sets writing mode for a file: "binary" or "text". On non-Windows, always returns "binary".
+---@field setmode fun(file: userdata, mode: 'binary'|'text'): boolean?, string?
+---Identical to attributes but obtains information about link itself (not target).
+---@field symlinkattributes fun(filepath: string, request_name?: string): LFSSymlinkAttributes|string|nil, string?, integer?
+---Set access and modification times of a file. Uses utime. Times in seconds (os.time).
+---@field touch fun(filepath: string, atime?: integer, mtime?: integer): boolean?, string?, integer?
+---Unlocks a file or part of it.
+---@field unlock fun(filehandle: userdata, start?: integer, length?: integer): boolean?, string?

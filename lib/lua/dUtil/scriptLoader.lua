@@ -313,6 +313,7 @@ DScriptLoader.Interfaces = setmetatable({},
 
 local bit, ffi = require 'bit', require 'ffi'
 local hasCJSON, cjson = pcall(require, 'cjson')
+local lfs = require 'lfs'
 function DScriptLoader.defaultModuleCache()
   return {
     bit = bit,
@@ -321,6 +322,7 @@ function DScriptLoader.defaultModuleCache()
     ffi = ffi,
     interfaces = DScriptLoader.Interfaces,
     jsoninterface = jsonInterface,
+    lfs = lfs,
   }
 end
 
