@@ -6,8 +6,8 @@ local cjsonExists, cjson = pcall(require, 'cjson')
 
 local LocalDataPath = tes3mp.GetDataPath()
 
----@type DUtilIO
-local DIO = require 'dUtil.io'
+---@type LFSFFIModule
+local lfs = require 'lfs'
 
 if cjsonExists then
     cjson = require("cjson")
@@ -82,6 +82,7 @@ function jsonInterface.load(fileName)
     end
 end
 
+local PathSeparator = tes3mp.GetOperatingSystemType() == 'Windows' and '\\' or '/'
 function jsonInterface.writeToFile(fileName, content)
     if jsonInterface.ioLibrary == nil then
         tes3mp.LogMessage(enumerations.log.ERROR, jsonInterface.libraryMissingMessage)
@@ -91,20 +92,23 @@ function jsonInterface.writeToFile(fileName, content)
     local filePath = string.format("%s/%s", config.dataPath, fileName)
 
     local dir = fileName:match("(.*[/\\])")
-    if dir and not DIO.isDir(dir) then
-        local currentPath = LocalDataPath .. '/' -- Is this portable?
+    local attributes = dir and lfs.attributes(dir) or nil
+
+    if dir and not attributes then
+        local currentPath = config.dataPath .. PathSeparator
 
         for segment in dir:gmatch("[^/\\]+") do
             if segment == '.' or segment == '..' then goto CONTINUE end
 
             currentPath = string.format("%s%s/", currentPath, segment)
+            local currentPathAttributes = lfs.attributes(currentPath)
 
-            if DIO.fileExists(currentPath) then
+            if currentPathAttributes and currentPathAttributes.mode == 'file' then
                 tes3mp.LogMessage(enumerations.log.ERROR,
                     'Cannot create directory ' .. currentPath .. ' as it is already a file that exists!')
                 return false
-            elseif not DIO.isDir(currentPath) then
-                local result = DIO.mkdir(currentPath)
+            elseif not currentPathAttributes then
+                local result = lfs.mkdir(currentPath)
                 if not result then
                     tes3mp.LogMessage(enumerations.log.ERROR,
                         "Failed to create directory: " .. currentPath .. ' result: ' .. tostring(result))

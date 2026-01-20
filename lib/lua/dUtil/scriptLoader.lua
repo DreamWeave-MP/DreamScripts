@@ -19,6 +19,9 @@ local jsonInterface = require 'jsonInterface'
 local logicHandler = require 'tes3mp.logicHandler'
 local tableHelper = require 'tes3mp.util.table'
 
+---@type LFSFFIModule
+local lfs = require 'lfs'
+
 local ScriptPathFormatter = 'server.scripts.custom.%s'
 local SaveDataTable = BufferedDiskPaths
 
@@ -71,7 +74,7 @@ function DScriptLoader.loadScript(scriptName, callerPid)
 
   local scriptPath = DScriptLoader.sanitizePath(ScriptPathFormatter:format(scriptName))
 
-  if not dUtil.io.fileExists(scriptPath) then
+  if not lfs.attributes(scriptPath) then
     if callerPid then
       return Players[callerPid]:Message(ScriptFailedMessage:format(scriptPath))
     else
@@ -313,7 +316,6 @@ DScriptLoader.Interfaces = setmetatable({},
 
 local bit, ffi = require 'bit', require 'ffi'
 local hasCJSON, cjson = pcall(require, 'cjson')
-local lfs = require 'lfs'
 function DScriptLoader.defaultModuleCache()
   return {
     bit = bit,

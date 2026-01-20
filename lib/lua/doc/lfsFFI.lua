@@ -38,6 +38,7 @@
 
 ---@class LFSFFIModule
 ---Get file or directory attributes. If filepath is a symbolic link, follows it recursively.
+---Returns nil, error in the case of some failure, including the file not existing.
 ---@field attributes fun(filepath: string, requestNameOrResultTable?: string|table): LFSAttributes|string|nil, string?, integer?
 ---Changes the current working directory to the given path.
 ---@field chdir fun(path: string): boolean?, string?
