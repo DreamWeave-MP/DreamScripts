@@ -19,7 +19,7 @@ local jsonInterface = require 'jsonInterface'
 local logicHandler = require 'tes3mp.logicHandler'
 local tableHelper = require 'tes3mp.util.table'
 
-local ScriptPathFormatter = 'server/scripts/custom/%s'
+local ScriptPathFormatter = 'server.scripts.custom.%s'
 local SaveDataTable = BufferedDiskPaths
 
 --- OpenMW-Style Script loader module for TES3MP.
@@ -27,24 +27,18 @@ local SaveDataTable = BufferedDiskPaths
 --- YOU HAVE BEEN WARNED!!!!!!!
 ---@class DScriptLoader
 local DScriptLoader = {}
+local IsWindows = tes3mp.GetOperatingSystemType() == 'Windows'
+local PathSeparator = IsWindows and '\\' or '/'
 
 --- Takes an input script path relative to server/scripts/custom and returns a sanitized script path to input into dofile
 ---@param path string name of a script to attempt to load, NOT including the file extension, or any path leading up to server/scripts/custom. Inputs to this function should look identical to require statements.
 ---@return string sanitizedPath input path with all duplicate and inappropriate path separators, including `.`, replaced and the `.lua` file extension appended. On Windows, lowercases the input path also.
 function DScriptLoader.sanitizePath(path)
-  if type(path) ~= 'string' then return path end
+  assert(type(path) == 'string')
 
-  -- Remove duplicate slashes (both forward and back)
-  path = path:gsub('%.', '/'):gsub('[/\\]+', '/')
+  if IsWindows then path = path:lower() end
 
-  -- On windows, we assume case-insensitive filesystems, so lowercasing file names to ensure conformity is safer
-  if tes3mp.GetOperatingSystemType() == 'Windows' then
-    path = path:gsub('/', '\\'):lower()
-  else
-    path = path:gsub('\\', '/')
-  end
-
-  return path .. '.lua'
+  return path:scriptPath():gsub('%.', PathSeparator) .. '.lua'
 end
 
 local AllowedFields, Loaders = {
@@ -330,7 +324,6 @@ function DScriptLoader.defaultModuleCache()
   }
 end
 
-local PathSeparator = tes3mp.GetOperatingSystemType() == 'Windows' and '\\' or '/'
 local ModuleCache, ScriptDirectories =
     DScriptLoader.defaultModuleCache(),
     { 'scripts/', 'lib/', 'lib/lua/', }
