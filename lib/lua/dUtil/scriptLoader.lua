@@ -24,20 +24,6 @@ local yamlInterface = require 'yamlInterface'
 ---@type LFSFFIModule
 local lfs = require 'lfs'
 
-local testl10n = l10n('test')
-print(testl10n('FreshPrince1'))
-print(testl10n('ShrekQuote1'))
-print(testl10n('FreshPrince1'))
-print(testl10n('FreshPrince1'))
-print(testl10n('EdgeCases'))
-print(testl10n('FinalMessage'))
-print(
-  testl10n(
-    'SubMessage',
-    { param = 'LOCALIZATION', thing = 'WOOT', }
-  )
-)
-
 local ScriptPathFormatter = 'server.scripts.custom.%s'
 local SaveDataTable = BufferedDiskPaths
 
