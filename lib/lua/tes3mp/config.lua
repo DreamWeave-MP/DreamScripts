@@ -58,7 +58,9 @@ config.customScripts = {
     'fixFollowAI',
     --- Prevent usage of trainers/traders
     --- And stacking magic effects
-    'balanceAdjustments',
+    -- 'balanceAdjustments',
+    --- Heavily modified version of a tool by learwolf to hot-update mwscripts
+    'mwscriptConverter',
 }
 
 --- The game mode displayed for this server in the server browser
