@@ -98,8 +98,7 @@ function MiscUtil.makeReadOnly(inTable)
   return setmetatable({}, {
     __index = inTable,
     __newindex = function()
-      print(debug.traceback(('Write attempt to read-only table %s'):format(inTable), 3))
-      tes3mp.StopServer(15)
+      error(debug.traceback(('Write attempt to read-only table %s'):format(inTable), 3))
     end,
     __metatable = false,
   })
