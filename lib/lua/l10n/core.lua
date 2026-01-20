@@ -16,7 +16,9 @@ return function(contextName)
 
   local languages = { 'en', }
   if languageCodes[config.preferredLocale] then
-    table.insert(languages, 1, config.preferredLocale)
+    if config.preferredLocale ~= 'en' then
+      table.insert(languages, 1, config.preferredLocale)
+    end
   else
     tes3mp.LogAppend(
       enumerations.log.WARN,
@@ -34,6 +36,7 @@ return function(contextName)
             possibleExtension
           )
 
+      print('Searching for localization module at', checkPath)
       local attributes = lfs.attributes(checkPath)
 
       if attributes and attributes.mode == 'file' then
