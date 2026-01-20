@@ -168,7 +168,7 @@ function DScriptLoader.loadAllScripts()
   --- Although it should be mentioned
   --- This particular way of doing it means that `config` is recompiled a second time, when
   --- any mods load it, but who cares.
-  config = DScriptLoader.requireShim('config')
+  config = DScriptLoader.requireShim('tes3mp.config')
 
   local startTime = os.clock()
 
