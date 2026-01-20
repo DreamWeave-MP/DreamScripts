@@ -101,6 +101,7 @@ function MiscUtil.makeReadOnly(inTable)
       print(debug.traceback(('Write attempt to read-only table %s'):format(inTable), 3))
       tes3mp.StopServer(15)
     end,
+    __metatable = false,
   })
 end
 
