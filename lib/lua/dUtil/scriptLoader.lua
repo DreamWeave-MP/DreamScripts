@@ -18,6 +18,7 @@ local enumerations = require 'tes3mp.enumerations'
 local jsonInterface = require 'jsonInterface'
 local logicHandler = require 'tes3mp.logicHandler'
 local tableHelper = require 'tes3mp.util.table'
+local yamlInterface = require 'yamlInterface'
 
 ---@type LFSFFIModule
 local lfs = require 'lfs'
@@ -334,6 +335,7 @@ function DScriptLoader.defaultModuleCache()
     interfaces = DScriptLoader.Interfaces,
     jsoninterface = jsonInterface,
     lfs = lfs,
+    yamlinterface = yamlInterface,
   }
 end
 
