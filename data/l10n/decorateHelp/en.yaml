@@ -1,5 +1,4 @@
 # WARN: Do not change values inside of {Braces}. These refer to other localization keys by name.
-
 Adjust: Adjust
 Bigger: Enlarge
 Close: Close
@@ -15,18 +14,19 @@ North: North
 NoSelect: No object selected.
 NoOption: The object cannot be modified.
 Option1: "Choose an option. Your current item:"
-
-# WARN: Please do not change this
-
-Option2: "{Adjust} {North};{Adjust} {East};{Adjust} {Height};{Turn} X;{Turn} Y;{Turn} Z;{Up};{Down};{East};{West};{North};{South};{Bigger};{Smaller};{Drop};{Close}"
 PlaceObject: The object has just been placed.
 Prompt: "] - Enter a number to add/subtract"
-RotX: {Turn} X
-RotY: {Turn} Y
-RotZ: {Turn} Z
 Smaller: Shrink
 South: South
 Turn: Turn
 Up: Up
 WarningCell: Attention, the object is leaving the zone!!!
 West: West
+
+# WARN: These specific values largely do not require localization as they may be changed
+# By editing the ones above
+
+Option2: "{Adjust} {North};{Adjust} {East};{Adjust} {Height};{Turn} X;{Turn} Y;{Turn} Z;{Up};{Down};{East};{West};{North};{South};{Bigger};{Smaller};{Drop};{Close}"
+RotX: "{Turn} X"
+RotY: "{Turn} Y"
+RotZ: "{Turn} Z"
