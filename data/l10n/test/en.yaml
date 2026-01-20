@@ -1,0 +1,5 @@
+LocalizationKeyOne: Hello
+LocalizationKeyTwo: Haiiii
+LocalizationKeyThree: >
+  Can we do multi-line strings?
+LocalizationKeyFour: I sure hope so.
