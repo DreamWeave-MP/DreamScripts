@@ -1,5 +1,160 @@
-LocalizationKeyOne: Hello
-LocalizationKeyTwo: Haiiii
-LocalizationKeyThree: >
-  Can we do multi-line strings?
-LocalizationKeyFour: I sure hope so.
+# Test localization file for YAML parser
+# Mixed quotes from various sources
+
+# Dutch Van Der Linde quotes (RDR2)
+DutchQuote1: "I have a plan!"
+DutchQuote2: "Just have some faith!"
+DutchQuote3: "One more score, Arthur!"
+DutchQuote4: "We just need more money!"
+DutchQuote5: "Tahiti! Mangos!"
+DutchQuote6: "This is a good one!"
+DutchQuote7: "I insist!"
+DutchQuote8: "When I'm gone, they'll just find another monster."
+DutchQuote9: "We're more ghosts than people."
+
+# Fresh Prince of Bel Air Theme Song
+FreshPrince1: "Now, this is a story all about how"
+FreshPrince2: "My life got flipped-turned upside down"
+FreshPrince3: "And I'd like to take a minute, just sit right there"
+FreshPrince4: "I'll tell you how I became the prince of a town called Bel-Air"
+FreshPrince5: "In West Philadelphia, born and raised"
+FreshPrince6: "On the playground is where I spent most of my days"
+FreshPrince7: "Chillin' out, maxin', relaxin' all cool"
+FreshPrince8: "And all shootin' some b-ball outside of the school"
+FreshPrince9: "When a couple of guys who were up to no good"
+FreshPrince10: "Started makin' trouble in my neighborhood"
+
+# Shrek 1 quotes
+ShrekQuote1: "Ogres are like onions."
+ShrekQuote2: "They have layers!"
+ShrekQuote3: "What are you doing in my swamp?!"
+ShrekQuote4: "That'll do, donkey. That'll do."
+ShrekQuote5: "Do you think he's compensating for something?"
+ShrekQuote6: "I'm makin' waffles!"
+ShrekQuote7: "Better out than in, I always say!"
+ShrekQuote8: "You know, donkey, sometimes things are more than they appear."
+ShrekQuote9: "There's a stack of freshly made crepes. Bye-bye!"
+
+# All Star by Smash Mouth
+AllStar1: "Somebody once told me the world is gonna roll me"
+AllStar2: "I ain't the sharpest tool in the shed"
+AllStar3: "She was looking kind of dumb with her finger and her thumb"
+AllStar4: "In the shape of an 'L' on her forehead"
+AllStar5: "Well, the years start coming and they don't stop coming"
+AllStar6: "Fed to the rules and I hit the ground running"
+AllStar7: "Didn't make sense not to live for fun"
+AllStar8: "Your brain gets smart but your head gets dumb"
+AllStar9: "So much to do, so much to see"
+AllStar10: "So what's wrong with taking the back streets?"
+
+# Mixed multi-line strings
+MixedMultiLine1: >
+  I have a plan! And I ain't the sharpest tool in the shed,
+  but we just need more money for Tahiti! Mangos!
+MixedMultiLine2: |
+  Now, this is a story all about how
+  My life got flipped-turned upside down
+  And I'd like to take a minute, just sit right there
+  I'll tell you how I became the prince of a town called Bel-Air
+MixedMultiLine3: >
+  Ogres are like onions. They have layers!
+  Somebody once told me the world is gonna roll me.
+  What are you doing in my swamp?!
+  
+# Flow style examples
+DutchPlans: ["Tahiti", "Australia", "One more score", "Bank job", "Train robbery"]
+ShrekCharacters: {ogre: "Shrek", donkey: "Donkey", princess: "Fiona", villain: "Farquaad"}
+SmashMouthAlbums: [FushYuMang, AstroLounge, GetThePicture, Magic]
+
+# Nested structures
+GameReferences:
+  RedDeadRedemption2:
+    characters: ["Dutch", "Arthur", "John", "Hosea", "Micah"]
+    quotes:
+      dutch: "I have a plan!"
+      arthur: "You always got a plan, Dutch."
+      john: "Work, ya damn nag!"
+  FreshPrince:
+    cast: ["Will Smith", "Carlton", "Uncle Phil", "Aunt Viv"]
+    famous_lines: ["Yo homes, smell ya later!", "Now this is a story..."]
+  Shrek:
+    layers: ["ogre layer", "onion layer", "parfait layer"]
+    memorable_scenes: 
+      - "Shrek's swamp introduction"
+      - "Dragon rescue"
+      - "Farquaad's castle"
+
+# Special values
+BooleanValues:
+  is_plan_good: true
+  has_faith: false
+  are_we_ghosts: true
+  is_sharp_tool: false
+
+NumericValues:
+  years_coming: 1999
+  backstreets_count: 100
+  mangos_needed: 5000
+  onion_layers: 7
+
+# Empty and null values
+EmptyValues:
+  empty_string: ""
+  null_value: null
+  empty_array: []
+  empty_map: {}
+
+# Complex nested example
+LocalizationData:
+  languages:
+    en:
+      ui:
+        greeting: "Hello, partner!"
+        farewell: "See you later, alligator!"
+      items:
+        weapon: "Repeater"
+        food: "Mango"
+    nl:
+      ui:
+        greeting: "Hallo, maatje!"
+        farewell: "Tot ziens!"
+      items:
+        weapon: "Repeterend geweer"
+        food: "Mango"
+  fallback_language: "en"
+  version: 1.0
+  author: "Test Module"
+  timestamp: "2023-10-15T14:30:00Z"
+  
+# Edge cases
+EdgeCases:
+  quoted_with_spaces: "  leading and trailing spaces  "
+  special_chars: "Line1\nLine2\tTabbed"
+  unicode: "Café naïve résumé"
+  escaped: "Quote: \"Hello\", Apostrophe: 'World'"
+  multiline_folded: >
+    This is a folded string that
+    will be joined into a single
+    line with spaces replacing
+    newlines.
+  multiline_literal: |
+    This is a literal string
+    that preserves newlines
+    exactly as written.
+    
+# Final test
+FinalMessage: >
+  This YAML file tests various features:
+  - Simple key-value pairs
+  - Multi-line strings (folded and literal)
+  - Flow style (arrays and maps)
+  - Nested structures
+  - Special values (booleans, numbers, null)
+  - Unicode and escaped characters
+  - Mixed content from multiple sources
+  
+  All quotes are from:
+  1. Red Dead Redemption 2 (Dutch)
+  2. Fresh Prince of Bel Air Theme
+  3. Shrek 1
+  4. All Star by Smash Mouth
