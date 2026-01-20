@@ -70,68 +70,6 @@ local function loadDataFileList(filename, log)
   return dataFileList
 end
 
----@enum TableType
-local TableType = {
-  HASH = 0,
-  VEC = 1,
-}
-
---- Fancy table constructor using either TDS or OpenResty functions
---- To construct optimized data structures
---- Can also be used to generate pre-filled arrays with numeric values, or empty strings if the third argument is true.
----@param tableType TableType
----@param elementCount integer?
----@return table
-local function tableConstructor(tableType, elementCount, ...)
-  assert(
-    tds and table.isempty and table.isarray,
-    'This function depends on TDS and OpenResty LuaJIT. Sorry!'
-  )
-
-  local firstVarArg = select(1, ...)
-
-  if tableType == TableType.HASH then
-    if not firstVarArg then
-      return tds.Hash()
-    elseif
-        type(firstVarArg) == 'table'
-        and not table.isarray(firstVarArg)
-        and not table.isempty(firstVarArg)
-    then
-      return tds.Hash(firstVarArg)
-    else
-      return tds.Hash()
-    end
-  elseif tableType == TableType.VEC then
-    if not firstVarArg then
-      local result = tds.Vec()
-
-      if elementCount then result:resize(elementCount) end
-
-      return result
-    elseif
-        type(firstVarArg) == 'table'
-        and table.isarray(firstVarArg)
-    then
-      return tds.Vec(firstVarArg)
-    else
-      return tds.Vec { ... }
-    end
-  elseif not tableType then
-    local result = {}
-
-    if elementCount then
-      for i = 1, elementCount do
-        result[i] = firstVarArg == true and '' or 0
-      end
-    end
-
-    return result
-  end
-
-  error(('Invalid tableType: %s'):format(tableType))
-end
-
 ---@param path string OS-Specific path relative to the working directory
 ---@return integer? CRC32
 local function crc32File(path)
@@ -190,8 +128,6 @@ local Module = {
   io = require 'dUtil.io',
   ---@type DUtilMisc
   misc = require 'dUtil.miscellaneous',
-  table = tds and tableConstructor or nil,
-  tableType = tds and TableType or nil,
   ---@type Vector3Constructor
   vector3 = require 'dUtil.vector3',
 }
