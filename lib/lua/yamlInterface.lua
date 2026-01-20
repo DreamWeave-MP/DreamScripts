@@ -13,6 +13,7 @@ local IoLibrary = OperatingSystem == "Windows" and require 'io2' or io
 local PathSeparator = OperatingSystem == 'Windows' and '\\' or '/'
 
 ---@param fileName string Path of a filename to open, relative to the server's configured data path.
+---@return table<string, any>?
 return function(fileName)
     local path = ('%s%s%s'):format(config.dataPath, PathSeparator, fileName)
     local result = lfs.attributes(path)
