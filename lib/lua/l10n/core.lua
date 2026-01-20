@@ -12,7 +12,7 @@ local ValidYAMLExtensions = { 'yml', 'yaml' }
 ---@param contextName string name of the directory in which localization files live, relative to the configured server data directory's l10n folder, eg, `test`, would default to `server/data/test/en.yaml`
 ---@return L10NSearchFunction l10nContext
 return function(contextName)
-  local found, checkPath
+  local found, yamlInterfacePath
 
   local languages = { 'en', }
   if languageCodes[config.preferredLocale] then
@@ -29,15 +29,15 @@ return function(contextName)
 
   for _, possibleLanguage in ipairs(languages) do
     for _, possibleExtension in ipairs(ValidYAMLExtensions) do
-      checkPath = LocalizationPathFormatter
+      yamlInterfacePath = LocalizationPathFormatter
           :format(
             contextName,
             possibleLanguage,
             possibleExtension
           )
 
-      print('Searching for localization module at', checkPath)
-      local attributes = lfs.attributes(checkPath)
+      print('Searching for localization module at', yamlInterfacePath)
+      local attributes = lfs.attributes(('%s/%s'):format(config.dataPath, yamlInterfacePath))
 
       if attributes and attributes.mode == 'file' then
         found = true
@@ -53,7 +53,7 @@ return function(contextName)
     )
   end
 
-  local localizationResult = assert(yamlInterface(checkPath))
+  local localizationResult = assert(yamlInterface(yamlInterfacePath))
 
   local function searcher(fieldName)
     if localizationResult[fieldName] and type(localizationResult[fieldName]) ~= 'string' then
