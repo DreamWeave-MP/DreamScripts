@@ -36,7 +36,6 @@ return function(contextName)
             possibleExtension
           )
 
-      print('Searching for localization module at', yamlInterfacePath)
       local attributes = lfs.attributes(('%s/%s'):format(config.dataPath, yamlInterfacePath))
 
       if attributes and attributes.mode == 'file' then
