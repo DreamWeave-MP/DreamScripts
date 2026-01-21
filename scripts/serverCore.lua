@@ -153,7 +153,7 @@ end
 DiskBufferTimerId = tes3mp.CreateTimerEx('SaveBufferedPaths', config.diskBufferDelay * 1000, '')
 tes3mp.StartTimer(DiskBufferTimerId)
 
-CallbackFunctionsTimerId = tes3mp.CreateTimerEx('CallbackFunctionPulse', 1 / 30, '')
+CallbackFunctionsTimerId = tes3mp.CreateTimerEx('CallbackFunctionPulse', 1000 / 30, '')
 tes3mp.StartTimer(CallbackFunctionsTimerId)
 
 --- If the CustomEventHooks interface is loaded,
