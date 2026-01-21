@@ -13,7 +13,8 @@ assert(
 local TimedModule = {}
 
 --- Provide a callback function, the amount of time before
---- It should be called, and any arbitrary number of arguments
+--- It should be called, and any arbitrary number of arguments may be supplied
+--- Which are passed to the callback when it runs.
 ---@param callbackFunction function
 ---@param callbackDelay number
 ---@param ... any
@@ -28,6 +29,13 @@ function TimedModule.registerCallbackFunction(callbackFunction, callbackDelay, .
   }
 end
 
+--- Given some initial data, provide a path and details for subscription,
+--- And return whatever the saved content is or will be.
+--- If neither a data field is provided in the subscription handler, nor an existing file was found,
+--- An empty table will be returned which is used for serialization.
+--- Don't lose track of it!
+--- For example, this function can be used to provide a default configuration
+--- And keep the configuration file saving consistently every thirty seconds or what-have.
 ---@param data SaveSubscriptionData
 ---@return table? resultData Returns the loaded file's contents if it exists, or, the initial data table which was subscribed to, or an empty table.
 function TimedModule.loadWithSubscription(data)
@@ -76,6 +84,11 @@ function TimedModule.loadWithSubscription(data)
   return result
 end
 
+--- Given some initial data, provide a path and details for subscription,
+--- The provided table will be auto-saved according to the parameters you set, once or continuously,
+--- On whatever delay you wish, or upon each server tick (which is a configurable timed delay up to the behest of the server administrator)
+--- No data is returned, and it is expected that references to the table you provide live as long as the subscription itself does.
+--- So, if you want to have a table be continuously saved for the entire runtime of the server, do not ever replace it entirely.
 function TimedModule.subscribeToSave(data)
   local traceback = debug.traceback()
   assert(data and type(data) == 'table', traceback)
