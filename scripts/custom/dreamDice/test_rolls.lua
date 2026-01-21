@@ -30,6 +30,14 @@ tes3mp.LogAppend(
 usedKeys = nil
 
 local TestIterations = 25
+
+local function testTimer(randomInt)
+  print(randomInt)
+  I.timed.registerCallbackFunction(testTimer, 1, math.random())
+end
+
+I.timed.registerCallbackFunction(testTimer, 1, math.random())
+
 return function()
   local startTime = os.clock()
 
