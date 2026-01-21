@@ -20,12 +20,12 @@
 ---@field menuHelper MenuHelper?
 ---@field scriptLoader DScriptLoaderHidden
 ---@field speechHelper SpeechHelper?
----@field storage StorageModule
 ---@field dreamDice DiceInterface?
 ---@field customMerchantRestock RestockInterface?
 ---@field recordStores RecordInterface?
 ---@field tds table<string, function>?
 ---@field tes3 table<string, function>?
+---@field timed TimedModule
 
 ---@class DreamWeaveMenuModule
 ---@field display function(pid: PlayerId, menuName: string)
@@ -52,7 +52,7 @@
 ---@field condition? fun(): boolean An optional condition function to run before determining whether or not to save.
 ---@field lastCheckedTime integer? The last time in seconds the subscription was checked for a save. Should NEVER be provided by the constructor! You will trip an assertion if you provide this asa parameter.
 
----@class StorageModule
+---@class TimedModule
 --- Given some initial data, provide a path and details for subscription,
 --- The provided table will be auto-saved according to the parameters you set, once or continuously,
 --- On whatever delay you wish, or upon each server tick (which is a configurable timed delay up to the behest of the server administrator)

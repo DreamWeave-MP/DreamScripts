@@ -50,7 +50,7 @@ return function()
     end
   end
 
-  I.storage.subscribeToSave {
+  I.timed.subscribeToSave {
     filePath = 'custom/dice/diceTestResults.json',
     data = testResults,
     persistent = false,

@@ -270,8 +270,8 @@ local ScriptLoaderInterface = dUtil.misc.makeReadOnly {
   loadAllScripts = DScriptLoader.loadAllScripts,
 }
 
----@type StorageModule
-local StorageInterface = dUtil.misc.makeReadOnly {
+---@type TimedModule
+local TimedInterface = dUtil.misc.makeReadOnly {
   loadWithSubscription = loadWithSubscription,
   subscribeToSave = subscribeToSave,
 }
@@ -279,8 +279,8 @@ local StorageInterface = dUtil.misc.makeReadOnly {
 ---@return DefaultInterfaces
 function DScriptLoader.originalInterfaces()
   local interfaces = {
-    storage = StorageInterface,
     scriptLoader = ScriptLoaderInterface,
+    timed = TimedInterface,
   }
 
   if hasTDS then interfaces.tds = tds end
