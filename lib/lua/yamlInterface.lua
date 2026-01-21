@@ -1,5 +1,4 @@
 local config = require 'tes3mp.config'
-local enumerations = require 'tes3mp.enumerations'
 local tinyYaml = require 'l10n.tinyyaml'
 
 ---@type LFSFFIModule
@@ -13,22 +12,21 @@ local IoLibrary = OperatingSystem == "Windows" and require 'io2' or io
 local PathSeparator = OperatingSystem == 'Windows' and '\\' or '/'
 
 ---@param fileName string Path of a filename to open, relative to the server's configured data path.
----@return table<string, any>?
+---@return table<string, any>
 return function(fileName)
     local path = ('%s%s%s'):format(config.dataPath, PathSeparator, fileName)
     local result = lfs.attributes(path)
 
     if not result or result.mode ~= 'file' then
-        return tes3mp.LogMessage(
-            enumerations.log.ERROR,
+        error(
             ('Could not load the yaml file at path %s because it does not exist, or is not a file!')
             :format(path)
         )
     end
 
-    local file = IoLibrary.open(path, 'r')
+    local file, err = IoLibrary.open(path, 'r')
 
-    if not file then return end
+    if not file then error(('Failed opening the file %s due to error %s'):format(path, err)) end
 
     local content = file:read("*all")
     file:close()
@@ -37,8 +35,7 @@ return function(fileName)
 
     if ok then return yamlResult end
 
-    tes3mp.LogAppend(
-        enumerations.log.ERROR,
+    error(
         ('Failed parsing the yaml file at %s: %s'):format(path, yamlResult)
     )
 end

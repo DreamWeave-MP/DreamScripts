@@ -52,7 +52,7 @@ return function(contextName)
     )
   end
 
-  local localizationResult = assert(yamlInterface(yamlInterfacePath))
+  local localizationResult = yamlInterface(yamlInterfacePath)
 
   local function searcher(fieldName, params)
     if type(localizationResult[fieldName]) ~= 'string' then return fieldName end

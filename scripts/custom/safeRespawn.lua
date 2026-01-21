@@ -20,7 +20,7 @@ local yamlInterface = require 'yamlInterface'
 ---@class SafeRespawnData
 ---@field SafeCells table<CellDescription, CellReviveInfo>
 ---@field StatsOnRevive ReviveStatInfo
-local SafeRespawnData = assert(yamlInterface('custom/safeRespawn/config.yml'))
+local SafeRespawnData = yamlInterface('custom/safeRespawn/config.yml')
 
 ---@type DefaultInterfaces
 local I = require 'interfaces'
