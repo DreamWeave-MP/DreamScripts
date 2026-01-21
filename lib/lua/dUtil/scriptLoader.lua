@@ -307,6 +307,8 @@ function DScriptLoader.requireShim(scriptName)
   return result
 end
 
+local hasChronos, chronos = pcall(require, 'chronos')
+
 --- Returns a fresh copy of the script environment for each loaded script, so it may not be mutated
 ---@return DreamWeaveScriptEnv
 function DScriptLoader.getScriptEnv()
@@ -324,7 +326,7 @@ function DScriptLoader.getScriptEnv()
     -- io = io,
     math = tableHelper.deepCopy(math),
     next = next,
-    os = { clock = os.clock, date = os.date, time = os.time },
+    os = { clock = os.clock, date = os.date, time = hasChronos and chronos.nanotime or os.time },
     require = DScriptLoader.requireShim,
     pairs = pairs,
     pcall = pcall,
