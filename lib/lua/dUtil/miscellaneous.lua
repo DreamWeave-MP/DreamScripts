@@ -108,7 +108,7 @@ end
 
 --- Safe function wrapper used by the `timed` module and customEventHooks exposed for reuse to help prevent crashes
 ---@param fn function
----@param ... any[]
+---@param ... any
 function MiscUtil.safeCall(fn, ...)
   local function wrapped(...)
     return fn(...)
