@@ -1,5 +1,7 @@
 ---@meta
 
+---@alias UniqueIndex string Special string type which is hyphenated and split using splitUniqueIndex. The resulting two integers give the refNum and mpNum of a target uniqueIndex string.
+
 ---@alias MWGender 0|1 0 indicates female, 1 is male
 
 ---@alias MWRace
