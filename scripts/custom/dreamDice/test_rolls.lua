@@ -31,12 +31,13 @@ usedKeys = nil
 
 local TestIterations = 25
 
+local TimerDelay = 1 / 10
 local function testTimer(randomInt)
   print(randomInt)
-  I.timed.registerCallbackFunction(testTimer, 1, math.random())
+  I.timed.registerCallbackFunction(testTimer, TimerDelay, math.random())
 end
 
-I.timed.registerCallbackFunction(testTimer, 1, math.random())
+I.timed.registerCallbackFunction(testTimer, TimerDelay, math.random())
 
 return function()
   local startTime = os.clock()
