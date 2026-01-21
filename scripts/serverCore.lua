@@ -125,11 +125,15 @@ end
 ---@global
 Callbacks = {}
 
+local hasChronos, chronos = pcall(require, 'chronos')
+if hasChronos then print('Chronos found! High-precision timers will be enabled.') end
+local timeFunction = hasChronos and chronos.nanotime or os.time
+
 function CallbackFunctionPulse()
     --- WARN: LuaJIT2 Required. Alternatively, use next(Callbacks) == nil
     if table.isempty(Callbacks) then return end
 
-    local now = os.time()
+    local now = timeFunction()
 
     for i = #Callbacks, 1, -1 do
         local targetCallback = Callbacks[i]
