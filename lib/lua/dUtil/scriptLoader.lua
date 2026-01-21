@@ -25,7 +25,6 @@ local yamlInterface = require 'yamlInterface'
 local lfs = require 'lfs'
 
 local ScriptPathFormatter = 'server.scripts.custom.%s'
-local SaveDataTable = BufferedDiskPaths
 
 --- OpenMW-Style Script loader module for TES3MP.
 --- This is a stateful module which should only ever be `require`'d once by serverCore.lua
@@ -184,81 +183,6 @@ function DScriptLoader.loadAllScripts()
   )
 end
 
----@param data SaveSubscriptionData
----@return table? resultData Returns the loaded file's contents if it exists, or, the initial data table which was subscribed to, or an empty table.
-local function loadWithSubscription(data)
-  local traceback = debug.traceback()
-  assert(data and type(data) == 'table', traceback)
-  assert(data.filePath and type(data.filePath) == 'string', traceback)
-  assert(data.lastCheckedTime == nil, traceback)
-
-  if not data.data or type(data.data) ~= 'table' then
-    return tes3mp.LogAppend(
-      enumerations.log.WARN,
-      ('Provided an invalid data table to load subscription handler. Refusing to subscribe: %s\n%s')
-      :format(data, traceback)
-    )
-  end
-
-  local existingData = SaveDataTable[data.filePath]
-  if existingData then
-    if not jsonInterface.quicksave(data.filePath, existingData) then
-      return tes3mp.LogAppend(
-        enumerations.log.WARN,
-        ('Attempted to overwrite %s in the global saved data table, but failed somehow. You must wait for its original reference to be removed!\n%s')
-        :format(data.filePath, traceback)
-      )
-    end
-  end
-
-  local result = jsonInterface.load(data.filePath)
-  if result then
-    if type(result) == 'table' then
-      data.data = result
-    elseif not result then
-      result = {}
-    else
-      return tes3mp.LogAppend(
-        enumerations.log.WARN,
-        ('A data path provided to load subscription handler returned a non-table value %s. Refusing to subscribe: %s\n%s')
-        :format(result, data, traceback)
-      )
-    end
-  else
-    result = data.data
-  end
-
-  SaveDataTable[data.filePath] = data
-
-  return result
-end
-
-local function subscribeToSave(data)
-  local traceback = debug.traceback()
-  assert(data and type(data) == 'table', traceback)
-  assert(data.filePath and type(data.filePath) == 'string', traceback)
-  assert(data.lastCheckedTime == nil, traceback)
-
-  if not data.data or type(data.data) ~= 'table' then
-    return tes3mp.LogAppend(
-      enumerations.log.WARN,
-      ('Provided an invalid data table to save subscription handler. Refusing to subscribe: %s'):format(data)
-    )
-  end
-
-  if SaveDataTable[data.filePath] then
-    if not jsonInterface.quicksave(data.filePath, SaveDataTable[data.filePath]) then
-      return tes3mp.LogAppend(
-        enumerations.log.WARN,
-        ('Attempted to overwrite %s in the global saved data table, but failed somehow. You must wait for its original reference to be removed!')
-        :format(data.filePath)
-      )
-    end
-  end
-
-  SaveDataTable[data.filePath] = data
-end
-
 local hasTDS, tds = pcall(require, 'tds.init')
 local hasTES3, tes3 = pcall(require, 'tes3_lua')
 
@@ -271,10 +195,7 @@ local ScriptLoaderInterface = dUtil.misc.makeReadOnly {
 }
 
 ---@type TimedModule
-local TimedInterface = dUtil.misc.makeReadOnly {
-  loadWithSubscription = loadWithSubscription,
-  subscribeToSave = subscribeToSave,
-}
+local TimedInterface = dUtil.misc.makeReadOnly(require 'dUtil.timed')
 
 ---@return DefaultInterfaces
 function DScriptLoader.originalInterfaces()

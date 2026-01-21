@@ -6,6 +6,7 @@ local guiHelper = require 'tes3mp.util.gui'
 local inventoryHelper = require 'tes3mp.util.inventory'
 local jsonInterface = require 'jsonInterface'
 local logicHandler = require 'tes3mp.logicHandler'
+local miscUtil = require 'dUtil.miscellaneous'
 local packetBuilder = require 'tes3mp.packet.builder'
 local packetReader = require 'tes3mp.packet.reader'
 local tableHelper = require 'tes3mp.util.table'
@@ -72,7 +73,7 @@ banList = {}
 ---@global
 BufferedDiskPaths = {}
 
-local DiskBufferTimerId
+local DiskBufferTimerId, CallbackFunctionsTimerId
 -- local PlayerSaveDelay, CellSaveDelay, WorldSaveDelay = 15, 30, 45
 function SaveBufferedPaths()
     local removePaths = {}
@@ -120,8 +121,41 @@ function SaveBufferedPaths()
     tes3mp.StartTimer(DiskBufferTimerId)
 end
 
+---@type TimerCallback[]
+---@global
+Callbacks = {}
+
+function CallbackFunctionPulse()
+    --- WARN: LuaJIT2 Required. Alternatively, use next(Callbacks) == nil
+    if table.isempty(Callbacks) then return end
+
+    local now = os.clock()
+
+    for i = #Callbacks, 1, -1 do
+        local targetCallback = Callbacks[i]
+
+        if now >= targetCallback.triggerAt then
+            local ok, err = miscUtil.safeCall(targetCallback.callback, unpack(targetCallback.arguments))
+
+            if ok then
+                table.remove(Callbacks, i)
+            else
+                error(
+                    ('Target callback %s failed due to error: %s. Aborting!'):format(targetCallback.callback, err)
+                )
+            end
+        end
+    end
+
+    tes3mp.StartTimer(CallbackFunctionsTimerId)
+end
+
 DiskBufferTimerId = tes3mp.CreateTimerEx('SaveBufferedPaths', config.diskBufferDelay * 1000, '')
 tes3mp.StartTimer(DiskBufferTimerId)
+
+local CallbackPulseDelay = 1 / 30
+CallbackFunctionsTimerId = tes3mp.CreateTimerEx('CallbackFunctionPulse', CallbackPulseDelay * 1000, '')
+tes3mp.StartTimer(CallbackFunctionsTimerId)
 
 --- If the CustomEventHooks interface is loaded,
 --- Then the OnServerInit event initializes this value
