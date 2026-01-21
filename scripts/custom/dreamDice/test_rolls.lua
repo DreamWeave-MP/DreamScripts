@@ -54,7 +54,7 @@ return function()
     filePath = 'custom/dice/diceTestResults.json',
     data = testResults,
     persistent = false,
-    delay = 47,
+    delay = math.random(30, 60),
   }
 
   tes3mp.LogAppend(
