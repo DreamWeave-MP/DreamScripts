@@ -1,0 +1,54 @@
+SafeCells:
+ Freighter, Combat Simulator:
+  cell: The Outer Rim, Freighter
+  pos:
+   x: 3410
+   y: 6596
+   z: 15255
+
+ Tatooine, Sandriver:
+  cell: Tatooine, Medical Bay
+  pos:
+   x: 4023
+   y: 3681
+   z: 15707
+  
+ Nar Shaddaa: 
+  cell: Nar Shaddaa, Medical Facility
+  pos: 
+   x: 3671
+   y: 4507
+   z: 14958
+  
+ The Outer Rim, Freighter: 
+  cell: The Outer Rim, Freighter
+  pos: 
+   x: 3410
+   y: 6596
+   z: 15255
+  
+ Dantooine, Ballast: 
+  cell: Dantooine, Medical Bay
+  pos: 
+   x: 3797
+   y: 4287
+   z: 15352
+  
+ Manaan, Bazaar: 
+  cell: Manaan, Ivesh's
+  pos: 
+   x: 1013
+   y: -56
+   z: -154
+  
+ Kashyyk, Boyle Research Facility: 
+  cell: Kashyyk, Medical Bay
+  pos: 
+   x: 3979
+   y: 4141
+   z: 14335
+   
+StatsOnRevive:
+  fatigue: 0.0
+  health: 0.1
+  magicka: preserve
