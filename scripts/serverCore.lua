@@ -126,7 +126,9 @@ end
 Callbacks = {}
 
 local hasChronos, chronos = pcall(require, 'chronos')
-if hasChronos then print('Chronos found! High-precision timers will be enabled.') end
+
+if hasChronos then tes3mp.LogAppend(enumerations.log.INFO, 'Chronos found! High-precision timers will be enabled.') end
+
 local timeFunction = hasChronos and chronos.nanotime or os.time
 
 function CallbackFunctionPulse()
@@ -157,7 +159,8 @@ end
 DiskBufferTimerId = tes3mp.CreateTimerEx('SaveBufferedPaths', config.diskBufferDelay * 1000, '')
 tes3mp.StartTimer(DiskBufferTimerId)
 
-CallbackFunctionsTimerId = tes3mp.CreateTimerEx('CallbackFunctionPulse', 1000 / 30, '')
+local CallbacksPerSecond = 15
+CallbackFunctionsTimerId = tes3mp.CreateTimerEx('CallbackFunctionPulse', 1000 / CallbacksPerSecond, '')
 tes3mp.StartTimer(CallbackFunctionsTimerId)
 
 --- If the CustomEventHooks interface is loaded,
