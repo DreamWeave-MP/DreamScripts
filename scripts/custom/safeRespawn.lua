@@ -1,7 +1,6 @@
 local enumerations = require 'tes3mp.enumerations'
 local inventoryHelper = require 'tes3mp.util.inventory'
 local logicHandler = require 'tes3mp.logicHandler'
-local tableHelper = require 'tes3mp.util.table'
 local yamlInterface = require 'yamlInterface'
 
 ---@class ReviveStatInfo
@@ -22,8 +21,6 @@ local yamlInterface = require 'yamlInterface'
 ---@field SafeCells table<CellDescription, CellReviveInfo>
 ---@field StatsOnRevive ReviveStatInfo
 local SafeRespawnData = assert(yamlInterface('custom/safeRespawn/config.yml'))
-
-tableHelper.print(SafeRespawnData)
 
 ---@type DefaultInterfaces
 local I = require 'interfaces'
