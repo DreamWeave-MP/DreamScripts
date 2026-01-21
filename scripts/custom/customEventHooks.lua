@@ -1,4 +1,5 @@
 local config = require 'tes3mp.config'
+local miscUtil = require 'dUtil.miscellaneous'
 local enumerations = require 'tes3mp.enumerations'
 
 ---@class EventHandler
@@ -104,27 +105,6 @@ function customEventHooks.registerHandler(event, handler)
     eventHandlers[#eventHandlers + 1] = handler
 end
 
----@param fn function
----@param ... any[]
-function customEventHooks.safeCall(fn, ...)
-    local function wrapped(...)
-        return fn(...)
-    end
-
-    local success, result = xpcall(
-        wrapped,
-        function(err)
-            tes3mp.LogAppend(
-                enumerations.log.WARN,
-                ('%s\n%s'):format(err, debug.traceback('', 1))
-            )
-        end,
-        ...
-    )
-
-    return success, result
-end
-
 ---@param event string
 ---@param ... any
 ---@return EventStatusTable
@@ -144,7 +124,7 @@ function customEventHooks.triggerValidators(event, ...)
                 :format(i, event, eventHandlerData.definedBy)
             )
 
-            local success, result = customEventHooks.safeCall(eventHandlerData.callback, eventStatus, unpack(...))
+            local success, result = miscUtil.safeCall(eventHandlerData.callback, eventStatus, unpack(...))
             if not success then
                 tes3mp.LogAppend(
                     enumerations.log.WARN,
@@ -183,7 +163,7 @@ function customEventHooks.triggerHandlers(event, eventStatus, args)
             :format(i, event, eventHandlerData.definedBy)
         )
 
-        local success, result = customEventHooks.safeCall(eventHandlerData.callback, eventStatus, unpack(args))
+        local success, result = miscUtil.safeCall(eventHandlerData.callback, eventStatus, unpack(args))
         if not success then
             tes3mp.LogAppend(
                 enumerations.log.WARN,

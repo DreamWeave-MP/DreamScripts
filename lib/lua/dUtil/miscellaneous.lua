@@ -1,3 +1,5 @@
+local enumerations = require 'tes3mp.enumerations'
+
 ---@class DUtilMisc
 local MiscUtil = {}
 
@@ -102,6 +104,28 @@ function MiscUtil.makeReadOnly(inTable)
     end,
     __metatable = false,
   })
+end
+
+--- Safe function wrapper used by the `timed` module and customEventHooks exposed for reuse to help prevent crashes
+---@param fn function
+---@param ... any[]
+function MiscUtil.safeCall(fn, ...)
+  local function wrapped(...)
+    return fn(...)
+  end
+
+  local success, result = xpcall(
+    wrapped,
+    function(err)
+      tes3mp.LogAppend(
+        enumerations.log.WARN,
+        ('%s\n%s'):format(err, debug.traceback('', 1))
+      )
+    end,
+    ...
+  )
+
+  return success, result
 end
 
 return MiscUtil
