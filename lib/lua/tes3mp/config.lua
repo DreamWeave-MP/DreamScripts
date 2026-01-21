@@ -62,6 +62,8 @@ config.customScripts = {
     --- Heavily modified version of a tool by learwolf to hot-update mwscripts
     'mwscriptConverter',
     'decorateHelp',
+    --- Prevents dying in certain cells, if you can pay the resurrection fee.
+    'safeRespawn',
 }
 
 --- The game mode displayed for this server in the server browser
