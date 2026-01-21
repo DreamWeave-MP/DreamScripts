@@ -20,7 +20,7 @@ function TimedModule.registerCallbackFunction(callbackFunction, callbackDelay, .
 
   Callbacks[#Callbacks + 1] = {
     callback = callbackFunction,
-    triggerAt = os.clock() + callbackDelay,
+    triggerAt = os.time() + callbackDelay,
     arguments = { ... }
   }
 end

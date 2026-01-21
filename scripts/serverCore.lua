@@ -129,7 +129,7 @@ function CallbackFunctionPulse()
     --- WARN: LuaJIT2 Required. Alternatively, use next(Callbacks) == nil
     if table.isempty(Callbacks) then return end
 
-    local now = os.clock()
+    local now = os.time()
 
     for i = #Callbacks, 1, -1 do
         local targetCallback = Callbacks[i]
