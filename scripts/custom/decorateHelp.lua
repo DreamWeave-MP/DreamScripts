@@ -5,6 +5,7 @@ self.data.objectData[uniqueIndex].scale = 1
 tableHelper.insertValueIfMissing(self.data.packets.scale, uniqueIndex)
 ---------------------------
 ]]
+local logicHandler = require 'tes3mp.logicHandler'
 
 ---@type DefaultInterfaces
 local I = require 'interfaces'
@@ -14,10 +15,12 @@ local L = require('l10n')('decorateHelp')
 
 ---@type MenuHelper
 local menuHelper = I.menuHelper
-local tableHelper = require 'tes3mp.util.table'
 MainGUIId, PromptGUIId = menuHelper.getMenuId(), menuHelper.getMenuId()
 
-local cfg = {}
+---@class DecorateHelp
+local DecorateScript = {}
+
+local CellSize = 8192
 
 local Text = {
 	Bigger = L 'Bigger',
@@ -29,9 +32,10 @@ local Text = {
 	MovE = L('MovE', { East = L 'East', }),
 	MovN = L('MovN', { North = L 'North', }),
 	MovUp = L('MovUp', { Height = L 'Height', }),
+	None = L 'None',
+	North = L 'North',
 	NoOption = L 'NoOption',
 	NoSelect = L 'NoSelect',
-	North = L 'North',
 	Opt1 = L 'Option1',
 	Opt2 = L(
 		'Option2',
@@ -63,29 +67,56 @@ local Text = {
 	West = L 'West',
 }
 
-tableHelper.print(Text)
-
 local playerSelectedObject = {}
 local playerCurrentMode = {}
 local playersTab = {}
 
-function StartDrop(pid)
+---@param pid PlayerId
+function DecorateScript.startDrop(pid)
 	local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
 	if not isValid or not targetPid then return end
 
 	DecorateScript.moveObject(targetPid)
 end
 
-local function GetName(pid)
-	return Players[pid].accountName:lower()
+---@param pid PlayerId
+---@return table? player
+local function getPlayer(pid)
+	local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
+	if not isValid or not targetPid then return end
+
+	return Players[targetPid]
 end
 
+--- Returns the player's lowercase account name for use as a table key
+--- If they're not logged in or otherwise invalid returns nil
+---@param pid PlayerId
+---@return string? playerName
+local function getName(pid)
+	local player = getPlayer(pid)
+	if player then return player.accountName:lower() end
+end
+
+--- Returns the player's lowercase account name for use as a table key
+--- If they're not logged in or otherwise invalid, murders the server
+---@param pid PlayerId
+---@return string playerName
+local function getNameAngry(pid)
+	return assert(getName(pid))
+end
+
+---@param pid PlayerId
+---@param refIndex string
 local function setSelectedObject(pid, refIndex)
-	playerSelectedObject[GetName(pid)] = refIndex
+	local name = getNameAngry(pid)
+	playerSelectedObject[name] = refIndex
 end
 
+---@param refIndex string
+---@param cellId CellDescription
 local function GetObject(refIndex, cellId)
-	if not refIndex then return false end
+	if not refIndex then return end
+
 	local cell = LoadedCells[cellId]
 
 	if not cell:ContainsObject(refIndex) then return end
@@ -93,19 +124,14 @@ local function GetObject(refIndex, cellId)
 	return cell.data.objectData[refIndex]
 end
 
-local function DeleteObject(pid, cellDescription, uniqueIndex, forEveryone)
-	tes3mp.ClearObjectList()
-	tes3mp.SetObjectListPid(pid)
-	tes3mp.SetObjectListCell(cellDescription)
-	local splitIndex = uniqueIndex:split("-")
-	tes3mp.SetObjectRefNum(splitIndex[1])
-	tes3mp.SetObjectMpNum(splitIndex[2])
-	tes3mp.AddObject()
-	tes3mp.SendObjectDelete(forEveryone)
-end
-
+---@param pid PlayerId
+---@param uniqueIndex UniqueIndex unique index string
+---@param cellDescription CellDescription
+---@param forEveryone boolean?
 local function ResendPlace(pid, uniqueIndex, cellDescription, forEveryone)
-	DeleteObject(pid, cellDescription, uniqueIndex, forEveryone)
+	forEveryone = forEveryone or false
+
+	logicHandler.DeleteObject(pid, cellDescription, uniqueIndex, forEveryone)
 
 	tes3mp.ClearObjectList()
 	tes3mp.SetObjectListPid(pid)
@@ -149,57 +175,66 @@ local function ResendPlace(pid, uniqueIndex, cellDescription, forEveryone)
 	end
 end
 
+---@param pid PlayerId
 local function showPromptGUI(pid)
-	local message = "[" .. playerCurrentMode[GetName(pid)] .. trad.prompt
-	tes3mp.InputDialog(pid, cfg.PromptId, message, "")
+	local message = '[' .. playerCurrentMode[getNameAngry(pid)] .. Text.Prompt
+	tes3mp.InputDialog(pid, PromptGUIId, message, '')
 end
 
+---@param start number
+---@param add number
+---@return number added
+local function convertAddedDegrees(start, add)
+	return math.rad((math.deg(start) + add) % 360)
+end
+
+---@param coord number
+---@return integer gridCoord Exterior position flattened to a cell grid coordinate
+local function grid(coord)
+	return math.floor(coord / CellSize)
+end
+
+---@param pid PlayerId
+---@param data integer
 local function onEnterPrompt(pid, data)
-	local cell = tes3mp.GetCell(pid)
-	local pname = GetName(pid)
-	local mode = playerCurrentMode[pname]
-	local object = GetObject(playerSelectedObject[pname], cell)
-	local cellSize = 8192
+	local cell, name = tes3mp.GetCell(pid), getNameAngry(pid)
+	local object = GetObject(playerSelectedObject[name], cell)
 
 	if not object then
 		return tes3mp.MessageBox(pid, -1, Text.NoSelect)
 	end
 
-	data = tonumber(data) or 0
+	local mode = playerCurrentMode[name]
+
+	data = assert(tonumber(data))
 	object.scale = object.scale or 1
 
-	local scaling = object.scale
+	local location, scaling = object.location, object.scale
 
 	if mode == Text.RotX then
-		local curDegrees = math.deg(object.location.rotX)
-		local newDegrees = (curDegrees + data) % 360
-		object.location.rotX = math.rad(newDegrees)
+		location.rotX = convertAddedDegrees(location.rotX, data)
 	elseif mode == Text.RotY then
-		local curDegrees = math.deg(object.location.rotY)
-		local newDegrees = (curDegrees + data) % 360
-		object.location.rotY = math.rad(newDegrees)
+		location.rotY = convertAddedDegrees(location.rotY, data)
 	elseif mode == Text.RotZ then
-		local curDegrees = math.deg(object.location.rotZ)
-		local newDegrees = (curDegrees + data) % 360
-		object.location.rotZ = math.rad(newDegrees)
+		location.rotZ = convertAddedDegrees(location.rotZ, data)
 	elseif mode == Text.MovN then
-		object.location.posY = object.location.posY + data
+		location.posY = location.posY + data
 	elseif mode == Text.MovE then
-		object.location.posX = object.location.posX + data
+		location.posX = location.posX + data
 	elseif mode == Text.MovUp then
-		object.location.posZ = object.location.posZ + data
+		location.posZ = location.posZ + data
 	elseif mode == Text.Up then
-		object.location.posZ = object.location.posZ + 10
+		location.posZ = location.posZ + 10
 	elseif mode == Text.Down then
-		object.location.posZ = object.location.posZ - 10
+		location.posZ = location.posZ - 10
 	elseif mode == Text.East then
-		object.location.posX = object.location.posX + 10
+		location.posX = location.posX + 10
 	elseif mode == Text.West then
-		object.location.posX = object.location.posX - 10
+		location.posX = location.posX - 10
 	elseif mode == Text.North then
-		object.location.posY = object.location.posY + 10
+		location.posY = location.posY + 10
 	elseif mode == Text.South then
-		object.location.posY = object.location.posY - 10
+		location.posY = location.posY - 10
 	elseif mode == Text.Bigger then
 		if object.scale < 2 then
 			object.scale = object.scale + 0.1
@@ -207,122 +242,137 @@ local function onEnterPrompt(pid, data)
 			tes3mp.MessageBox(pid, -1, Text.NoOption)
 		end
 	elseif mode == Text.Smaller then
-		if scaling ~= nil then
-			if scaling > 0.1 then
-				object.scale = object.scale - 0.1
-			else
-				object.scale = object.scale
-			end
+		if scaling > 0.1 then
+			object.scale = object.scale - 0.1
 		else
 			tes3mp.MessageBox(pid, -1, Text.NoOption)
 		end
 	elseif mode == Text.Close then
-		object.location.posY = object.location.posY
+		location.posY = location.posY
 		return
 	end
 
 	if tes3mp.IsInExterior(pid) then
-		local correctGridX = math.floor(object.location.posX / cellSize)
-		local correctGridY = math.floor(object.location.posY / cellSize)
-		if LoadedCells[cell].gridX ~= correctGridX or LoadedCells[cell].gridY ~= correctGridY then
+		local loadedCell = LoadedCells[cell]
+
+		if loadedCell.gridX ~= grid(location.posX) or loadedCell.gridY ~= grid(location.posY) then
 			return tes3mp.MessageBox(pid, -1, Text.WarningCell)
 		end
 	end
 
-	ResendPlace(pid, playerSelectedObject[pname], cell, true)
+	ResendPlace(pid, playerSelectedObject[name], cell, true)
 end
 
-local DecorateScript = {}
-
+---@param pid PlayerId
+---@param refIndex UniqueIndex Generated uniqueIndex string
 function DecorateScript.SetSelectedObject(pid, refIndex)
 	setSelectedObject(pid, refIndex)
 end
 
-function DecorateScript.OnObjectPlace(eventStatus, pid, cellDescription)
+---@param eventStatus EventStatusTable
+---@param pid PlayerId
+function DecorateScript.OnObjectPlace(eventStatus, pid, _)
 	tes3mp.ReadReceivedObjectList()
-	setSelectedObject(pid, ('%s-%s'):format(tes3mp.GetObjectRefNum(0), tes3mp.GetObjectMpNum(0)))
+
+	setSelectedObject(
+		pid,
+		('%s-%s'):format(tes3mp.GetObjectRefNum(0), tes3mp.GetObjectMpNum(0))
+	)
+
+	return eventStatus
 end
 
+---@param eventStatus EventStatusTable
+---@param pid PlayerId
+---@param idGui GUIID
+---@param data integer The selected option in the given menu
 function DecorateScript.OnGUIAction(eventStatus, pid, idGui, data)
-	if idGui == cfg.MainId then
-		local pname = GetName(pid)
-		if tonumber(data) == 0 then --Move North
-			playerCurrentMode[pname] = trad.movn
+	data = assert(tonumber(data))
+
+	local name = getNameAngry(pid)
+
+	if idGui == MainGUIId then
+		-- Closed
+		if data >= 15 or data < 0 then return end
+
+		if data == 0 then
+			playerCurrentMode[name] = Text.MovN
 			showPromptGUI(pid)
-		elseif tonumber(data) == 1 then --Move East
-			playerCurrentMode[pname] = trad.move
+		elseif data == 1 then
+			playerCurrentMode[name] = Text.MovE
 			showPromptGUI(pid)
-		elseif tonumber(data) == 2 then --Move Up
-			playerCurrentMode[pname] = trad.movup
+		elseif data == 2 then
+			playerCurrentMode[name] = Text.MovUp
 			showPromptGUI(pid)
-		elseif tonumber(data) == 3 then --Rotate X
-			playerCurrentMode[pname] = trad.rotx
+		elseif data == 3 then
+			playerCurrentMode[name] = Text.RotX
 			showPromptGUI(pid)
-		elseif tonumber(data) == 4 then --Rotate Y
-			playerCurrentMode[pname] = trad.roty
+		elseif data == 4 then
+			playerCurrentMode[name] = Text.RotY
 			showPromptGUI(pid)
-		elseif tonumber(data) == 5 then --Rotate Z
-			playerCurrentMode[pname] = trad.rotz
+		elseif data == 5 then
+			playerCurrentMode[name] = Text.RotZ
 			showPromptGUI(pid)
-		elseif tonumber(data) == 6 then --Monter
-			playerCurrentMode[pname] = trad.up
+		elseif data == 6 then
+			playerCurrentMode[name] = Text.Up
 			onEnterPrompt(pid, 0)
 			DecorateScript.showMainGUI(pid)
-		elseif tonumber(data) == 7 then --Descendre
-			playerCurrentMode[pname] = trad.down
+		elseif data == 7 then
+			playerCurrentMode[name] = Text.Down
 			onEnterPrompt(pid, 0)
 			DecorateScript.showMainGUI(pid)
-		elseif tonumber(data) == 8 then --Est
-			playerCurrentMode[pname] = trad.east
+		elseif data == 8 then
+			playerCurrentMode[name] = Text.East
 			onEnterPrompt(pid, 0)
 			DecorateScript.showMainGUI(pid)
-		elseif tonumber(data) == 9 then --Ouest
-			playerCurrentMode[pname] = trad.west
+		elseif data == 9 then
+			playerCurrentMode[name] = Text.West
 			onEnterPrompt(pid, 0)
 			DecorateScript.showMainGUI(pid)
-		elseif tonumber(data) == 10 then --Nord
-			playerCurrentMode[pname] = trad.north
+		elseif data == 10 then
+			playerCurrentMode[name] = Text.North
 			onEnterPrompt(pid, 0)
 			DecorateScript.showMainGUI(pid)
-		elseif tonumber(data) == 11 then --Sud
-			playerCurrentMode[pname] = trad.sud
+		elseif data == 11 then
+			playerCurrentMode[name] = Text.South
 			onEnterPrompt(pid, 0)
 			DecorateScript.showMainGUI(pid)
-		elseif tonumber(data) == 12 then --Agrandir
-			playerCurrentMode[pname] = trad.bigger
+		elseif data == 12 then
+			playerCurrentMode[name] = Text.Bigger
 			onEnterPrompt(pid, 0)
 			DecorateScript.showMainGUI(pid)
-		elseif tonumber(data) == 13 then --Reduire
-			playerCurrentMode[pname] = trad.Lower
+		elseif data == 13 then
+			playerCurrentMode[name] = Text.Smaller
 			onEnterPrompt(pid, 0)
 			DecorateScript.showMainGUI(pid)
-		elseif tonumber(data) == 14 then --Attraper
-			playersTab[pname] = true
-			logicHandler.RunConsoleCommandOnPlayer(pid, "tb", false)
-			tes3mp.MessageBox(pid, -1, trad.info)
-			local TimerDrop = tes3mp.CreateTimerEx("StartDrop", time.seconds(0.01), "i", pid)
-			tes3mp.StartTimer(TimerDrop)
-		elseif tonumber(data) == 15 then --Close
+		elseif data == 14 then
+			playersTab[name] = true
+
+			logicHandler.RunConsoleCommandOnPlayer(pid, 'tb', false)
+			tes3mp.MessageBox(pid, -1, Text.Info)
+
+			I.timed.registerCallbackFunction(DecorateScript.startDrop, 0.01, pid)
 		end
-	elseif idGui == cfg.PromptId then
-		local pname = GetName(pid)
-		if data ~= nil and data ~= "" and tonumber(data) then
-			onEnterPrompt(pid, data)
-		end
-		playerCurrentMode[pname] = nil
+	elseif idGui == PromptGUIId then
+		onEnterPrompt(pid, data)
+		playerCurrentMode[name] = nil
 		DecorateScript.showMainGUI(pid)
 	end
+
+	return eventStatus
 end
 
+---@param pid PlayerId
 function DecorateScript.moveObject(pid)
-	local cellSize = 8192
-	local cell = tes3mp.GetCell(pid)
-	local pname = GetName(pid)
-	local object = GetObject(playerSelectedObject[pname], cell)
-	local drawState = tes3mp.GetDrawState(pid)
+	local cell, name = tes3mp.GetCell(pid), getNameAngry(pid)
+
+	local object = GetObject(playerSelectedObject[name], cell)
+
 	if not object then
 		return tes3mp.MessageBox(pid, -1, Text.NoSelect)
 	end
+
+	local drawState = tes3mp.GetDrawState(pid)
 
 	local playerAngleZ = tes3mp.GetRotZ(pid)
 
@@ -347,74 +397,94 @@ function DecorateScript.moveObject(pid)
 	if PosZ < tes3mp.GetPosZ(pid) then PosZ = tes3mp.GetPosZ(pid) end
 
 	if tes3mp.IsInExterior(pid) then
-		local correctGridX = math.floor(PosX / cellSize)
-		local correctGridY = math.floor(PosY / cellSize)
-		if LoadedCells[cell].gridX ~= correctGridX or LoadedCells[cell].gridY ~= correctGridY then
-			PosX = object.location.posX
-			PosY = object.location.posY
-			PosZ = object.location.posZ
-			tes3mp.MessageBox(pid, -1, trad.warningcell)
+		local loadedCell = LoadedCells[cell]
+
+		if loadedCell.gridX ~= grid(PosX) or loadedCell.gridY ~= grid(PosY) then
+			PosX, PosY, PosZ = object.location.posX, object.location.posY, object.location.posZ
+			tes3mp.MessageBox(pid, -1, Text.WarningCell)
 		end
 	end
 
 	if drawState == 1 then
-		local curDegrees = math.deg(object.location.rotZ)
-		local newDegrees = (curDegrees + 1) % 360
-		object.location.rotZ = math.rad(newDegrees)
+		object.location.rotZ = convertAddedDegrees(object.location.rotZ, 1)
 	elseif drawState == 2 then
-		local curDegrees = math.deg(object.location.rotX)
-		local newDegrees = (curDegrees + 1) % 360
-		object.location.rotX = math.rad(newDegrees)
+		object.location.rotZ = convertAddedDegrees(object.location.rotX, 1)
 	end
 
 	object.location.posX = PosX
 	object.location.posY = PosY
 	object.location.posZ = PosZ
 
-	ResendPlace(pid, playerSelectedObject[pname], cell, false)
+	ResendPlace(pid, playerSelectedObject[name], cell, false)
 
 	if tes3mp.GetSneakState(pid) then
-		tes3mp.MessageBox(pid, -1, trad.placeobjet)
-		ResendPlace(pid, playerSelectedObject[pname], cell, true)
-		playersTab[GetName(pid)] = nil
-		logicHandler.RunConsoleCommandOnPlayer(pid, "tb", false)
+		tes3mp.MessageBox(pid, -1, Text.PlaceObject)
+
+		ResendPlace(pid, playerSelectedObject[name], cell, true)
+		playersTab[name] = nil
+
+		logicHandler.RunConsoleCommandOnPlayer(pid, 'tb', false)
 	else
-		local TimerDrop = tes3mp.CreateTimerEx("StartDrop", time.seconds(0.01), "i", pid)
-		tes3mp.StartTimer(TimerDrop)
+		I.timed.registerCallbackFunction(DecorateScript.startDrop, 0.01, pid)
 	end
 end
 
-function DecorateScript.OnObjectActivate(eventStatus, pid, cellDescription, objects)
-	if playersTab[GetName(pid)] and GetObject(playerSelectedObject[GetName(pid)], cellDescription) then
-		return customEventHooks.makeEventStatus(false, false)
+---@param eventStatus EventStatusTable
+---@param pid PlayerId
+---@param cellDescription CellDescription
+---@return EventStatusTable?
+function DecorateScript.OnObjectActivate(eventStatus, pid, cellDescription, _)
+	local name = getNameAngry(pid)
+
+	if playersTab[name] and GetObject(playerSelectedObject[name], cellDescription) then
+		eventStatus.validCustomHandlers = false
+		eventStatus.validDefaultHandler = false
 	end
+
+	return eventStatus
 end
 
-function DecorateScript.OnPlayerCellChange(eventStatus, pid, playerPacket, previousCellDescription)
-	playerSelectedObject[GetName(pid)] = nil
-	if playersTab[GetName(pid)] then
-		logicHandler.RunConsoleCommandOnPlayer(pid, "tb", false)
-		playersTab[GetName(pid)] = nil
+---@param eventStatus EventStatusTable
+---@param pid PlayerId
+function DecorateScript.OnPlayerCellChange(eventStatus, pid, _, _)
+	local name = getNameAngry(pid)
+
+	playerSelectedObject[name] = nil
+
+	if playersTab[name] then
+		logicHandler.RunConsoleCommandOnPlayer(pid, 'tb', false)
+		playersTab[name] = nil
 	end
+
+	return eventStatus
 end
 
+---@param eventStatus EventStatusTable
+---@param pid PlayerId
 function DecorateScript.OnPlayerAuthentified(eventStatus, pid)
-	if playersTab[GetName(pid)] then
-		playersTab[GetName(pid)] = nil
-	end
+	local name = getNameAngry(pid)
+
+	if playersTab[name] then playersTab[name] = nil end
+
+	return eventStatus
 end
 
+---@param pid PlayerId
 function DecorateScript.showMainGUI(pid)
-	if not playersTab[GetName(pid)] then
-		local currentItem = "Aucun"
-		local selected = playerSelectedObject[GetName(pid)]
-		local object = GetObject(selected, tes3mp.GetCell(pid))
-		if selected and object then
-			currentItem = object.refId .. " (" .. selected .. ")"
-		end
-		local message = trad.opt1 .. currentItem
-		tes3mp.CustomMessageBox(pid, cfg.MainId, message, trad.opt2)
+	local name = getNameAngry(pid)
+
+	if playersTab[name] then return end
+
+	local currentItem = Text.None
+
+	local selected = playerSelectedObject[name]
+	local object = GetObject(selected, tes3mp.GetCell(pid))
+
+	if selected and object then
+		currentItem = ('%s (%s)'):format(object.refId, selected)
 	end
+
+	tes3mp.CustomMessageBox(pid, MainGUIId, Text.Opt1 .. currentItem, Text.Opt2)
 end
 
 ---@type TES3MPScriptRegistration

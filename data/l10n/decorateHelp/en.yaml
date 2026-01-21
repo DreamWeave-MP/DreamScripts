@@ -10,6 +10,7 @@ Info: To place the item, enter stealth mode.\nTo rotate, draw your weapon or mag
 MovE: +/- {East}
 MovN: +/- {North}
 MovUp: +/- {Height}
+None: None
 North: North
 NoSelect: No object selected.
 NoOption: The object cannot be modified.
