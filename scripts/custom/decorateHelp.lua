@@ -15,7 +15,7 @@ local L = require('l10n')('decorateHelp')
 
 ---@type MenuHelper
 local menuHelper = I.menuHelper
-MainGUIId, PromptGUIId = menuHelper.getMenuId(), menuHelper.getMenuId()
+local MainGUIId, PromptGUIId = menuHelper.getMenuId(), menuHelper.getMenuId()
 
 ---@class DecorateHelp
 local DecorateScript = {}
