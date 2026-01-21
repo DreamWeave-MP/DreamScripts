@@ -21,6 +21,7 @@
 
 local color = require 'color'
 local enumerations = require 'tes3mp.enumerations'
+local miscUtil = require 'dUtil.miscellaneous'
 local tableHelper = require 'tes3mp.util.table'
 
 ---@class CustomCommandHooks
@@ -216,7 +217,16 @@ function customCommandHooks.validator(eventStatus, pid, message)
 
     if commandNotAuthenticated or allowedByName or allowedByRank then
         cmd[1] = cmd[1]:lower()
-        command.callback(pid, cmd)
+
+        local ok, err = miscUtil.safeCall(command.callback, pid, cmd)
+
+        if not ok then
+            error(
+                ('Callback function %s for command %s failed due to error: %s')
+                :format(command.callback, cmd, err)
+            )
+        end
+
         eventStatus.validDefaultHandler = false
     end
 
