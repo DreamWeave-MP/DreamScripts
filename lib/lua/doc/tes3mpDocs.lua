@@ -51,7 +51,7 @@
 ---@field prefixZeroes fun(self: string, desiredLength: integer): string Given a number of zeroes to prefix, returns the original string with N zeroes prepended
 ---@field normalize fun(self: string): string lowercases and converts all backslashes to forward slashes
 ---@field scriptPath fun(self: string): string Replaces native path separators with dots and removes leading, trailing, and duplicate separators
----@field titleCase fun(self: string): string
+---@field titleCase fun(self: string): string Splits a string by spaces and returns one where the first letter of each substring is capitalized and others are lowercased. Kind of expensive.
 ---@field splitUniqueIndex fun(self: string): integer, integer Splits a unique index string into refNum, mpNum
 
 ---@class TES3MPCommand

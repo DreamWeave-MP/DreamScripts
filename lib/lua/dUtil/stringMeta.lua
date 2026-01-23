@@ -15,7 +15,26 @@ function StringMeta:capitalizeFirstLetter()
   return (self:gsub("^%l", string.upper))
 end
 
-StringMeta.titleCase = StringMeta.capitalizeFirstLetter
+--- Title case a string (capitalize first letter of each word)
+function StringMeta:titleCase()
+  if self == '' then return '' end
+
+  -- Split by spaces, including multiple spaces
+  local words = {}
+  for word in self:gmatch('%S+') do
+    table.insert(words, word)
+  end
+
+  -- Capitalize each word
+  for i, word in ipairs(words) do
+    if #word > 0 then
+      words[i] = word:sub(1, 1):upper() .. word:sub(2):lower()
+    end
+  end
+
+  -- Reconstruct with single spaces
+  return table.concat(words, ' ')
+end
 
 function StringMeta:ciEqual(otherString)
   if type(otherString) ~= "string" then return false end
