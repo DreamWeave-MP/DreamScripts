@@ -873,7 +873,7 @@
 ---Send an ActorPosition packet.
 ---@field SendActorPosition fun(sendToOtherVisitors: boolean, skipAttachedPlayer: boolean)
 ---Send an ActorSpellsActive packet.
----@field SendActorSpellsActiveChanges fun(sendToOtherVisitors: boolean, skipAttachedPlayer: boolean)
+---@field SendActorSpellsActiveChanges fun(sendToOtherVisitors: boolean?, skipAttachedPlayer: boolean?)
 ---Send an ActorSpeech packet.
 ---@field SendActorSpeech fun(sendToOtherVisitors: boolean, skipAttachedPlayer: boolean)
 ---Send an ActorStatsDynamic packet.
