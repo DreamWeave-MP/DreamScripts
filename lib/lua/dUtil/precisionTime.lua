@@ -1,5 +1,7 @@
 local ffi, osType = require 'ffi', tes3mp.GetOperatingSystemType()
 
+local MSSinceStart = tes3mp.GetMillisecondsSinceServerStart
+
 local PlatformHandlers = {
   Linux = function()
     ffi.cdef [[
@@ -19,7 +21,7 @@ local PlatformHandlers = {
     local NANOSECONDS_PER_SECOND_MULT = 1.0 / 1e9
 
     return function()
-      if ffi.C.clock_gettime(CLOCK_MONOTONIC, ts) ~= 0 then return tes3mp.GetMillisecondsSinceServerStart() / 1000. end
+      if ffi.C.clock_gettime(CLOCK_MONOTONIC, ts) ~= 0 then return MSSinceStart() / 1000. end
 
       return tonumber(ts[0].tv_sec) + (tonumber(ts[0].tv_nsec) * NANOSECONDS_PER_SECOND_MULT)
     end
@@ -50,7 +52,7 @@ local PlatformHandlers = {
     end
   end,
   ['Unknown OS'] = function()
-    return tes3mp.GetMillisecondsSinceServerStart() / 1000
+    return MSSinceStart() / 1000
   end,
   Windows = function()
     ffi.cdef [[
