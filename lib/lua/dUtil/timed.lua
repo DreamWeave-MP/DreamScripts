@@ -1,9 +1,6 @@
 local enumerations = require 'tes3mp.enumerations'
 local jsonInterface = require 'jsonInterface'
 
-local hasChronos, chronos = pcall(require, 'chronos')
-local timeFunction = hasChronos and chronos.nanotime or os.time
-
 assert(
   BufferedDiskPaths and Callbacks,
   'This module may not be imported directly inside the script sandbox. Use I.timed instead!'
@@ -26,7 +23,7 @@ function TimedModule.defer(callbackFunction, callbackDelay, ...)
 
   Callbacks[#numCallbacks + 1] = {
     callback = callbackFunction,
-    triggerAt = timeFunction() + callbackDelay,
+    triggerAt = os.time() + callbackDelay,
     arguments = { ... }
   }
 

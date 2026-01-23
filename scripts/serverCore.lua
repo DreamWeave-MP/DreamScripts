@@ -126,19 +126,13 @@ tes3mp.StartTimer(DiskBufferTimerId)
 ---@global
 Callbacks = {}
 
-local hasChronos, chronos = pcall(require, 'chronos')
-
-if hasChronos then tes3mp.LogAppend(enumerations.log.INFO, 'Chronos found! High-precision timers will be enabled.') end
-
-local timeFunction = hasChronos and chronos.nanotime or os.time
-
 local CallbacksPerSecond = 15
 local CallbackFunctionsTimerId = tes3mp.CreateTimerEx('CallbackFunctionPulse', 1000 / CallbacksPerSecond, '')
 
 --- Run all stored timed callbacks and re-propagate the timer when appropriate.
 --- Does not continue execution if there are no more callbacks to run.
 function CallbackFunctionPulse()
-    local now = timeFunction()
+    local now = os.time()
 
     for i = #Callbacks, 1, -1 do
         local targetCallback = Callbacks[i]
