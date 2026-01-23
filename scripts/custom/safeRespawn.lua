@@ -27,13 +27,39 @@ local I = require 'interfaces'
 
 ---@class SafeRespawn
 local safeRespawn = {}
+local EPS = 0.001
+
+local ceil, floor = math.ceil, math.floor
+---@param input number
+local function round(input)
+	return input >= 0 and floor(input + 0.5) or ceil(input - 0.5)
+end
+
+---@param input number
+---@param high number
+---@param low number
+local function clamp(input, low, high)
+	return input < low and low or (input > high and high or input)
+end
+
+---@param target number?
+---@param base number
+local function statValue(target, base)
+	if not target then return base end
+
+	if target <= 1.0 and target >= EPS then
+		return round(target * base)
+	end
+
+	return base
+end
 
 ---@param pid PlayerId
 ---@return number, number, number
 local function CalculateRevivedPlayerStats(pid)
-	local healthBase = tes3mp.GetHealthBase(pid)
-	local fatigueCurrent, fatigueBase = tes3mp.GetFatigueCurrent(pid), tes3mp.GetFatigueBase(pid)
-	local magickaCurrent, magickaBase = tes3mp.GetMagickaCurrent(pid), tes3mp.GetMagickaBase(pid)
+	local baseHealth = tes3mp.GetHealthBase(pid)
+	local currentFatigue, baseFatigue = tes3mp.GetFatigueCurrent(pid), tes3mp.GetFatigueBase(pid)
+	local currentMagicka, baseMagicka = tes3mp.GetMagickaCurrent(pid), tes3mp.GetMagickaBase(pid)
 
 	local newHealth, newMagicka, newFatigue
 
@@ -41,31 +67,20 @@ local function CalculateRevivedPlayerStats(pid)
 			assert(tonumber(SafeRespawnData.StatsOnRevive.health)), tonumber(SafeRespawnData.StatsOnRevive.magicka),
 			tonumber(SafeRespawnData.StatsOnRevive.fatigue)
 
-	if targetHealth < 1.0 then
-		newHealth = math.floor((healthBase * SafeRespawnData.StatsOnRevive.health) + 0.5)
-	else
-		newHealth = SafeRespawnData.StatsOnRevive.health
-	end
+	newHealth = clamp(statValue(targetHealth, baseHealth), 1, baseHealth)
 
-	if not targetMagicka and SafeRespawnData.StatsOnRevive.magicka == 'preserve' then
-		newMagicka = magickaCurrent
-	elseif targetMagicka and targetMagicka < 1.0 then
-		newMagicka = math.floor((magickaBase * SafeRespawnData.StatsOnRevive.magicka) + 0.5)
-	else
-		newMagicka = targetMagicka or magickaBase
-	end
+	newMagicka = clamp(
+		SafeRespawnData.StatsOnRevive.magicka == 'preserve' and currentMagicka or statValue(targetMagicka, baseMagicka),
+		0,
+		baseMagicka
+	)
 
-	if not targetFatigue and SafeRespawnData.StatsOnRevive.fatigue == 'preserve' then
-		newFatigue = fatigueCurrent
-	elseif targetFatigue and targetFatigue < 1.0 then
-		newFatigue = math.floor((fatigueBase * SafeRespawnData.StatsOnRevive.fatigue) + 0.5)
-	else
-		newFatigue = targetFatigue or fatigueBase
-	end
+	newFatigue = clamp(
+		SafeRespawnData.StatsOnRevive.fatigue == 'preserve' and currentFatigue or statValue(targetFatigue, baseFatigue),
+		0,
+		baseFatigue
+	)
 
-	newHealth = math.max(math.min(newHealth, healthBase), 1)
-	newMagicka = math.max(math.min(newMagicka, magickaBase), 0)
-	newFatigue = math.max(math.min(newFatigue, fatigueBase), 0)
 	return newHealth, newMagicka, newFatigue
 end
 
