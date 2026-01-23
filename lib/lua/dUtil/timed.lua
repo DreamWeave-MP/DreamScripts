@@ -18,7 +18,7 @@ local TimedModule = {}
 ---@param callbackFunction function
 ---@param callbackDelay number
 ---@param ... any
-function TimedModule.registerCallbackFunction(callbackFunction, callbackDelay, ...)
+function TimedModule.defer(callbackFunction, callbackDelay, ...)
   assert(callbackFunction and type(callbackFunction) == 'function', 'Invalid callback function registered!')
   assert(callbackDelay and type(callbackDelay) == 'number' and callbackDelay > 0., 'Invalid callback delay!')
 

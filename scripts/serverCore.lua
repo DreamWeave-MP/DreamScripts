@@ -161,7 +161,7 @@ function CallbackFunctionPulse()
     tes3mp.StartTimer(CallbackFunctionsTimerId)
 end
 
---- Called by the `timed` module as a side effect of `registerCallbackFunction`
+--- Called ONLY by `timed.defer`
 --- In the event that the callbacks table is empty and thus the callback handler isn't running
 function StartTimedCallbackHandler()
     if next(Callbacks) == nil then return end

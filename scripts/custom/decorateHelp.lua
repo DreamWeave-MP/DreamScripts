@@ -351,7 +351,7 @@ function DecorateScript.OnGUIAction(eventStatus, pid, idGui, data)
 			logicHandler.RunConsoleCommandOnPlayer(pid, 'tb', false)
 			tes3mp.MessageBox(pid, -1, Text.Info)
 
-			I.timed.registerCallbackFunction(DecorateScript.startDrop, 0.01, pid)
+			I.timed.defer(DecorateScript.startDrop, 0.01, pid)
 		end
 	elseif idGui == PromptGUIId then
 		onEnterPrompt(pid, data)
@@ -425,7 +425,7 @@ function DecorateScript.moveObject(pid)
 
 		logicHandler.RunConsoleCommandOnPlayer(pid, 'tb', false)
 	else
-		I.timed.registerCallbackFunction(DecorateScript.startDrop, 0.01, pid)
+		I.timed.defer(DecorateScript.startDrop, 0.01, pid)
 	end
 end
 
