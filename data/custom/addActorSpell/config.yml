@@ -1,0 +1,51 @@
+# Refer to the types defined in addActorSpell.lua to
+# understand how to fill out this document
+forAllActors: true
+forRefIdActors: false
+forIndexActors: false
+
+refIdActors:
+  refId 01:
+    - spell01
+    - spell02
+
+  refId 02:
+    - spell01
+    - spell02
+
+fuzzyIdActors:
+  td_:
+    - spell01
+    - spell02
+
+  caius:
+    - spell01
+    - spell02
+
+actorIndexList:
+  01-0:
+    - spell01
+    - spell02
+
+  02-0:
+    - spell01
+    - spell02
+
+addedSpells:
+  spell01:
+    displayName: Example01
+    stackingState: false
+    effects:
+    # Only literal names for effects are accepted.
+    # Check server/lib/lua/dUtil/enums.lua:MagicEffectId::246
+      - id: Poison
+        magnitude: 30
+        duration: 3
+        timeLeft: 3
+        arg: -1
+
+      - id: Blind
+        magnitude: 300
+        duration: 300000
+        timeLeft: 300000
+
