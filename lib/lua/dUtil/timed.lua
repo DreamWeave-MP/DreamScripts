@@ -22,11 +22,15 @@ function TimedModule.registerCallbackFunction(callbackFunction, callbackDelay, .
   assert(callbackFunction and type(callbackFunction) == 'function', 'Invalid callback function registered!')
   assert(callbackDelay and type(callbackDelay) == 'number' and callbackDelay > 0., 'Invalid callback delay!')
 
-  Callbacks[#Callbacks + 1] = {
+  local numCallbacks = #Callbacks
+
+  Callbacks[#numCallbacks + 1] = {
     callback = callbackFunction,
     triggerAt = timeFunction() + callbackDelay,
     arguments = { ... }
   }
+
+  if numCallbacks == 0 then StartTimedCallbackHandler() end
 end
 
 --- Given some initial data, provide a path and details for subscription,

@@ -73,8 +73,7 @@ banList = {}
 ---@global
 BufferedDiskPaths = {}
 
-local DiskBufferTimerId, CallbackFunctionsTimerId
--- local PlayerSaveDelay, CellSaveDelay, WorldSaveDelay = 15, 30, 45
+local DiskBufferTimerId = tes3mp.CreateTimerEx('SaveBufferedPaths', config.diskBufferDelay * 1000, '')
 function SaveBufferedPaths()
     local removePaths = {}
 
@@ -121,6 +120,8 @@ function SaveBufferedPaths()
     tes3mp.StartTimer(DiskBufferTimerId)
 end
 
+tes3mp.StartTimer(DiskBufferTimerId)
+
 ---@type TimerCallback[]
 ---@global
 Callbacks = {}
@@ -131,10 +132,12 @@ if hasChronos then tes3mp.LogAppend(enumerations.log.INFO, 'Chronos found! High-
 
 local timeFunction = hasChronos and chronos.nanotime or os.time
 
-function CallbackFunctionPulse()
-    --- WARN: LuaJIT2 Required. Alternatively, use next(Callbacks) == nil
-    if table.isempty(Callbacks) then return end
+local CallbacksPerSecond = 15
+local CallbackFunctionsTimerId = tes3mp.CreateTimerEx('CallbackFunctionPulse', 1000 / CallbacksPerSecond, '')
 
+--- Run all stored timed callbacks and re-propagate the timer when appropriate.
+--- Does not continue execution if there are no more callbacks to run.
+function CallbackFunctionPulse()
     local now = timeFunction()
 
     for i = #Callbacks, 1, -1 do
@@ -153,15 +156,18 @@ function CallbackFunctionPulse()
         end
     end
 
+    if next(Callbacks) == nil then return end
+
     tes3mp.StartTimer(CallbackFunctionsTimerId)
 end
 
-DiskBufferTimerId = tes3mp.CreateTimerEx('SaveBufferedPaths', config.diskBufferDelay * 1000, '')
-tes3mp.StartTimer(DiskBufferTimerId)
+--- Called by the `timed` module as a side effect of `registerCallbackFunction`
+--- In the event that the callbacks table is empty and thus the callback handler isn't running
+function StartTimedCallbackHandler()
+    if next(Callbacks) == nil then return end
 
-local CallbacksPerSecond = 15
-CallbackFunctionsTimerId = tes3mp.CreateTimerEx('CallbackFunctionPulse', 1000 / CallbacksPerSecond, '')
-tes3mp.StartTimer(CallbackFunctionsTimerId)
+    tes3mp.StartTimer(CallbackFunctionsTimerId)
+end
 
 --- If the CustomEventHooks interface is loaded,
 --- Then the OnServerInit event initializes this value
