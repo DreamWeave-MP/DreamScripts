@@ -27,6 +27,8 @@ local lfs = require 'lfs'
 local ScriptPathFormatter = 'server.scripts.%s.%s'
 
 local BuiltinScriptPaths = {
+  --- NOTE: Only pure interfaces may be defined in this section.
+
   --- Re-expose the contents of clientVariableScopes through an interface
   'clientVariableScopesInterface',
   --- The menu interface is what used to be menuHelper, and many builtins rely on it
@@ -44,13 +46,18 @@ local BuiltinScriptPaths = {
   --- The interface defined by customCommandHooks is required for all scripts to
   --- Define chat commands. Don't remove it or change its order.
   'customCommandHooks',
-  --- All chat commands are defined by this script
+  --- NOTE: All chat commands should be defined in this section, before event callbacks
+
   'defaultCommands',
+  --- NOTE: Event callbacks in this section
+
   -- Most core server functionality is implemented in defaultValidators/defaultHandlers
   'defaultValidators',
   'defaultHandlers',
   --- contentFixer is used to adjust corprus state and world variables in certain circumstances
   'contentFixer',
+  --- NOTE: Dependencies of builtin interfaces without event callbacks
+
   -- Built in help menu and example interfaces
   'menu/help',
   'menu/defaultCrafting',
