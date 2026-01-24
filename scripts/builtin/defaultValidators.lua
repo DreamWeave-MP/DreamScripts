@@ -1,9 +1,11 @@
-local clientVariableScopes = require 'tes3mp.clientVariableScopes'
 local config = require 'tes3mp.config'
 local dUtil = require 'dUtil.init'
 local enumerations = require 'tes3mp.enumerations'
 local logicHandler = require 'tes3mp.logicHandler'
 local tableHelper = require 'tes3mp.util.table'
+
+local I = require 'interfaces'
+local clientVariableScopes = I.clientVariableScopes
 
 -- Don't create objects mentioned in config.disallowedCreateRefIds
 local function defaultCreationValidator(_, _, _, objects)

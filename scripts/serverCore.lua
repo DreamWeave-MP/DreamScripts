@@ -168,7 +168,7 @@ end
 ---@type CustomEventHooks?
 local CustomEventHooks
 
-local clientVariableScopes = require 'tes3mp.clientVariableScopes'
+local clientVariableScopes = require 'clientVariableScopes'
 local consoleKickMessage = '%s has been kicked for using the console despite not having the permission to do so.\n'
 
 if (config.databaseType ~= nil and config.databaseType ~= 'json') and pcall(require, 'luasql.' .. config.databaseType) then

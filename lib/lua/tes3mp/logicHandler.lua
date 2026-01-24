@@ -1,7 +1,7 @@
 -- assert(LoadedCells ~= nil, 'logicHandler does not have LoadedCells table in scope!')
 -- assert(Players ~= nil, 'logicHandler does not have Players table in scope!')
 
-local clientVariableScopes = require 'tes3mp.clientVariableScopes'
+local clientVariableScopes = require 'clientVariableScopes'
 local config = require 'tes3mp.config'
 local enumerations = require 'tes3mp.enumerations'
 local tableHelper = require 'tes3mp.util.table'

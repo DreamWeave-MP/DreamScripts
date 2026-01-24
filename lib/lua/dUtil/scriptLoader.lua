@@ -27,6 +27,8 @@ local lfs = require 'lfs'
 local ScriptPathFormatter = 'server.scripts.%s.%s'
 
 local BuiltinScriptPaths = {
+  --- Re-expose the contents of clientVariableScopes through an interface
+  'clientVariableScopesInterface',
   --- The menu interface is what used to be menuHelper, and many builtins rely on it
   --- FIXME: menuHelper sucked and menuInterface does too
   'menuInterface',
