@@ -163,11 +163,6 @@ function StartTimedCallbackHandler()
     tes3mp.StartTimer(CallbackFunctionsTimerId)
 end
 
---- If the CustomEventHooks interface is loaded,
---- Then the OnServerInit event initializes this value
----@type CustomEventHooks?
-local CustomEventHooks
-
 local clientVariableScopes = require 'clientVariableScopes'
 local consoleKickMessage = '%s has been kicked for using the console despite not having the permission to do so.\n'
 
@@ -287,15 +282,11 @@ local function onGenericObjectEvent(pid, cellDescription, packetType)
         logicHandler.LoadCell(cellDescription)
     end
 
-    local eventName, eventStatus = ('On%s'):format(packetType)
-    if CustomEventHooks then
-        eventStatus = CustomEventHooks.triggerValidators(
-            eventName,
-            { pid, cellDescription, objects, targetPlayers }
-        )
-    else
-        eventStatus = dUtil.misc.makeEventStatus()
-    end
+    local eventName = ('On%s'):format(packetType)
+    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
+        eventName,
+        { pid, cellDescription, objects, targetPlayers }
+    )
 
     if eventStatus.validDefaultHandler then
         local debugMessage = ('Accepted %s from %s about %s for ')
@@ -329,13 +320,11 @@ local function onGenericObjectEvent(pid, cellDescription, packetType)
         loadedCell:LoadObjectsByPacketType(packetType, pid, objects, tableHelper.getArrayFromIndices(objects), true)
     end
 
-    if CustomEventHooks then
-        CustomEventHooks.triggerHandlers(
-            eventName,
-            eventStatus,
-            { pid, cellDescription, objects, targetPlayers }
-        )
-    end
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+        eventName,
+        eventStatus,
+        { pid, cellDescription, objects, targetPlayers }
+    )
 
     if not cell then
         logicHandler.UnloadCell(cellDescription)
@@ -351,27 +340,21 @@ local function onGenericPlayerEvent(pid, packetType)
 
     local playerPacket = packetReader.GetPlayerPacketTables(pid, packetType)
 
-    if not CustomEventHooks then
-        return player:SaveDataByPacketType(packetType, playerPacket)
-    end
-
-    local eventName, eventStatus = ('On'):format(packetType)
-    if CustomEventHooks then
-        eventStatus = CustomEventHooks.triggerValidators(eventName, { pid, playerPacket })
-    else
-        eventStatus = dUtil.misc.makeEventStatus()
-    end
+    local eventName, eventStatus = ('On%s'):format(packetType)
+    eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
+        eventName,
+        { pid, playerPacket }
+    )
 
     if eventStatus.validDefaultHandler then
         player:SaveDataByPacketType(packetType, playerPacket)
     end
 
-    if CustomEventHooks then
-        CustomEventHooks.triggerHandlers(eventName,
-            eventStatus,
-            { pid, playerPacket }
-        )
-    end
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+        eventName,
+        eventStatus,
+        { pid, playerPacket }
+    )
 end
 
 ---@param pid PlayerId
@@ -392,15 +375,11 @@ local function onGenericActorEvent(pid, cellDescription, packetType)
     tes3mp.ReadReceivedActorList()
     local actors = packetReader.GetActorPacketTables(packetType).actors
 
-    local eventName, eventStatus = ('On'):format(packetType)
-    if CustomEventHooks then
-        eventStatus = CustomEventHooks.triggerValidators(
-            eventName,
-            { pid, cellDescription, actors }
-        )
-    else
-        eventStatus = dUtil.misc.makeEventStatus()
-    end
+    local eventName = ('On%s'):format(packetType)
+    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
+        eventName,
+        { pid, cellDescription, actors }
+    )
 
     if eventStatus.validDefaultHandler then
         tes3mp.LogMessage(
@@ -412,13 +391,11 @@ local function onGenericActorEvent(pid, cellDescription, packetType)
         cell:SaveActorsByPacketType(packetType, actors)
     end
 
-    if CustomEventHooks then
-        CustomEventHooks.triggerHandlers(
-            eventName,
-            eventStatus,
-            { pid, cellDescription, actors }
-        )
-    end
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+        eventName,
+        eventStatus,
+        { pid, cellDescription, actors }
+    )
 end
 
 function LoadBanList()
@@ -531,9 +508,6 @@ function OnServerInit()
 
     ScriptLoader.loadAllScripts()
     print(ScriptLoader.Interfaces)
-    if ScriptLoader.Interfaces.customEventHooks then
-        CustomEventHooks = ScriptLoader.Interfaces.customEventHooks
-    end
 
     -- If the world has a data entry, load it
     if WorldInstance:HasEntry() then
@@ -544,13 +518,11 @@ function OnServerInit()
         -- Get the current mpNum from the loaded world
         tes3mp.SetCurrentMpNum(WorldInstance:GetCurrentMpNum())
 
-        if CustomEventHooks then
-            CustomEventHooks.triggerHandlers(
-                'OnWorldReload',
-                dUtil.misc.makeEventStatus(),
-                {}
-            )
-        end
+        ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+            'OnWorldReload',
+            dUtil.misc.makeEventStatus(),
+            {}
+        )
 
         -- Otherwise, create a data file for it
     else
@@ -580,12 +552,7 @@ end
 function OnServerPostInit()
     tes3mp.LogMessage(enumerations.log.INFO, 'Called "OnServerPostInit"')
 
-    local eventStatus
-    if CustomEventHooks then
-        eventStatus = CustomEventHooks.triggerValidators('OnServerPostInit', {})
-    else
-        eventStatus = dUtil.misc.makeEventStatus()
-    end
+    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators('OnServerPostInit', {})
 
     if eventStatus.validDefaultHandler then
         tes3mp.SetGameMode(config.gameMode)
@@ -647,36 +614,28 @@ function OnServerPostInit()
         tes3mp.SetRuleString('respawnCell', respawnCell)
     end
 
-    if CustomEventHooks then
-        CustomEventHooks.triggerHandlers('OnServerPostInit', eventStatus, {})
-    end
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers('OnServerPostInit', eventStatus, {})
 end
 
 function OnServerExit(errorState)
     tes3mp.LogMessage(enumerations.log.INFO, 'Called "OnServerExit"')
     tes3mp.LogMessage(enumerations.log.ERROR, 'Error state: ' .. tostring(errorState))
 
-    if CustomEventHooks then
-        CustomEventHooks.triggerHandlers(
-            'OnServerExit',
-            dUtil.misc.makeEventStatus(),
-            { errorState }
-        )
-    end
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+        'OnServerExit',
+        dUtil.misc.makeEventStatus(),
+        { errorState }
+    )
 end
 
 function OnServerScriptCrash(errorMessage)
     tes3mp.LogMessage(enumerations.log.ERROR, 'Server crash from script error!')
 
-    if CustomEventHooks then
-        CustomEventHooks.triggerHandlers(
-            'OnServerExit',
-            dUtil.misc.makeEventStatus(),
-            { errorMessage }
-        )
-    end
-
-    -- tes3mp.StopServer(7)
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+        'OnServerExit',
+        dUtil.misc.makeEventStatus(),
+        { errorMessage }
+    )
 end
 
 function OnRequestDataFileList()
@@ -729,12 +688,7 @@ function OnPlayerConnect(pid)
     local player = Players[pid]
     player.name = playerName
 
-    local eventStatus
-    if CustomEventHooks then
-        eventStatus = CustomEventHooks.triggerValidators('OnPlayerConnect', { pid })
-    else
-        eventStatus = dUtil.misc.makeEventStatus()
-    end
+    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators('OnPlayerConnect', { pid })
 
     if eventStatus.validDefaultHandler then
         -- Send instanced spawn cell record now so it has time to arrive
@@ -840,9 +794,7 @@ function OnPlayerConnect(pid)
         tes3mp.StartTimer(Players[pid].loginTimerId)
     end
 
-    if CustomEventHooks then
-        CustomEventHooks.triggerHandlers('OnPlayerConnect', eventStatus, { pid })
-    end
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers('OnPlayerConnect', eventStatus, { pid })
 end
 
 function OnPlayerDisconnect(pid)
@@ -866,12 +818,7 @@ function OnPlayerDisconnect(pid)
 
     local player = Players[pid]
     if player and player:IsLoggedIn() then
-        local eventStatus
-        if CustomEventHooks then
-            eventStatus = CustomEventHooks.triggerValidators('OnPlayerDisconnect', { pid })
-        else
-            eventStatus = dUtil.misc.makeEventStatus()
-        end
+        local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators('OnPlayerDisconnect', { pid })
 
         if eventStatus.validDefaultHandler then
             local ipAddress = player.ipAddress
@@ -902,24 +849,20 @@ function OnPlayerDisconnect(pid)
 
             -- Unload every cell for this player
             for _, loadedCellDescription in pairs(player.cellsLoaded) do
-                if CustomEventHooks then
-                    local cellUnloadStatus = CustomEventHooks.triggerValidators(
-                        'OnCellUnload',
-                        { pid, loadedCellDescription }
-                    )
+                local cellUnloadStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
+                    'OnCellUnload',
+                    { pid, loadedCellDescription }
+                )
 
-                    if cellUnloadStatus.validDefaultHandler then
-                        logicHandler.UnloadCellForPlayer(pid, loadedCellDescription)
-                    end
-
-                    CustomEventHooks.triggerHandlers(
-                        'OnCellUnload',
-                        cellUnloadStatus,
-                        { pid, loadedCellDescription }
-                    )
-                else
+                if cellUnloadStatus.validDefaultHandler then
                     logicHandler.UnloadCellForPlayer(pid, loadedCellDescription)
                 end
+
+                ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+                    'OnCellUnload',
+                    cellUnloadStatus,
+                    { pid, loadedCellDescription }
+                )
             end
 
             if player.data.location.regionName ~= nil then
@@ -927,9 +870,11 @@ function OnPlayerDisconnect(pid)
             end
         end
 
-        if CustomEventHooks then
-            CustomEventHooks.triggerHandlers('OnPlayerDisconnect', eventStatus, { pid })
-        end
+        ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+            'OnPlayerDisconnect',
+            eventStatus,
+            { pid }
+        )
 
         player:Destroy()
         Players[pid] = nil
@@ -948,13 +893,11 @@ function OnPlayerDisconnect(pid)
 end
 
 function OnPlayerResurrect(pid)
-    if CustomEventHooks then
-        CustomEventHooks.triggerHandlers(
-            'OnPlayerResurrect',
-            dUtil.misc.makeEventStatus(),
-            { pid }
-        )
-    end
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+        'OnPlayerResurrect',
+        dUtil.misc.makeEventStatus(),
+        { pid }
+    )
 end
 
 ---@param pid PlayerId
@@ -966,12 +909,10 @@ function OnPlayerSendMessage(pid, message)
     local logMessage = ('%s: %s'):format(logicHandler.GetChatName(pid), message)
     tes3mp.LogMessage(enumerations.log.INFO, logMessage)
 
-    local eventStatus
-    if CustomEventHooks then
-        eventStatus = CustomEventHooks.triggerValidators('OnPlayerSendMessage', { pid, message })
-    else
-        eventStatus = dUtil.misc.makeEventStatus()
-    end
+    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
+        'OnPlayerSendMessage',
+        { pid, message }
+    )
 
     if eventStatus.validDefaultHandler and message:sub(1, 1) ~= '/' then
         local chatMessage = ('%s%s\n'):format(color.White, logMessage)
@@ -989,9 +930,11 @@ function OnPlayerSendMessage(pid, message)
         tes3mp.SendMessage(targetPid, chatMessage, true)
     end
 
-    if CustomEventHooks then
-        CustomEventHooks.triggerHandlers('OnPlayerSendMessage', eventStatus, { pid, message })
-    end
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+        'OnPlayerSendMessage',
+        eventStatus,
+        { pid, message }
+    )
 end
 
 ---@param pid PlayerId
@@ -1001,20 +944,20 @@ function OnPlayerDeath(pid)
     local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
     if not isValid or not targetPid then return end
 
-    local eventStatus
-    if CustomEventHooks then
-        eventStatus = CustomEventHooks.triggerValidators("OnPlayerDeath", { pid })
-    else
-        eventStatus = dUtil.misc.makeEventStatus()
-    end
+    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
+        'OnPlayerDeath',
+        { pid }
+    )
 
     if eventStatus.validDefaultHandler then
         Players[pid]:ProcessDeath()
     end
 
-    if CustomEventHooks then
-        CustomEventHooks.triggerHandlers('OnPlayerDeath', eventStatus, { pid })
-    end
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+        'OnPlayerDeath',
+        eventStatus,
+        { pid }
+    )
 end
 
 ---@param pid PlayerId
@@ -1091,15 +1034,10 @@ function OnPlayerCellChange(pid)
     else
         local previousCellDescription = Players[pid].data.location.cell
 
-        local eventStatus
-        if CustomEventHooks then
-            eventStatus = CustomEventHooks.triggerValidators(
-                'OnPlayerCellChange',
-                { pid, playerPacket, previousCellDescription }
-            )
-        else
-            eventStatus = dUtil.misc.makeEventStatus()
-        end
+        local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
+            'OnPlayerCellChange',
+            { pid, playerPacket, previousCellDescription }
+        )
 
         if eventStatus.validDefaultHandler then
             -- If this player is changing their region, add them to the visitors of the new
@@ -1164,13 +1102,11 @@ function OnPlayerCellChange(pid)
             end
         end
 
-        if CustomEventHooks then
-            CustomEventHooks.triggerHandlers(
-                'OnPlayerCellChange',
-                eventStatus,
-                { pid, playerPacket, previousCellDescription }
-            )
-        end
+        ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+            'OnPlayerCellChange',
+            eventStatus,
+            { pid, playerPacket, previousCellDescription }
+        )
     end
 end
 
@@ -1183,12 +1119,10 @@ function OnPlayerSpellsActive(pid)
 
     local playerPacket = packetReader.GetPlayerPacketTables(pid, 'PlayerSpellsActive')
 
-    local eventStatus
-    if CustomEventHooks then
-        eventStatus = CustomEventHooks.triggerValidators('OnPlayerSpellsActive', { pid, playerPacket })
-    else
-        eventStatus = dUtil.misc.makeEventStatus()
-    end
+    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
+        'OnPlayerSpellsActive',
+        { pid, playerPacket }
+    )
 
     if eventStatus.validDefaultHandler then
         Players[targetPid]:SaveSpellsActive(playerPacket)
@@ -1198,9 +1132,11 @@ function OnPlayerSpellsActive(pid)
         tes3mp.SendSpellsActiveChanges(pid, true, true)
     end
 
-    if CustomEventHooks then
-        CustomEventHooks.triggerHandlers('OnPlayerSpellsActive', eventStatus, { pid, playerPacket })
-    end
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+        'OnPlayerSpellsActive',
+        eventStatus,
+        { pid, playerPacket }
+    )
 end
 
 ---@param pid PlayerId
@@ -1212,12 +1148,10 @@ function OnPlayerJournal(pid)
 
     local playerPacket = packetReader.GetPlayerPacketTables(targetPid, 'PlayerJournal')
 
-    local eventStatus
-    if CustomEventHooks then
-        eventStatus = CustomEventHooks.triggerValidators('OnPlayerJournal', { targetPid, playerPacket })
-    else
-        eventStatus = dUtil.misc.makeEventStatus()
-    end
+    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
+        'OnPlayerJournal',
+        { targetPid, playerPacket }
+    )
 
     if eventStatus.validDefaultHandler then
         if config.shareJournal then
@@ -1231,9 +1165,11 @@ function OnPlayerJournal(pid)
         end
     end
 
-    if CustomEventHooks then
-        CustomEventHooks.triggerHandlers('OnPlayerJournal', eventStatus, { targetPid, playerPacket })
-    end
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+        'OnPlayerJournal',
+        eventStatus,
+        { targetPid, playerPacket }
+    )
 end
 
 ---@param pid PlayerId
@@ -1245,12 +1181,10 @@ function OnPlayerFaction(pid)
 
     local action = tes3mp.GetFactionChangesAction(targetPid)
 
-    local eventStatus
-    if CustomEventHooks then
-        eventStatus = CustomEventHooks.triggerValidators('OnPlayerFaction', { targetPid, action })
-    else
-        eventStatus = dUtil.misc.makeEventStatus()
-    end
+    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
+        'OnPlayerFaction',
+        { targetPid, action }
+    )
 
     local player = Players[targetPid]
     if eventStatus.validDefaultHandler then
@@ -1283,9 +1217,11 @@ function OnPlayerFaction(pid)
         end
     end
 
-    if CustomEventHooks then
-        CustomEventHooks.triggerHandlers("OnPlayerFaction", eventStatus, { targetPid, action })
-    end
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+        'OnPlayerFaction',
+        eventStatus,
+        { targetPid, action }
+    )
 end
 
 ---@param pid PlayerId
@@ -1295,12 +1231,10 @@ function OnPlayerTopic(pid)
     local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
     if not isValid or not targetPid then return end
 
-    local eventStatus
-    if CustomEventHooks then
-        eventStatus = CustomEventHooks.triggerValidators('OnPlayerTopic', { pid })
-    else
-        eventStatus = dUtil.misc.makeEventStatus()
-    end
+    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
+        'OnPlayerTopic',
+        { pid }
+    )
 
     if eventStatus.validDefaultHandler then
         if config.shareTopics then
@@ -1313,9 +1247,7 @@ function OnPlayerTopic(pid)
         end
     end
 
-    if CustomEventHooks then
-        CustomEventHooks.triggerHandlers('OnPlayerTopic', eventStatus, { pid })
-    end
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers('OnPlayerTopic', eventStatus, { pid })
 end
 
 ---@param pid PlayerId
@@ -1325,12 +1257,7 @@ function OnPlayerBounty(pid)
     local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
     if not isValid or not targetPid then return end
 
-    local eventStatus
-    if CustomEventHooks then
-        eventStatus = CustomEventHooks.triggerValidators('OnPlayerBounty', { pid })
-    else
-        eventStatus = dUtil.misc.makeEventStatus()
-    end
+    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators('OnPlayerBounty', { pid })
 
     if eventStatus.validDefaultHandler then
         if config.shareBounty then
@@ -1356,9 +1283,7 @@ function OnPlayerBounty(pid)
         end
     end
 
-    if CustomEventHooks then
-        CustomEventHooks.triggerHandlers('OnPlayerBounty', eventStatus, { pid })
-    end
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers('OnPlayerBounty', eventStatus, { pid })
 end
 
 ---@param pid PlayerId
@@ -1368,12 +1293,10 @@ function OnPlayerReputation(pid)
     local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
     if not isValid or not targetPid then return end
 
-    local eventStatus
-    if CustomEventHooks then
-        eventStatus = CustomEventHooks.triggerValidators('OnPlayerReputation', { targetPid })
-    else
-        eventStatus = dUtil.misc.makeEventStatus()
-    end
+    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
+        'OnPlayerReputation',
+        { targetPid }
+    )
 
     if eventStatus.validDefaultHandler then
         if config.shareReputation then
@@ -1386,9 +1309,7 @@ function OnPlayerReputation(pid)
         end
     end
 
-    if CustomEventHooks then
-        CustomEventHooks.triggerHandlers('OnPlayerReputation', eventStatus, { targetPid })
-    end
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers('OnPlayerReputation', eventStatus, { targetPid })
 end
 
 ---@param pid PlayerId
@@ -1398,20 +1319,16 @@ function OnPlayerBook(pid)
     local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
     if not isValid or not targetPid then return end
 
-    local eventStatus
-    if CustomEventHooks then
-        eventStatus = CustomEventHooks.triggerValidators('OnPlayerBook', { targetPid })
-    else
-        eventStatus = dUtil.misc.makeEventStatus()
-    end
+    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
+        'OnPlayerBook',
+        { targetPid }
+    )
 
     if eventStatus.validDefaultHandler then
         Players[targetPid]:AddBooks()
     end
 
-    if CustomEventHooks then
-        CustomEventHooks.triggerHandlers('OnPlayerBook', eventStatus, { targetPid })
-    end
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers('OnPlayerBook', eventStatus, { targetPid })
 end
 
 ---@param pid PlayerId
@@ -1422,12 +1339,10 @@ function OnPlayerItemUse(pid)
     if not isValid or not targetPid then return end
 
     local itemRefId = tes3mp.GetUsedItemRefId(targetPid)
-    local eventStatus
-    if CustomEventHooks then
-        eventStatus = CustomEventHooks.triggerValidators('OnPlayerItemUse', { targetPid, itemRefId })
-    else
-        eventStatus = dUtil.misc.makeEventStatus()
-    end
+    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
+        'OnPlayerItemUse',
+        { targetPid, itemRefId }
+    )
 
     if eventStatus.validDefaultHandler then
         tes3mp.LogMessage(enumerations.log.INFO,
@@ -1439,13 +1354,11 @@ function OnPlayerItemUse(pid)
         tes3mp.SendItemUse(targetPid)
     end
 
-    if CustomEventHooks then
-        CustomEventHooks.triggerHandlers(
-            'OnPlayerItemUse',
-            eventStatus,
-            { targetPid, itemRefId }
-        )
-    end
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+        'OnPlayerItemUse',
+        eventStatus,
+        { targetPid, itemRefId }
+    )
 end
 
 ---@param pid PlayerId
@@ -1459,35 +1372,31 @@ function OnPlayerMiscellaneous(pid)
     local changeType = tes3mp.GetMiscellaneousChangeType(targetPid)
 
     if changeType == enumerations.miscellaneous.MARK_LOCATION then
-        local eventStatus
-        if CustomEventHooks then
-            eventStatus = CustomEventHooks.triggerValidators("OnPlayerMarkLocation", { targetPid })
-        else
-            eventStatus = dUtil.misc.makeEventStatus()
-        end
+        local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
+            'OnPlayerMarkLocation',
+            { targetPid }
+        )
 
         if eventStatus.validDefaultHandler then
             player:SaveMarkLocation()
         end
 
-        if CustomEventHooks then
-            CustomEventHooks.triggerHandlers("OnPlayerMarkLocation", eventStatus, { targetPid })
-        end
+        ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+            'OnPlayerMarkLocation',
+            eventStatus,
+            { targetPid }
+        )
     elseif changeType == enumerations.miscellaneous.SELECTED_SPELL then
-        local eventStatus
-        if CustomEventHooks then
-            eventStatus = CustomEventHooks.triggerValidators("OnPlayerSelectedSpell", { targetPid })
-        else
-            eventStatus = dUtil.misc.makeEventStatus()
-        end
+        local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
+            'OnPlayerSelectedSpell',
+            { targetPid }
+        )
 
         if eventStatus.validDefaultHandler then
             player:SaveSelectedSpell()
         end
 
-        if CustomEventHooks then
-            CustomEventHooks.triggerHandlers("OnPlayerSelectedSpell", eventStatus, { targetPid })
-        end
+        ScriptLoader.Interfaces.customEventHooks.triggerHandlers('OnPlayerSelectedSpell', eventStatus, { targetPid })
     end
 end
 
@@ -1500,21 +1409,26 @@ function OnPlayerEndCharGen(pid)
 
     local player = Players[targetPid]
 
-    local eventStatus
-    if CustomEventHooks then
-        eventStatus = CustomEventHooks.triggerValidators('OnPlayerEndCharGen', { pid })
-    else
-        eventStatus = dUtil.misc.makeEventStatus()
-    end
+    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
+        'OnPlayerEndCharGen',
+        { pid }
+    )
 
     if eventStatus.validDefaultHandler then
         player:EndCharGen()
     end
 
-    if CustomEventHooks then
-        CustomEventHooks.triggerHandlers('OnPlayerEndCharGen', eventStatus, { pid })
-        CustomEventHooks.triggerHandlers('OnPlayerAuthentified', eventStatus, { pid })
-    end
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+        'OnPlayerEndCharGen',
+        eventStatus,
+        { pid }
+    )
+
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+        'OnPlayerAuthentified',
+        eventStatus,
+        { pid }
+    )
 end
 
 ---@param pid PlayerId
@@ -1531,23 +1445,20 @@ function OnCellLoad(pid, cellDescription)
         )
     end
 
-    local eventStatus
-    if CustomEventHooks then
-        eventStatus = CustomEventHooks.triggerValidators(
-            'OnCellLoad',
-            { pid, cellDescription }
-        )
-    else
-        eventStatus = dUtil.misc.makeEventStatus()
-    end
+    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
+        'OnCellLoad',
+        { pid, cellDescription }
+    )
 
     if eventStatus.validDefaultHandler then
         logicHandler.LoadCellForPlayer(pid, cellDescription)
     end
 
-    if CustomEventHooks then
-        CustomEventHooks.triggerHandlers('OnCellLoad', eventStatus, { pid, cellDescription })
-    end
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+        'OnCellLoad',
+        eventStatus,
+        { pid, cellDescription }
+    )
 end
 
 ---@param pid PlayerId
@@ -1558,47 +1469,36 @@ function OnCellUnload(pid, cellDescription)
     local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cellDescription)
     if not isValid or not targetPid then return end
 
-    local eventStatus
-    if CustomEventHooks then
-        eventStatus = CustomEventHooks.triggerValidators('OnCellUnload', { pid, cellDescription })
-    else
-        eventStatus = dUtil.misc.makeEventStatus()
-    end
+    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
+        'OnCellUnload',
+        { pid, cellDescription }
+    )
 
     if eventStatus.validDefaultHandler then
         logicHandler.UnloadCellForPlayer(pid, cellDescription)
     end
 
-    if CustomEventHooks then
-        CustomEventHooks.triggerHandlers(
-            'OnCellUnload',
-            eventStatus,
-            { pid, cellDescription }
-        )
-    end
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+        'OnCellUnload',
+        eventStatus,
+        { pid, cellDescription }
+    )
 end
 
 ---@param cellDescription CellDescription
 function OnCellDeletion(cellDescription)
     logCellEvent('OnCellDeletion', cellDescription)
 
-    local eventStatus
-    if CustomEventHooks then
-        eventStatus = CustomEventHooks.triggerValidators(
-            "OnCellDeletion",
-            { cellDescription }
-        )
-    else
-        eventStatus = dUtil.misc.makeEventStatus()
-    end
+    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
+        "OnCellDeletion",
+        { cellDescription }
+    )
 
     if eventStatus.validDefaultHandler then
         logicHandler.UnloadCell(cellDescription)
     end
 
-    if CustomEventHooks then
-        CustomEventHooks.triggerHandlers("OnCellDeletion", eventStatus, { cellDescription })
-    end
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers("OnCellDeletion", eventStatus, { cellDescription })
 end
 
 ---@param pid PlayerId
@@ -1626,12 +1526,10 @@ function OnActorAI(pid, cellDescription)
     local cell = LoadedCells[cellDescription]
     if not cell then return logUndefinedBehavior(pid, 'ActorAI', cellDescription) end
 
-    local eventStatus
-    if CustomEventHooks then
-        eventStatus = CustomEventHooks.triggerValidators('OnActorAI', { pid, cellDescription })
-    else
-        eventStatus = dUtil.misc.makeEventStatus()
-    end
+    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
+        'OnActorAI',
+        { pid, cellDescription }
+    )
 
     if eventStatus.validDefaultHandler then
         tes3mp.ReadReceivedActorList()
@@ -1644,13 +1542,11 @@ function OnActorAI(pid, cellDescription)
         tes3mp.SendActorAI(true, true)
     end
 
-    if CustomEventHooks then
-        CustomEventHooks.triggerHandlers(
-            'OnActorAI',
-            eventStatus,
-            { pid, cellDescription }
-        )
-    end
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+        'OnActorAI',
+        eventStatus,
+        { pid, cellDescription }
+    )
 end
 
 ---@param pid PlayerId
@@ -1669,12 +1565,8 @@ function OnActorDeath(pid, cellDescription)
     tes3mp.ReadReceivedActorList()
     local actors = packetReader.GetActorPacketTables('ActorDeath').actors
 
-    local eventStatus
-    if CustomEventHooks then
-        eventStatus = CustomEventHooks.triggerValidators('OnActorDeath', { pid, cellDescription, actors })
-    else
-        eventStatus = dUtil.misc.makeEventStatus()
-    end
+    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators('OnActorDeath',
+        { pid, cellDescription, actors })
 
     if eventStatus.validDefaultHandler then
         tes3mp.LogMessage(
@@ -1702,9 +1594,11 @@ function OnActorDeath(pid, cellDescription)
         cell:SaveActorsByPacketType('ActorDeath', actors)
     end
 
-    if CustomEventHooks then
-        CustomEventHooks.triggerHandlers('OnActorDeath', eventStatus, { pid, cellDescription, actors })
-    end
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+        'OnActorDeath',
+        eventStatus,
+        { pid, cellDescription, actors }
+    )
 end
 
 ---@param pid PlayerId
@@ -1728,20 +1622,20 @@ function OnActorCellChange(pid, cellDescription)
         logicHandler.LoadCell(cellDescription)
     end
 
-    local eventStatus
-    if CustomEventHooks then
-        eventStatus = CustomEventHooks.triggerValidators("OnActorCellChange", { pid, cellDescription })
-    else
-        eventStatus = dUtil.misc.makeEventStatus()
-    end
+    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
+        'OnActorCellChange',
+        { pid, cellDescription }
+    )
 
     if eventStatus.validDefaultHandler then
         LoadedCells[cellDescription]:SaveActorCellChanges(pid)
     end
 
-    if CustomEventHooks then
-        CustomEventHooks.triggerHandlers("OnActorCellChange", eventStatus, { pid, cellDescription })
-    end
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+        'OnActorCellChange',
+        eventStatus,
+        { pid, cellDescription }
+    )
 
     if not loadedCell then
         logicHandler.UnloadCell(cellDescription)
@@ -1861,15 +1755,10 @@ function OnConsoleCommand(pid, cellDescription)
     local targetPlayers = packetTables.players
     local consoleCommand = tes3mp.GetObjectListConsoleCommand()
 
-    local eventStatus
-    if CustomEventHooks then
-        eventStatus = CustomEventHooks.triggerValidators(
-            'OnConsoleCommand',
-            { pid, cellDescription, consoleCommand, objects, targetPlayers }
-        )
-    else
-        eventStatus = dUtil.misc.makeEventStatus()
-    end
+    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
+        'OnConsoleCommand',
+        { pid, cellDescription, consoleCommand, objects, targetPlayers }
+    )
 
     if eventStatus.validDefaultHandler then
         local debugMessage =
@@ -1905,13 +1794,11 @@ consoleCommand: %s]])
         tes3mp.LogMessage(enumerations.log.INFO, debugMessage)
     end
 
-    if CustomEventHooks then
-        CustomEventHooks.triggerHandlers(
-            'OnConsoleCommand',
-            eventStatus,
-            { pid, cellDescription, consoleCommand, objects, targetPlayers }
-        )
-    end
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+        'OnConsoleCommand',
+        eventStatus,
+        { pid, cellDescription, consoleCommand, objects, targetPlayers }
+    )
 end
 
 ---@param pid PlayerId
@@ -1995,15 +1882,10 @@ function OnContainer(pid, cellDescription)
     end
 
     if isAllowed then
-        local eventStatus
-        if CustomEventHooks then
-            eventStatus = CustomEventHooks.triggerValidators(
-                'OnContainer',
-                { pid, cellDescription, objects }
-            )
-        else
-            eventStatus = dUtil.misc.makeEventStatus()
-        end
+        local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
+            'OnContainer',
+            { pid, cellDescription, objects }
+        )
 
         if eventStatus.validDefaultHandler then
             local useTemporaryLoad = false
@@ -2022,13 +1904,11 @@ function OnContainer(pid, cellDescription)
             end
         end
 
-        if CustomEventHooks then
-            CustomEventHooks.triggerHandlers(
-                'OnContainer',
-                eventStatus,
-                { pid, cellDescription, objects }
-            )
-        end
+        ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+            'OnContainer',
+            eventStatus,
+            { pid, cellDescription, objects }
+        )
     else
         tes3mp.LogMessage(
             enumerations.log.INFO,
@@ -2078,12 +1958,10 @@ function OnVideoPlay(pid)
         tes3mp.LogAppend(enumerations.log.WARN, '- videoFilename ' .. videoFilename)
     end
 
-    local eventStatus
-    if CustomEventHooks then
-        eventStatus = CustomEventHooks.triggerValidators('OnVideoPlay', { pid, videos })
-    else
-        eventStatus = dUtil.misc.makeEventStatus()
-    end
+    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
+        'OnVideoPlay',
+        { pid, videos }
+    )
 
     if eventStatus.validDefaultHandler then
         tes3mp.CopyReceivedObjectListToStore()
@@ -2092,9 +1970,11 @@ function OnVideoPlay(pid)
         tes3mp.SendVideoPlay(true, true)
     end
 
-    if CustomEventHooks then
-        CustomEventHooks.triggerHandlers('OnVideoPlay', eventStatus, { pid, videos })
-    end
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+        'OnVideoPlay',
+        eventStatus,
+        { pid, videos }
+    )
 end
 
 ---@param pid PlayerId
@@ -2147,12 +2027,10 @@ function OnRecordDynamic(pid)
         )
     end
 
-    local eventStatus
-    if CustomEventHooks then
-        eventStatus = CustomEventHooks.triggerValidators('OnRecordDynamic', { pid, recordArray, storeType })
-    else
-        eventStatus = dUtil.misc.makeEventStatus()
-    end
+    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
+        'OnRecordDynamic',
+        { pid, recordArray, storeType }
+    )
 
     local isEnchantable = tableHelper.containsValue(config.enchantableRecordTypes, storeType)
 
@@ -2261,9 +2139,11 @@ function OnRecordDynamic(pid)
         end
     end
 
-    if CustomEventHooks then
-        CustomEventHooks.triggerHandlers('OnRecordDynamic', eventStatus, { pid, recordTable, storeType })
-    end
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+        'OnRecordDynamic',
+        eventStatus,
+        { pid, recordTable, storeType }
+    )
 end
 
 ---@param pid PlayerId
@@ -2273,12 +2153,10 @@ function OnWorldKillCount(pid)
     local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
     if not isValid or not targetPid then return end
 
-    local eventStatus
-    if CustomEventHooks then
-        eventStatus = CustomEventHooks.triggerValidators('OnWorldKillCount', { pid })
-    else
-        eventStatus = dUtil.misc.makeEventStatus()
-    end
+    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
+        'OnWorldKillCount',
+        { pid }
+    )
 
     if eventStatus.validDefaultHandler then
         WorldInstance:SaveKills(pid)
@@ -2289,9 +2167,11 @@ function OnWorldKillCount(pid)
         tes3mp.SendWorldKillCount(pid, true, true)
     end
 
-    if CustomEventHooks then
-        CustomEventHooks.triggerHandlers('OnWorldKillCount', eventStatus, { pid })
-    end
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+        'OnWorldKillCount',
+        eventStatus,
+        { pid }
+    )
 end
 
 ---@param pid PlayerId
@@ -2304,12 +2184,10 @@ function OnWorldMap(pid)
     tes3mp.ReadReceivedWorldstate()
     local mapTileArray = packetReader.GetWorldMapTileArray()
 
-    local eventStatus
-    if CustomEventHooks then
-        eventStatus = CustomEventHooks.triggerValidators('OnWorldMap', { pid, mapTileArray })
-    else
-        eventStatus = dUtil.misc.makeEventStatus()
-    end
+    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
+        'OnWorldMap',
+        { pid, mapTileArray }
+    )
 
     if eventStatus.validDefaultHandler then
         WorldInstance:SaveMapTiles(mapTileArray)
@@ -2323,9 +2201,11 @@ function OnWorldMap(pid)
         end
     end
 
-    if CustomEventHooks then
-        CustomEventHooks.triggerHandlers('OnWorldMap', eventStatus, { pid, mapTileArray })
-    end
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+        'OnWorldMap',
+        eventStatus,
+        { pid, mapTileArray }
+    )
 end
 
 ---@param pid PlayerId
@@ -2335,12 +2215,10 @@ function OnWorldWeather(pid)
     local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
     if not isValid or not targetPid then return end
 
-    local eventStatus
-    if CustomEventHooks then
-        eventStatus = CustomEventHooks.triggerValidators('OnWorldWeather', { pid })
-    else
-        eventStatus = dUtil.misc.makeEventStatus()
-    end
+    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
+        'OnWorldWeather',
+        { pid }
+    )
 
     if eventStatus.validDefaultHandler then
         tes3mp.ReadReceivedWorldstate()
@@ -2370,9 +2248,11 @@ function OnWorldWeather(pid)
         end
     end
 
-    if CustomEventHooks then
-        CustomEventHooks.triggerHandlers('OnWorldWeather', eventStatus, { pid })
-    end
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+        'OnWorldWeather',
+        eventStatus,
+        { pid }
+    )
 end
 
 ---@param pid PlayerId
@@ -2393,12 +2273,11 @@ function OnClientScriptGlobal(pid)
 
     tes3mp.ReadReceivedWorldstate()
 
-    local variables, eventStatus = packetReader.GetClientScriptGlobalPacketTable()
-    if CustomEventHooks then
-        eventStatus = CustomEventHooks.triggerValidators('OnClientScriptGlobal', { pid, variables })
-    else
-        eventStatus = dUtil.misc.makeEventStatus()
-    end
+    local variables = packetReader.GetClientScriptGlobalPacketTable()
+    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
+        'OnClientScriptGlobal',
+        { pid, variables }
+    )
 
     if eventStatus.validDefaultHandler then
         local shouldSync = false
@@ -2453,9 +2332,11 @@ function OnClientScriptGlobal(pid)
         end
     end
 
-    if CustomEventHooks then
-        CustomEventHooks.triggerHandlers('OnClientScriptGlobal', eventStatus, { pid, variables })
-    end
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+        'OnClientScriptGlobal',
+        eventStatus,
+        { pid, variables }
+    )
 end
 
 ---@param pid PlayerId
@@ -2469,15 +2350,10 @@ function OnGUIAction(pid, idGui, data)
 
     data = tostring(data) -- data can be numeric, but we should convert it to a string
 
-    local eventStatus
-    if CustomEventHooks then
-        eventStatus = CustomEventHooks.triggerValidators(
-            'OnGUIAction',
-            { pid, idGui, data }
-        )
-    else
-        eventStatus = dUtil.misc.makeEventStatus()
-    end
+    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
+        'OnGUIAction',
+        { pid, idGui, data }
+    )
 
     if eventStatus.validDefaultHandler then
         if player:IsLoggedIn() then
@@ -2571,19 +2447,17 @@ function OnGUIAction(pid, idGui, data)
                     player:Message(('%s is banned from this server.\n'):format(player.accountName))
                     tes3mp.BanAddress(tes3mp.GetIP(pid))
                 elseif player:FinishLogin() then
-                    if CustomEventHooks then
-                        CustomEventHooks.triggerHandlers(
-                            'OnPlayerFinishLogin',
-                            dUtil.misc.makeEventStatus(),
-                            { player.pid }
-                        )
+                    ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+                        'OnPlayerFinishLogin',
+                        dUtil.misc.makeEventStatus(),
+                        { player.pid }
+                    )
 
-                        CustomEventHooks.triggerHandlers(
-                            'OnPlayerAuthentified',
-                            dUtil.misc.makeEventStatus(),
-                            { player.pid }
-                        )
-                    end
+                    ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+                        'OnPlayerAuthentified',
+                        dUtil.misc.makeEventStatus(),
+                        { player.pid }
+                    )
 
                     player:Message(('You have successfully logged in.\n%s'):format(config.chatWindowInstructions))
 
@@ -2624,13 +2498,11 @@ function OnGUIAction(pid, idGui, data)
         end
     end
 
-    if CustomEventHooks then
-        CustomEventHooks.triggerHandlers(
-            'OnGUIAction',
-            eventStatus,
-            { pid, idGui, data }
-        )
-    end
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+        'OnGUIAction',
+        eventStatus,
+        { pid, idGui, data }
+    )
 end
 
 function OnMpNumIncrement(currentMpNum)
@@ -2644,27 +2516,20 @@ function OnLoginTimeExpiration(pid, accountName)
     local player = Players[pid]
     if not player or player.accountName ~= accountName then return end
 
-    local eventStatus
-    if CustomEventHooks then
-        eventStatus = CustomEventHooks.triggerValidators(
-            'OnLoginTimeExpiration',
-            { pid }
-        )
-    else
-        eventStatus = dUtil.misc.makeEventStatus()
-    end
+    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
+        'OnLoginTimeExpiration',
+        { pid }
+    )
 
     if eventStatus.validDefaultHandler then
         logicHandler.AuthCheck(pid)
     end
 
-    if CustomEventHooks then
-        CustomEventHooks.triggerHandlers(
-            'OnLoginTimeExpiration',
-            eventStatus,
-            { pid }
-        )
-    end
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+        'OnLoginTimeExpiration',
+        eventStatus,
+        { pid }
+    )
 end
 
 ---@param pid PlayerId
@@ -2673,27 +2538,20 @@ function OnDeathTimeExpiration(pid, accountName)
     local player = Players[pid]
     if not player or not player:IsLoggedIn() or player.accountName ~= accountName then return end
 
-    local eventStatus
-    if CustomEventHooks then
-        eventStatus = CustomEventHooks.triggerValidators(
-            'OnDeathTimeExpiration',
-            { pid }
-        )
-    else
-        eventStatus = dUtil.misc.makeEventStatus()
-    end
+    local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
+        'OnDeathTimeExpiration',
+        { pid }
+    )
 
     if eventStatus.validDefaultHandler then
         player:Resurrect()
     end
 
-    if CustomEventHooks then
-        CustomEventHooks.triggerHandlers(
-            'OnDeathTimeExpiration',
-            eventStatus,
-            { pid }
-        )
-    end
+    ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+        'OnDeathTimeExpiration',
+        eventStatus,
+        { pid }
+    )
 end
 
 ---@param loopIndex integer
@@ -2707,15 +2565,10 @@ function OnObjectLoopTimeExpiration(loopIndex)
 
     local player = Players[pid]
     if player and player:IsLoggedIn() and player.accountName == loop.targetName then
-        local eventStatus
-        if CustomEventHooks then
-            eventStatus = CustomEventHooks.triggerValidators(
-                'OnObjectLoopTimeExpiration',
-                { pid, loopIndex }
-            )
-        else
-            eventStatus = dUtil.misc.makeEventStatus()
-        end
+        local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
+            'OnObjectLoopTimeExpiration',
+            { pid, loopIndex }
+        )
 
         if eventStatus.validDefaultHandler then
             if loop.packetType == 'place' or loop.packetType == 'spawn' then
@@ -2734,13 +2587,11 @@ function OnObjectLoopTimeExpiration(loopIndex)
             end
         end
 
-        if CustomEventHooks then
-            CustomEventHooks.triggerHandlers(
-                'OnObjectLoopTimeExpiration',
-                eventStatus,
-                { pid, loopIndex }
-            )
-        end
+        ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
+            'OnObjectLoopTimeExpiration',
+            eventStatus,
+            { pid, loopIndex }
+        )
     else
         loopEnded = true
     end
