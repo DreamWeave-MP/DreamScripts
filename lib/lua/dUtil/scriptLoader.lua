@@ -24,7 +24,36 @@ local yamlInterface = require 'yamlInterface'
 ---@type LFSFFIModule
 local lfs = require 'lfs'
 
-local ScriptPathFormatter = 'server.scripts.custom.%s'
+local ScriptPathFormatter = 'server.scripts.%s.%s'
+
+local BuiltinScriptPaths = {
+  --- The menu interface is what used to be menuHelper, and many builtins rely on it
+  --- FIXME: menuHelper sucked and menuInterface does too
+  'menuInterface',
+  --- speechHelper is exposed as a public interface here.
+  --- For load order reasons, it should be defined before defaultCommands, as defaultCommands
+  --- relies on the interface it defines
+  'speechHelper',
+  --- customEventHooks is the most important module!
+  --- Its load order must never be changed and everything else, even all the chat commands,
+  --- depend upon it.
+  --- Should it be removed, even the serverCore will crash upon initialization!
+  'customEventHooks',
+  --- The interface defined by customCommandHooks is required for all scripts to
+  --- Define chat commands. Don't remove it or change its order.
+  'customCommandHooks',
+  --- All chat commands are defined by this script
+  'defaultCommands',
+  -- Most core server functionality is implemented in defaultValidators/defaultHandlers
+  'defaultValidators',
+  'defaultHandlers',
+  --- contentFixer is used to adjust corprus state and world variables in certain circumstances
+  'contentFixer',
+  -- Built in help menu and example interfaces
+  'menu/help',
+  'menu/defaultCrafting',
+  'menu/advancedExample',
+}
 
 --- OpenMW-Style Script loader module for TES3MP.
 --- This is a stateful module which should only ever be `require`'d once by serverCore.lua
@@ -59,21 +88,30 @@ local AllowedFields, Loaders = {
   'loadScriptInterface',
 }
 
+---@enum ScriptLoadType
+local ScriptPathPrefixes = {
+  BUILTIN = 1,
+  CUSTOM = 2,
+}
+
 local ScriptFailedMessage = 'Attempted to load the script at %s, but failed, because it doesn\'t exist.'
 
 --- Given a script name, attempt to load it into the tes3mp environment like an OpenMW Lua script.
 --- Can be called from the chat window by passing the second optional parameter, callerPid.
 ---@param scriptName string name of a script, relative to server/scripts/custom, to attempt to load
 ---@param callerPid PlayerId? optional PlayerId
+---@param scriptDir ScriptLoadType? Optionally determines whether the script being loaded is a builtin or not. If unspecified, falls back to custom.
 ---@return true? didLoad Whether or not script loading was successful
-function DScriptLoader.loadScript(scriptName, callerPid)
+function DScriptLoader.loadScript(scriptName, callerPid, scriptDir)
   if not scriptName or type(scriptName) ~= 'string' then
     error(
       ('Invalid script path provided to DScriptLoader.loadScript: %s'):format(scriptName)
     )
   end
 
-  local scriptPath = DScriptLoader.sanitizePath(ScriptPathFormatter:format(scriptName))
+  local subDir = scriptDir and scriptDir == ScriptPathPrefixes.BUILTIN and 'builtin' or 'custom'
+
+  local scriptPath = DScriptLoader.sanitizePath(ScriptPathFormatter:format(subDir, scriptName))
 
   if not lfs.attributes(scriptPath) then
     if callerPid then
@@ -171,9 +209,11 @@ function DScriptLoader.loadAllScripts()
 
   local startTime = os.clock()
 
-  for _, scriptName in ipairs(config.customScripts) do
-    if not DScriptLoader.loadScript(scriptName) then
-      error('Script loading has failed! Check your server log for more details.')
+  for scriptType, scriptTable in ipairs { BuiltinScriptPaths, config.customScripts, } do
+    for _, scriptName in ipairs(scriptTable) do
+      if not DScriptLoader.loadScript(scriptName, nil, scriptType) then
+        error('Script loading has failed! Check your server log for more details.')
+      end
     end
   end
 

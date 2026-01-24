@@ -20,35 +20,11 @@ config.customScripts = {
     --- A basic color interface is defined here which reuses the original `color` module.
     --- To extend the color interface, simply edit scripts/color.lua.
     --- Don't change scripts/custom/color.lua
+    --- This is mostly a basic example interface to demonstrate how the concept works.
     'color',
-    --- The menu interface is what used to be menuHelper, and many builtins rely on it
-    --- Don't disable or screw with this, or many things will break
-    'menuInterface',
-    --- speechHelper is exposed as a public interface here.
-    --- For load order reasons, it should be defined before defaultCommands
-    'speechHelper',
-    --- customEventHooks is the most important module!
-    --- Its load order must never be changed and everything else, even all the chat commands,
-    --- depend upon it.
-    --- Should it be removed, even the serverCore will crash upon initialization!
-    'customEventHooks',
-    --- The interface defined by customCommandHooks is required for all scripts to
-    --- Define chat commands. Don't remove it or change its order.
-    'customCommandHooks',
-    --- All chat commands are defined by this script
-    'defaultCommands',
     --- Fancy special sauce using tes3_lua and TDS for hyper-optimized record loading
     --- If it exists, this script must load before *all* other event validators!!!!!
     'recordReader',
-    --- The default handlers and validators defined by tes3mp are very important!
-    --- Don't mess with them!
-    'defaultValidators',
-    'defaultHandlers',
-    --- contentFixer is used to adjust corprus state and world variables in certain circumstances
-    'contentFixer',
-    'menu/help',
-    'menu/defaultCrafting',
-    'menu/advancedExample',
     --- Custom scripts may be added here
     'customMerchantRestock',
     'dreamDice/main',
