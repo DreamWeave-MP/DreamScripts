@@ -145,7 +145,7 @@ function DScriptLoader.loadScript(scriptName, callerPid, scriptDir)
     ModuleCache = DScriptLoader.defaultModuleCache()
   end
 
-  tes3mp.LogAppend(enumerations.log.INFO, ('Attempting to load custom script from path: %s'):format(scriptPath))
+  tes3mp.LogAppend(enumerations.log.INFO, ('Attempting to load %s script from path: %s'):format(subDir, scriptPath))
   local ok, result = pcall(function() return assert(loadfile(scriptPath)) end)
 
   if not ok then
