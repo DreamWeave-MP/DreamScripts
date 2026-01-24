@@ -1,6 +1,6 @@
 local enumerations = require 'tes3mp.enumerations'
 local inventoryHelper = require 'tes3mp.util.inventory'
-local logicHandler = require 'tes3mp.logicHandler'
+local logicHandler = require 'packages.logicHandler'
 local yamlInterface = require 'yamlInterface'
 
 ---@class ReviveStatInfo

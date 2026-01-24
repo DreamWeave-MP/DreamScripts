@@ -1,7 +1,7 @@
 local config = require 'config'
 local dUtil = require 'dUtil.init'
 local enumerations = require 'tes3mp.enumerations'
-local logicHandler = require 'tes3mp.logicHandler'
+local logicHandler = require 'packages.logicHandler'
 local tableHelper = require 'tes3mp.util.table'
 
 local I = require 'interfaces'

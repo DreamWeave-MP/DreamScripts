@@ -1,6 +1,6 @@
 local config = require 'config'
 local enumerations = require 'tes3mp.enumerations'
-local logicHandler = require 'tes3mp.logicHandler'
+local logicHandler = require 'packages.logicHandler'
 local stateHelper = require 'tes3mp.util.state'
 local tableHelper = require 'tes3mp.util.table'
 

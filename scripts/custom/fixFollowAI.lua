@@ -1,5 +1,5 @@
 local enumerations = require 'tes3mp.enumerations'
-local logicHandler = require 'tes3mp.logicHandler'
+local logicHandler = require 'packages.logicHandler'
 
 ---@param pid PlayerId
 ---@param cellDescription CellDescription

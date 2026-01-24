@@ -1,4 +1,4 @@
-local logicHandler = require 'tes3mp.logicHandler'
+local logicHandler = require 'packages.logicHandler'
 local tableHelper = require 'tes3mp.util.table'
 
 ---@class GUIHelper

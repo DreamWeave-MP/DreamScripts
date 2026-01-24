@@ -1,5 +1,5 @@
 local enumerations = require 'tes3mp.enumerations'
-local logicHandler = require 'tes3mp.logicHandler'
+local logicHandler = require 'packages.logicHandler'
 local packetBuilder = require 'tes3mp.packet.builder'
 local tableHelper = require 'tes3mp.util.table'
 

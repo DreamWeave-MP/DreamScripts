@@ -17,7 +17,7 @@ local dUtil = require 'dUtil.init'
 local enumerations = require 'tes3mp.enumerations'
 local jsonInterface = require 'jsonInterface'
 local l10n = require 'l10n.core'
-local logicHandler = require 'tes3mp.logicHandler'
+local logicHandler = require 'packages.logicHandler'
 local tableHelper = require 'tes3mp.util.table'
 local yamlInterface = require 'yamlInterface'
 

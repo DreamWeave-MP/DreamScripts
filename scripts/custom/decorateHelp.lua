@@ -5,7 +5,7 @@ self.data.objectData[uniqueIndex].scale = 1
 tableHelper.insertValueIfMissing(self.data.packets.scale, uniqueIndex)
 ---------------------------
 ]]
-local logicHandler = require 'tes3mp.logicHandler'
+local logicHandler = require 'packages.logicHandler'
 
 ---@type DefaultInterfaces
 local I = require 'interfaces'
