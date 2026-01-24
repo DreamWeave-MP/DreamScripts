@@ -1,4 +1,6 @@
-time = {}
+---@class TimeUtil
+local time = {}
+
 time.seconds = function(sec)
     return sec * 1000
 end

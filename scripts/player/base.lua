@@ -7,6 +7,7 @@ local packetReader = require 'tes3mp.packet.reader'
 local patterns = require 'patterns'
 local stateHelper = require 'tes3mp.util.state'
 local tableHelper = require 'tes3mp.util.table'
+local time = require 'time'
 
 --- Unequip items that damage the player when worn
 ---
