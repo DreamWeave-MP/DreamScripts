@@ -1,4 +1,4 @@
-local config = require 'tes3mp.config'
+local config = require 'config'
 local enumerations = require 'tes3mp.enumerations'
 local fileHelper = require 'fileHelper'
 local jsonInterface = require 'jsonInterface'

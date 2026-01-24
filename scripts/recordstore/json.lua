@@ -1,5 +1,5 @@
 local class = require 'classy'
-local config = require 'tes3mp.config'
+local config = require 'config'
 local enumerations = require 'tes3mp.enumerations'
 local jsonInterface = require 'jsonInterface'
 local tableHelper = require 'tes3mp.util.table'

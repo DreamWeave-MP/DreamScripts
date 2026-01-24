@@ -1,4 +1,4 @@
-local config = require 'tes3mp.config'
+local config = require 'config'
 local enumerations = require 'tes3mp.enumerations'
 local logicHandler = require 'tes3mp.logicHandler'
 local packetBuilder = require 'tes3mp.packet.builder'

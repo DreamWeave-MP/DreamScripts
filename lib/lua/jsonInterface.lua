@@ -1,4 +1,4 @@
-local config = require 'tes3mp.config'
+local config = require 'config'
 local dkjson = require 'dkjson'
 local enumerations = require 'tes3mp.enumerations'
 

@@ -1,4 +1,4 @@
-local config = require 'tes3mp.config'
+local config = require 'config'
 local enumerations = require 'tes3mp.enumerations'
 local logicHandler = require 'tes3mp.logicHandler'
 local tableHelper = require 'tes3mp.util.table'

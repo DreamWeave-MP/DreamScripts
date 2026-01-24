@@ -3,7 +3,7 @@ _ENV = _ENV
 
 local animHelper = require 'tes3mp.util.anim'
 local color = require 'color'
-local config = require 'tes3mp.config'
+local config = require 'config'
 local dataTableBuilder = require 'dataTableBuilder'
 local enumerations = require 'tes3mp.enumerations'
 local guiHelper = require 'tes3mp.util.gui'

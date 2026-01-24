@@ -1,4 +1,4 @@
-local config = require 'tes3mp.config'
+local config = require 'config'
 local tinyYaml = require 'l10n.tinyyaml'
 
 ---@type LFSFFIModule

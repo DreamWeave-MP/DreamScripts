@@ -1,4 +1,4 @@
-local config = require 'tes3mp.config'
+local config = require 'config'
 local enumerations = require 'tes3mp.enumerations'
 local languageCodes = require 'l10n.languageCodes'
 local yamlInterface = require 'yamlInterface'

@@ -2,7 +2,7 @@
 -- assert(Players ~= nil, 'logicHandler does not have Players table in scope!')
 
 local clientVariableScopes = require 'clientVariableScopes'
-local config = require 'tes3mp.config'
+local config = require 'config'
 local enumerations = require 'tes3mp.enumerations'
 local tableHelper = require 'tes3mp.util.table'
 local fileHelper = require 'fileHelper'

@@ -12,7 +12,7 @@ return {
 All fields are, in and of themselves, optional, however, an interfaceName is required when attempting to define an interface for a script
 ]]
 
-local config = require 'tes3mp.config'
+local config = require 'config'
 local dUtil = require 'dUtil.init'
 local enumerations = require 'tes3mp.enumerations'
 local jsonInterface = require 'jsonInterface'
@@ -187,6 +187,8 @@ function DScriptLoader.loadScript(scriptName, callerPid, scriptDir)
     end
   end
 
+  --- Maybe we only describe custom scripts here?
+  --- Or just omit menus, perhaps, and do it in each of the handler functions
   if config.debugScriptRegistrations then
     tableHelper.print(result)
   end

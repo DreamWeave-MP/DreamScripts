@@ -1,5 +1,5 @@
 local color = require 'color'
-local config = require 'tes3mp.config'
+local config = require 'config'
 local enumerations = require 'tes3mp.enumerations'
 local dataTableBuilder = require 'dataTableBuilder'
 local guiHelper = require 'tes3mp.util.gui'
