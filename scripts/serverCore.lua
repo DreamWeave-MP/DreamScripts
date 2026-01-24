@@ -507,7 +507,7 @@ function OnServerInit()
     WorldInstance = World()
 
     ScriptLoader.loadAllScripts()
-    print(ScriptLoader.Interfaces)
+    tes3mp.LogAppend(enumerations.log.INFO, tostring(ScriptLoader.Interfaces))
 
     -- If the world has a data entry, load it
     if WorldInstance:HasEntry() then
