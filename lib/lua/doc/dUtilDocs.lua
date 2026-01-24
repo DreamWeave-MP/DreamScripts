@@ -14,12 +14,13 @@
 
 ---@class DefaultInterfaces
 ---@field Color ColorModule?
----@field contentFixer ContentFixer?
----@field customCommandHooks CustomCommandHooksInterface?
----@field customEventHooks CustomEventHooks?
----@field menuHelper MenuHelper?
+---@field ClientVariableScopes ClientVariableScopes
+---@field contentFixer ContentFixer
+---@field customCommandHooks CustomCommandHooksInterface
+---@field customEventHooks CustomEventHooks
+---@field menuHelper MenuHelper
 ---@field scriptLoader DScriptLoaderHidden
----@field speechHelper SpeechHelper?
+---@field speechHelper SpeechHelper
 ---@field dreamDice DiceInterface?
 ---@field customMerchantRestock RestockInterface?
 ---@field recordStores RecordInterface?

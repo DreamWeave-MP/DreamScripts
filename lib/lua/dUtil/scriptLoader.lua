@@ -459,14 +459,7 @@ end
 function DScriptLoader.loadScriptCommands(scriptPath, scriptRegistration)
   if not scriptRegistration.chatCommands or type(scriptRegistration.chatCommands) ~= 'table' then return end
 
-  local customCommandHooks = Interfaces.customCommandHooks
-  if not customCommandHooks then
-    return tes3mp.LogAppend(
-      enumerations.log.ERROR,
-      ('%s attempted to define chat commands, but the customCommandHooks interface has not been loaded yet!\nFix your load order!')
-      :format(scriptPath)
-    )
-  end
+  local customCommandHooks = assert(Interfaces.customCommandHooks)
 
   customCommandHooks.clearCommandsFromScript(scriptPath)
 
@@ -515,15 +508,7 @@ end
 ---@param scriptRegistration TES3MPScriptRegistration resulting table after invoking a script using dofile
 function DScriptLoader.loadScriptHandlers(scriptPath, scriptRegistration)
   if not scriptRegistration.eventHandlers and not scriptRegistration.eventValidators then return end
-  local customEventHooks = Interfaces.customEventHooks
-
-  if not customEventHooks then
-    return tes3mp.LogAppend(
-      enumerations.log.ERROR,
-      ('%s tried to define eventHandlers or eventValidators, but was loaded before customEventHooks. Sorry!'):format(
-        scriptPath)
-    )
-  end
+  local customEventHooks = assert(Interfaces.customEventHooks)
 
   if scriptRegistration.eventHandlers and type(scriptRegistration.eventHandlers) ~= 'table' then
     error(
@@ -536,8 +521,6 @@ function DScriptLoader.loadScriptHandlers(scriptPath, scriptRegistration)
         scriptRegistration.eventValidators)
     )
   end
-
-  ---@cast customEventHooks CustomEventHooks
 
   for eventName, eventHandler in pairs(scriptRegistration.eventHandlers or {}) do
     assert(type(eventName) == 'string' and type(eventHandler) == 'function')
