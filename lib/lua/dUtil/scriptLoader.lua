@@ -205,7 +205,6 @@ function DScriptLoader.loadAllScripts()
   --- recompile the configuration each time all scripts are reloaded.
   --- This allows us to respond to changes in the actual customScripts list,
   config = DScriptLoader.requireShim('tes3mp.config')
-  ModuleCache['tes3mp.config'] = config
 
   local startTime = os.clock()
 
