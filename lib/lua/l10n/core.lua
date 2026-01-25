@@ -6,7 +6,7 @@ local yamlInterface = require 'yamlInterface'
 ---@type LFSFFIModule
 local lfs = require 'lfs'
 
-local LocalizationPathFormatter = 'l10n/%s/%s.%s'
+local LocalizationPathFormatter = 'custom/%s/l10n/%s.%s'
 local ValidYAMLExtensions = { 'yml', 'yaml' }
 
 local Languages = { 'en', }

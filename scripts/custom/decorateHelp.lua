@@ -11,7 +11,7 @@ local logicHandler = require 'packages.logicHandler'
 local I = require 'interfaces'
 
 ---@type L10NSearchFunction
-local L = require('l10n')('decorateHelp')
+local L = require 'l10n' 'decorateHelp'
 
 ---@type MenuHelper
 local menuHelper = I.menuHelper
