@@ -384,7 +384,7 @@ local RecordStores = {
   Race = tds.Hash(),
   Region = tds.Hash(),
   RepairItem = tds.Hash(),
-  Script = tds.Hash(),
+  Script = {},
   Skill = tds.Hash(),
   Sound = tds.Hash(),
   SoundGen = tds.Hash(),
@@ -1419,13 +1419,14 @@ local TypeHandlers = {
   end,
 
   Script = function(record, recordId)
-    local hash = tds.Hash()
+    local object = {
+      id = recordId,
+      text = assert(record.text:lower()),
+    }
 
-    hash.id = MandatoryRecordId(recordId)
-    hash.text = MandatoryRecordId(record.text)
+    objectFlags(record, object)
 
-    objectFlags(record, hash)
-    return hash
+    return object
   end,
 
   Skill = function(record, _)
