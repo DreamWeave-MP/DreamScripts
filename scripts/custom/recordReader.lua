@@ -1487,6 +1487,8 @@ local TypeHandlers = {
       assert(tostring(record.data.range[2])),
     }
     object.volume = numberField(record.data.volume)
+    if isDeleted then object.isDeleted = true end
+    if isModified then object.isModified = true end
 
     return object
   end,
