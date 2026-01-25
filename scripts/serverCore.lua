@@ -6,7 +6,6 @@ local guiHelper = require 'tes3mp.util.gui'
 local inventoryHelper = require 'tes3mp.util.inventory'
 local jsonInterface = require 'jsonInterface'
 local logicHandler = require 'packages.logicHandler'
-local miscUtil = require 'dUtil.miscellaneous'
 local packetBuilder = require 'packages.packetBuilder'
 local packetReader = require 'packages.packetReader'
 local tableHelper = require 'tes3mp.util.table'
@@ -138,7 +137,7 @@ function CallbackFunctionPulse()
         local targetCallback = Callbacks[i]
 
         if now >= targetCallback.triggerAt then
-            local ok, err = miscUtil.safeCall(targetCallback.callback, unpack(targetCallback.arguments))
+            local ok, err = dUtil.misc.safeCall(targetCallback.callback, unpack(targetCallback.arguments))
 
             if ok then
                 table.remove(Callbacks, i)
