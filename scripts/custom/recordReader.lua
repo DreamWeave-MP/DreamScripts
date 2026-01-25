@@ -953,7 +953,6 @@ local TypeHandlers = {
   end,
 
   GlobalVariable = function(record, _)
-    print(record.value, record.value.type, type(record.value))
     return numberField(tostring(record.value))
   end,
 
