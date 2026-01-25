@@ -119,18 +119,14 @@ local function hasFlag(flags, checkFlags)
 end
 
 ---@param record table<string, any>
----@param object table<string, any>
-local function objectFlags(record, object)
-  local flags = numberField(record.flags)
+---@return boolean? wasDeleted, boolean? wasModified
+local function objectFlags(record)
+  assert(type(record.flags) == 'number')
+
+  local flags = record.flags
   if flags == 0 then return end
 
-  if hasFlag(record.flags, Enums.Flags.Record.DELETED) then
-    object.isDeleted = true
-  end
-
-  if hasFlag(record.flags, Enums.Flags.Record.MODIFIED) then
-    object.isModified = true
-  end
+  return hasFlag(record.flags, Enums.Flags.Record.DELETED), hasFlag(record.flags, Enums.Flags.Record.MODIFIED)
 end
 
 local AIPackageHandlers = {
