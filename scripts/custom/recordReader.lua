@@ -132,6 +132,7 @@ local function objectFlags(record)
 end
 
 local NumMandatoryFields = {
+  LeveledCreature = 2,
   LeveledItem = 2,
   Light = 9,
   Lockpick = 7,
@@ -407,7 +408,7 @@ local RecordStores = {
   GlobalVariable = {},
   Header = {},
   Ingredient = tds.Hash(),
-  LeveledCreature = tds.Hash(),
+  LeveledCreature = {},
   LeveledItem = {},
   Light = {},
   Lockpick = {},
@@ -1045,23 +1046,30 @@ local TypeHandlers = {
   end,
 
   LeveledCreature = function(record, recordId)
-    local hash = tds.Hash()
-
-    hash.chanceNone = numberField(record.chance_none)
-    hash.id = recordId
-
-    if hasFlag(
-          record.leveled_creature_flags,
-          Enums.Flags.LeveledCreature.CALCULATE_FROM_ALL_LEVELS
-        ) then
-      hash.calculateFromAllLevels = true
-    end
-
+    local calculateFromAllLevels = hasFlag(
+      record.leveled_creature_flags,
+      Enums.Flags.LeveledCreature.CALCULATE_FROM_ALL_LEVELS
+    )
     local creatures = Handlers.LeveledEntry(record.creatures)
-    if creatures then hash.creatures = creatures end
+    local isDeleted, isModified = objectFlags(record)
 
-    objectFlags(record, hash)
-    return hash
+    local numFields = NumMandatoryFields.LeveledCreature
+        + (calculateFromAllLevels and 1 or 0)
+        + (creatures and 1 or 0)
+        + (isDeleted and 1 or 0)
+        + (isModified and 1 or 0)
+
+    local object = table.new(0, numFields)
+
+    object.chanceNone = numberField(record.chance_none)
+    object.id = recordId
+
+    if calculateFromAllLevels then object.calculateFromAllLevels = true end
+    if creatures then object.creatures = creatures end
+    if isDeleted then object.isDeleted = true end
+    if isModified then object.isModified = true end
+
+    return object
   end,
 
   LeveledItem = function(record, recordId)
