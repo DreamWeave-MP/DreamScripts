@@ -56,7 +56,10 @@ local function lowercase(value)
     return value:lower()
   end
 
-  return tostring(value):lower()
+  local result = tostring(value)
+  if not result or result == '' then return end
+
+  return result:lower()
 end
 
 local function numberField(value)
