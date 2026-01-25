@@ -368,7 +368,7 @@ local RecordStores = {
   Birthsign = tds.Hash(),
   Bodypart = tds.Hash(),
   Book = tds.Hash(),
-  Cell = tds.Hash { Interior = tds.Hash(), Exterior = tds.Hash(), },
+  -- Cell = tds.Hash { Interior = tds.Hash(), Exterior = tds.Hash(), },
   Class = tds.Hash(),
   Clothing = tds.Hash(),
   Container = tds.Hash(),
