@@ -83,7 +83,9 @@ end
 ---@return RecordId
 local function MandatoryRecordId(value)
   local id = lowercase(value)
-  return id and id or error('Invalid recordId: ' .. tostring(value), 2)
+  if not id then error('Invalid recordId: ' .. tostring(value), 2) end
+
+  return id
 end
 
 ---@param value any
