@@ -1,4 +1,4 @@
-Database = require("database")
+Database = require("packages.database")
 local BaseRecordStore = require("recordstore.base")
 
 local RecordStore = class("RecordStore", BaseRecordStore)
@@ -7,7 +7,6 @@ function RecordStore:__init()
     BaseRecordStore.__init(self)
 
     if self.hasEntry == nil then
-
         -- Not implemented yet
     end
 end

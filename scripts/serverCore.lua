@@ -166,7 +166,7 @@ local clientVariableScopes = require 'clientVariableScopes'
 local consoleKickMessage = '%s has been kicked for using the console despite not having the permission to do so.\n'
 
 if (config.databaseType ~= nil and config.databaseType ~= 'json') and pcall(require, 'luasql.' .. config.databaseType) then
-    Database = require("database")
+    Database = require("packages.database")
     Database:LoadDriver(config.databaseType)
 
     tes3mp.LogMessage(enumerations.log.INFO, "Using " .. Database.driver._VERSION .. " with " .. config.databaseType ..

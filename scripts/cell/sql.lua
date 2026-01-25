@@ -1,4 +1,4 @@
-Database = require 'database'
+Database = require 'packages.database'
 local BaseCell = require 'cell.base'
 
 local Cell = require('classy')('Cell', BaseCell)
