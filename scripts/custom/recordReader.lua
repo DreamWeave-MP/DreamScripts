@@ -374,7 +374,7 @@ local RecordStores = {
   Container = tds.Hash(),
   Creature = tds.Hash(),
   Door = tds.Hash(),
-  Enchanting = tds.Hash(),
+  Enchanting = {},
   Faction = tds.Hash(),
   GameSetting = {},
   GlobalVariable = {},
@@ -846,20 +846,21 @@ local TypeHandlers = {
   end,
 
   Enchanting = function(record, recordId)
-    local hash = tds.Hash()
+    local object = {
+      cost = numberField(record.data.cost),
+      enchantType = numberField(Enums.EnchantType[record.data.enchant_type]),
+      id = assert(recordId),
+      maxCharge = numberField(record.data.max_charge),
+    }
 
-    hash.cost = numberField(record.data.cost)
-    hash.enchantType = numberField(Enums.EnchantType[record.data.enchant_type])
-    hash.id = MandatoryRecordId(recordId)
     --- Surely this has some implication for parsing the effect array?
-    if hasFlag(record.data.flags, Enums.Flags.Enchant.AUTO_CALC) then hash.isAutoCalc = true end
-    hash.maxCharge = numberField(record.data.max_charge)
-    objectFlags(record, hash)
+    if hasFlag(record.data.flags, Enums.Flags.Enchant.AUTO_CALC) then object.isAutoCalc = true end
+    objectFlags(record, object)
 
     local effects = Handlers.Effects(record.effects)
-    if effects then hash.effects = effects end
+    if effects then object.effects = effects end
 
-    return hash
+    return object
   end,
 
   Faction = function(record, recordId)
