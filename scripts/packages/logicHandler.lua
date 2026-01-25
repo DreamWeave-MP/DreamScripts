@@ -3,7 +3,7 @@ local config = require 'config'
 local enumerations = require 'packages.networkEnums'
 local tableHelper = require 'tes3mp.util.table'
 local fixFilename = require 'packages.misc.fixFilename'
-local dataTableBuilder = require 'dataTableBuilder'
+local dataTableBuilder = require 'packages.dataTableBuilder'
 local packetBuilder = require 'packages.packetBuilder'
 
 local logicHandler = {}

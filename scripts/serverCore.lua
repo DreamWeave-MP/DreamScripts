@@ -1,7 +1,7 @@
 local color = require 'color'
 local config = require 'config'
 local enumerations = require 'packages.networkEnums'
-local dataTableBuilder = require 'dataTableBuilder'
+local dataTableBuilder = require 'packages.dataTableBuilder'
 local guiHelper = require 'tes3mp.util.gui'
 local inventoryHelper = require 'tes3mp.util.inventory'
 local jsonInterface = require 'packages.jsonInterface'
