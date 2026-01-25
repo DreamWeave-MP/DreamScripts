@@ -6,16 +6,6 @@ local ioModule = tes3mp.GetOperatingSystemType() == 'Windows' and require 'io2' 
 local jsonInterface = require 'jsonInterface'
 local tableHelper = require 'tes3mp.util.table'
 
-local isModChunk, I = pcall(require, 'interfaces')
-local tds
-
-if isModChunk then
-  tds = I.tds
-else
-  local ok, result = pcall(require, 'tds.init')
-  if ok then tds = result end
-end
-
 ---@param filename string
 ---@param log boolean? Whether or not to write initialization logs
 ---@return DataFileRequirements
