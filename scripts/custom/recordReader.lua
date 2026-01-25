@@ -78,8 +78,13 @@ end
 ---@param value any
 ---@return string? forSure
 local function RealString(value)
-  local result = tostring(value)
-  if result and result ~= '' then return result end
+  if type(value) == 'string' then
+    if value ~= '' then
+      return value
+    end
+  end
+
+  error('Invalid string parameter: ' .. value .. ' ' .. tostring(value))
 end
 
 ---@param ... any
