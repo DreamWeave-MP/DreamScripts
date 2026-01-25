@@ -17,7 +17,7 @@ local tes3 = assert(I.tes3)
 ---@class CellLoadConfig
 ---@field Exterior boolean
 ---@field Interior boolean
-local LoadCellTypes = tds.hash { Exterior = false, Interior = true, }
+local LoadCellTypes = tds.hash { Exterior = true, Interior = true, }
 
 local Enums = require 'packages.MWEnums'
 
