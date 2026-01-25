@@ -29,26 +29,13 @@ local I = require 'interfaces'
 local safeRespawn = {}
 local EPS = 0.001
 
-local ceil, floor = math.ceil, math.floor
----@param input number
-local function round(input)
-	return input >= 0 and floor(input + 0.5) or ceil(input - 0.5)
-end
-
----@param input number
----@param high number
----@param low number
-local function clamp(input, low, high)
-	return input < low and low or (input > high and high or input)
-end
-
 ---@param target number?
 ---@param base number
 local function statValue(target, base)
 	if not target then return base end
 
 	if target <= 1.0 and target >= EPS then
-		return round(target * base)
+		return math.round(target * base)
 	end
 
 	return base
@@ -67,15 +54,15 @@ local function CalculateRevivedPlayerStats(pid)
 			assert(tonumber(SafeRespawnData.StatsOnRevive.health)), tonumber(SafeRespawnData.StatsOnRevive.magicka),
 			tonumber(SafeRespawnData.StatsOnRevive.fatigue)
 
-	newHealth = clamp(statValue(targetHealth, baseHealth), 1, baseHealth)
+	newHealth = math.clamp(statValue(targetHealth, baseHealth), 1, baseHealth)
 
-	newMagicka = clamp(
+	newMagicka = math.clamp(
 		SafeRespawnData.StatsOnRevive.magicka == 'preserve' and currentMagicka or statValue(targetMagicka, baseMagicka),
 		0,
 		baseMagicka
 	)
 
-	newFatigue = clamp(
+	newFatigue = math.clamp(
 		SafeRespawnData.StatsOnRevive.fatigue == 'preserve' and currentFatigue or statValue(targetFatigue, baseFatigue),
 		0,
 		baseFatigue

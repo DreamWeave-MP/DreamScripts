@@ -18,6 +18,8 @@ require 'doc.tes3mpDocs'
 
 --- Global string overrides load before any possibly-dependent modules
 require 'dUtil.stringMeta'
+--- Extensions to the math module borrowed from OpenMW and elsewhere
+require 'dUtil.mathExtensions'
 
 ---@global
 Players = {}

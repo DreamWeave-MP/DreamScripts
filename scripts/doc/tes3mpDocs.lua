@@ -54,6 +54,10 @@
 ---@field titleCase fun(self: string): string Splits a string by spaces and returns one where the first letter of each substring is capitalized and others are lowercased. Kind of expensive.
 ---@field splitUniqueIndex fun(self: string): integer, integer Splits a unique index string into refNum, mpNum
 
+---@class mathlib
+---@field clamp fun(input: number, low: number, high: number) Clamps an input numeric value within a certain range
+---@field round fun(input: number) Rounds a positive or negative integer to the nearest whole value.
+
 ---@class TES3MPCommand
 ---@field definedBy string path of the script which defined this command. The name of the script which defines a command it kept so that old references to it may be removed.
 ---@field callback CommandHandler handler function for whenever this command is invoked
