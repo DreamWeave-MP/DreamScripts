@@ -1667,10 +1667,6 @@ local function createRecordStores()
     for j, object in ipairs(tes3.load_plugin(pluginPath).objects) do
       local recordId = OptionalRecordId(object.id)
       if idIsFree(recordId, object) then
-        if object.type == 'Static' then
-          print(recordId, 'id is free')
-        end
-
         local recordStore, typeHandler = RecordStores[object.type], TypeHandlers[object.type]
 
         if recordStore and typeHandler then
