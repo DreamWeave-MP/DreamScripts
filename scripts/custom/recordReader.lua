@@ -48,7 +48,15 @@ foundPlugins = nil
 ---@param value any
 ---@return string? lowercased
 local function lowercase(value)
-  if value then return tostring(value):lower() end
+  if not value then return end
+
+  if type(value) == 'string' then
+    if value == '' then return end
+
+    return value:lower()
+  end
+
+  return tostring(value):lower()
 end
 
 local function numberField(value)
