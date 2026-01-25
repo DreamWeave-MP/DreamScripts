@@ -129,6 +129,10 @@ local function objectFlags(record)
   return hasFlag(record.flags, Enums.Flags.Record.DELETED), hasFlag(record.flags, Enums.Flags.Record.MODIFIED)
 end
 
+local NumMandatoryFields = {
+  SoundGen = 3,
+}
+
 local AIPackageHandlers = {
   AiActivatePackage = function(package)
     local hash = tds.Hash()
@@ -1482,16 +1486,24 @@ local TypeHandlers = {
   SoundGen = function(record, recordId)
     assert(recordId and recordId ~= '')
 
-    local object = {
-      id = recordId,
-      sound = MandatoryRecordId(record.sound),
-      soundGenType = numberField(Enums.SoundGenType[tostring(record.sound_gen_type)]),
-    }
-
+    local isDeleted, isModified = objectFlags(record)
     local creature = OptionalRecordId(record.creature)
-    if creature then object.creature = creature end
 
-    objectFlags(record, object)
+    local numFields = NumMandatoryFields.SoundGen
+        + (isDeleted and 1 or 0)
+        + (isModified and 1 or 0)
+        + (creature and 1 or 0)
+
+    local object = table.new(0, numFields)
+
+    object.id = recordId
+    object.sound = MandatoryRecordId(record.sound)
+    object.soundGenType = numberField(Enums.SoundGenType[tostring(record.sound_gen_type)])
+
+    if creature then object.creature = creature end
+    if isDeleted then object.isDeleted = true end
+    if isModified then object.isModified = true end
+
     return object
   end,
 
