@@ -1,5 +1,5 @@
 local config = require 'config'
-local tinyYaml = require 'l10n.tinyyaml'
+local tinyYaml = require 'tinyyaml'
 
 ---@type LFSFFIModule
 local lfs = require 'lfs'

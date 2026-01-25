@@ -19,7 +19,7 @@ local jsonInterface = require 'jsonInterface'
 local l10n = require 'l10n.core'
 local logicHandler = require 'packages.logicHandler'
 local tableHelper = require 'tes3mp.util.table'
-local yamlInterface = require 'yamlInterface'
+local yamlInterface = require 'packages.yamlInterface'
 
 ---@type LFSFFIModule
 local lfs = require 'lfs'
@@ -306,7 +306,7 @@ function DScriptLoader.defaultModuleCache()
     ['l10n.core'] = function() error('Incorrect l10n module path. use \'l10n\' instead.') end,
     l10n = l10n,
     lfs = lfs,
-    yamlinterface = yamlInterface,
+    ['packages.yamlinterface'] = yamlInterface,
   }
 end
 

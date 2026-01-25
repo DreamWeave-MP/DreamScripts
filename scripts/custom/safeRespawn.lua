@@ -1,7 +1,7 @@
 local enumerations = require 'packages.networkEnums'
 local inventoryHelper = require 'tes3mp.util.inventory'
 local logicHandler = require 'packages.logicHandler'
-local yamlInterface = require 'yamlInterface'
+local yamlInterface = require 'packages.yamlInterface'
 
 ---@class ReviveStatInfo
 ---@field fatigue number|'preserve' Percentage of fatigue when revived as a percentage, or optionally, just leave fatigue intact

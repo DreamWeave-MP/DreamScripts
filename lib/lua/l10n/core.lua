@@ -1,7 +1,7 @@
 local config = require 'config'
 local enumerations = require 'packages.networkEnums'
 local languageCodes = require 'l10n.languageCodes'
-local yamlInterface = require 'yamlInterface'
+local yamlInterface = require 'packages.yamlInterface'
 
 ---@type LFSFFIModule
 local lfs = require 'lfs'
