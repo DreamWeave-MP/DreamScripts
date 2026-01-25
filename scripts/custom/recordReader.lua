@@ -132,6 +132,7 @@ local function objectFlags(record)
 end
 
 local NumMandatoryFields = {
+  Lockpick = 7,
   MiscItem = 7,
   Npc = 11,
   Probe = 7,
@@ -407,7 +408,7 @@ local RecordStores = {
   LeveledCreature = tds.Hash(),
   LeveledItem = tds.Hash(),
   Light = tds.Hash(),
-  Lockpick = tds.Hash(),
+  Lockpick = {},
   MiscItem = {},
   Npc = {},
   Probe = {},
@@ -1120,23 +1121,31 @@ local TypeHandlers = {
   end,
 
   Lockpick = function(record, recordId)
-    local hash = tds.Hash()
-
-    hash.icon = path(record.icon)
-    hash.id = MandatoryRecordId(recordId)
-    hash.model = path(record.mesh)
-
-    hash.quality = numberField(record.data.quality)
-    hash.uses = numberField(record.data.uses)
-    hash.value = numberField(record.data.value)
-    hash.weight = numberField(record.data.weight)
-
+    local isDeleted, isModified = objectFlags(record)
     local script, name = OptionalRecordId(record.script), RealString(record.name)
-    if script then hash.script = script end
-    if name then hash.name = name end
 
-    objectFlags(record, hash)
-    return hash
+    local numFields = NumMandatoryFields.Lockpick
+        + (isDeleted and 1 or 0)
+        + (isModified and 1 or 0)
+        + (name and 1 or 0)
+        + (script and 1 or 0)
+
+    local object = table.new(0, numFields)
+
+    object.icon = path(record.icon)
+    object.id = recordId
+    object.model = path(record.mesh)
+    object.quality = numberField(record.data.quality)
+    object.uses = numberField(record.data.uses)
+    object.value = numberField(record.data.value)
+    object.weight = numberField(record.data.weight)
+
+    if script then object.script = script end
+    if name then object.name = name end
+    if isDeleted then object.isDeleted = true end
+    if isModified then object.isModified = true end
+
+    return object
   end,
 
   MiscItem = function(record, recordId)
