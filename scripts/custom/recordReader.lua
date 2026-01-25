@@ -84,7 +84,8 @@ local function RealString(value)
     end
   end
 
-  error('Invalid string parameter: ' .. value .. ' ' .. tostring(value))
+  local converted = tostring(value)
+  if converted ~= '' then return converted end
 end
 
 ---@param ... any
