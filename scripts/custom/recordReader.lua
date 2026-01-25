@@ -132,6 +132,7 @@ local function objectFlags(record)
 end
 
 local NumMandatoryFields = {
+  LeveledItem = 2,
   Light = 9,
   Lockpick = 7,
   MiscItem = 7,
@@ -407,7 +408,7 @@ local RecordStores = {
   Header = {},
   Ingredient = tds.Hash(),
   LeveledCreature = tds.Hash(),
-  LeveledItem = tds.Hash(),
+  LeveledItem = {},
   Light = {},
   Lockpick = {},
   MiscItem = {},
@@ -1064,30 +1065,30 @@ local TypeHandlers = {
   end,
 
   LeveledItem = function(record, recordId)
-    local hash = tds.Hash()
-
-    if hasFlag(
-          record.leveled_item_flags,
-          Enums.Flags.LeveledItem.CALCULATE_FOR_EACH_ITEM
-        ) then
-      hash.calculateForEachItem = true
-    end
-
-    if hasFlag(
-          record.leveled_item_flags,
-          Enums.Flags.LeveledItem.CALCULATE_FROM_ALL_LEVELS
-        ) then
-      hash.calculateFromAllLevels = true
-    end
-
-    hash.chanceNone = numberField(record.chance_none)
-    hash.id = recordId
-
+    local calculateForEachItem = hasFlag(record.leveled_item_flags, Enums.Flags.LeveledItem.CALCULATE_FOR_EACH_ITEM)
+    local calculateFromAllLevels = hasFlag(record.leveled_item_flags, Enums.Flags.LeveledItem.CALCULATE_FROM_ALL_LEVELS)
+    local isDeleted, isModified = objectFlags(record)
     local items = Handlers.LeveledEntry(record.items)
-    if items then hash.items = items end
 
-    objectFlags(record, hash)
-    return hash
+    local numFields = NumMandatoryFields.LeveledItem
+        + (calculateForEachItem and 1 or 0)
+        + (calculateFromAllLevels and 1 or 0)
+        + (isDeleted and 1 or 0)
+        + (isModified and 1 or 0)
+        + (items and 1 or 0)
+
+    local object = table.new(0, numFields)
+
+    object.chanceNone = numberField(record.chance_none)
+    object.id = recordId
+
+    if calculateForEachItem then object.calculateForEachItem = true end
+    if calculateFromAllLevels then object.calculateFromAllLevels = true end
+    if isDeleted then object.isDeleted = true end
+    if isModified then object.isModified = true end
+    if items then object.items = items end
+
+    return object
   end,
 
   Light = function(record, recordId)
