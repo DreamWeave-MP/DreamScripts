@@ -74,4 +74,6 @@ do
     table.nkeys = require 'table.nkeys'
     table.clone = require 'table.clone'
   end
+
+  table.new = require 'table.new'
 end

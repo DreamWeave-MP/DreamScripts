@@ -1,3 +1,9 @@
+--- Global string overrides load before any possibly-dependent modules
+require 'dUtil.stringExtensions'
+--- Extensions to the math module borrowed from OpenMW and elsewhere
+require 'dUtil.mathExtensions'
+require 'dUtil.tableExtensions'
+
 local color = require 'packages.color'
 local config = require 'config'
 local enumerations = require 'packages.networkEnums'
@@ -15,11 +21,6 @@ local time = require 'packages.misc.time'
 local dUtil = require 'dUtil.init'
 
 require 'doc.tes3mpDocs'
-
---- Global string overrides load before any possibly-dependent modules
-require 'dUtil.stringMeta'
---- Extensions to the math module borrowed from OpenMW and elsewhere
-require 'dUtil.mathExtensions'
 
 ---@global
 Players = {}

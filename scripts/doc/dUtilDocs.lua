@@ -11,6 +11,7 @@
 ---@field isempty fun(inTable: table): boolean Returns true when the given Lua table contains neither non-nil array elements nor non-nil key-value pairs, or false otherwise.
 ---@field nkeys fun(inTable: table): integer Returns the total number of elements in a given Lua table (i.e. from both the array and hash parts combined).
 ---@field clone fun(inTable: table): table Returns a shallow copy of the given Lua table.
+---@field new fun(numArray: integer, numHash: integer): table This creates a pre-sized table, just like the C API equivalent lua_createtable(). This is useful for big tables if the final table size is known and automatic table resizing is too expensive.
 
 ---@class DefaultInterfaces
 ---@field Color ColorModule?
