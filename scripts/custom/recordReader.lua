@@ -131,6 +131,7 @@ end
 
 local NumMandatoryFields = {
   SoundGen = 3,
+  StartScript = 2,
   Static = 2,
 }
 
@@ -1528,13 +1529,20 @@ local TypeHandlers = {
   end,
 
   StartScript = function(record, recordId)
-    local hash = tds.Hash()
+    local isDeleted, isModified = objectFlags(record)
 
-    hash.id = recordId
-    hash.script = MandatoryRecordId(record.script)
-    objectFlags(record, hash)
+    local numFields = NumMandatoryFields.StartScript
+        + (isDeleted and 1 or 0)
+        + (isModified and 1 or 0)
 
-    return hash
+    local object = table.new(0, numFields)
+
+    object.id = recordId
+    object.script = MandatoryRecordId(record.script)
+    if isDeleted then object.isDeleted = true end
+    if isModified then object.isModified = true end
+
+    return object
   end,
 
   Static = function(record, recordId)
