@@ -33,7 +33,7 @@
 local enumerations = require 'packages.networkEnums'
 local inventoryHelper = require 'tes3mp.util.inventory'
 local jsonInterface = require 'jsonInterface'
-local packetBuilder = require 'tes3mp.packet.builder'
+local packetBuilder = require 'packages.packetBuilder'
 
 local merchantRestockLog = true
 local merchantData = nil

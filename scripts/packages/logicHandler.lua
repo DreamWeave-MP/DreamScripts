@@ -7,7 +7,7 @@ local enumerations = require 'packages.networkEnums'
 local tableHelper = require 'tes3mp.util.table'
 local fileHelper = require 'fileHelper'
 local dataTableBuilder = require 'dataTableBuilder'
-local packetBuilder = require 'tes3mp.packet.builder'
+local packetBuilder = require 'packages.packetBuilder'
 
 local logicHandler = {}
 

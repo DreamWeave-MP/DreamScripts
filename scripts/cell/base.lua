@@ -3,7 +3,7 @@ local config = require 'config'
 local enumerations = require 'packages.networkEnums'
 local inventoryHelper = require 'tes3mp.util.inventory'
 local logicHandler = require 'packages.logicHandler'
-local packetBuilder = require 'tes3mp.packet.builder'
+local packetBuilder = require 'packages.packetBuilder'
 local patterns = require 'patterns'
 local tableHelper = require 'tes3mp.util.table'
 

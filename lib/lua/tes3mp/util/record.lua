@@ -1,7 +1,7 @@
 local config = require 'config'
 local enumerations = require 'packages.networkEnums'
 local logicHandler = require 'packages.logicHandler'
-local packetBuilder = require 'tes3mp.packet.builder'
+local packetBuilder = require 'packages.packetBuilder'
 local tableHelper = require 'tes3mp.util.table'
 
 -- The record type settings whose input should be converted to booleans when using /storerecord
