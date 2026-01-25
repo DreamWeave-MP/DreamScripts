@@ -1,5 +1,5 @@
 local enumerations = require 'packages.networkEnums'
-local tableHelper = require 'tes3mp.util.table'
+local tableHelper = require 'packages.tableHelper'
 
 ---@class PacketReader
 local packetReader = {}

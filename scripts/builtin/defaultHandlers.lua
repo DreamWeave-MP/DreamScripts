@@ -1,7 +1,7 @@
 local config = require 'config'
 local enumerations = require 'packages.networkEnums'
 local logicHandler = require 'packages.logicHandler'
-local tableHelper = require 'tes3mp.util.table'
+local tableHelper = require 'packages.tableHelper'
 
 local sendKills = {}
 

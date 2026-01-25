@@ -1,11 +1,11 @@
 local class = require 'classy'
 local config = require 'config'
 local enumerations = require 'packages.networkEnums'
-local inventoryHelper = require 'tes3mp.util.inventory'
+local inventoryHelper = require 'packages.inventoryHelper'
 local logicHandler = require 'packages.logicHandler'
 local packetBuilder = require 'packages.packetBuilder'
 local patterns = require 'packages.misc.patterns'
-local tableHelper = require 'tes3mp.util.table'
+local tableHelper = require 'packages.tableHelper'
 
 local contentFixesByCell = {}
 

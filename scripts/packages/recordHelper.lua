@@ -2,7 +2,7 @@ local config = require 'config'
 local enumerations = require 'packages.networkEnums'
 local logicHandler = require 'packages.logicHandler'
 local packetBuilder = require 'packages.packetBuilder'
-local tableHelper = require 'tes3mp.util.table'
+local tableHelper = require 'packages.tableHelper'
 
 -- The record type settings whose input should be converted to booleans when using /storerecord
 local booleanRecordSettings = {
@@ -98,7 +98,7 @@ local requiredRecordSettings = {
 local unplaceableRecordTypes = { 'spell', 'cell', 'script', 'gamesetting' }
 
 --- The settings which are accepted as input for different record types when using /storerecord
-local validRecordSettings = require 'tes3mp.util.validRecordSettings'
+local validRecordSettings = require 'packages.misc.validRecordSettings'
 
 local recordHandlers = {
   activator = packetBuilder.AddActivatorRecord,

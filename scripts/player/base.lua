@@ -1,12 +1,12 @@
 local config = require 'config'
 local enumerations = require 'packages.networkEnums'
-local inventoryHelper = require 'tes3mp.util.inventory'
+local inventoryHelper = require 'packages.inventoryHelper'
 local logicHandler = require 'packages.logicHandler'
 local packetBuilder = require 'packages.packetBuilder'
 local packetReader = require 'packages.packetReader'
 local patterns = require 'packages.misc.patterns'
-local stateHelper = require 'tes3mp.util.state'
-local tableHelper = require 'tes3mp.util.table'
+local stateHelper = require 'packages.stateHelper'
+local tableHelper = require 'packages.tableHelper'
 local time = require 'packages.misc.time'
 
 --- Unequip items that damage the player when worn

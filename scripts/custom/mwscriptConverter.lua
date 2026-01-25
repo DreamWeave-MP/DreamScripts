@@ -3,7 +3,7 @@ local jsonInterface = require 'packages.jsonInterface'
 
 ---@type LFSFFIModule
 local lfs = require 'lfs'
-local tableHelper = require 'tes3mp.util.table'
+local tableHelper = require 'packages.tableHelper'
 
 local scriptConvertMethods = {}
 local ScriptRecordStore = RecordStores.script

@@ -1,5 +1,5 @@
 local patterns = require 'packages.misc.patterns'
-local tableHelper = require 'tes3mp.util.table'
+local tableHelper = require 'packages.tableHelper'
 
 -- Avoid using the following filenames because of their reserved status on operating systems
 local invalidFilenames = { "CON", "PRN", "AUX", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5",

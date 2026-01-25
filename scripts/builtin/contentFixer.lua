@@ -1,6 +1,6 @@
 local config = require 'config'
 local enumerations = require 'packages.networkEnums'
-local tableHelper = require 'tes3mp.util.table'
+local tableHelper = require 'packages.tableHelper'
 
 ---@class ContentFixer
 local contentFixer = {}

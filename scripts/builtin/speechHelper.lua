@@ -1,4 +1,4 @@
-local tableHelper = require 'tes3mp.util.table'
+local tableHelper = require 'packages.tableHelper'
 
 ---@alias SpeechSubfolder 'default'|string
 ---@alias SpeechSubDirCollection table<string, SpeechDirDetails>

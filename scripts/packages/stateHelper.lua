@@ -1,7 +1,7 @@
 local config = require 'config'
 local enumerations = require 'packages.networkEnums'
 local patterns = require 'packages.misc.patterns'
-local tableHelper = require 'tes3mp.util.table'
+local tableHelper = require 'packages.tableHelper'
 
 local StateHelper = require('classy')('StateHelper')
 

@@ -1,7 +1,7 @@
 local config = require 'config'
 local enumerations = require 'packages.networkEnums'
 local jsonInterface = require 'packages.jsonInterface'
-local tableHelper = require 'tes3mp.util.table'
+local tableHelper = require 'packages.tableHelper'
 
 local BaseWorld = require("world.base")
 

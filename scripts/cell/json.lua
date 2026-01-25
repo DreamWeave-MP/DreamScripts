@@ -2,7 +2,7 @@ local config = require 'config'
 local enumerations = require 'packages.networkEnums'
 local fixFilename = require 'packages.misc.fixFilename'
 local jsonInterface = require 'packages.jsonInterface'
-local tableHelper = require 'tes3mp.util.table'
+local tableHelper = require 'packages.tableHelper'
 local BaseCell = require 'cell.base'
 
 ---@class JSONCell

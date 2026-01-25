@@ -3,7 +3,7 @@ local enumerations = require 'packages.networkEnums'
 local fixFilename = require 'packages.misc.fixFilename'
 local jsonInterface = require 'packages.jsonInterface'
 local logicHandler = require 'packages.logicHandler'
-local tableHelper = require 'tes3mp.util.table'
+local tableHelper = require 'packages.tableHelper'
 local BasePlayer = require 'player.base'
 
 local Player = require('classy')('Player', BasePlayer)

@@ -26,7 +26,7 @@ local SpellConfig = require 'yamlInterface' 'custom/addActorSpell/config.yml'
 
 local enumerations = require 'packages.networkEnums'
 local enums = require 'packages.MWEnums'
-local tableHelper = require 'tes3mp.util.table'
+local tableHelper = require 'packages.tableHelper'
 
 --- Lowercases input recordIds
 ---@param dirtyTable ExactRefIdSpellList|FuzzyRefIdSpellList|UniqueIndexSpellList

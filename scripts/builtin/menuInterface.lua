@@ -1,8 +1,8 @@
 local config = require 'config'
 local enumerations = require 'packages.networkEnums'
 local patterns = require 'packages.misc.patterns'
-local inventoryHelper = require 'tes3mp.util.inventory'
-local tableHelper = require 'tes3mp.util.table'
+local inventoryHelper = require 'packages.inventoryHelper'
+local tableHelper = require 'packages.tableHelper'
 
 require 'doc.menuHelper'
 

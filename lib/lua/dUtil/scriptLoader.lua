@@ -17,7 +17,7 @@ local dUtil = require 'dUtil.init'
 local enumerations = require 'packages.networkEnums'
 local jsonInterface = require 'packages.jsonInterface'
 local logicHandler = require 'packages.logicHandler'
-local tableHelper = require 'tes3mp.util.table'
+local tableHelper = require 'packages.tableHelper'
 local yamlInterface = require 'packages.yamlInterface'
 
 ---@type LFSFFIModule

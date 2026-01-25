@@ -20,7 +20,7 @@
 -- * "worldwide" is where you place variables that are always shared across all players
 --   because they affect the physical world in a way that should be visible to everyone,
 --   i.e. they affect structures, mechanism states, water levels, and so on
-local tableHelper = require 'tes3mp.util.table'
+local tableHelper = require 'packages.tableHelper'
 
 if not ClientDataFiles then
     ClientDataFiles = require('dUtil.init').loadRequiredDataFiles(false)

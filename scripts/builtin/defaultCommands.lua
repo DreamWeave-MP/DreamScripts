@@ -9,8 +9,8 @@ local enumerations = require 'packages.networkEnums'
 local guiHelper = require 'packages.guiHelper'
 local logicHandler = require 'packages.logicHandler'
 local patterns = require 'packages.misc.patterns'
-local recordHelper = require 'tes3mp.util.record'
-local tableHelper = require 'tes3mp.util.table'
+local recordHelper = require 'packages.recordHelper'
+local tableHelper = require 'packages.tableHelper'
 
 ---@type DefaultInterfaces
 local I = require 'interfaces'

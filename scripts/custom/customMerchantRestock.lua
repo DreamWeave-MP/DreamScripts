@@ -31,7 +31,7 @@
 -- Fuck that fella we got rust around these parts
 
 local enumerations = require 'packages.networkEnums'
-local inventoryHelper = require 'tes3mp.util.inventory'
+local inventoryHelper = require 'packages.inventoryHelper'
 local jsonInterface = require 'packages.jsonInterface'
 local packetBuilder = require 'packages.packetBuilder'
 

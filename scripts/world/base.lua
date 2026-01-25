@@ -1,8 +1,8 @@
 local config = require 'config'
 local enumerations = require 'packages.networkEnums'
 local logicHandler = require 'packages.logicHandler'
-local stateHelper = require 'tes3mp.util.state'
-local tableHelper = require 'tes3mp.util.table'
+local stateHelper = require 'packages.stateHelper'
+local tableHelper = require 'packages.tableHelper'
 
 ---@class BaseWorld
 local BaseWorld = require('classy')('BaseWorld')

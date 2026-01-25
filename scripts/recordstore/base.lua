@@ -1,7 +1,7 @@
 local enumerations = require 'packages.networkEnums'
 local logicHandler = require 'packages.logicHandler'
 local packetBuilder = require 'packages.packetBuilder'
-local tableHelper = require 'tes3mp.util.table'
+local tableHelper = require 'packages.tableHelper'
 
 local BaseRecordStore = require('classy')('BaseRecordStore')
 

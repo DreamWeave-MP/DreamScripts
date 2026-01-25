@@ -4,7 +4,7 @@ local bit = require 'bit'
 local enumerations = require 'packages.networkEnums'
 local ioModule = tes3mp.GetOperatingSystemType() == 'Windows' and require 'io2' or io
 local jsonInterface = require 'packages.jsonInterface'
-local tableHelper = require 'tes3mp.util.table'
+local tableHelper = require 'packages.tableHelper'
 
 ---@param filename string
 ---@param log boolean? Whether or not to write initialization logs

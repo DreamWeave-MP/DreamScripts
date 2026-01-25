@@ -1,7 +1,7 @@
 -- This is a very unfinished and out-of-date example of using a database in TES3MP
 
 local enumerations = require 'packages.networkEnums'
-local tableHelper = require 'tes3mp.util.table'
+local tableHelper = require 'packages.tableHelper'
 
 Database = require('classy')('Database')
 

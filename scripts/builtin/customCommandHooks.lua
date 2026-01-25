@@ -23,7 +23,7 @@ local color = require 'packages.color'
 local enumerations = require 'packages.networkEnums'
 ---@type DUtilMisc
 local miscUtil = require 'dUtil'.misc
-local tableHelper = require 'tes3mp.util.table'
+local tableHelper = require 'packages.tableHelper'
 
 ---@class CustomCommandHooks
 ---@field commands table<string, TES3MPCommand>
