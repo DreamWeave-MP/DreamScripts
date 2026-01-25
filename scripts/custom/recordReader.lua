@@ -1444,6 +1444,8 @@ local TypeHandlers = {
 
     if name then object.name = name end
     if script then object.script = script end
+    if isDeleted then object.isDeleted = true end
+    if isModified then object.isModified = true end
 
     return object
   end,
