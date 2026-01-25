@@ -21,7 +21,7 @@ local menuHelper = I.menuHelper
 local speechHelper = I.speechHelper
 
 ---@type DUtilModule
-local dUtil = require 'dUtil.init'
+local dUtil = require 'dUtil'
 
 local function invalidCommand(pid)
     assert(logicHandler.CheckPlayerValidity(nil, pid),

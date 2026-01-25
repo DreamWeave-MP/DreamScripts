@@ -21,7 +21,8 @@
 
 local color = require 'color'
 local enumerations = require 'packages.networkEnums'
-local miscUtil = require 'dUtil.miscellaneous'
+---@type DUtilMisc
+local miscUtil = require 'dUtil'.misc
 local tableHelper = require 'tes3mp.util.table'
 
 ---@class CustomCommandHooks

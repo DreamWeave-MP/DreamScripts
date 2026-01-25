@@ -1,4 +1,4 @@
-local dUtil = require 'dUtil.init'
+local dUtil = require 'dUtil'
 local enumerations = require 'packages.networkEnums'
 local logicHandler = require 'packages.logicHandler'
 

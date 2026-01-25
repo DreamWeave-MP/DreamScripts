@@ -1,5 +1,6 @@
 local config = require 'config'
-local miscUtil = require 'dUtil.miscellaneous'
+---@type DUtilMisc
+local miscUtil = require 'dUtil'.misc
 local enumerations = require 'packages.networkEnums'
 
 ---@class EventHandler

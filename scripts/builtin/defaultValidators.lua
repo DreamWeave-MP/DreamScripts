@@ -1,5 +1,5 @@
 local config = require 'config'
-local dUtil = require 'dUtil.init'
+local dUtil = require 'dUtil'
 local enumerations = require 'packages.networkEnums'
 local logicHandler = require 'packages.logicHandler'
 local tableHelper = require 'tes3mp.util.table'

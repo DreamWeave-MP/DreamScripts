@@ -17,7 +17,7 @@ local tableHelper = require 'tes3mp.util.table'
 ---@field femaleFiles SpeechSubDirCollection? speech file listing for females
 
 if not ClientDataFiles then
-    ClientDataFiles = require('dUtil.init').loadRequiredDataFiles(false)
+    ClientDataFiles = require('dUtil').loadRequiredDataFiles(false)
 end
 
 ---@type table<MWRace, table<SpeechSubfolder, ContentFileSpeechCollection>>
