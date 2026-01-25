@@ -131,6 +131,7 @@ end
 
 local NumMandatoryFields = {
   SoundGen = 3,
+  Static = 2,
 }
 
 local AIPackageHandlers = {
@@ -1537,11 +1538,18 @@ local TypeHandlers = {
   end,
 
   Static = function(record, recordId)
-    local object = {
-      id = recordId,
-      model = path(record.mesh),
-    }
-    objectFlags(record, object)
+    local isDeleted, isModified = objectFlags(record)
+
+    local numFields = NumMandatoryFields.Static
+        + (isDeleted and 1 or 0)
+        + (isModified and 1 or 0)
+
+    local object = table.new(0, numFields)
+
+    object.id = recordId
+    object.model = path(record.mesh)
+    if isDeleted then object.isDeleted = true end
+    if isModified then object.isModified = true end
 
     return object
   end,
