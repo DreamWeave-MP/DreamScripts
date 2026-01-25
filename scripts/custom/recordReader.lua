@@ -372,7 +372,7 @@ local RecordStores = {
   Faction = tds.Hash(),
   GameSetting = {},
   GlobalVariable = {},
-  Header = tds.Hash(),
+  Header = {},
   Ingredient = tds.Hash(),
   LeveledCreature = tds.Hash(),
   LeveledItem = tds.Hash(),
@@ -962,10 +962,10 @@ local TypeHandlers = {
     local masterLength = #masters
     if masterLength == 0 then return end
 
-    local masterList = tds.Vec()
-    masterList:resize(masterLength)
+    local masterList = table.new(masterLength, 0)
 
     for i, masterInfo in ipairs(masters) do
+      print(masterInfo[1], type(masterInfo[1]))
       masterList[i] = MandatoryRecordId(masterInfo[1])
     end
 
