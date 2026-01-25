@@ -7,7 +7,6 @@
         ]
     },
     "workspace.library": [
-        "./lib/lua/doc/*.lua",
-        "./scripts/custom/?.lua"
+        "./scripts/**/*.lua"
     ]
 }
