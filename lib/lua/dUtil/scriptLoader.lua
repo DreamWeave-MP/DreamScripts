@@ -309,9 +309,7 @@ function DScriptLoader.defaultModuleCache()
   }
 end
 
-local ModuleCache, ScriptDirectories =
-    DScriptLoader.defaultModuleCache(),
-    { 'scripts/', 'lib/lua/', }
+local ModuleCache = DScriptLoader.defaultModuleCache()
 
 --- Small shim for overriding require statements in curated script environment
 ---@param scriptName string
@@ -326,27 +324,15 @@ function DScriptLoader.requireShim(scriptName)
     return ModuleCache[lowerName]
   end
 
-  local ok, chunk, err, result = false, nil, nil, nil
+  local chunk, err = loadfile(('server/scripts/%s.lua'):format(scriptName:gsub('%.', '/')))
 
-  for _, prefix in ipairs(ScriptDirectories) do
-    local checkPath = ('server%s%s%s.lua')
-        :format(PathSeparator, prefix, scriptName:gsub('%.', PathSeparator))
-
-    chunk, err = loadfile(checkPath)
-
-    if chunk then
-      ok = true
-      break
-    end
-  end
-
-  if not ok or not chunk then
+  if not chunk then
     error(('%s: %s!'):format(scriptName, err))
   end
 
   setfenv(chunk, DScriptLoader.getScriptEnv())
 
-  ok, result = pcall(chunk)
+  local ok, result = pcall(chunk)
   if not ok then
     error(('%s: %s!'):format(scriptName, result))
   end
