@@ -73,7 +73,7 @@ end
 ---@return RecordId?
 local function OptionalRecordId(value)
   local id = lowercase(value)
-  if id and id ~= '' then return id end
+  if id then return id end
 end
 
 ---@param value any
