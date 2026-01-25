@@ -403,8 +403,8 @@ local RecordStores = {
   RepairItem = tds.Hash(),
   Script = {},
   Skill = tds.Hash(),
-  Sound = tds.Hash(),
-  SoundGen = tds.Hash(),
+  Sound = {},
+  SoundGen = {},
   Spell = tds.Hash(),
   StartScript = tds.Hash(),
   Static = {},
@@ -1469,36 +1469,34 @@ local TypeHandlers = {
   end,
 
   Sound = function(record, recordId)
-    local hash = tds.Hash()
+    local object = {
+      id = recordId,
+      path = path(record.sound_path),
+      range = {
+        assert(tostring(record.data.range[1])),
+        assert(tostring(record.data.range[2])),
+      },
+      volume = numberField(record.data.volume)
+    }
 
-    hash.id = MandatoryRecordId(recordId)
-    hash.path = path(record.sound_path)
-    hash.range = tds.Vec(
-      numberField(tostring(record.data.range[1])),
-      numberField(tostring(record.data.range[2]))
-    )
-    hash.volume = numberField(record.data.volume)
-
-    objectFlags(record, hash)
-    return hash
+    objectFlags(record, object)
+    return object
   end,
 
   SoundGen = function(record, recordId)
+    assert(recordId and recordId ~= '')
+
+    local object = {
+      id = recordId,
+      sound = MandatoryRecordId(record.sound),
+      soundGenType = numberField(Enums.SoundGenType[tostring(record.sound_gen_type)]),
+    }
+
     local creature = OptionalRecordId(record.creature)
-    local thisId = recordId or creature
+    if creature then object.creature = creature end
 
-    if not thisId then return end
-
-    local hash = tds.Hash()
-
-    if creature then hash.creature = creature end
-    hash.id = thisId
-
-    hash.sound = MandatoryRecordId(record.sound)
-    hash.soundGenType = numberField(Enums.SoundGenType[tostring(record.sound_gen_type)])
-
-    objectFlags(record, hash)
-    return hash
+    objectFlags(record, object)
+    return object
   end,
 
   Spell = function(record, recordId)
