@@ -354,7 +354,7 @@ local Handlers = {
 }
 
 ---@type RecordStores
-local RecordStores = tds.Hash {
+local RecordStores = {
   Alchemy = tds.Hash(),
   Armor = tds.Hash(),
   Apparatus = tds.Hash(),
@@ -390,7 +390,7 @@ local RecordStores = tds.Hash {
   SoundGen = tds.Hash(),
   Spell = tds.Hash(),
   StartScript = tds.Hash(),
-  Static = tds.Hash(),
+  Static = {},
   Weapon = tds.Hash(),
 }
 
@@ -1513,13 +1513,13 @@ local TypeHandlers = {
   end,
 
   Static = function(record, recordId)
-    local hash = tds.Hash()
+    local object = {
+      id = MandatoryRecordId(recordId),
+      model = path(record.mesh),
+    }
+    objectFlags(record, object)
 
-    hash.id = recordId
-    hash.model = path(record.mesh)
-
-    objectFlags(record, hash)
-    return hash
+    return object
   end,
 
   Weapon = function(record, recordId)
