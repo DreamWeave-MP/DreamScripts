@@ -338,92 +338,814 @@ if tableHelper.containsCaseInsensitiveString(ClientDataFiles, 'Morrowind.esm') t
             }
         }
     }
+end
 
-    if tableHelper.containsCaseInsensitiveString(ClientDataFiles, 'Tribunal.esm') then
-        speechCollections['dark elf']['tb'] = {
-            folderPath = 'd',
-            malePrefix = 'DM',
-            femalePrefix = 'DF',
+if tableHelper.containsCaseInsensitiveString(ClientDataFiles, 'Tribunal.esm') then
+    speechCollections['dark elf']['tb'] = {
+        folderPath = 'd',
+        malePrefix = 'DM',
+        femalePrefix = 'DF',
+        maleFiles = {
+            hello = { count = 200, filePrefixOverride = 'tHlo' },
+            idle = { count = 24, filePrefixOverride = 'tIdl' }
+        },
+        femaleFiles = {
+            hello = { count = 173, filePrefixOverride = 'tHlo' },
+            idle = { count = 17, filePrefixOverride = 'tIdl' }
+        }
+    }
+
+    speechCollections['imperial']['tb'] = {
+        folderPath = 'i',
+        malePrefix = 'IM',
+        femalePrefix = 'IF',
+        maleFiles = {
+            hello = { count = 116, filePrefixOverride = 'tHlo' },
+            idle = { count = 13, filePrefixOverride = 'tIdl' }
+        },
+        femaleFiles = {
+            hello = { count = 112, filePrefixOverride = 'tHlo' },
+            idle = { count = 13, filePrefixOverride = 'tIdl' }
+        }
+    }
+end
+
+if tableHelper.containsCaseInsensitiveString(ClientDataFiles, 'Bloodmoon.esm') then
+    speechCollections['dark elf']['bm'] = {
+        folderPath = 'd',
+        malePrefix = 'DM',
+        femalePrefix = 'DF',
+        maleFiles = {
+            attack = { count = 6, filePrefixOverride = 'bAtk' },
+            flee = { count = 4, filePrefixOverride = 'bFle' },
+            hello = { count = 7, filePrefixOverride = 'bHlo' },
+            idle = { count = 14, skip = { 1 }, filePrefixOverride = 'bIdl' }
+        },
+        femaleFiles = {
+            attack = { count = 6, filePrefixOverride = 'bAtk' },
+            flee = { count = 4, filePrefixOverride = 'bFle' },
+            hello = { count = 1, filePrefixOverride = 'bHlo' },
+            idle = { count = 15, skip = { 7, 8 }, filePrefixOverride = 'bIdl' }
+        }
+    }
+
+    speechCollections['imperial']['bm'] = {
+        folderPath = 'i',
+        malePrefix = 'IM',
+        femalePrefix = 'IF',
+        maleFiles = {
+            attack = { count = 9, filePrefixOverride = 'bAtk' },
+            flee = { count = 4, filePrefixOverride = 'bFle' },
+            hello = { count = 52, filePrefixOverride = 'bHlo' },
+            idle = { count = 41, skip = { 16 }, filePrefixOverride = 'bIdl' }
+        },
+        femaleFiles = {
+            attack = { count = 8, filePrefixOverride = 'bAtk' },
+            flee = { count = 4, filePrefixOverride = 'bFle' },
+            hello = { count = 17, skip = { 8, 9, 10 }, filePrefixOverride = 'bHlo' },
+            idle = { count = 13, filePrefixOverride = 'bIdl' }
+        }
+    }
+
+    speechCollections['nord']['bm'] = {
+        folderPath = 'n',
+        malePrefix = 'NM',
+        femalePrefix = 'NF',
+        maleFiles = {
+            attack = { count = 9, filePrefixOverride = 'bAtk' },
+            flee = { count = 4, filePrefixOverride = 'bFle' },
+            hello = { count = 75, filePrefixOverride = 'bHlo' },
+            idle = { count = 37, filePrefixOverride = 'bIdl' }
+        },
+        femaleFiles = {
+            attack = { count = 9, filePrefixOverride = 'bAtk' },
+            flee = { count = 4, filePrefixOverride = 'bFle' },
+            hello = { count = 21, skip = { 8, 9 }, filePrefixOverride = 'bHlo' },
+            idle = { count = 23, skip = { 21 }, filePrefixOverride = 'bIdl' }
+        }
+    }
+end
+
+if tableHelper.containsCaseInsensitiveString(ClientDataFiles, "Starwind-TSI.omwaddon") then
+    speechCollections["arkanian"] = {
+        default = {
+            folderPath = "Starwind\\Arkanian",
             maleFiles = {
-                hello = { count = 200, filePrefixOverride = 'tHlo' },
-                idle = { count = 24, filePrefixOverride = 'tIdl' }
+                attack = { count = 9 },
+                hello = { count = 9 },
+                idle = { count = 9 },
+                hit = { count = 7, filePrefixOverride = "O" }
             },
             femaleFiles = {
-                hello = { count = 173, filePrefixOverride = 'tHlo' },
-                idle = { count = 17, filePrefixOverride = 'tIdl' }
-            }
+                attack = { count = 9 },
+                hello = { count = 9 },
+                idle = { count = 9 },
+                hit = { count = 8, filePrefixOverride = "Hu" }
+            },
         }
+    }
 
-        speechCollections['imperial']['tb'] = {
-            folderPath = 'i',
-            malePrefix = 'IM',
-            femalePrefix = 'IF',
+    speechCollections["arkanian"]["mr"] = {
+        folderPath = "Starwind\\Arkanian\\MR",
+        skipGenderAssign = { "skip" },
+        maleFiles = {
+            attack = { count = 8 },
+            hello = { count = 16 },
+            idle = { count = 9 },
+        },
+        femaleFiles = {
+            attack = { count = 8 },
+            hello = { count = 16 },
+            idle = { count = 9 },
+        },
+    }
+
+    -- Tarisian
+    speechCollections["breton"] = {
+        default = {
+            folderPath = "Starwind\\Type4",
             maleFiles = {
-                hello = { count = 116, filePrefixOverride = 'tHlo' },
-                idle = { count = 13, filePrefixOverride = 'tIdl' }
+                attack = { count = 8 },
+                hello = { count = 8 },
+                idle = { count = 8 },
+                hit = { count = 8, needsIndexSuffixOverride = { 6 }, indexSuffixOverride = "]" }
             },
             femaleFiles = {
-                hello = { count = 112, filePrefixOverride = 'tHlo' },
-                idle = { count = 13, filePrefixOverride = 'tIdl' }
-            }
+                attack = { count = 7 },
+                hello = { count = 8 },
+                idle = { count = 7 },
+                hit = { count = 8, }
+            },
         }
-    end
+    }
 
-    if tableHelper.containsCaseInsensitiveString(ClientDataFiles, 'Bloodmoon.esm') then
-        speechCollections['dark elf']['bm'] = {
-            folderPath = 'd',
-            malePrefix = 'DM',
-            femalePrefix = 'DF',
+    speechCollections["droid"] = {
+        default = {
+            skipGenderAssign = { "skip" },
+            folderPath = "Starwind\\Droid\\M",
             maleFiles = {
-                attack = { count = 6, filePrefixOverride = 'bAtk' },
-                flee = { count = 4, filePrefixOverride = 'bFle' },
-                hello = { count = 7, filePrefixOverride = 'bHlo' },
-                idle = { count = 14, skip = { 1 }, filePrefixOverride = 'bIdl' }
+                attack = { count = 32, skip = { 2 } },
+                hello = { count = 17 },
+                idle = { count = 17 },
+                hit = { count = 8 }
             },
             femaleFiles = {
-                attack = { count = 6, filePrefixOverride = 'bAtk' },
-                flee = { count = 4, filePrefixOverride = 'bFle' },
-                hello = { count = 1, filePrefixOverride = 'bHlo' },
-                idle = { count = 15, skip = { 7, 8 }, filePrefixOverride = 'bIdl' }
-            }
+                attack = { count = 32, skip = { 2 } },
+                hello = { count = 17 },
+                idle = { count = 17 },
+                hit = { count = 8 }
+            },
         }
+    }
 
-        speechCollections['imperial']['bm'] = {
-            folderPath = 'i',
-            malePrefix = 'IM',
-            femalePrefix = 'IF',
+    speechCollections["droid"]["lu"] = {
+        folderPath = "Starwind\\Droid",
+        skipGenderAssign = { "skip" },
+        maleFiles = {
+            attack = { count = 8, filePrefixOverride = "Attack" },
+            hello = { count = 9, skip = { 6 }, addSpace = { 1, 2 }, filePrefixOverride = "Hello" }
+        },
+        femaleFiles = {
+            attack = { count = 8, filePrefixOverride = "Attack" },
+            hello = { count = 9, skip = { 6 }, addSpace = { 1, 2 }, filePrefixOverride = "Hello" }
+        },
+    }
+    --Duros
+    speechCollections["dark elf"] = {
+        default = {
+            folderPath = "Starwind\\Duros",
             maleFiles = {
-                attack = { count = 9, filePrefixOverride = 'bAtk' },
-                flee = { count = 4, filePrefixOverride = 'bFle' },
-                hello = { count = 52, filePrefixOverride = 'bHlo' },
-                idle = { count = 41, skip = { 16 }, filePrefixOverride = 'bIdl' }
+                attack = { count = 24 },
+                hello = { count = 32, needsIndexSuffixOverride = { 18 }, indexSuffixOverride = "N" },
+                idle = { count = 25 },
+                hit = { count = 8 }
             },
             femaleFiles = {
-                attack = { count = 8, filePrefixOverride = 'bAtk' },
-                flee = { count = 4, filePrefixOverride = 'bFle' },
-                hello = { count = 17, skip = { 8, 9, 10 }, filePrefixOverride = 'bHlo' },
-                idle = { count = 13, filePrefixOverride = 'bIdl' }
-            }
+                attack = { count = 24 },
+                hello = {
+                    count = 34,
+                    needsIndexSuffixOverride = { 10, 22, 25 },
+                    indexSuffixOverride = "N",
+                    skip = { 11, 23 },
+                    fullOverride = { 26 },
+                    fullOverrideValue = "H25NN",
+                    decrementIndex = { 27, 28, 29, 30, 31, 32, 33, 34 }
+                },
+                idle = { count = 24, needsIndexSuffixOverride = { 20, 22 }, indexSuffixOverride = "N" },
+                hit = { count = 8 }
+            },
         }
-
-        speechCollections['nord']['bm'] = {
-            folderPath = 'n',
-            malePrefix = 'NM',
-            femalePrefix = 'NF',
+    }
+    --Cathar
+    speechCollections["khajiit"] = {
+        default = {
+            skipGenderAssign = { "skip" },
+            folderPath = "Starwind\\Cathar\\M",
             maleFiles = {
-                attack = { count = 9, filePrefixOverride = 'bAtk' },
-                flee = { count = 4, filePrefixOverride = 'bFle' },
-                hello = { count = 75, filePrefixOverride = 'bHlo' },
-                idle = { count = 37, filePrefixOverride = 'bIdl' }
+                attack = { count = 16 },
+                hello = { count = 24 },
+                idle = { count = 16 },
+                hit = { count = 8 }
             },
             femaleFiles = {
-                attack = { count = 9, filePrefixOverride = 'bAtk' },
-                flee = { count = 4, filePrefixOverride = 'bFle' },
-                hello = { count = 21, skip = { 8, 9 }, filePrefixOverride = 'bHlo' },
-                idle = { count = 23, skip = { 21 }, filePrefixOverride = 'bIdl' }
-            }
+                attack = { count = 16 },
+                hello = { count = 24 },
+                idle = { count = 16 },
+                hit = { count = 8 }
+            },
         }
-    end
+    }
+    -- Gungan
+    speechCollections["argonian"] = {
+        default = {
+            skipGenderAssign = { "skip" },
+            folderPath = "Starwind\\Gungan",
+            maleFiles = {
+                attack = { count = 16 },
+                hello = { count = 23 },
+                idle = { count = 8 },
+                hit = { count = 8 }
+            },
+            femaleFiles = {
+                attack = { count = 16 },
+                hello = { count = 23 },
+                idle = { count = 8 },
+                hit = { count = 8 }
+            },
+        }
+    }
+    --Gungan
+    speechCollections["argonian"]["sdf"] = {
+        skipGenderAssign = { "skip" },
+        folderPath = "Starwind\\GunganSDF",
+        maleFiles = {
+            attack = { count = 8 },
+            hello = { count = 8 },
+        },
+        femaleFiles = {
+            attack = { count = 8 },
+            hello = { count = 8 },
+        },
+    }
+
+    speechCollections["bith"] = {
+        default = {
+            folderPath = "Starwind\\Bith",
+            maleFiles = {
+                attack = { count = 16 },
+                hello = { count = 24 },
+                idle = { count = 18 },
+                hit = { count = 8 }
+            },
+            femaleFiles = {
+                attack = { count = 16 },
+                hello = { count = 24 },
+                idle = { count = 18 },
+                hit = { count = 8 }
+            },
+        }
+    }
+
+    speechCollections["chagrian"] = {
+        default = {
+            folderPath = "Starwind\\Chagrian",
+            maleFiles = {
+                attack = { count = 8 },
+                hello = { count = 8 },
+                hit = { count = 8 }
+            },
+            femaleFiles = {
+                attack = { count = 8 },
+                hello = { count = 8 },
+                hit = { count = 8 }
+            },
+        }
+    }
+
+    speechCollections["chiss"] = {
+        default = {
+            folderPath = "Starwind\\Chiss",
+            maleFiles = {
+                attack = { count = 24 },
+                hello = { count = 40 },
+                idle = { count = 24 },
+                hit = { count = 8 }
+            },
+            femaleFiles = {
+                attack = { count = 24 },
+                hello = { count = 40 },
+                idle = { count = 25 },
+                hit = { count = 8 }
+            },
+        }
+    }
+
+    --coruscanti
+    speechCollections["imperial"] = {
+        default = {
+            folderPath = "Starwind\\Type1", --TODO add Type3 to imperial...
+            maleFiles = {
+                attack = { count = 8 },
+                hello = { count = 8 },
+                idle = { count = 8 },
+                hit = { count = 8 }
+            },
+            femaleFiles = {
+                attack = { count = 8, needsIndexSuffixOverride = { 3 }, indexSuffixOverride = "'" },
+                hello = { count = 8 },
+                idle = { count = 8 },
+                hit = { count = 8 }
+            },
+        }
+    }
+
+    speechCollections["imperial"]["mcc"] = {
+        folderPath = "Starwind\\Type3",
+        skipGenderAssign = { "skip" },
+        maleFiles = {
+            attack = { count = 7 },
+            f = { count = 1, noIndex = { 1 } },
+            hello = { count = 8 },
+            idle = { count = 8 },
+            hit = { count = 8 }
+        }
+    }
+
+    speechCollections["imperial"]["fcc"] = {
+        folderPath = "Starwind\\Type3F",
+        skipGenderAssign = { "skip" },
+        femaleFiles = {
+            attack = { count = 8 },
+            hello = { count = 8 },
+            idle = { count = 8 },
+            hit = { count = 8 }
+        }
+    }
+
+    speechCollections["cow"] = {
+        default = {
+            folderPath = "",
+            skipGenderAssign = { "skip" },
+            maleFiles = {
+                moo = { count = 1, cow = { 1 } }
+            },
+            femaleFiles = {
+                moo = { count = 1, cow = { 1 } }
+            },
+        }
+    }
+
+    speechCollections["sw_cyborg"] = {
+        default = {
+            folderPath = "Starwind\\Cyborg",
+            maleFiles = {
+                attack = { count = 8 },
+                hello = { count = 8 },
+                idle = { count = 8 },
+                hit = { count = 8 }
+            },
+            femaleFiles = {
+                attack = { count = 8 },
+                hello = { count = 8 },
+                idle = { count = 8 },
+                hit = { count = 8 }
+            },
+        }
+    }
+
+    speechCollections["sw_cyborg"]["cc"] = {
+        folderPath = "Starwind\\CyborgCC",
+        maleFiles = {
+            attack = { count = 9 },
+            hello = { count = 9 },
+            idle = { count = 8 },
+            hit = { count = 8 }
+        }
+    }
+    speechCollections["sw_cyborg"]["rs"] = {
+        folderPath = "Starwind\\CyborgRS",
+        maleFiles = {
+            attack = { count = 8 },
+            hello = { count = 14 },
+            idle = { count = 8 },
+            hit = { count = 8 }
+        },
+        femaleFiles = {
+            attack = { count = 8 },
+            hello = { count = 15 },
+            idle = { count = 8 },
+            hit = { count = 8 }
+        },
+    }
+
+    speechCollections["ewok"] = {
+        default = {
+            folderPath = "Starwind\\Ewok",
+            skipGenderAssign = { "skip" },
+            maleFiles = {
+                attack = { count = 4 },
+                hello = { count = 4, needsIndexSuffixOverride = { 2 }, indexSuffixOverride = "'" },
+                idle = { count = 1 },
+                hit = { count = 4 }
+            },
+            femaleFiles = {
+                attack = { count = 4 },
+                hello = { count = 4, needsIndexSuffixOverride = { 2 }, indexSuffixOverride = "'" },
+                idle = { count = 1 },
+                hit = { count = 4 }
+            },
+
+        }
+    }
+    --Mandalorian
+    speechCollections["nord"] = {
+        default = {
+            folderPath = "Starwind\\Type7",
+            maleFiles = {
+                attack = { count = 8 },
+                hello = { count = 8 },
+                idle = { count = 8, needsIndexSuffixOverride = { 6 }, indexSuffixOverride = ".7", incrementIndex = 6 },
+                hit = { count = 8 }
+            },
+            femaleFiles = {
+                attack = { count = 8 },
+                hello = { count = 8 },
+                idle = { count = 8 },
+                hit = { count = 8 }
+            },
+        }
+    }
+    --gammorean
+    speechCollections["goomorena"] = {
+        default = {
+            skipGenderAssign = { "skip" },
+            folderPath = "Starwind\\Gomorrean",
+            maleFiles = {
+                hello = { count = 8 },
+                oink = { count = 8 }
+            },
+            femaleFiles = {
+                hello = { count = 8 },
+                oink = { count = 8 }
+            },
+        }
+    }
+
+    speechCollections["gran"] = {
+        default = {
+            skipGenderAssign = { "skip" },
+            folderPath = "Starwind\\Gran\\M",
+            maleFiles = {
+                attack = { count = 18 },
+                hello = { count = 24 },
+                idle = { count = 13 },
+                hit = { count = 9, skip = { 7 } }
+            },
+            femaleFiles = {
+                attack = { count = 18 },
+                hello = { count = 24 },
+                idle = { count = 13 },
+                hit = { count = 9, skip = { 7 } }
+            },
+        }
+    }
+    --Twi'lek (Yellow)
+    speechCollections["high elf"] = {
+        default = {
+            skipGenderAssign = { "skip" },
+            folderPath = "Starwind\\TwilekY\\M",
+            maleFiles = {
+                attack = { count = 8 },
+                hello = { count = 8 },
+                hit = { count = 8 }
+            },
+            femaleFiles = {
+                attack = { count = 8 },
+                hello = { count = 8 },
+                hit = { count = 8 }
+            },
+        }
+    }
+
+    speechCollections["ithorian"] = {
+        default = {
+            skipGenderAssign = { "skip" },
+            folderPath = "Starwind\\Ithorian",
+            maleFiles = {
+                attack = { count = 2 },
+                hello = { count = 4 },
+                hit = { count = 8 }
+            },
+            femaleFiles = {
+                attack = { count = 2 },
+                hello = { count = 4 },
+                hit = { count = 8 }
+            },
+        }
+    }
+
+    --jawa
+    speechCollections["jewa"] = {
+        default = {
+            skipGenderAssign = { "skip" },
+            folderPath = "Starwind\\Jawa",
+            maleFiles = {
+                die = { count = 1, noIndex = { 1 } },
+                hli = { count = 1, noIndex = { 1 } },
+                jua = { count = 1, noIndex = { 1 } },
+                maloo = { count = 1, noIndex = { 1 } },
+                muum = { count = 1, noIndex = { 1 } },
+                utini = { count = 1, noIndex = { 1 } },
+                wauh = { count = 1, noIndex = { 1 } },
+                yuamikee = { count = 1, noIndex = { 1 } },
+                ibana = { count = 2, noIndex = { 1 } },
+                hurt = { count = 5 }
+            },
+            femaleFiles = {
+                die = { count = 1, noIndex = { 1 } },
+                hli = { count = 1, noIndex = { 1 } },
+                jua = { count = 1, noIndex = { 1 } },
+                maloo = { count = 1, noIndex = { 1 } },
+                muum = { count = 1, noIndex = { 1 } },
+                utini = { count = 1, noIndex = { 1 } },
+                wauh = { count = 1, noIndex = { 1 } },
+                yuamikee = { count = 1, noIndex = { 1 } },
+                ibana = { count = 2, noIndex = { 1 } },
+                hurt = { count = 5 }
+            },
+        }
+    }
+
+    --kel dor
+    speechCollections["keldor"] = {
+        default = {
+            folderPath = "Starwind\\Kel Dor",
+            maleFiles = {
+                attack = { count = 16 },
+                hello = { count = 23 },
+                idle = { count = 16 },
+                hit = { count = 8 }
+            },
+            femaleFiles = {
+                attack = { count = 16 },
+                hello = { count = 24 },
+                idle = { count = 16 },
+                hit = { count = 8 }
+            },
+        }
+    }
+
+    speechCollections["miraluka"] = {
+        default = {
+            folderPath = "Starwind\\Miraluka",
+            maleFiles = {
+                attack = { count = 16 },
+                hello = { count = 8 },
+                idle = { count = 16 },
+                hit = { count = 8 }
+            },
+            femaleFiles = {
+                attack = { count = 15 },
+                hello = { count = 8 },
+                idle = { count = 16 },
+                hit = { count = 8 }
+            },
+        }
+    }
+
+    speechCollections["nikto"] = {
+        default = {
+            skipGenderAssign = { "skip" },
+            folderPath = "Starwind\\Nikto\\M",
+            maleFiles = {
+                attack = { count = 8 },
+                hello = { count = 7 },
+                hit = { count = 8 }
+            },
+            femaleFiles = {
+                attack = { count = 8 },
+                hello = { count = 7 },
+                hit = { count = 8 }
+            },
+        }
+    }
+
+    --rodian
+    speechCollections["orc"] = {
+        default = {
+            folderPath = "Starwind\\Rodian",
+            maleFiles = {
+                attack = { count = 8 },
+                hello = { count = 8 },
+                hit = { count = 8 }
+            },
+            femaleFiles = {
+                attack = { count = 8 },
+                hello = { count = 8 },
+                hit = { count = 8 }
+            },
+        }
+    }
+
+    speechCollections["sand person"] = {
+        default = {
+            folderPath = "Starwind\\Sand",
+            maleFiles = {
+                attack = { count = 8, filePrefixOverride = "" },
+                hello = { count = 3 },
+                t = { count = 3 }
+            },
+            femaleFiles = {
+                attack = { count = 9, filePrefixOverride = "" },
+                hello = { count = 1, noIndex = { 1 } },
+                idle = { count = 1, noIndex = { 1 } },
+                j = { count = 1, noIndex = { 1 } },
+                k = { count = 1, noIndex = { 1 } },
+                l = { count = 1, noIndex = { 1 } },
+            },
+        }
+    }
+
+    speechCollections["selkath"] = {
+        default = {
+            skipGenderAssign = { "skip" },
+            folderPath = "Starwind\\Selkath",
+            maleFiles = {
+                attack = { count = 8 },
+                hello = { count = 8 },
+                hit = { count = 8 }
+            },
+            femaleFiles = {
+                attack = { count = 8 },
+                hello = { count = 8 },
+                hit = { count = 8 }
+            },
+        }
+    }
+
+    speechCollections["sith"] = {
+        default = {
+            folderPath = "Starwind\\SithT",
+            maleFiles = {
+                attack = { count = 8 },
+                hello = { count = 16 },
+                idle = { count = 9 },
+                hit = { count = 8 }
+            },
+            femaleFiles = {
+                attack = { count = 8 },
+                hello = { count = 16 },
+                idle = { count = 8 },
+                hit = { count = 8 }
+            },
+        }
+    }
+
+    speechCollections["sith"]["fe"] = {
+        skipGenderAssign = { "skip" },
+        folderPath = "Starwind\\Sith\\F",
+        femaleFiles = {
+            attack = { count = 8 },
+            hello = { count = 8 },
+            idle = { count = 8 },
+            hit = { count = 8 }
+        },
+    }
+
+    speechCollections["sith"]["ch"] = {
+        skipGenderAssign = { "skip" },
+        folderPath = "Starwind\\SithTrooperTT",
+        maleFiles = {
+            stt = { count = 5, waveFile = { 1, 2, 3, 4, 5 }, filePrefixOverride = "" },
+        },
+    }
+
+    speechCollections["twi'lekblue"] = {
+        default = {
+            folderPath = "Starwind\\TwilekB",
+            maleFiles = {
+                attack = { count = 24 },
+                hello = { count = 32 },
+                idle = { count = 24 },
+                hit = { count = 8 }
+            },
+            femaleFiles = {
+                attack = { count = 24 },
+                hello = { count = 32 },
+                idle = { count = 24 },
+                hit = { count = 8 }
+            },
+        }
+    }
+
+    speechCollections["togruta"] = {
+        default = {
+            folderPath = "Starwind\\Togruta",
+            maleFiles = {
+                attack = { count = 8 },
+                hello = { count = 8 },
+                idle = { count = 8 },
+                hit = { count = 8, filePrefixOverride = "Hu" }
+            },
+            femaleFiles = {
+                attack = { count = 8 },
+                hello = { count = 8 },
+                idle = { count = 8 },
+                hit = { count = 8, filePrefixOverride = "Hu" }
+            },
+        }
+    }
+
+    speechCollections["togruta"]["r"] = {
+        folderPath = "Starwind\\TogrutaR",
+        maleFiles = {
+            attack = { count = 8 },
+            hello = { count = 16 },
+            idle = { count = 8 },
+            hit = { count = 8 }
+        },
+        femaleFiles = {
+            attack = { count = 8 },
+            hello = { count = 16 },
+            idle = { count = 8 }
+        },
+    }
+
+    speechCollections["wookie"] = {
+        default = {
+            skipGenderAssign = { "skip" },
+            folderPath = "Starwind\\Wookie",
+            maleFiles = {
+                attack = { count = 4, filePrefixOverride = "WookieA", fullOverride = { 3 }, fullOverrideValue = "WookeA3" },
+                hello = { count = 5, filePrefixOverride = "WookieH", fullOverride = { 3 }, fullOverrideValue = "wOOKIEH3" },
+                hit = { count = 4, filePrefixOverride = "WookieP" }
+            },
+            femaleFiles = {
+                attack = { count = 4, filePrefixOverride = "WookieA", fullOverride = { 3 }, fullOverrideValue = "WookeA3" },
+                hello = { count = 5, filePrefixOverride = "WookieH", fullOverride = { 3 }, fullOverrideValue = "wOOKIEH3" },
+                hit = { count = 4, filePrefixOverride = "WookieP" }
+            },
+        }
+    }
+
+    speechCollections["zabrak"] = {
+        default = {
+            skipGenderAssign = { "skip" },
+            folderPath = "Starwind\\Zabrak\\Male",
+            maleFiles = {
+                attack = { count = 10 },
+                hello = { count = 7 },
+                hit = { count = 7, filePrefixOverride = "HU", fullOverride = { 1, 3 }, fullOverrideValue = "HU", includeIndexInFullOverride = "true" },
+                idle = { count = 10 }
+            },
+        }
+    }
+
+    speechCollections["zabrak"]["f"] = {
+        skipGenderAssign = { "skip" },
+        folderPath = "Starwind\\Zabrak\\Fem",
+        femaleFiles = {
+            attack = { count = 8 },
+            hello = { count = 7 },
+            hit = { count = 7, filePrefixOverride = "Hu" },
+            idle = { count = 10 }
+        },
+    }
+
+    speechCollections["zabrak"]["r"] = {
+        skipGenderAssign = { "skip" },
+        folderPath = "Starwind\\ZabrakR\\M",
+        maleFiles = {
+            attack = { count = 8 },
+            hello = { count = 16 },
+            hit = { count = 8 },
+            idle = { count = 8 }
+        },
+    }
+
+    -- NOTE: Not yet implemented:
+    -- E_BattleDroid
+    -- Chargrian
+    -- Devaronian
+    -- Lothalite (Redguard)
+    -- Moncalamari
+    -- Nautolan
+    -- Protocol Droid
+    -- Trandoshan
+    -- Tribal ewok
+    -- Twi'lek(red)
+
+    speechCollections["swe_assassindroid"] = {}
+    speechCollections["e_battledroid"] = {}
+    speechCollections["chargrian"] = {}
+    speechCollections["swe_devaronian"] = {}
+    speechCollections["redguard"] = {}
+    speechCollections["moncalamari"] = {}
+    speechCollections["nautolan"] = {}
+    speechCollections["e_protocoldroid"] = {}
+    speechCollections["swe_trandoshan"] = {}
+    speechCollections["e_ewok2"] = {}
+    speechCollections["swe_sithtwilek"] = {}
 end
 
 ---@class SpeechHelper
@@ -620,5 +1342,6 @@ end
 ---@type TES3MPScriptRegistration
 return {
     interfaceName = 'speechHelper',
+    -- FIXME: Define an interface function to allow defining/overriding speech collections
     interface = speechHelper,
 }
