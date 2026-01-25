@@ -1,6 +1,6 @@
 local config = require 'config'
 local enumerations = require 'packages.networkEnums'
-local fileHelper = require 'fileHelper'
+local fixFilename = require 'packages.misc.fixFilename'
 local jsonInterface = require 'jsonInterface'
 local tableHelper = require 'tes3mp.util.table'
 local BaseCell = require 'cell.base'
@@ -12,7 +12,7 @@ function Cell:__init(cellDescription)
     BaseCell.__init(self, cellDescription)
 
     -- Ensure filename is valid
-    self.entryName = fileHelper.fixFilename(cellDescription)
+    self.entryName = fixFilename(cellDescription)
 
     self.entryFile = tes3mp.GetCaseInsensitiveFilename(config.dataPath .. "/cell/", self.entryName .. ".json")
 

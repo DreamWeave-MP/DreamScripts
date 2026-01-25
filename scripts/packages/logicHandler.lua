@@ -2,7 +2,7 @@ local clientVariableScopes = require 'clientVariableScopes'
 local config = require 'config'
 local enumerations = require 'packages.networkEnums'
 local tableHelper = require 'tes3mp.util.table'
-local fileHelper = require 'fileHelper'
+local fixFilename = require 'packages.misc.fixFilename'
 local dataTableBuilder = require 'dataTableBuilder'
 local packetBuilder = require 'packages.packetBuilder'
 
@@ -119,7 +119,7 @@ end
 ---@return boolean isLoggedIn
 function logicHandler.IsPlayerNameLoggedIn(newName)
     -- Make sure we also check the account name this new player would end up having
-    local newAccountName, lowerName = fileHelper.fixFilename(newName):lower(), newName:lower()
+    local newAccountName, lowerName = fixFilename(newName):lower(), newName:lower()
 
     for _, player in pairs(Players) do
         if player:IsLoggedIn() then
@@ -176,7 +176,7 @@ end
 function logicHandler.BanPlayer(pid, targetName)
     -- Ban players based on their account names, i.e. based on the filenames used for their JSON files that
     -- have had invalid characters replaced
-    local accountName = fileHelper.fixFilename(targetName)
+    local accountName = fixFilename(targetName)
 
     if not tableHelper.containsValue(banList.playerNames, string.lower(accountName)) then
         local targetPlayer = logicHandler.GetPlayerByName(targetName)

@@ -1,6 +1,6 @@
 local config = require 'config'
 local enumerations = require 'packages.networkEnums'
-local fileHelper = require 'fileHelper'
+local fixFilename = require 'packages.misc.fixFilename'
 local jsonInterface = require 'jsonInterface'
 local logicHandler = require 'packages.logicHandler'
 local tableHelper = require 'tes3mp.util.table'
@@ -12,7 +12,7 @@ function Player:__init(pid, playerName)
     BasePlayer.__init(self, pid, playerName)
 
     -- Ensure filename is valid
-    self.accountName = fileHelper.fixFilename(playerName)
+    self.accountName = fixFilename(playerName)
 
     self.accountFile = tes3mp.GetCaseInsensitiveFilename(config.dataPath .. "/player/", self.accountName .. ".json")
 
