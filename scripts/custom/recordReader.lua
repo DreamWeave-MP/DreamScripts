@@ -945,8 +945,6 @@ local TypeHandlers = {
   end,
 
   GameSetting = function(record, _)
-    print(record.value, record.value.type, type(record.value))
-
     if record.value.type == 'String' then
       return assert(tostring(record.value))
     else
