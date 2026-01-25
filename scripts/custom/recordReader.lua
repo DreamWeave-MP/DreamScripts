@@ -132,6 +132,7 @@ local function objectFlags(record)
 end
 
 local NumMandatoryFields = {
+  MiscItem = 7,
   Npc = 11,
   Probe = 7,
   Race = 12,
@@ -407,7 +408,7 @@ local RecordStores = {
   LeveledItem = tds.Hash(),
   Light = tds.Hash(),
   Lockpick = tds.Hash(),
-  MiscItem = tds.Hash(),
+  MiscItem = {},
   Npc = {},
   Probe = {},
   Race = {},
@@ -1139,24 +1140,33 @@ local TypeHandlers = {
   end,
 
   MiscItem = function(record, recordId)
-    local hash = tds.Hash()
-
-    hash.icon = path(record.icon)
-    hash.id = MandatoryRecordId(recordId)
-    hash.isKey = numberField(record.data.flags) == 1
-    hash.miscFlags = numberField(record.data.flags)
-    hash.model = path(record.mesh)
-    hash.value = numberField(record.data.value)
-    hash.weight = numberField(record.data.weight)
+    local isDeleted, isModified = objectFlags(record)
 
     local name = RealString(record.name)
-    if name then hash.name = name end
-
     local script = OptionalRecordId(record.script)
-    if script then hash.script = script end
 
-    objectFlags(record, hash)
-    return hash
+    local numFields = NumMandatoryFields.MiscItem
+        + (isDeleted and 1 or 0)
+        + (isModified and 1 or 0)
+        + (name and 1 or 0)
+        + (script and 1 or 0)
+
+    local object = table.new(0, numFields)
+
+    object.icon = path(record.icon)
+    object.id = MandatoryRecordId(recordId)
+    object.isKey = hasFlag(record.data.flags, Enums.Flags.Misc.KEY)
+    object.miscFlags = numberField(record.data.flags)
+    object.model = path(record.mesh)
+    object.value = numberField(record.data.value)
+    object.weight = numberField(record.data.weight)
+
+    if isDeleted then object.isDeleted = true end
+    if isModified then object.isModified = true end
+    if name then object.name = name end
+    if script then object.script = script end
+
+    return object
   end,
 
   Npc = function(record, recordId)
