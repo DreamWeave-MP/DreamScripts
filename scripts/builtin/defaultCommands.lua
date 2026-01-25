@@ -8,7 +8,7 @@ local dataTableBuilder = require 'dataTableBuilder'
 local enumerations = require 'packages.networkEnums'
 local guiHelper = require 'tes3mp.util.gui'
 local logicHandler = require 'packages.logicHandler'
-local patterns = require 'patterns'
+local patterns = require 'packages.misc.patterns'
 local recordHelper = require 'tes3mp.util.record'
 local tableHelper = require 'tes3mp.util.table'
 

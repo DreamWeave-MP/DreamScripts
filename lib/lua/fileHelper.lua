@@ -1,4 +1,4 @@
-local patterns = require 'patterns'
+local patterns = require 'packages.misc.patterns'
 local tableHelper = require 'tes3mp.util.table'
 
 ---@class FileHelper

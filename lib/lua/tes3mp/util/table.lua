@@ -1,5 +1,5 @@
 local enumerations = require 'packages.networkEnums'
-local patterns = require 'patterns'
+local patterns = require 'packages.misc.patterns'
 
 ---@class TableHelper
 local tableHelper = {}
