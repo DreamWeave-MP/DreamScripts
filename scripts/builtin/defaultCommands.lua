@@ -1,7 +1,7 @@
 ---@type DreamWeaveScriptEnv
 _ENV = _ENV
 
-local animHelper = require 'tes3mp.util.anim'
+local animHelper = require 'packages.animHelper'
 local color = require 'packages.color'
 local config = require 'config'
 local dataTableBuilder = require 'packages.dataTableBuilder'
