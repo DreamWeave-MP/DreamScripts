@@ -1408,7 +1408,7 @@ local TypeHandlers = {
     object.clearChance    = numberField(chances.clear)
     object.cloudyChance   = numberField(chances.cloudy)
     object.foggyChance    = numberField(chances.foggy)
-    object.id             = MandatoryRecordId(recordId)
+    object.id             = recordId
 
     object.mapColor       = table.new(4, 0)
     for i = 1, 4 do
