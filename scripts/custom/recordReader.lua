@@ -130,6 +130,7 @@ local function objectFlags(record)
 end
 
 local NumMandatoryFields = {
+  Race = 12,
   Region = 12,
   RepairItem = 7,
   Script = 2,
@@ -405,7 +406,7 @@ local RecordStores = {
   MiscItem = tds.Hash(),
   Npc = tds.Hash(),
   Probe = tds.Hash(),
-  Race = tds.Hash(),
+  Race = {},
   Region = {},
   RepairItem = {},
   Script = {},
@@ -1282,96 +1283,102 @@ local TypeHandlers = {
   end,
 
   Race = function(record, recordId)
-    local hash = tds.Hash()
-
-    hash.id = MandatoryRecordId(recordId)
-
-    if hasFlag(record.data.flags, Enums.Flags.Race.BEAST_RACE) then
-      hash.isBeastRace = true
-    end
-
-    if hasFlag(record.data.flags, Enums.Flags.Race.PLAYABLE) then
-      hash.isPlayable = true
-    end
-
+    local description = RealString(record.description)
+    local isBeast = hasFlag(record.data.flags, Enums.Flags.Race.BEAST_RACE)
+    local isDeleted, isModified = objectFlags(record)
+    local isPlayable = hasFlag(record.data.flags, Enums.Flags.Race.PLAYABLE)
     local name = RealString(record.name)
-    if name then hash.name = name end
-
     local spells = Handlers.Spells(record.spells)
-    if spells then hash.spells = spells end
 
-    hash.agility = tds.Vec(
+    local numFields = NumMandatoryFields.Race
+        + (description and 1 or 0)
+        + (isBeast and 1 or 0)
+        + (isDeleted and 1 or 0)
+        + (isModified and 1 or 0)
+        + (isPlayable and 1 or 0)
+        + (name and 1 or 0)
+        + (spells and 1 or 0)
+
+    local object = table.new(0, numFields)
+
+    object.agility = {
       numberField(tostring(record.data.agility[1])),
       numberField(tostring(record.data.agility[2]))
-    )
+    }
 
-    hash.endurance = tds.Vec(
+    object.endurance = {
       numberField(tostring(record.data.endurance[1])),
       numberField(tostring(record.data.endurance[2]))
-    )
+    }
 
-    hash.height = tds.Vec(
+    object.height = {
       numberField(tostring(record.data.height[1])),
       numberField(tostring(record.data.height[2]))
-    )
+    }
 
-    hash.intelligence = tds.Vec(
+    object.id = recordId
+
+    object.intelligence = {
       numberField(tostring(record.data.intelligence[1])),
       numberField(tostring(record.data.intelligence[2]))
-    )
+    }
 
-    hash.luck = tds.Vec(
+    object.luck = {
       numberField(tostring(record.data.luck[1])),
       numberField(tostring(record.data.luck[2]))
-    )
+    }
 
-    hash.personality = tds.Vec(
+    object.personality = {
       numberField(tostring(record.data.personality[1])),
       numberField(tostring(record.data.personality[2]))
-    )
+    }
 
-    hash.speed = tds.Vec(
+    object.speed = {
       numberField(tostring(record.data.speed[1])),
       numberField(tostring(record.data.speed[2]))
-    )
+    }
 
-    hash.strength = tds.Vec(
+    object.strength = {
       numberField(tostring(record.data.strength[1])),
       numberField(tostring(record.data.strength[2]))
-    )
+    }
 
-    hash.weight = tds.Vec(
+    object.weight = {
       numberField(tostring(record.data.weight[1])),
       numberField(tostring(record.data.weight[2]))
-    )
+    }
 
-    hash.willpower = tds.Vec(
+    object.willpower = {
       numberField(tostring(record.data.willpower[1])),
       numberField(tostring(record.data.willpower[2]))
-    )
+    }
 
-    local description = RealString(record.description)
-    if description then hash.description = description end
+    object.bonuses = {
+      bonus1 = numberField(record.data.skill_bonuses.bonus_0),
+      bonus2 = numberField(record.data.skill_bonuses.bonus_1),
+      bonus3 = numberField(record.data.skill_bonuses.bonus_2),
+      bonus4 = numberField(record.data.skill_bonuses.bonus_3),
+      bonus5 = numberField(record.data.skill_bonuses.bonus_4),
+      bonus6 = numberField(record.data.skill_bonuses.bonus_5),
+      bonus7 = numberField(record.data.skill_bonuses.bonus_6),
+      skill1 = numberField(Enums.SkillId[record.data.skill_bonuses.skill_0]),
+      skill2 = numberField(Enums.SkillId[record.data.skill_bonuses.skill_1]),
+      skill3 = numberField(Enums.SkillId[record.data.skill_bonuses.skill_2]),
+      skill4 = numberField(Enums.SkillId[record.data.skill_bonuses.skill_3]),
+      skill5 = numberField(Enums.SkillId[record.data.skill_bonuses.skill_4]),
+      skill6 = numberField(Enums.SkillId[record.data.skill_bonuses.skill_5]),
+      skill7 = numberField(Enums.SkillId[record.data.skill_bonuses.skill_6]),
+    }
 
-    local bonuses = tds.Hash()
-    bonuses.skill1 = numberField(Enums.SkillId[record.data.skill_bonuses.skill_0])
-    bonuses.bonus1 = numberField(record.data.skill_bonuses.bonus_0)
-    bonuses.skill2 = numberField(Enums.SkillId[record.data.skill_bonuses.skill_1])
-    bonuses.bonus2 = numberField(record.data.skill_bonuses.bonus_1)
-    bonuses.skill3 = numberField(Enums.SkillId[record.data.skill_bonuses.skill_2])
-    bonuses.bonus3 = numberField(record.data.skill_bonuses.bonus_2)
-    bonuses.skill4 = numberField(Enums.SkillId[record.data.skill_bonuses.skill_3])
-    bonuses.bonus4 = numberField(record.data.skill_bonuses.bonus_3)
-    bonuses.skill5 = numberField(Enums.SkillId[record.data.skill_bonuses.skill_4])
-    bonuses.bonus5 = numberField(record.data.skill_bonuses.bonus_4)
-    bonuses.skill6 = numberField(Enums.SkillId[record.data.skill_bonuses.skill_5])
-    bonuses.bonus6 = numberField(record.data.skill_bonuses.bonus_5)
-    bonuses.skill7 = numberField(Enums.SkillId[record.data.skill_bonuses.skill_6])
-    bonuses.bonus7 = numberField(record.data.skill_bonuses.bonus_6)
-    hash.bonuses = bonuses
+    if description then object.description = description end
+    if isBeast then object.isBeastRace = true end
+    if isDeleted then object.isDeleted = true end
+    if isModified then object.isModified = true end
+    if isPlayable then object.isPlayable = true end
+    if name then object.name = name end
+    if spells then object.spells = spells end
 
-    objectFlags(record, hash)
-    return hash
+    return object
   end,
 
   Region = function(record, recordId)
