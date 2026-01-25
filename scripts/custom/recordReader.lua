@@ -130,6 +130,7 @@ local function objectFlags(record)
 end
 
 local NumMandatoryFields = {
+  Script = 2,
   Skill = 5,
   Sound = 4,
   SoundGen = 3,
@@ -1441,12 +1442,18 @@ local TypeHandlers = {
   end,
 
   Script = function(record, recordId)
-    local object = {
-      id = recordId,
-      text = assert(record.text:lower()),
-    }
+    local isDeleted, isModified = objectFlags(record)
 
-    objectFlags(record, object)
+    local numFields = NumMandatoryFields.Script
+        + (isDeleted and 1 or 0)
+        + (isModified and 1 or 0)
+
+    local object = table.new(0, numFields)
+
+    object.id = recordId
+    object.text = assert(record.text:lower())
+    if isDeleted then object.isDeleted = true end
+    if isModified then object.isModified = true end
 
     return object
   end,
