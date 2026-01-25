@@ -130,6 +130,7 @@ local function objectFlags(record)
 end
 
 local NumMandatoryFields = {
+  Sound = 4,
   SoundGen = 3,
   StartScript = 2,
   Static = 2,
@@ -1471,17 +1472,22 @@ local TypeHandlers = {
   end,
 
   Sound = function(record, recordId)
-    local object = {
-      id = recordId,
-      path = path(record.sound_path),
-      range = {
-        assert(tostring(record.data.range[1])),
-        assert(tostring(record.data.range[2])),
-      },
-      volume = numberField(record.data.volume)
-    }
+    local isDeleted, isModified = objectFlags(record)
 
-    objectFlags(record, object)
+    local numFields = NumMandatoryFields
+        + (isDeleted and 1 or 0)
+        + (isModified and 1 or 0)
+
+    local object = table.new(0, numFields)
+
+    object.id = recordId
+    object.path = path(record.sound_path)
+    object.range = {
+      assert(tostring(record.data.range[1])),
+      assert(tostring(record.data.range[2])),
+    }
+    object.volume = numberField(record.data.volume)
+
     return object
   end,
 
