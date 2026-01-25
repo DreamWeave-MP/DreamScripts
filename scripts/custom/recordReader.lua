@@ -411,7 +411,7 @@ local RecordStores = {
   Sound = {},
   SoundGen = {},
   Spell = tds.Hash(),
-  StartScript = tds.Hash(),
+  StartScript = {},
   Static = {},
   Weapon = tds.Hash(),
 }
