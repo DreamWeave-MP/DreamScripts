@@ -964,8 +964,7 @@ local TypeHandlers = {
     local masterList = table.new(masterLength, 0)
 
     for i, masterInfo in ipairs(masters) do
-      print(masterInfo[1], type(masterInfo[1]))
-      masterList[i] = MandatoryRecordId(masterInfo[1])
+      masterList[i] = assert(masterInfo[1]:lower())
     end
 
     RecordStores.Header[currentPluginName] = masterList
