@@ -132,6 +132,7 @@ local function objectFlags(record)
 end
 
 local NumMandatoryFields = {
+  Npc = 11,
   Probe = 7,
   Race = 12,
   Region = 12,
@@ -407,7 +408,7 @@ local RecordStores = {
   Light = tds.Hash(),
   Lockpick = tds.Hash(),
   MiscItem = tds.Hash(),
-  Npc = tds.Hash(),
+  Npc = {},
   Probe = {},
   Race = {},
   Region = {},
@@ -1159,111 +1160,122 @@ local TypeHandlers = {
   end,
 
   Npc = function(record, recordId)
-    local hash = tds.Hash()
-
+    local aiPackages = Handlers.AIPackages(record.ai_packages)
     local baseGold = numberField(record.data.gold)
-    if baseGold > 0 then hash.baseGold = baseGold end
+    local destinations = Handlers.TravelDestination(record.travel_destinations)
+    local faction = OptionalRecordId(record.faction)
+    local hair = OptionalRecordId(record.hair)
+    local inventory = Handlers.Inventory(record.inventory)
+    local isAutoCalc = hasFlag(record.npc_flags, Enums.Flags.NPC.AUTO_CALCULATE)
+    local isDeleted, isModified = objectFlags(record)
+    local isEssential = hasFlag(record.npc_flags, Enums.Flags.NPC.ESSENTIAL)
+    local isFemale = hasFlag(record.npc_flags, Enums.Flags.NPC.FEMALE)
+    local isRespawning = hasFlag(record.npc_flags, Enums.Flags.NPC.RESPAWN)
+    local mwScript = OptionalRecordId(record.script)
+    local name = RealString(record.name)
+    local spells = Handlers.Spells(record.spells)
 
-    hash.bloodType = numberField(record.blood_type)
-    hash.class = MandatoryRecordId(record.class)
-    hash.disposition = numberField(record.data.disposition)
-    hash.head = MandatoryRecordId(record.head)
-    hash.id = MandatoryRecordId(recordId)
-    hash.level = numberField(record.data.level)
-    hash.model = path(record.mesh)
+    local stats
+    if isAutoCalc and record.data.stats then
+      assert(#record.data.stats.attributes == 8)
+      assert(#record.data.stats.skills == 27)
 
-    if hasFlag(record.npc_flags, Enums.Flags.NPC.AUTO_CALCULATE) then hash.isAutoCalc = true end
-    if hasFlag(record.npc_flags, Enums.Flags.NPC.ESSENTIAL) then hash.isEssential = true end
-    if hasFlag(record.npc_flags, Enums.Flags.NPC.FEMALE) then hash.isFemale = true end
-    if hasFlag(record.npc_flags, Enums.Flags.NPC.RESPAWN) then hash.isRespawning = true end
-
-    hash.race = MandatoryRecordId(record.race)
-    hash.rank = numberField(record.data.rank)
-    hash.reputation = numberField(record.data.reputation)
-
-    if hash.isAutoCalc and record.data.stats then
-      local stats = record.data.stats
-      assert(#stats.attributes == 8)
-      assert(#stats.skills == 27)
-
-      local statHash = tds.Hash()
-
-      statHash.health = stats.health
-      statHash.magicka = stats.magicka
-      statHash.fatigue = stats.fatigue
-
-      statHash.attributes = tds.Vec(
-        numberField(tostring(stats.attributes[1])),
-        numberField(tostring(stats.attributes[2])),
-        numberField(tostring(stats.attributes[3])),
-        numberField(tostring(stats.attributes[4])),
-        numberField(tostring(stats.attributes[5])),
-        numberField(tostring(stats.attributes[6])),
-        numberField(tostring(stats.attributes[7])),
-        numberField(tostring(stats.attributes[8]))
-      )
-
-      statHash.skills = tds.Vec(
-        numberField(tostring(stats.skills[1])),
-        numberField(tostring(stats.skills[2])),
-        numberField(tostring(stats.skills[3])),
-        numberField(tostring(stats.skills[4])),
-        numberField(tostring(stats.skills[5])),
-        numberField(tostring(stats.skills[6])),
-        numberField(tostring(stats.skills[7])),
-        numberField(tostring(stats.skills[8])),
-        numberField(tostring(stats.skills[9])),
-        numberField(tostring(stats.skills[10])),
-        numberField(tostring(stats.skills[11])),
-        numberField(tostring(stats.skills[12])),
-        numberField(tostring(stats.skills[13])),
-        numberField(tostring(stats.skills[14])),
-        numberField(tostring(stats.skills[15])),
-        numberField(tostring(stats.skills[16])),
-        numberField(tostring(stats.skills[17])),
-        numberField(tostring(stats.skills[18])),
-        numberField(tostring(stats.skills[19])),
-        numberField(tostring(stats.skills[20])),
-        numberField(tostring(stats.skills[21])),
-        numberField(tostring(stats.skills[22])),
-        numberField(tostring(stats.skills[23])),
-        numberField(tostring(stats.skills[24])),
-        numberField(tostring(stats.skills[25])),
-        numberField(tostring(stats.skills[26])),
-        numberField(tostring(stats.skills[27]))
-      )
-
-      hash.stats = statHash
-      stats = nil
+      stats = {
+        attributes = {
+          numberField(tostring(record.data.stats.attributes[1])),
+          numberField(tostring(record.data.stats.attributes[2])),
+          numberField(tostring(record.data.stats.attributes[3])),
+          numberField(tostring(record.data.stats.attributes[4])),
+          numberField(tostring(record.data.stats.attributes[5])),
+          numberField(tostring(record.data.stats.attributes[6])),
+          numberField(tostring(record.data.stats.attributes[7])),
+          numberField(tostring(record.data.stats.attributes[8]))
+        },
+        fatigue = record.data.stats.fatigue,
+        health = record.data.stats.health,
+        magicka = record.data.stats.magicka,
+        skills = {
+          numberField(tostring(record.data.stats.skills[1])),
+          numberField(tostring(record.data.stats.skills[2])),
+          numberField(tostring(record.data.stats.skills[3])),
+          numberField(tostring(record.data.stats.skills[4])),
+          numberField(tostring(record.data.stats.skills[5])),
+          numberField(tostring(record.data.stats.skills[6])),
+          numberField(tostring(record.data.stats.skills[7])),
+          numberField(tostring(record.data.stats.skills[8])),
+          numberField(tostring(record.data.stats.skills[9])),
+          numberField(tostring(record.data.stats.skills[10])),
+          numberField(tostring(record.data.stats.skills[11])),
+          numberField(tostring(record.data.stats.skills[12])),
+          numberField(tostring(record.data.stats.skills[13])),
+          numberField(tostring(record.data.stats.skills[14])),
+          numberField(tostring(record.data.stats.skills[15])),
+          numberField(tostring(record.data.stats.skills[16])),
+          numberField(tostring(record.data.stats.skills[17])),
+          numberField(tostring(record.data.stats.skills[18])),
+          numberField(tostring(record.data.stats.skills[19])),
+          numberField(tostring(record.data.stats.skills[20])),
+          numberField(tostring(record.data.stats.skills[21])),
+          numberField(tostring(record.data.stats.skills[22])),
+          numberField(tostring(record.data.stats.skills[23])),
+          numberField(tostring(record.data.stats.skills[24])),
+          numberField(tostring(record.data.stats.skills[25])),
+          numberField(tostring(record.data.stats.skills[26])),
+          numberField(tostring(record.data.stats.skills[27]))
+        },
+      }
     end
 
-    hash.AIData = Handlers.AIData(record.ai_data)
+    local numFields = NumMandatoryFields.Npc
+        + (aiPackages and 1 or 0)
+        + (baseGold > 0 and 1 or 0)
+        + (destinations and 1 or 0)
+        + (faction and 1 or 0)
+        + (hair and 1 or 0)
+        + (inventory and 1 or 0)
+        + (isAutoCalc and 1 or 0)
+        + (isDeleted and 1 or 0)
+        + (isEssential and 1 or 0)
+        + (isFemale and 1 or 0)
+        + (isModified and 1 or 0)
+        + (isRespawning and 1 or 0)
+        + (mwScript and 1 or 0)
+        + (name and 1 or 0)
+        + (spells and 1 or 0)
+        + (stats and 1 or 0)
 
-    local hair = OptionalRecordId(record.hair)
-    if hair then hash.hair = hair end
+    local object = table.new(0, numFields)
 
-    local faction = OptionalRecordId(record.faction)
-    if faction then hash.faction = faction end
+    object.AIData = Handlers.AIData(record.ai_data)
+    object.bloodType = numberField(record.blood_type)
+    object.class = MandatoryRecordId(record.class)
+    object.disposition = numberField(record.data.disposition)
+    object.head = MandatoryRecordId(record.head)
+    object.id = recordId
+    object.level = numberField(record.data.level)
+    object.model = path(record.mesh)
+    object.race = MandatoryRecordId(record.race)
+    object.rank = numberField(record.data.rank)
+    object.reputation = numberField(record.data.reputation)
 
-    local mwScript = OptionalRecordId(record.script)
-    if mwScript then hash.script = mwScript end
+    if aiPackages then object.AIPackages = aiPackages end
+    if baseGold > 0 then object.baseGold = baseGold end
+    if destinations then object.travelDestinations = destinations end
+    if faction then object.faction = faction end
+    if hair then object.hair = hair end
+    if inventory then object.inventory = inventory end
+    if isAutoCalc then object.isAutoCalc = true end
+    if isDeleted then object.isDeleted = true end
+    if isEssential then object.isEssential = true end
+    if isFemale then object.isFemale = true end
+    if isModified then object.isModified = true end
+    if isRespawning then object.isRespawning = true end
+    if mwScript then object.script = mwScript end
+    if name then object.name = name end
+    if spells then object.spells = spells end
+    if stats then object.stats = stats end
 
-    local destinations = Handlers.TravelDestination(record.travel_destinations)
-    if destinations then hash.travelDestinations = destinations end
-
-    local inventory = Handlers.Inventory(record.inventory)
-    if inventory then hash.inventory = inventory end
-
-    local aiPackages, spells = Handlers.AIPackages(record.ai_packages), Handlers.Spells(record.spells)
-
-    if aiPackages then hash.AIPackages = aiPackages end
-    if spells then hash.spells = spells end
-
-    local name = RealString(record.name)
-    if name then hash.name = name end
-
-    objectFlags(record, hash)
-    return hash
+    return object
   end,
 
   Probe = function(record, recordId)
