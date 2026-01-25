@@ -132,6 +132,7 @@ local function objectFlags(record)
 end
 
 local NumMandatoryFields = {
+  Light = 9,
   Lockpick = 7,
   MiscItem = 7,
   Npc = 11,
@@ -407,7 +408,7 @@ local RecordStores = {
   Ingredient = tds.Hash(),
   LeveledCreature = tds.Hash(),
   LeveledItem = tds.Hash(),
-  Light = tds.Hash(),
+  Light = {},
   Lockpick = {},
   MiscItem = {},
   Npc = {},
@@ -1090,34 +1091,41 @@ local TypeHandlers = {
   end,
 
   Light = function(record, recordId)
-    local hash = tds.Hash()
+    local isDeleted, isModified = objectFlags(record)
+    local name = RealString(record.name)
+    local script = OptionalRecordId(record.script)
+    local sound = OptionalRecordId(record.sound)
 
-    hash.color = tds.Vec(
+    local numFields = NumMandatoryFields.Lockpick
+        + (isDeleted and 1 or 0)
+        + (isModified and 1 or 0)
+        + (name and 1 or 0)
+        + (script and 1 or 0)
+        + (sound and 1 or 0)
+
+    local object = table.new(0, numFields)
+
+    object.color = {
       numberField(tostring(record.data.color[1])),
       numberField(tostring(record.data.color[2])),
       numberField(tostring(record.data.color[3]))
-    )
-    hash.icon = path(record.icon)
-    hash.id = recordId
-    hash.lightFlags = numberField(record.data.flags)
-    hash.model = path(record.mesh)
+    }
+    object.icon = path(record.icon)
+    object.id = recordId
+    object.lightFlags = numberField(record.data.flags)
+    object.model = path(record.mesh)
+    object.radius = numberField(record.data.radius)
+    object.time = numberField(record.data.value)
+    object.value = numberField(record.data.value)
+    object.weight = numberField(record.data.weight)
 
-    hash.radius = numberField(record.data.radius)
-    hash.time = numberField(record.data.value)
-    hash.value = numberField(record.data.value)
-    hash.weight = numberField(record.data.weight)
+    if isDeleted then object.isDeleted = true end
+    if isModified then object.isModified = true end
+    if name then object.name = name end
+    if script then object.script = script end
+    if sound then object.sound = sound end
 
-    local name = RealString(record.name)
-    if name then hash.name = name end
-
-    local script = OptionalRecordId(record.script)
-    if script then hash.script = script end
-
-    local sound = OptionalRecordId(record.sound)
-    if sound then hash.sound = sound end
-
-    objectFlags(record, hash)
-    return hash
+    return object
   end,
 
   Lockpick = function(record, recordId)
