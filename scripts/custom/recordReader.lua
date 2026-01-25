@@ -130,6 +130,7 @@ local function objectFlags(record)
 end
 
 local NumMandatoryFields = {
+  Skill = 5,
   Sound = 4,
   SoundGen = 3,
   StartScript = 2,
@@ -405,7 +406,7 @@ local RecordStores = {
   Region = tds.Hash(),
   RepairItem = tds.Hash(),
   Script = {},
-  Skill = tds.Hash(),
+  Skill = {},
   Sound = {},
   SoundGen = {},
   Spell = tds.Hash(),
@@ -1451,24 +1452,33 @@ local TypeHandlers = {
   end,
 
   Skill = function(record, _)
-    local hash = tds.Hash()
-
-    hash.actions = tds.Vec(
-      numberField(tostring(record.data.actions[1])),
-      numberField(tostring(record.data.actions[2])),
-      numberField(tostring(record.data.actions[3])),
-      numberField(tostring(record.data.actions[4]))
-    )
-    hash.governingAttribute = numberField(record.data.governing_attribute)
-    hash.id = MandatoryRecordId(tostring(record.skill_id))
-    hash.skillId = numberField(Enums.SkillId[tostring(record.skill_id)])
-    hash.specialization = numberField(record.data.specialization)
+    local isDeleted, isModified = objectFlags(record)
 
     local description = RealString(record.description)
-    if description then hash.description = description end
 
-    objectFlags(record, hash)
-    return hash
+    local numFields = NumMandatoryFields.Skill
+        + (isDeleted and 1 or 0)
+        + (isModified and 1 or 0)
+        + (description and 1 or 0)
+
+    local object = table.new(0, numFields)
+
+    object.actions = table.new(4, 0)
+
+    for i = 1, 4 do
+      object.actions[i] = numberField(tostring(record.data.actions[i]))
+    end
+
+    object.governingAttribute = numberField(record.data.governing_attribute)
+    object.id = MandatoryRecordId(record.skill_id)
+    object.specialization = numberField(record.data.specialization)
+
+    object.skillId = numberField(Enums.SkillId[object.id])
+    if description then object.description = description end
+    if isDeleted then object.isDeleted = true end
+    if isModified then object.isModified = true end
+
+    return object
   end,
 
   Sound = function(record, recordId)
