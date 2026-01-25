@@ -1,4 +1,4 @@
-local enumerations = require 'tes3mp.enumerations'
+local enumerations = require 'packages.networkEnums'
 
 ---@class InventoryHelper
 local inventoryHelper = {}

@@ -1,6 +1,6 @@
 local color = require 'color'
 local config = require 'config'
-local enumerations = require 'tes3mp.enumerations'
+local enumerations = require 'packages.networkEnums'
 local dataTableBuilder = require 'dataTableBuilder'
 local guiHelper = require 'tes3mp.util.gui'
 local inventoryHelper = require 'tes3mp.util.inventory'

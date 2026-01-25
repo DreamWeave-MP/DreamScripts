@@ -1,6 +1,6 @@
 local bit = require 'bit'
 local dUtil = require 'dUtil.init'
-local enumerations = require 'tes3mp.enumerations'
+local enumerations = require 'packages.networkEnums'
 local lfs = require 'lfs'
 
 local LogSkippedRecords = false

@@ -20,7 +20,7 @@
 ]]
 
 local color = require 'color'
-local enumerations = require 'tes3mp.enumerations'
+local enumerations = require 'packages.networkEnums'
 local miscUtil = require 'dUtil.miscellaneous'
 local tableHelper = require 'tes3mp.util.table'
 

@@ -1,5 +1,5 @@
 local color = require 'color'
-local enumerations = require 'tes3mp.enumerations'
+local enumerations = require 'packages.networkEnums'
 
 ---@class TES3MPConfig
 local config = {}

@@ -1,6 +1,6 @@
 local class = require 'classy'
 local config = require 'config'
-local enumerations = require 'tes3mp.enumerations'
+local enumerations = require 'packages.networkEnums'
 local jsonInterface = require 'jsonInterface'
 local tableHelper = require 'tes3mp.util.table'
 

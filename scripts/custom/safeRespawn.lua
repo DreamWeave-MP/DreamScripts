@@ -1,4 +1,4 @@
-local enumerations = require 'tes3mp.enumerations'
+local enumerations = require 'packages.networkEnums'
 local inventoryHelper = require 'tes3mp.util.inventory'
 local logicHandler = require 'packages.logicHandler'
 local yamlInterface = require 'yamlInterface'

@@ -1,6 +1,6 @@
 local class = require 'classy'
 local config = require 'config'
-local enumerations = require 'tes3mp.enumerations'
+local enumerations = require 'packages.networkEnums'
 local inventoryHelper = require 'tes3mp.util.inventory'
 local logicHandler = require 'packages.logicHandler'
 local packetBuilder = require 'tes3mp.packet.builder'

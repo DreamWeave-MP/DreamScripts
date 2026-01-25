@@ -1,5 +1,5 @@
 local config = require 'config'
-local enumerations = require 'tes3mp.enumerations'
+local enumerations = require 'packages.networkEnums'
 local fileHelper = require 'fileHelper'
 local jsonInterface = require 'jsonInterface'
 local logicHandler = require 'packages.logicHandler'

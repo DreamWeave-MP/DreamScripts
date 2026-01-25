@@ -3,7 +3,7 @@
 
 local clientVariableScopes = require 'clientVariableScopes'
 local config = require 'config'
-local enumerations = require 'tes3mp.enumerations'
+local enumerations = require 'packages.networkEnums'
 local tableHelper = require 'tes3mp.util.table'
 local fileHelper = require 'fileHelper'
 local dataTableBuilder = require 'dataTableBuilder'

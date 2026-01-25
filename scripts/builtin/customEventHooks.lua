@@ -1,6 +1,6 @@
 local config = require 'config'
 local miscUtil = require 'dUtil.miscellaneous'
-local enumerations = require 'tes3mp.enumerations'
+local enumerations = require 'packages.networkEnums'
 
 ---@class EventHandler
 ---@field definedBy string Path of the script which defined this particular event

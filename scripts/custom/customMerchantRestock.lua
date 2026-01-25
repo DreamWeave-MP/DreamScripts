@@ -30,7 +30,7 @@
 -- Add the uniqueIndex of the merchant and table of items you want to restock in the format shown below
 -- Fuck that fella we got rust around these parts
 
-local enumerations = require 'tes3mp.enumerations'
+local enumerations = require 'packages.networkEnums'
 local inventoryHelper = require 'tes3mp.util.inventory'
 local jsonInterface = require 'jsonInterface'
 local packetBuilder = require 'tes3mp.packet.builder'

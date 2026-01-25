@@ -1,5 +1,5 @@
 local dUtil = require 'dUtil.init'
-local enumerations = require 'tes3mp.enumerations'
+local enumerations = require 'packages.networkEnums'
 local logicHandler = require 'packages.logicHandler'
 
 ---@type DefaultInterfaces

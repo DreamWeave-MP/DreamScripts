@@ -24,7 +24,7 @@
 ---@field addedSpells table<RecordId, CustomSpellRecord>
 local SpellConfig = require 'yamlInterface' 'custom/addActorSpell/config.yml'
 
-local enumerations = require 'tes3mp.enumerations'
+local enumerations = require 'packages.networkEnums'
 local enums = require 'dUtil.enums'
 local tableHelper = require 'tes3mp.util.table'
 

@@ -1,4 +1,4 @@
-local enumerations = require 'tes3mp.enumerations'
+local enumerations = require 'packages.networkEnums'
 local dUtil = require 'dUtil.init'
 
 ---@class PacketBuilder

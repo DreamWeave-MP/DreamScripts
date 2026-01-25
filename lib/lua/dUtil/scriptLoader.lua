@@ -14,7 +14,7 @@ All fields are, in and of themselves, optional, however, an interfaceName is req
 
 local config = require 'config'
 local dUtil = require 'dUtil.init'
-local enumerations = require 'tes3mp.enumerations'
+local enumerations = require 'packages.networkEnums'
 local jsonInterface = require 'jsonInterface'
 local l10n = require 'l10n.core'
 local logicHandler = require 'packages.logicHandler'

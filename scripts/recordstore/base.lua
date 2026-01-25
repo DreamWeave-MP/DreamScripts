@@ -1,4 +1,4 @@
-local enumerations = require 'tes3mp.enumerations'
+local enumerations = require 'packages.networkEnums'
 local logicHandler = require 'packages.logicHandler'
 local packetBuilder = require 'tes3mp.packet.builder'
 local tableHelper = require 'tes3mp.util.table'

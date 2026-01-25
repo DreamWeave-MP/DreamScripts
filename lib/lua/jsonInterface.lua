@@ -1,6 +1,6 @@
 local config = require 'config'
 local dkjson = require 'dkjson'
-local enumerations = require 'tes3mp.enumerations'
+local enumerations = require 'packages.networkEnums'
 
 local cjsonExists, cjson = pcall(require, 'cjson')
 
