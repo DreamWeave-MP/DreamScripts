@@ -1403,11 +1403,7 @@ local TypeHandlers = {
       sounds = table.new(numSounds, 0)
 
       for i, soundData in ipairs(record.sounds) do
-        local soundHash = table.new(0, 1)
-
-        soundHash[MandatoryRecordId(soundData[1])] = numberField(soundData[2])
-
-        sounds[i] = soundHash
+        sounds[i] = { [MandatoryRecordId(soundData[1])] = numberField(soundData[2]) }
       end
     end
 
