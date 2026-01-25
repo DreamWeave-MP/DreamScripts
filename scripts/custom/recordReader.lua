@@ -102,17 +102,17 @@ local function hasFlag(flags, checkFlags)
 end
 
 ---@param record table<string, any>
----@param hash table<string, any>
-local function objectFlags(record, hash)
+---@param object table<string, any>
+local function objectFlags(record, object)
   local flags = numberField(record.flags)
   if flags == 0 then return end
 
   if hasFlag(record.flags, Enums.Flags.Record.DELETED) then
-    hash.isDeleted = true
+    object.isDeleted = true
   end
 
   if hasFlag(record.flags, Enums.Flags.Record.MODIFIED) then
-    hash.isModified = true
+    object.isModified = true
   end
 end
 
