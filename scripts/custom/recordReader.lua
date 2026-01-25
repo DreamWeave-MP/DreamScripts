@@ -1154,7 +1154,7 @@ local TypeHandlers = {
     local object = table.new(0, numFields)
 
     object.icon = path(record.icon)
-    object.id = MandatoryRecordId(recordId)
+    object.id = recordId
     object.isKey = hasFlag(record.data.flags, Enums.Flags.Misc.KEY)
     object.miscFlags = numberField(record.data.flags)
     object.model = path(record.mesh)
