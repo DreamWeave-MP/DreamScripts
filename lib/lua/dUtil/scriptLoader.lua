@@ -15,7 +15,7 @@ All fields are, in and of themselves, optional, however, an interfaceName is req
 local config = require 'config'
 local dUtil = require 'dUtil.init'
 local enumerations = require 'packages.networkEnums'
-local jsonInterface = require 'jsonInterface'
+local jsonInterface = require 'packages.jsonInterface'
 local logicHandler = require 'packages.logicHandler'
 local tableHelper = require 'tes3mp.util.table'
 local yamlInterface = require 'packages.yamlInterface'
@@ -304,6 +304,7 @@ function DScriptLoader.defaultModuleCache()
     interfaces = DScriptLoader.Interfaces,
     jsoninterface = jsonInterface,
     lfs = lfs,
+    ['packages.jsoninterface'] = jsonInterface,
     ['packages.yamlinterface'] = yamlInterface,
   }
 end

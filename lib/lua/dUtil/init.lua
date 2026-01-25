@@ -3,7 +3,7 @@ require 'doc.dUtilDocs'
 local bit = require 'bit'
 local enumerations = require 'packages.networkEnums'
 local ioModule = tes3mp.GetOperatingSystemType() == 'Windows' and require 'io2' or io
-local jsonInterface = require 'jsonInterface'
+local jsonInterface = require 'packages.jsonInterface'
 local tableHelper = require 'tes3mp.util.table'
 
 ---@param filename string

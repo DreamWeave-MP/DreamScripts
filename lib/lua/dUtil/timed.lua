@@ -1,5 +1,5 @@
 local enumerations = require 'packages.networkEnums'
-local jsonInterface = require 'jsonInterface'
+local jsonInterface = require 'packages.jsonInterface'
 
 assert(
   BufferedDiskPaths and Callbacks,
