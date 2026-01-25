@@ -371,7 +371,7 @@ local RecordStores = {
   Enchanting = tds.Hash(),
   Faction = tds.Hash(),
   GameSetting = {},
-  GlobalVariable = tds.Hash(),
+  GlobalVariable = {},
   Header = tds.Hash(),
   Ingredient = tds.Hash(),
   LeveledCreature = tds.Hash(),
@@ -953,6 +953,7 @@ local TypeHandlers = {
   end,
 
   GlobalVariable = function(record, _)
+    print(record.value, record.value.type, type(record.value))
     return numberField(tostring(record.value))
   end,
 
