@@ -1514,7 +1514,7 @@ local TypeHandlers = {
 
   Static = function(record, recordId)
     local object = {
-      id = MandatoryRecordId(recordId),
+      id = recordId,
       model = path(record.mesh),
     }
     objectFlags(record, object)
