@@ -9,25 +9,25 @@ local lfs = require 'lfs'
 local LocalizationPathFormatter = 'l10n/%s/%s.%s'
 local ValidYAMLExtensions = { 'yml', 'yaml' }
 
+local Languages = { 'en', }
+if languageCodes[config.preferredLocale] then
+  if config.preferredLocale ~= 'en' then
+    table.insert(Languages, 1, config.preferredLocale)
+  end
+else
+  tes3mp.LogAppend(
+    enumerations.log.WARN,
+    ('The preferred language %s is not a valid ISO country code and so will not be used when searching for localization contexts.')
+    :format(config.preferredLocale)
+  )
+end
+
 ---@param contextName string name of the directory in which localization files live, relative to the configured server data directory's l10n folder, eg, `test`, would default to `server/data/test/en.yaml`
 ---@return L10NSearchFunction l10nContext
 return function(contextName)
   local found, yamlInterfacePath
 
-  local languages = { 'en', }
-  if languageCodes[config.preferredLocale] then
-    if config.preferredLocale ~= 'en' then
-      table.insert(languages, 1, config.preferredLocale)
-    end
-  else
-    tes3mp.LogAppend(
-      enumerations.log.WARN,
-      ('The preferred language %s is not a valid ISO country code and so will not be used when searching localization contexts for %s.')
-      :format(config.preferredLocale, contextName)
-    )
-  end
-
-  for _, possibleLanguage in ipairs(languages) do
+  for _, possibleLanguage in ipairs(Languages) do
     for _, possibleExtension in ipairs(ValidYAMLExtensions) do
       yamlInterfacePath = LocalizationPathFormatter
           :format(
