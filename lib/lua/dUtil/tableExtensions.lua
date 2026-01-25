@@ -7,3 +7,4 @@ if hasResty then
 end
 
 table.new = require 'table.new'
+table.clear = require 'table.clear'
