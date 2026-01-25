@@ -8,7 +8,7 @@ local jsonInterface = require 'jsonInterface'
 local logicHandler = require 'packages.logicHandler'
 local miscUtil = require 'dUtil.miscellaneous'
 local packetBuilder = require 'tes3mp.packet.builder'
-local packetReader = require 'tes3mp.packet.reader'
+local packetReader = require 'packages.packetReader'
 local tableHelper = require 'tes3mp.util.table'
 local time = require 'time'
 
