@@ -19,7 +19,7 @@ local tes3 = assert(I.tes3)
 ---@field Interior boolean
 local LoadCellTypes = tds.hash { Exterior = false, Interior = true, }
 
-local Enums = require 'dUtil.enums'
+local Enums = require 'packages.MWEnums'
 
 local RequiredDataFiles = dUtil.getRequiredDataFiles()
 
