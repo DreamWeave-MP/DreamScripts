@@ -370,7 +370,7 @@ local RecordStores = {
   Door = tds.Hash(),
   Enchanting = tds.Hash(),
   Faction = tds.Hash(),
-  GameSetting = tds.Hash(),
+  GameSetting = {},
   GlobalVariable = tds.Hash(),
   Header = tds.Hash(),
   Ingredient = tds.Hash(),
@@ -945,6 +945,8 @@ local TypeHandlers = {
   end,
 
   GameSetting = function(record, _)
+    print(record.value, record.value.type, type(record.value))
+
     if record.value.type == 'String' then
       return assert(tostring(record.value))
     else
