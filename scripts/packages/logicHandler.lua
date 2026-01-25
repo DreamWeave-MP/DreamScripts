@@ -1,6 +1,3 @@
--- assert(LoadedCells ~= nil, 'logicHandler does not have LoadedCells table in scope!')
--- assert(Players ~= nil, 'logicHandler does not have Players table in scope!')
-
 local clientVariableScopes = require 'clientVariableScopes'
 local config = require 'config'
 local enumerations = require 'packages.networkEnums'
