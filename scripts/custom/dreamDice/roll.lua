@@ -3,7 +3,7 @@
 ---@alias RollNum integer positive number of dice to roll. Minimum of 1, but any positive bounds
 ---@alias RollFaces integer positive number of faces to roll for each die. Minimum of 1, but any positive bounds
 
-local color = require 'color'
+local color = require 'packages.color'
 
 math.randomseed(os.time())
 

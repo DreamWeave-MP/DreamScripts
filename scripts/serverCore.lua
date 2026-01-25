@@ -1,4 +1,4 @@
-local color = require 'color'
+local color = require 'packages.color'
 local config = require 'config'
 local enumerations = require 'packages.networkEnums'
 local dataTableBuilder = require 'packages.dataTableBuilder'

@@ -1,4 +1,4 @@
-local color = require 'color'
+local color = require 'packages.color'
 local Roll = require 'custom.dreamDice.roll'
 
 local lastRolls = {}

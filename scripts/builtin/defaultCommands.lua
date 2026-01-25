@@ -2,7 +2,7 @@
 _ENV = _ENV
 
 local animHelper = require 'tes3mp.util.anim'
-local color = require 'color'
+local color = require 'packages.color'
 local config = require 'config'
 local dataTableBuilder = require 'packages.dataTableBuilder'
 local enumerations = require 'packages.networkEnums'

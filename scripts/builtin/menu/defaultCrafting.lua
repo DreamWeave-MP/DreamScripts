@@ -1,4 +1,4 @@
-local color = require 'color'
+local color = require 'packages.color'
 
 local I = require 'interfaces'
 ---@type MenuHelper

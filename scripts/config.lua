@@ -1,4 +1,4 @@
-local color = require 'color'
+local color = require 'packages.color'
 local enumerations = require 'packages.networkEnums'
 
 ---@class TES3MPConfig

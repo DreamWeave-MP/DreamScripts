@@ -1,4 +1,4 @@
-local color = require 'color'
+local color = require 'packages.color'
 local config = require 'config'
 local tableHelper = require 'tes3mp.util.table'
 local validRecordSettings = require 'tes3mp.util.validRecordSettings'

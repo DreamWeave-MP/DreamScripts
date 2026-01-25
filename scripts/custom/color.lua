@@ -2,5 +2,5 @@
 return {
   interfaceName = 'Color',
   ---@type ColorModule
-  interface = require 'color',
+  interface = require 'packages.color',
 }
