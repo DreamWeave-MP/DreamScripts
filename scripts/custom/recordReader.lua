@@ -130,6 +130,7 @@ local function objectFlags(record)
 end
 
 local NumMandatoryFields = {
+  Region = 12,
   RepairItem = 7,
   Script = 2,
   Skill = 5,
@@ -405,7 +406,7 @@ local RecordStores = {
   Npc = tds.Hash(),
   Probe = tds.Hash(),
   Race = tds.Hash(),
-  Region = tds.Hash(),
+  Region = {},
   RepairItem = {},
   Script = {},
   Skill = {},
@@ -1374,51 +1375,58 @@ local TypeHandlers = {
   end,
 
   Region = function(record, recordId)
-    local chances       = record.weather_chances
-    local hash          = tds.Hash()
+    local isDeleted, isModified = objectFlags(record)
 
-    hash.ashChance      = numberField(chances.ash)
-    hash.blightChance   = numberField(chances.blight)
-    hash.blizzardChance = numberField(chances.blizzard)
-    hash.clearChance    = numberField(chances.clear)
-    hash.cloudyChance   = numberField(chances.cloudy)
-    hash.foggyChance    = numberField(chances.foggy)
-    hash.id             = MandatoryRecordId(recordId)
-    hash.mapColor       = tds.Vec(
-      numberField(tostring(record.map_color[1])),
-      numberField(tostring(record.map_color[2])),
-      numberField(tostring(record.map_color[3])),
-      numberField(tostring(record.map_color[4]))
-    )
-    hash.overcastChance = numberField(chances.overcast)
-    hash.rainChance     = numberField(chances.rain)
-    hash.snowChance     = numberField(chances.snow)
-    hash.thunderChance  = numberField(chances.thunder)
-
-    local name          = RealString(record.name)
-    if name then hash.name = name end
-
-    local sleepCreature = OptionalRecordId(record.sleep_creature)
-    if sleepCreature then hash.sleepCreature = sleepCreature end
-
-    local numSounds, sounds = #record.sounds, nil
+    local name                  = RealString(record.name)
+    local sleepCreature         = OptionalRecordId(record.sleep_creature)
+    local numSounds, sounds     = #record.sounds, nil
     if numSounds > 0 then
-      sounds = tds.Vec()
-      sounds:resize(numSounds)
+      sounds = table.new(numSounds, 0)
 
       for i, soundData in ipairs(record.sounds) do
-        local soundHash = tds.Hash()
+        local soundHash = table.new(0, 1)
 
         soundHash[MandatoryRecordId(soundData[1])] = numberField(soundData[2])
 
         sounds[i] = soundHash
       end
-
-      hash.sounds = sounds
     end
 
-    objectFlags(record, hash)
-    return hash
+    local numFields       = NumMandatoryFields.Region
+        + (isDeleted and 1 or 0)
+        + (isModified and 1 or 0)
+        + (name and 1 or 0)
+        + (sleepCreature and 1 or 0)
+        + (sounds and 1 or 0)
+
+    local object          = table.new(0, numFields)
+    local chances         = record.weather_chances
+
+    object.ashChance      = numberField(chances.ash)
+    object.blightChance   = numberField(chances.blight)
+    object.blizzardChance = numberField(chances.blizzard)
+    object.clearChance    = numberField(chances.clear)
+    object.cloudyChance   = numberField(chances.cloudy)
+    object.foggyChance    = numberField(chances.foggy)
+    object.id             = MandatoryRecordId(recordId)
+
+    object.mapColor       = table.new(4, 0)
+    for i = 1, 4 do
+      object.mapColor[i] = numberField(tostring(record.map_color[i]))
+    end
+
+    object.overcastChance = numberField(chances.overcast)
+    object.rainChance     = numberField(chances.rain)
+    object.snowChance     = numberField(chances.snow)
+    object.thunderChance  = numberField(chances.thunder)
+
+    if isDeleted then object.isDeleted = true end
+    if isModified then object.isModified = true end
+    if name then object.name = name end
+    if sleepCreature then object.sleepCreature = sleepCreature end
+    if sounds then object.sounds = sounds end
+
+    return object
   end,
 
   RepairItem = function(record, recordId)
