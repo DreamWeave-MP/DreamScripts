@@ -9,7 +9,7 @@ local logicHandler = require 'packages.logicHandler'
 local packetBuilder = require 'packages.packetBuilder'
 local packetReader = require 'packages.packetReader'
 local tableHelper = require 'tes3mp.util.table'
-local time = require 'time'
+local time = require 'packages.misc.time'
 
 ---@type DUtilModule
 local dUtil = require 'dUtil.init'
