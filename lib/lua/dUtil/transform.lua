@@ -5,7 +5,7 @@ typedef struct Transform {
   vector3 position;
   vector3 rotation;
   float scale;
-}
+} Transform;
 ]]
 
 ---@type ffi.ctype*(pos: Vector3, rot: Vector3, scale: numebr?): Transform
