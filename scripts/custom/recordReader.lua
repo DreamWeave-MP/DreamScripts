@@ -62,7 +62,7 @@ local function numberField(value)
   local valueType = type(value)
 
   if valueType ~= 'number' then
-    error(('%s: %s'):format(tostring(value), valueType), 2)
+    error(('%s: %s'):format(tostring(value), valueType))
   end
 
   return value
