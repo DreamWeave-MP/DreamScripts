@@ -116,10 +116,10 @@ local Module = {
   end,
   ---@type DUtilMisc
   misc = require 'dUtil.miscellaneous',
-  ---@type TransformConstructor
-  transform = require 'dUtil.transform',
   ---@type Vector3Constructor
   vector3 = require 'dUtil.vector3',
+  ---@type TransformConstructor
+  transform = require 'dUtil.transform',
 }
 
 return Module
