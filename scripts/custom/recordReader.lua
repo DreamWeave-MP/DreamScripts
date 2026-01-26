@@ -1492,55 +1492,55 @@ local TypeHandlers = {
     local object = table.new(0, numFields)
 
     object.agility = {
-      numberField(tostring(record.data.agility[1])),
-      numberField(tostring(record.data.agility[2]))
+      numberField(record.data.agility[1]),
+      numberField(record.data.agility[2])
     }
 
     object.endurance = {
-      numberField(tostring(record.data.endurance[1])),
-      numberField(tostring(record.data.endurance[2]))
+      numberField(record.data.endurance[1]),
+      numberField(record.data.endurance[2])
     }
 
     object.height = {
-      numberField(tostring(record.data.height[1])),
-      numberField(tostring(record.data.height[2]))
+      numberField(record.data.height[1]),
+      numberField(record.data.height[2])
     }
 
     object.id = recordId
 
     object.intelligence = {
-      numberField(tostring(record.data.intelligence[1])),
-      numberField(tostring(record.data.intelligence[2]))
+      numberField(record.data.intelligence[1]),
+      numberField(record.data.intelligence[2])
     }
 
     object.luck = {
-      numberField(tostring(record.data.luck[1])),
-      numberField(tostring(record.data.luck[2]))
+      numberField(record.data.luck[1]),
+      numberField(record.data.luck[2])
     }
 
     object.personality = {
-      numberField(tostring(record.data.personality[1])),
-      numberField(tostring(record.data.personality[2]))
+      numberField(record.data.personality[1]),
+      numberField(record.data.personality[2])
     }
 
     object.speed = {
-      numberField(tostring(record.data.speed[1])),
-      numberField(tostring(record.data.speed[2]))
+      numberField(record.data.speed[1]),
+      numberField(record.data.speed[2])
     }
 
     object.strength = {
-      numberField(tostring(record.data.strength[1])),
-      numberField(tostring(record.data.strength[2]))
+      numberField(record.data.strength[1]),
+      numberField(record.data.strength[2])
     }
 
     object.weight = {
-      numberField(tostring(record.data.weight[1])),
-      numberField(tostring(record.data.weight[2]))
+      numberField(record.data.weight[1]),
+      numberField(record.data.weight[2])
     }
 
     object.willpower = {
-      numberField(tostring(record.data.willpower[1])),
-      numberField(tostring(record.data.willpower[2]))
+      numberField(record.data.willpower[1]),
+      numberField(record.data.willpower[2])
     }
 
     object.bonuses = {
