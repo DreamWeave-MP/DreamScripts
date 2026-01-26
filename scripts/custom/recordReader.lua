@@ -1686,7 +1686,7 @@ local TypeHandlers = {
     object.id = MandatoryRecordId(record.skill_id)
     object.specialization = numberField(record.data.specialization)
 
-    object.skillId = numberField(Enums.SkillId[object.id])
+    object.skillId = numberField(Enums.SkillId[RealString(object.id)])
     if description then object.description = description end
     if isDeleted then object.isDeleted = true end
     if isModified then object.isModified = true end
