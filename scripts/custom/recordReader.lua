@@ -221,15 +221,13 @@ local AIPackageHandlers = {
 
 local Handlers = {
   AIData = function(aiData)
-    local hash = tds.Hash()
-
-    hash.alarm = numberField(aiData.alarm)
-    hash.fight = numberField(aiData.fight)
-    hash.flee = numberField(aiData.flee)
-    hash.hello = numberField(aiData.hello)
-    hash.services = numberField(aiData.services)
-
-    return hash
+    return {
+      alarm = numberField(aiData.alarm),
+      fight = numberField(aiData.fight),
+      flee = numberField(aiData.flee),
+      hello = numberField(aiData.hello),
+      services = numberField(aiData.services),
+    }
   end,
   AIPackages = function(aiPackages)
     if not aiPackages then return end
@@ -237,9 +235,8 @@ local Handlers = {
     local numPackages = #aiPackages
     if numPackages <= 0 then return end
 
-    local newPackages = tds.Vec()
+    local newPackages = table.new(numPackages, 0)
 
-    newPackages:resize(numPackages)
     for i, aiPackage in ipairs(aiPackages) do
       newPackages[i] = assert(AIPackageHandlers[aiPackage.type](aiPackage))
     end
