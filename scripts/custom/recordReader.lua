@@ -686,22 +686,22 @@ local TypeHandlers = {
       local atmo = record.atmosphere_data
       cell.ambient = dUtil.cellAmbient(
         dUtil.vector3(
-          numberField(tostring(atmo.ambient_color[1])),
-          numberField(tostring(atmo.ambient_color[2])),
-          numberField(tostring(atmo.ambient_color[3]))
-        -- numberField(tostring(atmo.ambient_color[4]))
+          numberField(atmo.ambient_color[1]),
+          numberField(atmo.ambient_color[2]),
+          numberField(atmo.ambient_color[3])
+        -- numberField(atmo.ambient_color[4])
         ),
         dUtil.vector3(
-          numberField(tostring(atmo.fog_color[1])),
-          numberField(tostring(atmo.fog_color[2])),
-          numberField(tostring(atmo.fog_color[3]))
-        -- numberField(tostring(atmo.fog_color[4]))
+          numberField(atmo.fog_color[1]),
+          numberField(atmo.fog_color[2]),
+          numberField(atmo.fog_color[3])
+        -- numberField(atmo.fog_color[4])
         ),
         dUtil.vector3(
-          numberField(tostring(atmo.sunlight_color[1])),
-          numberField(tostring(atmo.sunlight_color[2])),
-          numberField(tostring(atmo.sunlight_color[3]))
-        -- numberField(tostring(atmo.sunlight_color[4]))
+          numberField(atmo.sunlight_color[1]),
+          numberField(atmo.sunlight_color[2]),
+          numberField(atmo.sunlight_color[3])
+        -- numberField(atmo.sunlight_color[4])
         ),
         numberField(atmo.fog_density)
       )
@@ -711,7 +711,7 @@ local TypeHandlers = {
     if maybeRegion then cell.region = maybeRegion end
 
     if record.water_height then
-      cell.waterHeight = numberField(tostring(record.water_height))
+      cell.waterHeight = numberField(record.water_height)
     end
 
     --- One plugin might change certain cell flags, so,
