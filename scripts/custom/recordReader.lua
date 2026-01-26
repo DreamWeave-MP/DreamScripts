@@ -138,6 +138,7 @@ end
 
 local NumMandatoryFields = {
   Activator = 2,
+  Alchemy = 5,
   Class = 6,
   Clothing = 7,
   Container = 3,
@@ -377,7 +378,7 @@ local Handlers = {
 ---@type RecordStores
 local RecordStores = {
   Activator = {},
-  Alchemy = tds.Hash(),
+  Alchemy = {},
   Apparatus = tds.Hash(),
   Armor = tds.Hash(),
   Birthsign = tds.Hash(),
@@ -442,6 +443,39 @@ local TypeHandlers = {
     return object
   end,
 
+  Alchemy = function(record, recordId)
+    local effects = Handlers.Effects(record.effects)
+    local isAutoCalc = hasFlag(record.data.flags, Enums.Flags.Potion.AUTO_CALC)
+    local isDeleted, isModified = objectFlags(record)
+    local name = RealString(record.name)
+    local script = OptionalRecordId(record.script)
+
+    local numFields = NumMandatoryFields.Alchemy
+        + (effects and 1 or 0)
+        + (isAutoCalc and 1 or 0)
+        + (isDeleted and 1 or 0)
+        + (isModified and 1 or 0)
+        + (name and 1 or 0)
+        + (script and 1 or 0)
+
+    local object = table.new(0, numFields)
+
+    object.icon = path(record.icon)
+    object.id = recordId
+    object.model = path(record.mesh)
+    object.value = numberField(record.data.value)
+    object.weight = numberField(record.data.weight)
+
+    if effects then object.effects = effects end
+    if isAutoCalc then object.isAutoCalc = true end
+    if isDeleted then object.isDeleted = true end
+    if isModified then object.isModified = true end
+    if name then object.name = name end
+    if script then object.script = script end
+
+    return object
+  end,
+
   Apparatus = function(record, recordId)
     local hash = tds.Hash()
     hash.id = recordId
@@ -457,28 +491,6 @@ local TypeHandlers = {
 
     local script = OptionalRecordId(record.script)
     if script then hash.script = script end
-
-    objectFlags(record, hash)
-    return hash
-  end,
-
-  Alchemy = function(record, recordId)
-    local hash = tds.Hash()
-    hash.icon = path(record.icon)
-    hash.id = recordId
-    hash.model = path(record.mesh)
-    if hasFlag(record.data.flags, Enums.Flags.Potion.AUTO_CALC) then hash.isAutoCalc = true end
-    hash.value = numberField(record.data.value)
-    hash.weight = numberField(record.data.weight)
-
-    local name = RealString(record.name)
-    if name then hash.name = name end
-
-    local script = OptionalRecordId(record.script)
-    if script then hash.script = script end
-
-    local effects = Handlers.Effects(record.effects)
-    if effects then hash.effects = effects end
 
     objectFlags(record, hash)
     return hash
