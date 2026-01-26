@@ -74,14 +74,14 @@ local function path(value)
   if type(value) == 'string' then
     if value == '' then return end
 
-    return value:normalize()
+    return ffi.string(value:normalize())
   end
 
   local stringForm = assert(tostring(value))
 
   if stringForm == '' then return end
 
-  return stringForm:normalize()
+  return ffi.string(stringForm:normalize())
 end
 
 ---@param value any
@@ -543,11 +543,11 @@ local TypeHandlers = {
     object.value = numberField(record.data.value)
 
     if bipedObjects then object.bipedObjects = bipedObjects end
-    if enchantment then object.enchantment = enchantment end
+    if enchantment then object.enchantment = ffi.string(enchantment) end
     if isDeleted then object.isDeleted = true end
     if isModified then object.isModified = true end
     if name then object.name = name end
-    if script then object.script = script end
+    if script then object.script = ffi.string(script) end
 
     return object
   end,
@@ -602,7 +602,7 @@ local TypeHandlers = {
     if isFemale then object.isFemale = true end
     if isVampire then object.isVampire = true end
     if isUnplayable then object.isUnplayable = true end
-    if race then object.race = race end
+    if race then object.race = ffi.string(race) end
 
     return object
   end,
@@ -634,12 +634,12 @@ local TypeHandlers = {
     object.value = numberField(record.data.value)
     object.weight = numberField(record.data.weight)
 
-    if enchantment then object.enchantment = enchantment end
+    if enchantment then object.enchantment = ffi.string(enchantment) end
     if isDeleted then object.isDeleted = true end
     if isModified then object.isModified = true end
     if isScroll then object.isBook = true end
-    if name then object.name = name end
-    if script then object.script = script end
+    if name then object.name = ffi.string(name) end
+    if script then object.script = ffi.string(script) end
     if text then object.text = text end
 
     return object
@@ -826,11 +826,11 @@ local TypeHandlers = {
     object.value = numberField(record.data.value)
 
     if bipedObjects then object.parts = bipedObjects end
-    if enchantment then object.enchantment = enchantment end
+    if enchantment then object.enchantment = ffi.string(enchantment) end
     if isDeleted then object.isDeleted = true end
     if isModified then object.isModified = true end
-    if script then object.script = script end
-    if name then object.name = name end
+    if script then object.script = ffi.string(script) end
+    if name then object.name = ffi.string(name) end
 
     return object
   end,
