@@ -115,7 +115,7 @@ end
 ---@param trans number[] array with three numeric values
 local function transform(trans)
   assert(trans and #trans == 3, tostring(trans))
-  return { numberField(trans[1]), numberField(trans[2]), numberField(trans[3]) }
+  return { numberField(tostring(trans[1])), numberField(tostring(trans[2])), numberField(tostring(trans[3])) }
 end
 
 ---@param flags integer
@@ -199,19 +199,16 @@ local AIPackageHandlers = {
   AiFollowPackage = function(package)
     local cell = OptionalRecordId(package.cell)
 
-    local location
-    if package.location then location = transform(package.location) end
-
-    local numFields = 5 + (cell and 1 or 0) + (location and 1 or 0)
+    local numFields = 5 + (cell and 1 or 0)
     local object = table.new(0, numFields)
 
     object.duration = numberField(package.duration)
+    object.location = transform(package.location)
     object.reset = numberField(package.reset)
     object.target = assert(package.target)
     object.type = enumerations.ai.FOLLOW
 
     if cell then object.cell = cell end
-    if location then object.location = location end
 
     return object
   end,
