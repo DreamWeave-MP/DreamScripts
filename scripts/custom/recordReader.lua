@@ -1994,7 +1994,6 @@ local function createRecordStores()
 
   return LoadedRecords
 end
-local tableHelper = require 'packages.tableHelper'
 
 ---@type TES3MPScriptRegistration
 return {
@@ -2020,8 +2019,6 @@ return {
 
         logStr = logStr .. ('%s %s Records loaded.\n'):format(length, k)
       end
-
-      tableHelper.print(RecordStores)
 
       tes3mp.LogAppend(enumerations.log.INFO, logStr)
     end
