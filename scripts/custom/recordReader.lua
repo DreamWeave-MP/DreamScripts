@@ -140,6 +140,7 @@ local NumMandatoryFields = {
   Activator = 2,
   Alchemy = 5,
   Apparatus = 7,
+  Armor = 9,
   Class = 6,
   Clothing = 7,
   Container = 3,
@@ -381,7 +382,7 @@ local RecordStores = {
   Activator = {},
   Alchemy = {},
   Apparatus = {},
-  Armor = tds.Hash(),
+  Armor = {},
   Birthsign = tds.Hash(),
   Bodypart = tds.Hash(),
   Book = tds.Hash(),
@@ -507,32 +508,38 @@ local TypeHandlers = {
   end,
 
   Armor = function(record, recordId)
-    local hash = tds.Hash()
-
-    hash.armorRating = numberField(record.data.armor_rating)
-    hash.armorType = numberField(Enums.ArmorType[record.data.armor_type])
-    hash.durability = numberField(record.data.health)
-    hash.enchantmentValue = numberField(record.data.enchantment)
-    hash.icon = path(record.icon)
-    hash.id = recordId
-    hash.model = path(record.mesh)
-    hash.weight = numberField(record.data.weight)
-    hash.value = numberField(record.data.value)
-
     local bipedObjects = Handlers.BipedObjects(record.biped_objects)
-    if bipedObjects then hash.bipedObjects = bipedObjects end
-
-    local name = RealString(record.name)
-    if name then hash.name = name end
-
-    local script = OptionalRecordId(record.script)
-    if script then hash.script = script end
-
     local enchantment = OptionalRecordId(record.enchanting)
-    if enchantment then hash.enchantment = enchantment end
+    local isDeleted, isModified = objectFlags(record)
+    local name = RealString(record.name)
+    local script = OptionalRecordId(record.script)
 
-    objectFlags(record, hash)
-    return hash
+    local numFields = NumMandatoryFields.Armor
+        + (bipedObjects and 1 or 0)
+        + (enchantment and 1 or 0)
+        + (name and 1 or 0)
+        + (script and 1 or 0)
+
+    local object = table.new(0, numFields)
+
+    object.armorRating = numberField(record.data.armor_rating)
+    object.armorType = numberField(Enums.ArmorType[record.data.armor_type])
+    object.durability = numberField(record.data.health)
+    object.enchantmentValue = numberField(record.data.enchantment)
+    object.icon = path(record.icon)
+    object.id = recordId
+    object.model = path(record.mesh)
+    object.weight = numberField(record.data.weight)
+    object.value = numberField(record.data.value)
+
+    if bipedObjects then object.bipedObjects = bipedObjects end
+    if enchantment then object.enchantment = enchantment end
+    if isDeleted then object.isDeleted = true end
+    if isModified then object.isModified = true end
+    if name then object.name = name end
+    if script then object.script = script end
+
+    return object
   end,
 
   Birthsign = function(record, recordId)
