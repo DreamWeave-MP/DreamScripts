@@ -169,6 +169,7 @@ local NumMandatoryFields = {
   Spell = 2,
   StartScript = 2,
   Static = 2,
+  Weapon = 13,
 }
 
 local AIPackageHandlers = {
@@ -421,7 +422,7 @@ local RecordStores = {
   Spell = {},
   StartScript = {},
   Static = {},
-  Weapon = tds.Hash(),
+  Weapon = {},
 }
 
 local TypeHandlers = {
@@ -1807,35 +1808,47 @@ local TypeHandlers = {
   end,
 
   Weapon = function(record, recordId)
-    local hash = tds.Hash()
-
-    hash.chop = tds.Vec(numberField(record.data.chop_min), numberField(record.data.chop_max))
-    hash.durability = numberField(record.data.health)
-    hash.enchantmentValue = numberField(record.data.enchantment)
-    hash.icon = path(record.icon)
-    hash.id = recordId
-    if hasFlag(record.data.flags, Enums.Flags.Weapon.IGNORES_NORMAL_WEAPON_RESISTANCE) then hash.ignoresNormalResistance = true end
-    if hasFlag(record.data.flags, Enums.Flags.Weapon.SILVER) then hash.isSilver = true end
-    hash.model = path(record.mesh)
-    hash.reach = numberField(record.data.reach)
-    hash.slash = tds.Vec(numberField(record.data.slash_min), numberField(record.data.slash_max))
-    hash.speed = numberField(record.data.speed)
-    hash.thrust = tds.Vec(numberField(record.data.thrust_min), numberField(record.data.thrust_max))
-    hash.value = numberField(record.data.value)
-    hash.weaponType = numberField(Enums.WeaponType[tostring(record.data.weapon_type)])
-    hash.weight = numberField(record.data.weight)
-
-    local name = RealString(record.name)
-    if name then hash.name = name end
-
-    local script = OptionalRecordId(record.script)
-    if script then hash.script = script end
-
     local enchantment = OptionalRecordId(record.enchanting)
-    if enchantment then hash.enchantment = enchantment end
+    local ignoresNormalResistance = hasFlag(record.data.flags, Enums.Flags.Weapon.IGNORES_NORMAL_WEAPON_RESISTANCE)
+    local isDeleted, isModified = objectFlags(record)
+    local isSilver = hasFlag(record.data.flags, Enums.Flags.Weapon.SILVER)
+    local name = RealString(record.name)
+    local script = OptionalRecordId(record.script)
 
-    objectFlags(record, hash)
-    return hash
+    local numFields = NumMandatoryFields.Weapon
+        + (enchantment and 1 or 0)
+        + (ignoresNormalResistance and 1 or 0)
+        + (isDeleted and 1 or 0)
+        + (isModified and 1 or 0)
+        + (isSilver and 1 or 0)
+        + (name and 1 or 0)
+        + (script and 1 or 0)
+
+    local object = table.new(0, numFields)
+
+    object.chop = { numberField(record.data.chop_min), numberField(record.data.chop_max), }
+    object.durability = numberField(record.data.health)
+    object.enchantmentValue = numberField(record.data.enchantment)
+    object.icon = path(record.icon)
+    object.id = recordId
+    object.model = path(record.mesh)
+    object.reach = numberField(record.data.reach)
+    object.slash = { numberField(record.data.slash_min), numberField(record.data.slash_max), }
+    object.speed = numberField(record.data.speed)
+    object.thrust = { numberField(record.data.thrust_min), numberField(record.data.thrust_max), }
+    object.value = numberField(record.data.value)
+    object.weaponType = numberField(Enums.WeaponType[RealString(record.data.weapon_type)])
+    object.weight = numberField(record.data.weight)
+
+    if ignoresNormalResistance then object.ignoresNormalResistance = true end
+    if isDeleted then object.isDeleted = true end
+    if isModified then object.isModified = true end
+    if isSilver then object.isSilver = true end
+    if name then object.name = name end
+    if script then object.script = script end
+    if enchantment then object.enchantment = enchantment end
+
+    return object
   end,
 }
 
