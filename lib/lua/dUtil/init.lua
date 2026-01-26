@@ -117,9 +117,11 @@ local Module = {
   ---@type DUtilMisc
   misc = require 'dUtil.miscellaneous',
   ---@type Vector3Constructor
-  vector3 = require 'dUtil.vector3',
+  vector3 = require 'dUtil.ctypes.vector3',
   ---@type TransformConstructor
-  transform = require 'dUtil.transform',
+  transform = require 'dUtil.ctypes.transform',
+  ---@type CellAmbientConstructor
+  cellAmbient = require 'dUtil.ctypes.cellAmbient',
 }
 
 return Module

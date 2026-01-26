@@ -466,7 +466,14 @@
 ---@field model NormalizedPath
 ---@field isVampire boolean
 
+---@class CellAmbient
+---@field ambientColor Vector3
+---@field fogColor Vector3
+---@field sunlightColor Vector3
+---@field fogDensity number
+
 ---@class CellRecord: BaseRecord
+---@field ambient CellAmbient
 
 ---@class ClassRecord: BaseRecord
 ---@field attribute AttributeId[]

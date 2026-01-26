@@ -1,5 +1,7 @@
 ---@meta
 
+---@alias CellAmbientConstructor fun(ambientColor: Vector3, fogColor: Vector3, sunlightColor: Vector3, fogDensity: number): CellAmbient
+
 --- L10N searcher function that retains a cached reference to a localization context, and returns matching values from that localization context when called.
 --- Takes an optional params hashmap for parameter replacement in localized strings.
 ---@alias L10NSearchFunction fun(keyName: string, params: table<string, string>?): string
@@ -42,6 +44,7 @@
 ---@field I table<string, table<any, any>> Global script interfaces to be accessed by other mods
 
 ---@class DUtilModule
+---@field cellAmbient CellAmbientConstructor
 ---@field getRequiredDataFiles fun(): DataFileRequirements Safer version of below function which doesn't modify global server state
 ---@field loadRequiredDataFiles fun(writeLog: boolean): DataFileRequirements Loads the required data files, whilst also initializing the server connection requirements. ONLY Call this once!
 ---@field misc DUtilMisc
