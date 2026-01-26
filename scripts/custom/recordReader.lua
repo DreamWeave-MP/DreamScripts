@@ -967,7 +967,7 @@ local TypeHandlers = {
     local openSound = OptionalRecordId(record.open_sound)
     local script = OptionalRecordId(record.script)
 
-    local numFields = NumMandatoryFields
+    local numFields = NumMandatoryFields.Door
         + (closeSound and 1 or 0)
         + (isDeleted and 1 or 0)
         + (isModified and 1 or 0)
