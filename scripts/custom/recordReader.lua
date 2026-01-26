@@ -151,6 +151,7 @@ local NumMandatoryFields = {
   Door = 2,
   Enchanting = 4,
   Faction = 4,
+  Ingredient = 8,
   LeveledCreature = 2,
   LeveledItem = 2,
   Light = 9,
@@ -401,7 +402,7 @@ local RecordStores = {
   GameSetting = {},
   GlobalVariable = {},
   Header = {},
-  Ingredient = tds.Hash(),
+  Ingredient = {},
   LeveledCreature = {},
   LeveledItem = {},
   Light = {},
@@ -1124,43 +1125,48 @@ local TypeHandlers = {
   end,
 
   Ingredient = function(record, recordId)
-    local hash = tds.Hash()
+    local isDeleted, isModified = objectFlags(record)
+    local name = RealString(record.name)
+    local script = OptionalRecordId(record.script)
 
-    hash.icon = path(record.icon)
-    hash.id = MandatoryRecordId(recordId)
-    objectFlags(record, hash)
-    hash.model = path(record.mesh)
-    hash.value = numberField(record.data.value)
-    hash.weight = numberField(record.data.weight)
+    local numFields = NumMandatoryFields.Ingredient
+        + (isDeleted and 1 or 0)
+        + (isModified and 1 or 0)
+        + (name and 1 or 0)
+        + (script and 1 or 0)
 
-    hash.effects = tds.Vec(
+    local object = table.new(0, numFields)
+
+    object.icon = path(record.icon)
+    object.id = recordId
+    object.model = path(record.mesh)
+    object.value = numberField(record.data.value)
+    object.weight = numberField(record.data.weight)
+    object.effects = {
       numberField(Enums.MagicEffectId[RealString(record.data.effects[1])]),
       numberField(Enums.MagicEffectId[RealString(record.data.effects[2])]),
       numberField(Enums.MagicEffectId[RealString(record.data.effects[3])]),
       numberField(Enums.MagicEffectId[RealString(record.data.effects[4])])
-    )
-
-    hash.skills = tds.Vec(
+    }
+    object.skills = {
       numberField(Enums.SkillId[RealString(record.data.skills[1])]),
       numberField(Enums.SkillId[RealString(record.data.skills[2])]),
       numberField(Enums.SkillId[RealString(record.data.skills[3])]),
       numberField(Enums.SkillId[RealString(record.data.skills[4])])
-    )
-
-    hash.attributes = tds.Vec(
+    }
+    object.attributes = {
       numberField(Enums.AttributeId[RealString(record.data.attributes[1])]),
       numberField(Enums.AttributeId[RealString(record.data.attributes[2])]),
       numberField(Enums.AttributeId[RealString(record.data.attributes[3])]),
       numberField(Enums.AttributeId[RealString(record.data.attributes[4])])
-    )
+    }
 
-    local name = RealString(record.name)
-    if name then hash.name = name end
+    if isDeleted then object.isDeleted = true end
+    if isModified then object.isModified = true end
+    if name then object.name = name end
+    if script then object.script = script end
 
-    local script = OptionalRecordId(record.script)
-    if script then hash.script = script end
-
-    return hash
+    return object
   end,
 
   LeveledCreature = function(record, recordId)
