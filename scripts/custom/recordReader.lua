@@ -1697,7 +1697,7 @@ local TypeHandlers = {
   Sound = function(record, recordId)
     local isDeleted, isModified = objectFlags(record)
 
-    local numFields = NumMandatoryFields
+    local numFields = NumMandatoryFields.Sound
         + (isDeleted and 1 or 0)
         + (isModified and 1 or 0)
 
