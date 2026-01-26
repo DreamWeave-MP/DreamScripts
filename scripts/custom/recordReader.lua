@@ -155,70 +155,67 @@ local NumMandatoryFields = {
 
 local AIPackageHandlers = {
   AiActivatePackage = function(package)
-    local hash = tds.Hash()
-    hash.reset = numberField(package.reset)
-    hash.target = assert(package.target)
-    hash.type = enumerations.ai.ACTIVATE
+    return {
+      reset = numberField(package.reset),
+      target = assert(package.target),
+      type = enumerations.ai.ACTIVATE,
+    }
   end,
   AiEscortPackage = function(package)
-    local hash = tds.Hash()
-
-    hash.duration = numberField(package.duration)
-    hash.reset = numberField(package.reset)
-    hash.target = assert(package.target)
-    hash.type = enumerations.ai.ESCORT
-
-    local location = transform(package.location)
-    if location then hash.location = location end
-
     local cell = OptionalRecordId(package.cell)
-    if cell then hash.cell = cell end
 
-    return hash
+    local numFields = 5 + (cell and 1 or 0)
+    local object = table.new(0, numFields)
+
+    object.duration = numberField(package.duration)
+    object.reset = numberField(package.reset)
+    object.target = assert(package.target)
+    object.type = enumerations.ai.ESCORT
+    object.location = transform(package.location)
+
+    if cell then object.cell = cell end
+
+    return object
   end,
   AiFollowPackage = function(package)
-    local hash = tds.Hash()
-
-    hash.duration = numberField(package.duration)
-    hash.reset = numberField(package.reset)
-    hash.target = assert(package.target)
-    hash.type = enumerations.ai.FOLLOW
-
-    local location = transform(package.location)
-    if location then hash.location = location end
-
     local cell = OptionalRecordId(package.cell)
-    if cell then hash.cell = cell end
 
-    return hash
+    local numFields = 5 + (cell and 1 or 0)
+    local object = table.new(0, numFields)
+
+    object.location = transform(package.location)
+    object.duration = numberField(package.duration)
+    object.reset = numberField(package.reset)
+    object.target = assert(package.target)
+    object.type = enumerations.ai.FOLLOW
+
+    if cell then object.cell = cell end
+
+    return object
   end,
   AiTravelPackage = function(package)
-    local hash = tds.Hash()
-
-    hash.location = assert(transform(package.location))
-    hash.reset = numberField(package.reset)
-    hash.type = enumerations.ai.TRAVEL
-
-    return hash
+    return {
+      location = assert(transform(package.location)),
+      reset = numberField(package.reset),
+      type = enumerations.ai.TRAVEL,
+    }
   end,
   AiWanderPackage = function(package)
-    local hash    = tds.hash()
-
-    hash.distance = numberField(package.distance)
-    hash.duration = numberField(package.duration)
-    hash.gameHour = numberField(package.game_hour)
-    hash.idle2    = numberField(package.idle2)
-    hash.idle3    = numberField(package.idle3)
-    hash.idle4    = numberField(package.idle4)
-    hash.idle5    = numberField(package.idle5)
-    hash.idle6    = numberField(package.idle6)
-    hash.idle7    = numberField(package.idle7)
-    hash.idle8    = numberField(package.idle8)
-    hash.idle9    = numberField(package.idle9)
-    hash.reset    = numberField(package.reset)
-    hash.type     = enumerations.ai.WANDER
-
-    return hash
+    return {
+      distance = numberField(package.distance),
+      duration = numberField(package.duration),
+      gameHour = numberField(package.game_hour),
+      idle2    = numberField(package.idle2),
+      idle3    = numberField(package.idle3),
+      idle4    = numberField(package.idle4),
+      idle5    = numberField(package.idle5),
+      idle6    = numberField(package.idle6),
+      idle7    = numberField(package.idle7),
+      idle8    = numberField(package.idle8),
+      idle9    = numberField(package.idle9),
+      reset    = numberField(package.reset),
+      type     = enumerations.ai.WANDER,
+    }
   end,
 }
 
