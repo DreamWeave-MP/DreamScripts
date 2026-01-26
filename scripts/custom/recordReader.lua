@@ -166,6 +166,7 @@ local NumMandatoryFields = {
   Skill = 5,
   Sound = 4,
   SoundGen = 3,
+  Spell = 2,
   StartScript = 2,
   Static = 2,
 }
@@ -417,7 +418,7 @@ local RecordStores = {
   Skill = {},
   Sound = {},
   SoundGen = {},
-  Spell = tds.Hash(),
+  Spell = {},
   StartScript = {},
   Static = {},
   Weapon = tds.Hash(),
@@ -1739,22 +1740,36 @@ local TypeHandlers = {
   end,
 
   Spell = function(record, recordId)
-    local hash = tds.Hash()
-
-    if hasFlag(record.data.flags, Enums.Flags.Spell.ALWAYS_SUCCEEDS) then hash.alwaysSucceeds = true end
-    hash.cost = numberField(record.data.cost)
-    hash.id = MandatoryRecordId(recordId)
-    if hasFlag(record.data.flags, Enums.Flags.Spell.AUTO_CALCULATE) then hash.isAutoCalc = true end
-    if hasFlag(record.data.flags, Enums.Flags.Spell.PC_START_SPELL) then hash.isStartSpell = true end
-
-    local name = RealString(record.name)
-    if name then hash.name = name end
-
+    local alwaysSucceeds = hasFlag(record.data.flags, Enums.Flags.Spell.ALWAYS_SUCCEEDS)
     local effects = Handlers.Effects(record.effects)
-    if effects then hash.effects = effects end
+    local isAutoCalc = hasFlag(record.data.flags, Enums.Flags.Spell.AUTO_CALCULATE)
+    local isDeleted, isModified = objectFlags(record)
+    local isStartSpell = hasFlag(record.data.flags, Enums.Flags.Spell.PC_START_SPELL)
+    local name = RealString(record.name)
 
-    objectFlags(record, hash)
-    return hash
+    local numFields = NumMandatoryFields.Spell
+        + (alwaysSucceeds and 1 or 0)
+        + (effects and 1 or 0)
+        + (isAutoCalc and 1 or 0)
+        + (isDeleted and 1 or 0)
+        + (isModified and 1 or 0)
+        + (isStartSpell and 1 or 0)
+        + (name and 1 or 0)
+
+    local object = table.new(0, numFields)
+
+    object.cost = numberField(record.data.cost)
+    object.id = MandatoryRecordId(recordId)
+
+    if alwaysSucceeds then object.alwaysSucceeds = true end
+    if effects then object.effects = effects end
+    if isAutoCalc then object.isAutoCalc = true end
+    if isDeleted then object.isDeleted = true end
+    if isModified then object.isModified = true end
+    if isStartSpell then object.isStartSpell = true end
+    if name then object.name = name end
+
+    return object
   end,
 
   StartScript = function(record, recordId)
