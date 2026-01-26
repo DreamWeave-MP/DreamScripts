@@ -737,18 +737,19 @@ local TypeHandlers = {
         cell.references[referenceKey] = {
           id = referenceKey,
           recordId = MandatoryRecordId(referenceData.id),
-          transform = {
-            position = {
-              numberField(tostring(referenceData.translation[1])),
-              numberField(tostring(referenceData.translation[2])),
-              numberField(tostring(referenceData.translation[3]))
-            },
-            rotation = {
+          transform = dUtil.transform(
+            dUtil.vector3(
               numberField(tostring(referenceData.rotation[1])),
               numberField(tostring(referenceData.rotation[2])),
               numberField(tostring(referenceData.rotation[3]))
-            },
-          }
+            ),
+            dUtil.vector3(
+              numberField(tostring(referenceData.translation[1])),
+              numberField(tostring(referenceData.translation[2])),
+              numberField(tostring(referenceData.translation[3]))
+            ),
+            1
+          ),
         }
       end
     end
