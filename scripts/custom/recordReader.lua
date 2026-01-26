@@ -370,10 +370,10 @@ local Handlers = {
 
 ---@type RecordStores
 local RecordStores = {
-  Alchemy = tds.Hash(),
-  Armor = tds.Hash(),
-  Apparatus = tds.Hash(),
   Activator = tds.Hash(),
+  Alchemy = tds.Hash(),
+  Apparatus = tds.Hash(),
+  Armor = tds.Hash(),
   Birthsign = tds.Hash(),
   Bodypart = tds.Hash(),
   Book = tds.Hash(),
