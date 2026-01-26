@@ -1605,7 +1605,7 @@ local TypeHandlers = {
 
     object.mapColor       = table.new(4, 0)
     for i = 1, 4 do
-      object.mapColor[i] = numberField(tostring(record.map_color[i]))
+      object.mapColor[i] = numberField(record.map_color[i])
     end
 
     object.overcastChance = numberField(chances.overcast)
