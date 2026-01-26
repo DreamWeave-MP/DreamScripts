@@ -1966,7 +1966,7 @@ local function createRecordStores()
       local recordId
 
       if object.id then
-        recordId = ffi.string(recordId:lower(), #object.id)
+        recordId = ffi.string(object.id:lower(), #object.id)
       end
 
       if idIsFree(recordId, object) then
