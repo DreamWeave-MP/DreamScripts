@@ -150,6 +150,7 @@ local NumMandatoryFields = {
   Creature = 21,
   Door = 2,
   Enchanting = 4,
+  Faction = 4,
   LeveledCreature = 2,
   LeveledItem = 2,
   Light = 9,
@@ -396,7 +397,7 @@ local RecordStores = {
   Creature = {},
   Door = {},
   Enchanting = {},
-  Faction = tds.Hash(),
+  Faction = {},
   GameSetting = {},
   GlobalVariable = {},
   Header = {},
@@ -1014,13 +1015,13 @@ local TypeHandlers = {
   end,
 
   Faction = function(record, recordId)
-    local hash = tds.Hash()
+    local isDeleted, isModified = objectFlags(record)
+    local isHidden = hasFlag(record.data.flags, Enums.Flags.Faction.HIDDEN_FROM_PC)
+    local name = RealString(record.name)
 
     local numRanks, rankNames = #record.rank_names, nil
-
     if numRanks > 0 then
-      rankNames = tds.Vec()
-      rankNames:resize(numRanks)
+      rankNames = table.new(numRanks, 0)
 
       for i, rankName in ipairs(record.rank_names) do
         rankNames[i] = assert(RealString(rankName))
@@ -1029,29 +1030,29 @@ local TypeHandlers = {
 
     local numReactions, reactions = #record.reactions, nil
     if numReactions > 0 then
-      reactions = tds.Vec()
-      reactions:resize(numReactions)
+      reactions = table.new(numReactions, 0)
 
       for i, reactionData in ipairs(record.reactions) do
-        local reaction = tds.Hash()
-
-        reaction[MandatoryRecordId(reactionData.faction)] = numberField(reactionData.reaction)
-
-        reactions[i] = reaction
+        reactions[i] = { [MandatoryRecordId(reactionData.faction)] = numberField(reactionData.reaction) }
       end
     end
 
-    if hasFlag(record.data.flags, Enums.Flags.Faction.HIDDEN_FROM_PC) then hash.isHidden = true end
+    local numFields = NumMandatoryFields.Faction
+        + (isDeleted and 1 or 0)
+        + (isHidden and 1 or 0)
+        + (isModified and 1 or 0)
+        + (name and 1 or 0)
+        + (rankNames and 1 or 0)
+        + (reactions and 1 or 0)
 
-    hash.id = MandatoryRecordId(recordId)
-    objectFlags(record, hash)
+    local object = table.new(0, numFields)
 
-    hash.favoredAttributes = tds.Vec(
+    object.id = recordId
+    object.favoredAttributes = {
       numberField(Enums.AttributeId[MandatoryRecordId(record.data.favored_attributes[1]):titleCase()]),
       numberField(Enums.AttributeId[MandatoryRecordId(record.data.favored_attributes[2]):titleCase()])
-    )
-
-    hash.favoredSkills = tds.Vec(
+    }
+    object.favoredSkills = {
       numberField(Enums.SkillId[MandatoryRecordId(record.data.favored_skills[1]):titleCase()]),
       numberField(Enums.SkillId[MandatoryRecordId(record.data.favored_skills[2]):titleCase()]),
       numberField(Enums.SkillId[MandatoryRecordId(record.data.favored_skills[3]):titleCase()]),
@@ -1059,46 +1060,41 @@ local TypeHandlers = {
       numberField(Enums.SkillId[MandatoryRecordId(record.data.favored_skills[5]):titleCase()]),
       numberField(Enums.SkillId[MandatoryRecordId(record.data.favored_skills[6]):titleCase()]),
       numberField(Enums.SkillId[MandatoryRecordId(record.data.favored_skills[7]):titleCase()])
-    )
+    }
 
-    local requirements = record.data.requirements
-
-    local numReqs = #requirements
+    local numReqs = #record.data.requirements
     assert(numReqs == 10)
 
-    local hashRequirements = tds.Vec()
-    hashRequirements:resize(10)
-
-    for i, requirement in ipairs(requirements) do
-      local hashRequirement = tds.Hash()
-      hashRequirement.favoredSkill = numberField(requirement.favored_skill)
-      hashRequirement.primarySkill = numberField(requirement.primary_skill)
-      hashRequirement.reputation = numberField(requirement.reputation)
-
+    object.requirements = table.new(10, 0)
+    for i, requirement in ipairs(record.data.requirements) do
       local attributes, numAttributes = nil, #requirement.attributes
-
       if numAttributes > 0 then
-        attributes = tds.Vec()
-        attributes:resize(numAttributes)
+        attributes = table.new(numAttributes, 0)
 
         for j, attribute in ipairs(requirement.attributes) do
           attributes[j] = numberField(tostring(attribute))
         end
       end
 
-      if attributes then hashRequirement.attributes = attributes end
+      local numReqFields = 3 + (attributes and 1 or 0)
+      local objectRequirement = table.new(numReqFields, 0)
 
-      hashRequirements[i] = hashRequirement
+      objectRequirement.favoredSkill = numberField(requirement.favored_skill)
+      objectRequirement.primarySkill = numberField(requirement.primary_skill)
+      objectRequirement.reputation = numberField(requirement.reputation)
+      if attributes then objectRequirement.attributes = attributes end
+
+      object.requirements[i] = objectRequirement
     end
 
-    hash.requirements = hashRequirements
+    if isDeleted then object.isDeleted = true end
+    if isHidden then object.isHidden = true end
+    if isModified then object.isModified = true end
+    if name then object.name = name end
+    if rankNames then object.rankNames = rankNames end
+    if reactions then object.reactions = reactions end
 
-    local name = RealString(record.name)
-    if name then hash.name = name end
-
-    if rankNames then hash.rankNames = rankNames end
-
-    return hash
+    return object
   end,
 
   GameSetting = function(record, _)
