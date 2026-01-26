@@ -138,6 +138,7 @@ end
 
 local NumMandatoryFields = {
   Activator = 2,
+  Container = 3,
   Creature = 21,
   Door = 2,
   Enchanting = 4,
@@ -383,7 +384,7 @@ local RecordStores = {
   -- Cell = tds.Hash { Interior = tds.Hash(), Exterior = tds.Hash(), },
   Class = tds.Hash(),
   Clothing = tds.Hash(),
-  Container = tds.Hash(),
+  Container = {},
   Creature = {},
   Door = {},
   Enchanting = {},
@@ -753,24 +754,37 @@ local TypeHandlers = {
   end,
 
   Container = function(record, recordId)
-    local hash = tds.Hash()
-    hash.capacity = numberField(record.encumbrance)
-    hash.id = recordId
-    if hasFlag(record.container_flags, Enums.Flags.Container.ORGANIC) then hash.isOrganic = true end
-    if hasFlag(record.container_flags, Enums.Flags.Container.RESPAWNS) then hash.isRespawning = true end
-    hash.model = path(record.mesh)
-
-    local script = OptionalRecordId(record.script)
-    if script then hash.script = script end
-
     local inventory = Handlers.Inventory(record.inventory)
-    if inventory then hash.inventory = inventory end
-
+    local isDeleted, isModified = objectFlags(record)
+    local isOrganic = hasFlag(record.container_flags, Enums.Flags.Container.ORGANIC)
+    local isRespawning = hasFlag(record.container_flags, Enums.Flags.Container.RESPAWNS)
     local name = RealString(record.name)
-    if name then hash.name = name end
+    local script = OptionalRecordId(record.script)
 
-    objectFlags(record, hash)
-    return hash
+    local numFields = NumMandatoryFields.Container
+        + (inventory and 1 or 0)
+        + (isDeleted and 1 or 0)
+        + (isModified and 1 or 0)
+        + (isOrganic and 1 or 0)
+        + (isRespawning and 1 or 0)
+        + (name and 1 or 0)
+        + (script and 1 or 0)
+
+    local object = table.new(0, numFields)
+
+    object.capacity = numberField(record.encumbrance)
+    object.id = recordId
+    object.model = path(record.mesh)
+
+    if inventory then object.inventory = inventory end
+    if isDeleted then object.isDeleted = true end
+    if isModified then object.isModified = true end
+    if isOrganic then object.isOrganic = true end
+    if isRespawning then object.isRespawning = true end
+    if name then object.name = name end
+    if script then object.script = script end
+
+    return object
   end,
 
   Creature = function(record, recordId)
