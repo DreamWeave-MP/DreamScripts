@@ -321,7 +321,7 @@ local Handlers = {
     local inventory = table.new(numItems, 0)
 
     for i, item in ipairs(originalInventory) do
-      inventory[i] = { [ffi.string(MandatoryRecordId(item[2]))] = item[1] }
+      inventory[i] = { [MandatoryRecordId(item[2])] = item[1] }
     end
 
     return inventory
@@ -337,7 +337,7 @@ local Handlers = {
     local list = table.new(numItems, 0)
 
     for i, item in ipairs(originalItems) do
-      list[i] = { [ffi.string(MandatoryRecordId(item[1]))] = item[2] }
+      list[i] = { [MandatoryRecordId(item[1])] = item[2] }
     end
 
     return list
@@ -351,7 +351,7 @@ local Handlers = {
     local newSpells = table.new(numSpells, 0)
 
     for i, spellId in ipairs(spells) do
-      newSpells[i] = ffi.string(MandatoryRecordId(spellId))
+      newSpells[i] = MandatoryRecordId(spellId)
     end
 
     return newSpells
