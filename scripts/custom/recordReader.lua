@@ -516,6 +516,8 @@ local TypeHandlers = {
 
     local numFields = NumMandatoryFields.Armor
         + (bipedObjects and 1 or 0)
+        + (isDeleted and 1 or 0)
+        + (isModified and 1 or 0)
         + (enchantment and 1 or 0)
         + (name and 1 or 0)
         + (script and 1 or 0)
