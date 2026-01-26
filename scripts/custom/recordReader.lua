@@ -308,15 +308,10 @@ local Handlers = {
     local numItems = #originalInventory
     if numItems <= 0 then return end
 
-    local inventory = tds.Vec()
-    inventory:resize(numItems)
+    local inventory = table.new(numItems, 0)
 
     for i, item in ipairs(originalInventory) do
-      local inventoryItem = tds.Hash()
-
-      inventoryItem[MandatoryRecordId(item[2])] = item[1]
-
-      inventory[i] = inventoryItem
+      inventory[i] = { [MandatoryRecordId(item[2])] = item[1] }
     end
 
     return inventory
