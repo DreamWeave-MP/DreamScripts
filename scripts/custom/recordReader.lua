@@ -1971,10 +1971,10 @@ local function createRecordStores()
       local recordId = object.id
 
       if idIsFree(recordId, object) then
-        local recordStore, typeHandler = RecordStores[object.type], TypeHandlers[object.type]
+        local recordStore = RecordStores[object.type]
 
-        if recordStore and typeHandler then
-          local resultRecord = typeHandler(object, recordId, lowerPluginName)
+        if recordStore and TypeHandlers[object.type] then
+          local resultRecord = TypeHandlers[object.type](object, recordId, lowerPluginName)
 
           if resultRecord then
             recordStore[recordId or resultRecord.id] = resultRecord
