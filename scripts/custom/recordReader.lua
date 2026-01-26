@@ -1108,7 +1108,7 @@ local TypeHandlers = {
     if record.value.type == 'String' then
       return assert(tostring(record.value))
     else
-      return numberField(tonumber(record.value))
+      return numberField(tostring(record.value))
     end
   end,
 
