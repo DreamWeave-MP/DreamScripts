@@ -344,22 +344,21 @@ local Handlers = {
     local numDestinations = #destinations
     if numDestinations <= 0 then return end
 
-    local newDestinations = tds.Vec()
-    newDestinations:resize(#destinations)
+    local newDestinations = table.new(numDestinations, 0)
 
     for i, travelDestination in ipairs(destinations) do
-      local destination = tds.Hash()
-
       local cell = OptionalRecordId(travelDestination.cell)
+      local destRot = travelDestination.rotation
+      local destPos = travelDestination.position
+
+      local numFields = (cell and 1 or 0) + (destPos and 1 or 0) + (destRot and 1 or 0)
+      if numFields == 0 then error() end
+
+      local destination = table.new(0, numFields)
+
       if cell then destination.cell = cell end
-
-      if travelDestination.position then
-        destination.position = transform(travelDestination.position)
-      end
-
-      if travelDestination.rotation then
-        destination.rotation = transform(travelDestination.rotation)
-      end
+      if destPos then destination.position = transform(destPos) end
+      if destRot then destination.rotation = transform(destRot) end
 
       newDestinations[i] = destination
     end
