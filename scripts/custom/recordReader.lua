@@ -59,8 +59,9 @@ local function lowercase(value)
 end
 
 local function numberField(value)
-  assert(type(value) == 'number')
-  return value
+  if type(value) == 'number' then return value end
+
+  return assert(tonumber(value))
 end
 
 ---@param value any
@@ -117,7 +118,7 @@ end
 ---@return Vector3
 local function vector(trans)
   assert(trans and #trans == 3, tostring(trans))
-  return dUtil.vector3(numberField(trans[1]), numberField(trans[2]), numberField(trans[3]))
+  return dUtil.vector3(numberField(tostring(trans[1])), numberField(tostring(trans[2])), numberField(tostring(trans[3])))
 end
 
 ---@param flags integer
@@ -681,22 +682,22 @@ local TypeHandlers = {
       local atmo = record.atmosphere_data
       cell.ambient = dUtil.cellAmbient(
         dUtil.vector3(
-          numberField(atmo.ambient_color[1]),
-          numberField(atmo.ambient_color[2]),
-          numberField(atmo.ambient_color[3])
-        -- numberField(atmo.ambient_color[4])
+          numberField(tostring(atmo.ambient_color[1])),
+          numberField(tostring(atmo.ambient_color[2])),
+          numberField(tostring(atmo.ambient_color[3]))
+        -- numberField(tostring(atmo.ambient_color[4]))
         ),
         dUtil.vector3(
-          numberField(atmo.fog_color[1]),
-          numberField(atmo.fog_color[2]),
-          numberField(atmo.fog_color[3])
-        -- numberField(atmo.fog_color[4])
+          numberField(tostring(atmo.fog_color[1])),
+          numberField(tostring(atmo.fog_color[2])),
+          numberField(tostring(atmo.fog_color[3]))
+        -- numberField(tostring(atmo.fog_color[4]))
         ),
         dUtil.vector3(
-          numberField(atmo.sunlight_color[1]),
-          numberField(atmo.sunlight_color[2]),
-          numberField(atmo.sunlight_color[3])
-        -- numberField(atmo.sunlight_color[4])
+          numberField(tostring(atmo.sunlight_color[1])),
+          numberField(tostring(atmo.sunlight_color[2])),
+          numberField(tostring(atmo.sunlight_color[3]))
+        -- numberField(tostring(atmo.sunlight_color[4]))
         ),
         numberField(atmo.fog_density)
       )
@@ -706,7 +707,7 @@ local TypeHandlers = {
     if maybeRegion then cell.region = maybeRegion end
 
     if record.water_height then
-      cell.waterHeight = numberField(record.water_height)
+      cell.waterHeight = numberField(tostring(record.water_height))
     end
 
     --- One plugin might change certain cell flags, so,
@@ -724,7 +725,7 @@ local TypeHandlers = {
     for _, referenceData in ipairs(references) do
       -- print(i, referenceData)
       local masterIndex, referenceIndex =
-          numberField(referenceData.mast_index), numberField(referenceData.refr_index)
+          numberField(tostring(referenceData.mast_index)), numberField(tostring(referenceData.refr_index))
 
       local LiveRefIndex = PluginLoadIndex
 
@@ -736,14 +737,14 @@ local TypeHandlers = {
           recordId = MandatoryRecordId(referenceData.id),
           transform = dUtil.transform(
             dUtil.vector3(
-              numberField(referenceData.rotation[1]),
-              numberField(referenceData.rotation[2]),
-              numberField(referenceData.rotation[3])
+              numberField(tostring(referenceData.rotation[1])),
+              numberField(tostring(referenceData.rotation[2])),
+              numberField(tostring(referenceData.rotation[3]))
             ),
             dUtil.vector3(
-              numberField(referenceData.translation[1]),
-              numberField(referenceData.translation[2]),
-              numberField(referenceData.translation[3])
+              numberField(tostring(referenceData.translation[1])),
+              numberField(tostring(referenceData.translation[2])),
+              numberField(tostring(referenceData.translation[3]))
             ),
             1
           ),
@@ -1074,7 +1075,7 @@ local TypeHandlers = {
         attributes = table.new(numAttributes, 0)
 
         for j, attribute in ipairs(requirement.attributes) do
-          attributes[j] = numberField(attribute)
+          attributes[j] = numberField(tostring(attribute))
         end
       end
 
@@ -1101,15 +1102,14 @@ local TypeHandlers = {
 
   GameSetting = function(record, _)
     if record.value.type == 'String' then
-      assert(type(record.value) == 'string')
-      return record.value
+      return assert(tostring(record.value))
     else
-      return numberField(record.value)
+      return numberField(tostring(record.value))
     end
   end,
 
   GlobalVariable = function(record, _)
-    return numberField(record.value)
+    return numberField(tostring(record.value))
   end,
 
   Header = function(record, _, currentPluginName)
@@ -1240,11 +1240,11 @@ local TypeHandlers = {
 
     local object = table.new(0, numFields)
 
-    object.color = dUtil.vector3(
-      numberField(record.data.color[1]),
-      numberField(record.data.color[2]),
-      numberField(record.data.color[3])
-    )
+    object.color = {
+      numberField(tostring(record.data.color[1])),
+      numberField(tostring(record.data.color[2])),
+      numberField(tostring(record.data.color[3]))
+    }
     object.icon = path(record.icon)
     object.id = recordId
     object.lightFlags = numberField(record.data.flags)
@@ -1344,46 +1344,46 @@ local TypeHandlers = {
 
       stats = {
         attributes = {
-          numberField(record.data.stats.attributes[1]),
-          numberField(record.data.stats.attributes[2]),
-          numberField(record.data.stats.attributes[3]),
-          numberField(record.data.stats.attributes[4]),
-          numberField(record.data.stats.attributes[5]),
-          numberField(record.data.stats.attributes[6]),
-          numberField(record.data.stats.attributes[7]),
-          numberField(record.data.stats.attributes[8])
+          numberField(tostring(record.data.stats.attributes[1])),
+          numberField(tostring(record.data.stats.attributes[2])),
+          numberField(tostring(record.data.stats.attributes[3])),
+          numberField(tostring(record.data.stats.attributes[4])),
+          numberField(tostring(record.data.stats.attributes[5])),
+          numberField(tostring(record.data.stats.attributes[6])),
+          numberField(tostring(record.data.stats.attributes[7])),
+          numberField(tostring(record.data.stats.attributes[8]))
         },
         fatigue = record.data.stats.fatigue,
         health = record.data.stats.health,
         magicka = record.data.stats.magicka,
         skills = {
-          numberField(record.data.stats.skills[1]),
-          numberField(record.data.stats.skills[2]),
-          numberField(record.data.stats.skills[3]),
-          numberField(record.data.stats.skills[4]),
-          numberField(record.data.stats.skills[5]),
-          numberField(record.data.stats.skills[6]),
-          numberField(record.data.stats.skills[7]),
-          numberField(record.data.stats.skills[8]),
-          numberField(record.data.stats.skills[9]),
-          numberField(record.data.stats.skills[10]),
-          numberField(record.data.stats.skills[11]),
-          numberField(record.data.stats.skills[12]),
-          numberField(record.data.stats.skills[13]),
-          numberField(record.data.stats.skills[14]),
-          numberField(record.data.stats.skills[15]),
-          numberField(record.data.stats.skills[16]),
-          numberField(record.data.stats.skills[17]),
-          numberField(record.data.stats.skills[18]),
-          numberField(record.data.stats.skills[19]),
-          numberField(record.data.stats.skills[20]),
-          numberField(record.data.stats.skills[21]),
-          numberField(record.data.stats.skills[22]),
-          numberField(record.data.stats.skills[23]),
-          numberField(record.data.stats.skills[24]),
-          numberField(record.data.stats.skills[25]),
-          numberField(record.data.stats.skills[26]),
-          numberField(record.data.stats.skills[27])
+          numberField(tostring(record.data.stats.skills[1])),
+          numberField(tostring(record.data.stats.skills[2])),
+          numberField(tostring(record.data.stats.skills[3])),
+          numberField(tostring(record.data.stats.skills[4])),
+          numberField(tostring(record.data.stats.skills[5])),
+          numberField(tostring(record.data.stats.skills[6])),
+          numberField(tostring(record.data.stats.skills[7])),
+          numberField(tostring(record.data.stats.skills[8])),
+          numberField(tostring(record.data.stats.skills[9])),
+          numberField(tostring(record.data.stats.skills[10])),
+          numberField(tostring(record.data.stats.skills[11])),
+          numberField(tostring(record.data.stats.skills[12])),
+          numberField(tostring(record.data.stats.skills[13])),
+          numberField(tostring(record.data.stats.skills[14])),
+          numberField(tostring(record.data.stats.skills[15])),
+          numberField(tostring(record.data.stats.skills[16])),
+          numberField(tostring(record.data.stats.skills[17])),
+          numberField(tostring(record.data.stats.skills[18])),
+          numberField(tostring(record.data.stats.skills[19])),
+          numberField(tostring(record.data.stats.skills[20])),
+          numberField(tostring(record.data.stats.skills[21])),
+          numberField(tostring(record.data.stats.skills[22])),
+          numberField(tostring(record.data.stats.skills[23])),
+          numberField(tostring(record.data.stats.skills[24])),
+          numberField(tostring(record.data.stats.skills[25])),
+          numberField(tostring(record.data.stats.skills[26])),
+          numberField(tostring(record.data.stats.skills[27]))
         },
       }
     end
@@ -1488,55 +1488,55 @@ local TypeHandlers = {
     local object = table.new(0, numFields)
 
     object.agility = {
-      numberField(record.data.agility[1]),
-      numberField(record.data.agility[2])
+      numberField(tostring(record.data.agility[1])),
+      numberField(tostring(record.data.agility[2]))
     }
 
     object.endurance = {
-      numberField(record.data.endurance[1]),
-      numberField(record.data.endurance[2])
+      numberField(tostring(record.data.endurance[1])),
+      numberField(tostring(record.data.endurance[2]))
     }
 
     object.height = {
-      numberField(record.data.height[1]),
-      numberField(record.data.height[2])
+      numberField(tostring(record.data.height[1])),
+      numberField(tostring(record.data.height[2]))
     }
 
     object.id = recordId
 
     object.intelligence = {
-      numberField(record.data.intelligence[1]),
-      numberField(record.data.intelligence[2])
+      numberField(tostring(record.data.intelligence[1])),
+      numberField(tostring(record.data.intelligence[2]))
     }
 
     object.luck = {
-      numberField(record.data.luck[1]),
-      numberField(record.data.luck[2])
+      numberField(tostring(record.data.luck[1])),
+      numberField(tostring(record.data.luck[2]))
     }
 
     object.personality = {
-      numberField(record.data.personality[1]),
-      numberField(record.data.personality[2])
+      numberField(tostring(record.data.personality[1])),
+      numberField(tostring(record.data.personality[2]))
     }
 
     object.speed = {
-      numberField(record.data.speed[1]),
-      numberField(record.data.speed[2])
+      numberField(tostring(record.data.speed[1])),
+      numberField(tostring(record.data.speed[2]))
     }
 
     object.strength = {
-      numberField(record.data.strength[1]),
-      numberField(record.data.strength[2])
+      numberField(tostring(record.data.strength[1])),
+      numberField(tostring(record.data.strength[2]))
     }
 
     object.weight = {
-      numberField(record.data.weight[1]),
-      numberField(record.data.weight[2])
+      numberField(tostring(record.data.weight[1])),
+      numberField(tostring(record.data.weight[2]))
     }
 
     object.willpower = {
-      numberField(record.data.willpower[1]),
-      numberField(record.data.willpower[2])
+      numberField(tostring(record.data.willpower[1])),
+      numberField(tostring(record.data.willpower[2]))
     }
 
     object.bonuses = {
@@ -1601,7 +1601,7 @@ local TypeHandlers = {
 
     object.mapColor       = table.new(4, 0)
     for i = 1, 4 do
-      object.mapColor[i] = numberField(record.map_color[i])
+      object.mapColor[i] = numberField(tostring(record.map_color[i]))
     end
 
     object.overcastChance = numberField(chances.overcast)
@@ -1679,7 +1679,7 @@ local TypeHandlers = {
     object.actions = table.new(4, 0)
 
     for i = 1, 4 do
-      object.actions[i] = numberField(record.data.actions[i])
+      object.actions[i] = numberField(tostring(record.data.actions[i]))
     end
 
     object.governingAttribute = numberField(record.data.governing_attribute)
@@ -1706,8 +1706,8 @@ local TypeHandlers = {
     object.id = recordId
     object.path = path(record.sound_path)
     object.range = {
-      numberField(record.data.range[1]),
-      numberField(record.data.range[2]),
+      numberField(tostring(record.data.range[1])),
+      numberField(tostring(record.data.range[2])),
     }
     object.volume = numberField(record.data.volume)
     if isDeleted then object.isDeleted = true end
