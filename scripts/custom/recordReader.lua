@@ -731,7 +731,7 @@ local TypeHandlers = {
 
       local LiveRefIndex = PluginLoadIndex
 
-      local referenceKey = ('%d-%d'):format(LiveRefIndex, referenceIndex)
+      local referenceKey = bit.bor(referenceIndex, bit.lshift(LiveRefIndex, 24))
 
       if masterIndex == 0 then
         cell.references[referenceKey] = {
