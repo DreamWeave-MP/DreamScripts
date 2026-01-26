@@ -729,7 +729,7 @@ local TypeHandlers = {
     for _, referenceData in ipairs(references) do
       -- print(i, referenceData)
       local masterIndex, referenceIndex =
-          numberField(tostring(referenceData.mast_index)), numberField(tostring(referenceData.refr_index))
+          numberField(referenceData.mast_index), numberField(referenceData.refr_index)
 
       local LiveRefIndex = PluginLoadIndex
 
@@ -741,14 +741,14 @@ local TypeHandlers = {
           recordId = MandatoryRecordId(referenceData.id),
           transform = dUtil.transform(
             dUtil.vector3(
-              numberField(tostring(referenceData.rotation[1])),
-              numberField(tostring(referenceData.rotation[2])),
-              numberField(tostring(referenceData.rotation[3]))
+              numberField(referenceData.rotation[1]),
+              numberField(referenceData.rotation[2]),
+              numberField(referenceData.rotation[3])
             ),
             dUtil.vector3(
-              numberField(tostring(referenceData.translation[1])),
-              numberField(tostring(referenceData.translation[2])),
-              numberField(tostring(referenceData.translation[3]))
+              numberField(referenceData.translation[1]),
+              numberField(referenceData.translation[2]),
+              numberField(referenceData.translation[3])
             ),
             1
           ),
