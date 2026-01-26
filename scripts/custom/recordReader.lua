@@ -1707,8 +1707,8 @@ local TypeHandlers = {
     object.id = recordId
     object.path = path(record.sound_path)
     object.range = {
-      assert(tostring(record.data.range[1])),
-      assert(tostring(record.data.range[2])),
+      numberField(tostring(record.data.range[1])),
+      numberField(tostring(record.data.range[2])),
     }
     object.volume = numberField(record.data.volume)
     if isDeleted then object.isDeleted = true end
