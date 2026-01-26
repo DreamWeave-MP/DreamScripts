@@ -59,9 +59,13 @@ local function lowercase(value)
 end
 
 local function numberField(value)
-  if type(value) == 'number' then return value end
+  local valueType = type(value)
 
-  return assert(tonumber(value))
+  if valueType ~= 'number' then
+    error(('%s: %s'):format(tostring(value), valueType), 2)
+  end
+
+  return value
 end
 
 ---@param value any
