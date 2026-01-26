@@ -271,23 +271,21 @@ local Handlers = {
     local numItems = #originalEffects
     if numItems <= 0 then return end
 
-    local newEffects = tds.Vec()
-    newEffects:resize(numItems)
+    local newEffects = table.new(numItems, 0)
 
     for i, effect in ipairs(originalEffects) do
-      local hash = tds.Hash()
-      hash.area = numberField(effect.area)
-      hash.attribute = numberField(Enums.AttributeId[effect.attribute])
-      hash.duration = numberField(effect.duration)
-      hash.magicEffect = numberField(Enums.MagicEffectId[effect.magic_effect])
-      hash.magnitude = tds.Vec(
-        numberField(effect.max_magnitude),
-        numberField(effect.min_magnitude)
-      )
-      hash.range = numberField(Enums.EffectRange[effect.range])
-      hash.skill = numberField(Enums.SkillId[effect.skill])
-
-      newEffects[i] = hash
+      newEffects[i] = {
+        area = numberField(effect.area),
+        attribute = numberField(Enums.AttributeId[effect.attribute]),
+        duration = numberField(effect.duration),
+        magicEffect = numberField(Enums.MagicEffectId[effect.magic_effect]),
+        magnitude = {
+          numberField(effect.max_magnitude),
+          numberField(effect.min_magnitude)
+        },
+        range = numberField(Enums.EffectRange[effect.range]),
+        skill = numberField(Enums.SkillId[effect.skill]),
+      }
     end
 
     return newEffects
