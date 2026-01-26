@@ -1079,7 +1079,7 @@ local TypeHandlers = {
         attributes = table.new(numAttributes, 0)
 
         for j, attribute in ipairs(requirement.attributes) do
-          attributes[j] = numberField(tostring(attribute))
+          attributes[j] = numberField(attribute)
         end
       end
 
