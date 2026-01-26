@@ -66,7 +66,19 @@ end
 ---@param value any
 ---@return NormalizedPath? lowercased
 local function path(value)
-  if value then return assert(tostring(value):normalize()) end
+  if not value then return end
+
+  if type(value) == 'string' then
+    if value == '' then return end
+
+    return value:normalize()
+  end
+
+  local stringForm = assert(tostring(value))
+
+  if stringForm == '' then return end
+
+  return stringForm:normalize()
 end
 
 ---@param value any
