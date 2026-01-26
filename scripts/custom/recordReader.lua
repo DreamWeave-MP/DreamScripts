@@ -138,6 +138,7 @@ end
 
 local NumMandatoryFields = {
   Activator = 2,
+  Clothing = 7,
   Container = 3,
   Creature = 21,
   Door = 2,
@@ -383,7 +384,7 @@ local RecordStores = {
   Book = tds.Hash(),
   -- Cell = tds.Hash { Interior = tds.Hash(), Exterior = tds.Hash(), },
   Class = tds.Hash(),
-  Clothing = tds.Hash(),
+  Clothing = {},
   Container = {},
   Creature = {},
   Door = {},
@@ -728,29 +729,37 @@ local TypeHandlers = {
 
   Clothing = function(record, recordId)
     local bipedObjects = Handlers.BipedObjects(record.biped_objects)
-
-    local hash = tds.Hash()
-    hash.clothingType = numberField(Enums.ClothingType[record.data.clothing_type])
-    hash.enchantmentValue = numberField(record.data.enchantment)
-    hash.icon = path(record.icon)
-    hash.id = recordId
-    hash.model = path(record.mesh)
-    hash.weight = numberField(record.data.weight)
-    hash.value = numberField(record.data.value)
-
-    if bipedObjects then hash.parts = bipedObjects end
-
     local enchantment = OptionalRecordId(record.enchanting)
-    if enchantment then hash.enchantment = enchantment end
-
-    local script = OptionalRecordId(record.script)
-    if script then hash.script = script end
-
+    local isDeleted, isModified = objectFlags(record)
     local name = RealString(record.name)
-    if name then hash.name = name end
+    local script = OptionalRecordId(record.script)
 
-    objectFlags(record, hash)
-    return hash
+    local numFields = NumMandatoryFields.Clothing
+        + (bipedObjects and 1 or 0)
+        + (enchantment and 1 or 0)
+        + (isDeleted and 1 or 0)
+        + (isModified and 1 or 0)
+        + (name and 1 or 0)
+        + (script and 1 or 0)
+
+    local object = table.new(0, numFields)
+
+    object.clothingType = numberField(Enums.ClothingType[record.data.clothing_type])
+    object.enchantmentValue = numberField(record.data.enchantment)
+    object.icon = path(record.icon)
+    object.id = recordId
+    object.model = path(record.mesh)
+    object.weight = numberField(record.data.weight)
+    object.value = numberField(record.data.value)
+
+    if bipedObjects then object.parts = bipedObjects end
+    if enchantment then object.enchantment = enchantment end
+    if isDeleted then object.isDeleted = true end
+    if isModified then object.isModified = true end
+    if script then object.script = script end
+    if name then object.name = name end
+
+    return object
   end,
 
   Container = function(record, recordId)
