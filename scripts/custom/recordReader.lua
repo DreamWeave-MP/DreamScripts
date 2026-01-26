@@ -75,7 +75,7 @@ local function path(value)
     if value == '' then return end
 
     local str, _ = value:normalize()
-    return str
+    return ffi.string(str)
   end
 
   local stringForm = assert(tostring(value))
@@ -84,7 +84,7 @@ local function path(value)
 
   stringForm, _ = stringForm:normalize()
 
-  return stringForm
+  return ffi.string(stringForm)
 end
 
 ---@param value any
@@ -196,7 +196,7 @@ local AIPackageHandlers = {
     object.type = enumerations.ai.ESCORT
     object.location = transform(package.location)
 
-    if cell then object.cell = cell end
+    if cell then object.cell = ffi.string(cell) end
 
     return object
   end,
@@ -212,7 +212,7 @@ local AIPackageHandlers = {
     object.target = assert(package.target)
     object.type = enumerations.ai.FOLLOW
 
-    if cell then object.cell = cell end
+    if cell then object.cell = ffi.string(cell) end
 
     return object
   end,
@@ -281,8 +281,8 @@ local Handlers = {
       local hashBipedObject = table.new(0, numFields)
 
       hashBipedObject.bipedObjectType = numberField(Enums.BipedObjectType[bipedObject.biped_object_type])
-      if malePart then hashBipedObject.malePart = malePart end
-      if femalePart then hashBipedObject.femalePart = femalePart end
+      if malePart then hashBipedObject.malePart = ffi.string(malePart) end
+      if femalePart then hashBipedObject.femalePart = ffi.string(femalePart) end
 
       bipedObjects[i] = hashBipedObject
     end
@@ -324,7 +324,7 @@ local Handlers = {
     local inventory = table.new(numItems, 0)
 
     for i, item in ipairs(originalInventory) do
-      inventory[i] = { [MandatoryRecordId(item[2])] = item[1] }
+      inventory[i] = { [ffi.string(MandatoryRecordId(item[2]))] = item[1] }
     end
 
     return inventory
@@ -340,7 +340,7 @@ local Handlers = {
     local list = table.new(numItems, 0)
 
     for i, item in ipairs(originalItems) do
-      list[i] = { [MandatoryRecordId(item[1])] = item[2] }
+      list[i] = { [ffi.string(MandatoryRecordId(item[1]))] = item[2] }
     end
 
     return list
@@ -354,7 +354,7 @@ local Handlers = {
     local newSpells = table.new(numSpells, 0)
 
     for i, spellId in ipairs(spells) do
-      newSpells[i] = MandatoryRecordId(spellId)
+      newSpells[i] = ffi.string(MandatoryRecordId(spellId))
     end
 
     return newSpells
@@ -377,7 +377,7 @@ local Handlers = {
 
       local destination = table.new(0, numFields)
 
-      if cell then destination.cell = cell end
+      if cell then destination.cell = ffi.string(cell) end
       if destPos then destination.position = transform(destPos) end
       if destRot then destination.rotation = transform(destRot) end
 
@@ -546,11 +546,11 @@ local TypeHandlers = {
     object.value = numberField(record.data.value)
 
     if bipedObjects then object.bipedObjects = bipedObjects end
-    if enchantment then object.enchantment = enchantment end
+    if enchantment then object.enchantment = ffi.string(enchantment) end
     if isDeleted then object.isDeleted = true end
     if isModified then object.isModified = true end
     if name then object.name = name end
-    if script then object.script = script end
+    if script then object.script = ffi.string(script) end
 
     return object
   end,
@@ -605,7 +605,7 @@ local TypeHandlers = {
     if isFemale then object.isFemale = true end
     if isVampire then object.isVampire = true end
     if isUnplayable then object.isUnplayable = true end
-    if race then object.race = race end
+    if race then object.race = ffi.string(race) end
 
     return object
   end,
@@ -637,12 +637,12 @@ local TypeHandlers = {
     object.value = numberField(record.data.value)
     object.weight = numberField(record.data.weight)
 
-    if enchantment then object.enchantment = enchantment end
+    if enchantment then object.enchantment = ffi.string(enchantment) end
     if isDeleted then object.isDeleted = true end
     if isModified then object.isModified = true end
     if isScroll then object.isBook = true end
-    if name then object.name = name end
-    if script then object.script = script end
+    if name then object.name = ffi.string(name) end
+    if script then object.script = ffi.string(script) end
     if text then object.text = text end
 
     return object
@@ -654,11 +654,11 @@ local TypeHandlers = {
 
     local cellId, cellType
     if isInterior and LoadCellTypes.Interior then
-      cellId = MandatoryRecordId(record.name)
+      cellId = ffi.string(MandatoryRecordId(record.name))
 
       cellType = 'Interior'
     elseif not isInterior and LoadCellTypes.Exterior then
-      cellId = ('%d, %d'):format(gridX, gridY)
+      cellId = ffi.string(('%d, %d'):format(gridX, gridY))
 
       cellType = 'Exterior'
     else
@@ -670,7 +670,7 @@ local TypeHandlers = {
 
     ---@class CellRecord
     local cell = existingCell or {}
-    cell.id = cell.id or cellId
+    cell.id = cell.id or ffi.string(cellId)
 
     if isInterior then
       cell.isInterior = true
@@ -679,7 +679,7 @@ local TypeHandlers = {
     end
 
     local cellName = RealString(record.name)
-    if cellName then cell.name = cellName end
+    if cellName then cell.name = ffi.string(cellName) end
 
     if record.atmosphere_data then
       local atmo = record.atmosphere_data
@@ -708,7 +708,7 @@ local TypeHandlers = {
     end
 
     local maybeRegion = OptionalRecordId(record.region)
-    if maybeRegion then cell.region = maybeRegion end
+    if maybeRegion then cell.region = ffi.string(maybeRegion) end
 
     if record.water_height then
       cell.waterHeight = numberField(tostring(record.water_height))
@@ -830,11 +830,11 @@ local TypeHandlers = {
     object.value = numberField(record.data.value)
 
     if bipedObjects then object.parts = bipedObjects end
-    if enchantment then object.enchantment = enchantment end
+    if enchantment then object.enchantment = ffi.string(enchantment) end
     if isDeleted then object.isDeleted = true end
     if isModified then object.isModified = true end
-    if script then object.script = script end
-    if name then object.name = name end
+    if script then object.script = ffi.string(script) end
+    if name then object.name = ffi.string(name) end
 
     return object
   end,
@@ -985,11 +985,11 @@ local TypeHandlers = {
     object.id = recordId
     object.model = path(record.mesh)
 
-    if closeSound then object.closeSound = closeSound end
+    if closeSound then object.closeSound = ffi.string(closeSound) end
     if isDeleted then object.isDeleted = true end
     if isModified then object.isModified = true end
     if name then object.name = name end
-    if openSound then object.openSound = openSound end
+    if openSound then object.openSound = ffi.string(openSound) end
     if script then object.script = script end
 
     return object
@@ -1032,7 +1032,7 @@ local TypeHandlers = {
       rankNames = table.new(numRanks, 0)
 
       for i, rankName in ipairs(record.rank_names) do
-        rankNames[i] = assert(RealString(rankName))
+        rankNames[i] = ffi.string(assert(RealString(rankName)))
       end
     end
 
@@ -1041,7 +1041,7 @@ local TypeHandlers = {
       reactions = table.new(numReactions, 0)
 
       for i, reactionData in ipairs(record.reactions) do
-        reactions[i] = { [MandatoryRecordId(reactionData.faction)] = numberField(reactionData.reaction) }
+        reactions[i] = { [ffi.string(MandatoryRecordId(reactionData.faction))] = numberField(reactionData.reaction) }
       end
     end
 
@@ -1098,7 +1098,7 @@ local TypeHandlers = {
     if isDeleted then object.isDeleted = true end
     if isHidden then object.isHidden = true end
     if isModified then object.isModified = true end
-    if name then object.name = name end
+    if name then object.name = ffi.string(name) end
     if rankNames then object.rankNames = rankNames end
     if reactions then object.reactions = reactions end
 
@@ -1107,7 +1107,7 @@ local TypeHandlers = {
 
   GameSetting = function(record, _)
     if record.value.type == 'String' then
-      return assert(tostring(record.value))
+      return ffi.string(assert(tostring(record.value)))
     else
       return numberField(tostring(record.value))
     end
@@ -1125,7 +1125,7 @@ local TypeHandlers = {
     local masterList = table.new(masterLength, 0)
 
     for i, masterInfo in ipairs(masters) do
-      masterList[i] = assert(masterInfo[1]:lower())
+      masterList[i] = ffi.string(assert(masterInfo[1]:lower()))
     end
 
     RecordStores.Header[currentPluginName] = masterList
@@ -1170,8 +1170,8 @@ local TypeHandlers = {
 
     if isDeleted then object.isDeleted = true end
     if isModified then object.isModified = true end
-    if name then object.name = name end
-    if script then object.script = script end
+    if name then object.name = ffi.string(name) end
+    if script then object.script = ffi.string(script) end
 
     return object
   end,
@@ -1261,9 +1261,9 @@ local TypeHandlers = {
 
     if isDeleted then object.isDeleted = true end
     if isModified then object.isModified = true end
-    if name then object.name = name end
-    if script then object.script = script end
-    if sound then object.sound = sound end
+    if name then object.name = ffi.string(name) end
+    if script then object.script = ffi.string(script) end
+    if sound then object.sound = ffi.string(sound) end
 
     return object
   end,
@@ -1290,8 +1290,8 @@ local TypeHandlers = {
 
     if isDeleted then object.isDeleted = true end
     if isModified then object.isModified = true end
-    if name then object.name = name end
-    if script then object.script = script end
+    if name then object.name = ffi.string(name) end
+    if script then object.script = ffi.string(script) end
 
     return object
   end,
@@ -1320,8 +1320,8 @@ local TypeHandlers = {
 
     if isDeleted then object.isDeleted = true end
     if isModified then object.isModified = true end
-    if name then object.name = name end
-    if script then object.script = script end
+    if name then object.name = ffi.string(name) end
+    if script then object.script = ffi.string(script) end
 
     return object
   end,
@@ -1428,8 +1428,8 @@ local TypeHandlers = {
     if aiPackages then object.AIPackages = aiPackages end
     if baseGold > 0 then object.baseGold = baseGold end
     if destinations then object.travelDestinations = destinations end
-    if faction then object.faction = faction end
-    if hair then object.hair = hair end
+    if faction then object.faction = ffi.string(faction) end
+    if hair then object.hair = ffi.string(hair) end
     if inventory then object.inventory = inventory end
     if isAutoCalc then object.isAutoCalc = true end
     if isDeleted then object.isDeleted = true end
@@ -1437,8 +1437,8 @@ local TypeHandlers = {
     if isFemale then object.isFemale = true end
     if isModified then object.isModified = true end
     if isRespawning then object.isRespawning = true end
-    if mwScript then object.script = mwScript end
-    if name then object.name = name end
+    if mwScript then object.script = ffi.string(mwScript) end
+    if name then object.name = ffi.string(name) end
     if spells then object.spells = spells end
     if stats then object.stats = stats end
 
@@ -1467,8 +1467,8 @@ local TypeHandlers = {
 
     if isDeleted then object.isDeleted = true end
     if isModified then object.isModified = true end
-    if script then object.script = script end
-    if name then object.name = name end
+    if script then object.script = ffi.string(script) end
+    if name then object.name = ffi.string(name) end
 
     return object
   end,
@@ -1566,7 +1566,7 @@ local TypeHandlers = {
     if isDeleted then object.isDeleted = true end
     if isModified then object.isModified = true end
     if isPlayable then object.isPlayable = true end
-    if name then object.name = name end
+    if name then object.name = ffi.string(name) end
     if spells then object.spells = spells end
 
     return object
@@ -1582,7 +1582,7 @@ local TypeHandlers = {
       sounds = table.new(numSounds, 0)
 
       for i, soundData in ipairs(record.sounds) do
-        sounds[i] = { [MandatoryRecordId(soundData[1])] = numberField(soundData[2]) }
+        sounds[i] = { [ffi.string(MandatoryRecordId(soundData[1]))] = numberField(soundData[2]) }
       end
     end
 
@@ -1617,7 +1617,7 @@ local TypeHandlers = {
     if isDeleted then object.isDeleted = true end
     if isModified then object.isModified = true end
     if name then object.name = name end
-    if sleepCreature then object.sleepCreature = sleepCreature end
+    if sleepCreature then object.sleepCreature = ffi.string(sleepCreature) end
     if sounds then object.sounds = sounds end
 
     return object
@@ -1644,8 +1644,8 @@ local TypeHandlers = {
     object.weight = numberField(record.data.weight)
     object.quality = numberField(record.data.quality)
 
-    if name then object.name = name end
-    if script then object.script = script end
+    if name then object.name = ffi.string(name) end
+    if script then object.script = ffi.string(script) end
     if isDeleted then object.isDeleted = true end
     if isModified then object.isModified = true end
 
@@ -1662,7 +1662,7 @@ local TypeHandlers = {
     local object = table.new(0, numFields)
 
     object.id = recordId
-    object.text = MandatoryRecordId(record.text)
+    object.text = ffi.string(MandatoryRecordId(record.text))
     if isDeleted then object.isDeleted = true end
     if isModified then object.isModified = true end
 
@@ -1688,7 +1688,7 @@ local TypeHandlers = {
     end
 
     object.governingAttribute = numberField(record.data.governing_attribute)
-    object.id = MandatoryRecordId(record.skill_id)
+    object.id = ffi.string(MandatoryRecordId(record.skill_id))
     object.specialization = numberField(record.data.specialization)
 
     object.skillId = numberField(Enums.SkillId[RealString(record.skill_id)])
@@ -1735,10 +1735,10 @@ local TypeHandlers = {
     local object = table.new(0, numFields)
 
     object.id = recordId
-    object.sound = MandatoryRecordId(record.sound)
+    object.sound = ffi.string(MandatoryRecordId(record.sound))
     object.soundGenType = numberField(Enums.SoundGenType[RealString(record.sound_gen_type)])
 
-    if creature then object.creature = creature end
+    if creature then object.creature = ffi.string(creature) end
     if isDeleted then object.isDeleted = true end
     if isModified then object.isModified = true end
 
@@ -1773,7 +1773,7 @@ local TypeHandlers = {
     if isDeleted then object.isDeleted = true end
     if isModified then object.isModified = true end
     if isStartSpell then object.isStartSpell = true end
-    if name then object.name = name end
+    if name then object.name = ffi.string(name) end
 
     return object
   end,
@@ -1788,7 +1788,7 @@ local TypeHandlers = {
     local object = table.new(0, numFields)
 
     object.id = recordId
-    object.script = MandatoryRecordId(record.script)
+    object.script = ffi.string(MandatoryRecordId(record.script))
     if isDeleted then object.isDeleted = true end
     if isModified then object.isModified = true end
 
@@ -1849,9 +1849,9 @@ local TypeHandlers = {
     if isDeleted then object.isDeleted = true end
     if isModified then object.isModified = true end
     if isSilver then object.isSilver = true end
-    if name then object.name = name end
-    if script then object.script = script end
-    if enchantment then object.enchantment = enchantment end
+    if name then object.name = ffi.string(name) end
+    if script then object.script = ffi.string(script) end
+    if enchantment then object.enchantment = ffi.string(enchantment) end
 
     return object
   end,
@@ -1970,7 +1970,7 @@ local function createRecordStores()
       local recordId
 
       if object.id then
-        recordId = object.id:lower()
+        recordId = ffi.string(object.id:lower(), #object.id)
       end
 
       if idIsFree(recordId, object) then
