@@ -115,9 +115,10 @@ local function RealString(value)
 end
 
 ---@param trans number[] array with three numeric values
-local function transform(trans)
+---@return Vector3
+local function vector(trans)
   assert(trans and #trans == 3, tostring(trans))
-  return { numberField(tostring(trans[1])), numberField(tostring(trans[2])), numberField(tostring(trans[3])) }
+  return dUtil.vector3(numberField(tostring(trans[1])), numberField(tostring(trans[2])), numberField(tostring(trans[3])))
 end
 
 ---@param flags integer
@@ -192,7 +193,7 @@ local AIPackageHandlers = {
     object.reset = numberField(package.reset)
     object.target = assert(package.target)
     object.type = enumerations.ai.ESCORT
-    object.location = transform(package.location)
+    object.location = vector(package.location)
 
     if cell then object.cell = cell end
 
@@ -205,7 +206,7 @@ local AIPackageHandlers = {
     local object = table.new(0, numFields)
 
     object.duration = numberField(package.duration)
-    object.location = transform(package.location)
+    object.location = vector(package.location)
     object.reset = numberField(package.reset)
     object.target = assert(package.target)
     object.type = enumerations.ai.FOLLOW
@@ -216,7 +217,7 @@ local AIPackageHandlers = {
   end,
   AiTravelPackage = function(package)
     return {
-      location = assert(transform(package.location)),
+      location = assert(vector(package.location)),
       reset = numberField(package.reset),
       type = enumerations.ai.TRAVEL,
     }
@@ -374,8 +375,8 @@ local Handlers = {
       local destination = table.new(0, numFields)
 
       if cell then destination.cell = cell end
-      if destPos then destination.position = transform(destPos) end
-      if destRot then destination.rotation = transform(destRot) end
+      if destPos then destination.position = vector(destPos) end
+      if destRot then destination.rotation = vector(destRot) end
 
       newDestinations[i] = destination
     end
