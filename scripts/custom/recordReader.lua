@@ -138,6 +138,7 @@ end
 
 local NumMandatoryFields = {
   Activator = 2,
+  Creature = 21,
   Door = 2,
   Enchanting = 4,
   LeveledCreature = 2,
@@ -383,7 +384,7 @@ local RecordStores = {
   Class = tds.Hash(),
   Clothing = tds.Hash(),
   Container = tds.Hash(),
-  Creature = tds.Hash(),
+  Creature = {},
   Door = {},
   Enchanting = {},
   Faction = tds.Hash(),
@@ -773,75 +774,95 @@ local TypeHandlers = {
   end,
 
   Creature = function(record, recordId)
-    local hash = tds.Hash()
-
-    hash.agility = numberField(record.data.agility)
-
-    hash.attack = tds.Vec(
-      record.data.attack1[1],
-      record.data.attack1[2],
-      record.data.attack2[1],
-      record.data.attack2[2],
-      record.data.attack3[1],
-      record.data.attack3[2]
-    )
-
+    local aiPackages = Handlers.AIPackages(record.ai_packages)
     local baseGold = numberField(record.data.gold)
-    if baseGold > 0 then hash.baseGold = baseGold end
-
-    hash.bloodType = numberField(record.blood_type)
-    if hasFlag(record.creature_flags, Enums.Flags.Creature.FLIES) then hash.canFly = true end
-    if hasFlag(record.creature_flags, Enums.Flags.Creature.SWIMS) then hash.canSwim = true end
-    if hasFlag(record.creature_flags, Enums.Flags.Creature.WALKS) then hash.canWalk = true end
-    hash.creatureType = numberField(Enums.CreatureType[record.data.creature_type])
-    hash.endurance = numberField(record.data.endurance)
-    hash.fatigue = numberField(record.data.fatigue)
-    hash.health = numberField(record.data.health)
-    hash.id = MandatoryRecordId(recordId)
-    hash.intelligence = numberField(record.data.intelligence)
-    if hasFlag(record.creature_flags, Enums.Flags.Creature.BIPED) then hash.isBiped = true end
-    if hasFlag(record.creature_flags, Enums.Flags.Creature.ESSENTIAL) then hash.isEssential = true end
-    if hasFlag(record.creature_flags, Enums.Flags.Creature.RESPAWN) then hash.isRespawning = true end
-    hash.level = numberField(record.data.level)
-    hash.luck = numberField(record.data.luck)
-    hash.magicAbility = numberField(record.data.magic)
-    hash.magicka = numberField(record.data.magicka)
-    hash.model = path(record.mesh)
-    objectFlags(record, hash)
-    hash.personality = numberField(record.data.personality)
-    hash.soulValue = numberField(record.data.soul)
-    hash.speed = numberField(record.data.speed)
-    hash.stealthAbility = numberField(record.data.stealth)
-    hash.strength = numberField(record.data.strength)
-    if hasFlag(record.creature_flags, Enums.Flags.Creature.WEAPON_AND_SHIELD) then hash.usesWeapons = true end
-    hash.willpower = numberField(record.data.willpower)
-
-    hash.AIData = Handlers.AIData(record.ai_data)
-
+    local canFly = hasFlag(record.creature_flags, Enums.Flags.Creature.FLIES)
+    local canSwim = hasFlag(record.creature_flags, Enums.Flags.Creature.SWIMS)
+    local canWalk = hasFlag(record.creature_flags, Enums.Flags.Creature.WALKS)
     local creatureScale = tonumber(record.scale)
-    if creatureScale and creatureScale ~= 1 then hash.scale = creatureScale end
-
-    local mwScript = OptionalRecordId(record.script)
-    if mwScript then hash.script = mwScript end
-
-    local sound = OptionalRecordId(record.sound)
-    if sound then hash.sound = sound end
-
     local destinations = Handlers.TravelDestination(record.travel_destinations)
-    if destinations then hash.travelDestinations = destinations end
-
     local inventory = Handlers.Inventory(record.inventory)
-    if inventory then hash.inventory = inventory end
-
-    local aiPackages, spells = Handlers.AIPackages(record.ai_packages), Handlers.Spells(record.spells)
-
-    if aiPackages then hash.AIPackages = aiPackages end
-    if spells then hash.spells = spells end
-
+    local isBiped = hasFlag(record.creature_flags, Enums.Flags.Creature.BIPED)
+    local isDeleted, isModified = objectFlags(record)
+    local isEssential = hasFlag(record.creature_flags, Enums.Flags.Creature.ESSENTIAL)
+    local isRespawning = hasFlag(record.creature_flags, Enums.Flags.Creature.RESPAWN)
+    local mwScript = OptionalRecordId(record.script)
     local name = RealString(record.name)
-    if name then hash.name = name end
+    local sound = OptionalRecordId(record.sound)
+    local spells = Handlers.Spells(record.spells)
+    local usesWeapons = hasFlag(record.creature_flags, Enums.Flags.Creature.WEAPON_AND_SHIELD)
 
-    return hash
+    local numFields = NumMandatoryFields.Creature
+        + (aiPackages and 1 or 0)
+        + (baseGold > 0 and 1 or 0)
+        + (canFly and 1 or 0)
+        + (canSwim and 1 or 0)
+        + (canWalk and 1 or 0)
+        + (creatureScale and creatureScale ~= 1 and 1 or 0)
+        + (destinations and 1 or 0)
+        + (inventory and 1 or 0)
+        + (isBiped and 1 or 0)
+        + (isDeleted and 1 or 0)
+        + (isModified and 1 or 0)
+        + (isEssential and 1 or 0)
+        + (isRespawning and 1 or 0)
+        + (mwScript and 1 or 0)
+        + (name and 1 or 0)
+        + (sound and 1 or 0)
+        + (spells and 1 or 0)
+        + (usesWeapons and 1 or 0)
+
+    local object = table.new(0, numFields)
+
+    object.AIData = Handlers.AIData(record.ai_data)
+    object.agility = numberField(record.data.agility)
+    object.attack = {
+      numberField(record.data.attack1[1]),
+      numberField(record.data.attack1[2]),
+      numberField(record.data.attack2[1]),
+      numberField(record.data.attack2[2]),
+      numberField(record.data.attack3[1]),
+      numberField(record.data.attack3[2]),
+    }
+    object.bloodType = numberField(record.blood_type)
+    object.creatureType = numberField(Enums.CreatureType[record.data.creature_type])
+    object.endurance = numberField(record.data.endurance)
+    object.fatigue = numberField(record.data.fatigue)
+    object.health = numberField(record.data.health)
+    object.id = MandatoryRecordId(recordId)
+    object.intelligence = numberField(record.data.intelligence)
+    object.level = numberField(record.data.level)
+    object.luck = numberField(record.data.luck)
+    object.magicAbility = numberField(record.data.magic)
+    object.magicka = numberField(record.data.magicka)
+    object.model = path(record.mesh)
+    object.personality = numberField(record.data.personality)
+    object.soulValue = numberField(record.data.soul)
+    object.speed = numberField(record.data.speed)
+    object.stealthAbility = numberField(record.data.stealth)
+    object.strength = numberField(record.data.strength)
+    object.willpower = numberField(record.data.willpower)
+
+    if aiPackages then object.AIPackages = aiPackages end
+    if baseGold > 0 then object.baseGold = baseGold end
+    if canFly then object.canFly = true end
+    if canSwim then object.canSwim = true end
+    if canWalk then object.canWalk = true end
+    if creatureScale and creatureScale ~= 1 then object.scale = creatureScale end
+    if destinations then object.travelDestinations = destinations end
+    if inventory then object.inventory = inventory end
+    if isBiped then object.isBiped = true end
+    if isDeleted then object.isDeleted = true end
+    if isEssential then object.isEssential = true end
+    if isModified then object.isModified = true end
+    if isRespawning then object.isRespawning = true end
+    if mwScript then object.script = mwScript end
+    if name then object.name = name end
+    if sound then object.sound = sound end
+    if spells then object.spells = spells end
+    if usesWeapons then object.usesWeapons = true end
+
+    return object
   end,
 
   Door = function(record, recordId)
