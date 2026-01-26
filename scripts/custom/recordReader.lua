@@ -138,6 +138,7 @@ end
 
 local NumMandatoryFields = {
   Activator = 2,
+  Class = 6,
   Clothing = 7,
   Container = 3,
   Creature = 21,
@@ -383,7 +384,7 @@ local RecordStores = {
   Bodypart = tds.Hash(),
   Book = tds.Hash(),
   -- Cell = tds.Hash { Interior = tds.Hash(), Exterior = tds.Hash(), },
-  Class = tds.Hash(),
+  Class = {},
   Clothing = {},
   Container = {},
   Creature = {},
@@ -694,37 +695,46 @@ local TypeHandlers = {
   end,
 
   Class = function(record, recordId)
-    local hash = tds.Hash()
+    local isDeleted, isModified = objectFlags(record)
+    local isPlayable = hasFlag(record.data.flags, Enums.Flags.Class.PLAYABLE)
 
-    if hasFlag(record.data.flags, Enums.Flags.Class.PLAYABLE) then hash.isPlayable = true end
+    local numFields = NumMandatoryFields.Class
+        + (isDeleted and 1 or 0)
+        + (isModified and 1 or 0)
+        + (isPlayable and 1 or 0)
 
-    hash.attribute = tds.Vec(
+    local object = table.new(0, numFields)
+
+    object.attribute = {
       numberField(Enums.AttributeId[record.data.attribute1]),
       numberField(Enums.AttributeId[record.data.attribute2])
-    )
+    }
 
-    hash.id = recordId
-    hash.major = tds.Vec(
+    object.id = recordId
+    object.major = {
       numberField(Enums.SkillId[record.data.major1]),
       numberField(Enums.SkillId[record.data.major2]),
       numberField(Enums.SkillId[record.data.major3]),
       numberField(Enums.SkillId[record.data.major4]),
       numberField(Enums.SkillId[record.data.major5])
-    )
+    }
 
-    hash.minor = tds.Vec(
+    object.minor = {
       numberField(Enums.SkillId[record.data.minor1]),
       numberField(Enums.SkillId[record.data.minor2]),
       numberField(Enums.SkillId[record.data.minor3]),
       numberField(Enums.SkillId[record.data.minor4]),
       numberField(Enums.SkillId[record.data.minor5])
-    )
+    }
 
-    hash.services = numberField(record.data.services)
-    hash.specialization = numberField(Enums.Specialization[record.data.specialization])
+    object.services = numberField(record.data.services)
+    object.specialization = numberField(Enums.Specialization[record.data.specialization])
 
-    objectFlags(record, hash)
-    return hash
+    if isDeleted then object.isDeleted = true end
+    if isModified then object.isModified = true end
+    if isPlayable then object.isPlayable = true end
+
+    return object
   end,
 
   Clothing = function(record, recordId)
