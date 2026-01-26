@@ -1964,11 +1964,7 @@ local function createRecordStores()
     local lowerPluginName = pluginName:lower()
 
     for j, object in ipairs(tes3.load_plugin(pluginPath, PluginOptions).objects) do
-      local recordId
-
-      if object.id then
-        recordId = object.id:lower()
-      end
+      local recordId = object.id
 
       if idIsFree(recordId, object) then
         local recordStore, typeHandler = RecordStores[object.type], TypeHandlers[object.type]
