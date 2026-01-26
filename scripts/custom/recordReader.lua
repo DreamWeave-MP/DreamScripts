@@ -1729,7 +1729,7 @@ local TypeHandlers = {
 
     object.id = recordId
     object.sound = MandatoryRecordId(record.sound)
-    object.soundGenType = numberField(Enums.SoundGenType[tostring(record.sound_gen_type)])
+    object.soundGenType = numberField(Enums.SoundGenType[RealString(record.sound_gen_type)])
 
     if creature then object.creature = creature end
     if isDeleted then object.isDeleted = true end
