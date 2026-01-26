@@ -397,7 +397,7 @@ local RecordStores = {
   Birthsign = {},
   Bodypart = {},
   Book = {},
-  -- Cell = tds.Hash { Interior = tds.Hash(), Exterior = tds.Hash(), },
+  Cell = { Interior = {}, Exterior = {}, },
   Class = {},
   Clothing = {},
   Container = {},
@@ -654,11 +654,11 @@ local TypeHandlers = {
 
     local cellId, cellType
     if isInterior and LoadCellTypes.Interior then
-      cellId = MandatoryRecordId(record.name)
+      cellId = ffi.string(MandatoryRecordId(record.name))
 
       cellType = 'Interior'
     elseif not isInterior and LoadCellTypes.Exterior then
-      cellId = ('%d, %d'):format(gridX, gridY)
+      cellId = ffi.string(('%d, %d'):format(gridX, gridY))
 
       cellType = 'Exterior'
     else
@@ -668,6 +668,7 @@ local TypeHandlers = {
     local existingCell = RecordStores.Cell[cellType][cellId]
     if not existingCell then LoadedRecords = LoadedRecords + 1 end
 
+    ---@class CellRecord
     local cell = existingCell or {}
     cell.id = cell.id or ffi.string(cellId)
 
@@ -678,36 +679,36 @@ local TypeHandlers = {
     end
 
     local cellName = RealString(record.name)
-    if cellName then cell.name = cellName end
+    if cellName then cell.name = ffi.string(cellName) end
 
     if record.atmosphere_data then
       local atmo = record.atmosphere_data
-      cell.fogDensity = atmo.fog_density
+      cell.fogDensity = numberField(atmo.fog_density)
 
-      cell.ambientColor = tds.Vec(
+      cell.ambientColor = {
         numberField(tostring(atmo.ambient_color[1])),
         numberField(tostring(atmo.ambient_color[2])),
         numberField(tostring(atmo.ambient_color[3])),
         numberField(tostring(atmo.ambient_color[4]))
-      )
+      }
 
-      cell.fogColor = tds.Vec(
+      cell.fogColor = {
         numberField(tostring(atmo.fog_color[1])),
         numberField(tostring(atmo.fog_color[2])),
         numberField(tostring(atmo.fog_color[3])),
         numberField(tostring(atmo.fog_color[4]))
-      )
+      }
 
-      cell.sunlightColor = tds.Vec(
+      cell.sunlightColor = {
         numberField(tostring(atmo.sunlight_color[1])),
         numberField(tostring(atmo.sunlight_color[2])),
         numberField(tostring(atmo.sunlight_color[3])),
         numberField(tostring(atmo.sunlight_color[4]))
-      )
+      }
     end
 
     local maybeRegion = OptionalRecordId(record.region)
-    if maybeRegion then cell.region = maybeRegion end
+    if maybeRegion then cell.region = ffi.string(maybeRegion) end
 
     if record.water_height then
       cell.waterHeight = numberField(tostring(record.water_height))
@@ -720,41 +721,41 @@ local TypeHandlers = {
     cell.isFakeExterior = hasFlag(record.data.flags, Enums.Flags.Cell.BEHAVES_LIKE_EXTERIOR)
     cell.restingIsIllegal = hasFlag(record.data.flags, Enums.Flags.Cell.RESTING_IS_ILLEGAL)
 
-    objectFlags(record, cell)
-
-    local references = record.references
-    cell.references = cell.references or tds.Hash()
-
-    for _, referenceData in ipairs(references) do
-      -- print(i, referenceData)
-      local masterIndex, referenceIndex =
-          numberField(tostring(referenceData.mast_index)), numberField(tostring(referenceData.refr_index))
-
-      local LiveRefIndex = PluginLoadIndex
-
-      local referenceKey = ('%d-%d'):format(LiveRefIndex, referenceIndex)
-
-      if masterIndex == 0 then
-        local hashRef = tds.Hash()
-
-        hashRef.id = referenceKey
-        hashRef.recordId = MandatoryRecordId(referenceData.id)
-
-        hashRef.transform = tds.Hash()
-        hashRef.transform.position = tds.Vec(
-          numberField(tostring(referenceData.translation[1])),
-          numberField(tostring(referenceData.translation[2])),
-          numberField(tostring(referenceData.translation[3]))
-        )
-        hashRef.transform.rotation = tds.Vec(
-          numberField(tostring(referenceData.rotation[1])),
-          numberField(tostring(referenceData.rotation[2])),
-          numberField(tostring(referenceData.rotation[3]))
-        )
-
-        cell.references[referenceKey] = hashRef
-      end
-    end
+    -- objectFlags(record, cell)
+    --
+    -- local references = record.references
+    -- cell.references = cell.references or tds.Hash()
+    --
+    -- for _, referenceData in ipairs(references) do
+    --   -- print(i, referenceData)
+    --   local masterIndex, referenceIndex =
+    --       numberField(tostring(referenceData.mast_index)), numberField(tostring(referenceData.refr_index))
+    --
+    --   local LiveRefIndex = PluginLoadIndex
+    --
+    --   local referenceKey = ('%d-%d'):format(LiveRefIndex, referenceIndex)
+    --
+    --   if masterIndex == 0 then
+    --     local hashRef = tds.Hash()
+    --
+    --     hashRef.id = referenceKey
+    --     hashRef.recordId = MandatoryRecordId(referenceData.id)
+    --
+    --     hashRef.transform = tds.Hash()
+    --     hashRef.transform.position = tds.Vec(
+    --       numberField(tostring(referenceData.translation[1])),
+    --       numberField(tostring(referenceData.translation[2])),
+    --       numberField(tostring(referenceData.translation[3]))
+    --     )
+    --     hashRef.transform.rotation = tds.Vec(
+    --       numberField(tostring(referenceData.rotation[1])),
+    --       numberField(tostring(referenceData.rotation[2])),
+    --       numberField(tostring(referenceData.rotation[3]))
+    --     )
+    --
+    --     cell.references[referenceKey] = hashRef
+    --   end
+    -- end
 
     -- print(cell)
     RecordStores.Cell[cellType][cellId] = cell
