@@ -1079,7 +1079,7 @@ local TypeHandlers = {
         attributes = table.new(numAttributes, 0)
 
         for j, attribute in ipairs(requirement.attributes) do
-          attributes[j] = numberField(tostring(attribute))
+          attributes[j] = numberField(attribute)
         end
       end
 
@@ -1108,7 +1108,7 @@ local TypeHandlers = {
     if record.value.type == 'String' then
       return assert(tostring(record.value))
     else
-      return numberField(tostring(record.value))
+      return numberField(record.value)
     end
   end,
 
