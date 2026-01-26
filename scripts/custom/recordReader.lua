@@ -193,7 +193,7 @@ local AIPackageHandlers = {
     object.type = enumerations.ai.ESCORT
     object.location = transform(package.location)
 
-    if cell then object.cell = ffi.string(cell) end
+    if cell then object.cell = cell end
 
     return object
   end,
@@ -209,7 +209,7 @@ local AIPackageHandlers = {
     object.target = assert(package.target)
     object.type = enumerations.ai.FOLLOW
 
-    if cell then object.cell = ffi.string(cell) end
+    if cell then object.cell = cell end
 
     return object
   end,
@@ -278,8 +278,8 @@ local Handlers = {
       local hashBipedObject = table.new(0, numFields)
 
       hashBipedObject.bipedObjectType = numberField(Enums.BipedObjectType[bipedObject.biped_object_type])
-      if malePart then hashBipedObject.malePart = ffi.string(malePart) end
-      if femalePart then hashBipedObject.femalePart = ffi.string(femalePart) end
+      if malePart then hashBipedObject.malePart = malePart end
+      if femalePart then hashBipedObject.femalePart = femalePart end
 
       bipedObjects[i] = hashBipedObject
     end
@@ -374,7 +374,7 @@ local Handlers = {
 
       local destination = table.new(0, numFields)
 
-      if cell then destination.cell = ffi.string(cell) end
+      if cell then destination.cell = cell end
       if destPos then destination.position = transform(destPos) end
       if destRot then destination.rotation = transform(destRot) end
 
