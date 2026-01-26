@@ -23,10 +23,9 @@ local Enums = require 'packages.MWEnums'
 
 local RequiredDataFiles = dUtil.getRequiredDataFiles()
 
-local loadOrder = tds.Vec()
-loadOrder:resize(#RequiredDataFiles)
+local loadOrder = table.new(#RequiredDataFiles, 0)
 
-local foundPlugins = tds.Hash()
+local foundPlugins = table.new(0, #RequiredDataFiles)
 
 for i, loadOrderData in ipairs(RequiredDataFiles) do
   local pluginName = loadOrderData.name
@@ -42,8 +41,6 @@ for i, loadOrderData in ipairs(RequiredDataFiles) do
 
   foundPlugins[lowerPluginName] = true
 end
-
-foundPlugins = nil
 
 ---@param value any
 ---@return string? lowercased
