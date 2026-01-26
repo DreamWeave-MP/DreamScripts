@@ -135,6 +135,7 @@ local function objectFlags(record)
 end
 
 local NumMandatoryFields = {
+  Activator = 2,
   LeveledCreature = 2,
   LeveledItem = 2,
   Light = 9,
@@ -367,7 +368,7 @@ local Handlers = {
 
 ---@type RecordStores
 local RecordStores = {
-  Activator = tds.Hash(),
+  Activator = {},
   Alchemy = tds.Hash(),
   Apparatus = tds.Hash(),
   Armor = tds.Hash(),
@@ -409,19 +410,28 @@ local RecordStores = {
 local TypeHandlers = {
 
   Activator = function(record, recordId)
-    local hash = tds.Hash()
-
-    hash.id = recordId
-    hash.model = path(record.mesh)
+    local isDeleted, isModified = objectFlags(record)
 
     local name = RealString(record.name)
-    if name then hash.name = name end
-
     local script = OptionalRecordId(record.script)
-    if script then hash.script = script end
 
-    objectFlags(record, hash)
-    return hash
+    local numFields = NumMandatoryFields.Activator
+        + (isDeleted and 1 or 0)
+        + (isModified and 1 or 0)
+        + (name and 1 or 0)
+        + (script and 1 or 0)
+
+    local object = table.new(0, numFields)
+
+    object.id = recordId
+    object.model = path(record.mesh)
+
+    if isDeleted then object.isDeleted = true end
+    if isModified then object.isModified = true end
+    if name then object.name = name end
+    if script then object.script = script end
+
+    return object
   end,
 
   Apparatus = function(record, recordId)
