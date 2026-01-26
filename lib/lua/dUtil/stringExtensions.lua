@@ -54,11 +54,13 @@ function StringMeta:prefixZeroes(desiredLength)
 end
 
 function StringMeta:normalize()
-  return self:lower():gsub('\\', '/')
+  local result, _ = self:lower():gsub('\\', '/')
+  return result
 end
 
 function StringMeta:scriptPath()
-  return self:gsub('[\\/]+', '.'):gsub('^%.', ''):gsub('%.$', ''):gsub('%.%.+', '.')
+  local result, _ = self:gsub('[\\/]+', '.'):gsub('^%.', ''):gsub('%.$', ''):gsub('%.%.+', '.')
+  return result
 end
 
 function StringMeta:splitUniqueIndex()
