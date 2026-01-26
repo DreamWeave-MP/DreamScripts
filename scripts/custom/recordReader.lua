@@ -248,23 +248,18 @@ local Handlers = {
 
     if numObjects <= 0 then return end
 
-    bipedObjects = tds.Vec()
-    bipedObjects:resize(numObjects)
+    bipedObjects = table.new(numObjects, 0)
 
     for i, bipedObject in ipairs(biped_objects) do
-      local hashBipedObject = tds.Hash()
-
-      hashBipedObject.bipedObjectType = numberField(Enums.BipedObjectType[bipedObject.biped_object_type])
       local malePart = OptionalRecordId(bipedObject.male_bodypart)
       local femalePart = OptionalRecordId(bipedObject.female_bodypart)
 
-      if malePart then
-        hashBipedObject.malePart = malePart
-      end
+      local numFields = 1 + (malePart and 1 or 0) + (femalePart and 1 or 0)
+      local hashBipedObject = table.new(0, numFields)
 
-      if femalePart then
-        hashBipedObject.femalePart = femalePart
-      end
+      hashBipedObject.bipedObjectType = numberField(Enums.BipedObjectType[bipedObject.biped_object_type])
+      if malePart then hashBipedObject.malePart = malePart end
+      if femalePart then hashBipedObject.femalePart = femalePart end
 
       bipedObjects[i] = hashBipedObject
     end
