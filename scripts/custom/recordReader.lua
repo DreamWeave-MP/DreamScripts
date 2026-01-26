@@ -122,7 +122,7 @@ end
 ---@return Vector3
 local function vector(trans)
   assert(trans and #trans == 3, tostring(trans))
-  return dUtil.vector3(numberField(tostring(trans[1])), numberField(tostring(trans[2])), numberField(tostring(trans[3])))
+  return dUtil.vector3(numberField(trans[1]), numberField(trans[2]), numberField(trans[3]))
 end
 
 ---@param flags integer
