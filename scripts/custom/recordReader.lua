@@ -1761,7 +1761,7 @@ local TypeHandlers = {
     local object = table.new(0, numFields)
 
     object.cost = numberField(record.data.cost)
-    object.id = MandatoryRecordId(recordId)
+    object.id = recordId
 
     if alwaysSucceeds then object.alwaysSucceeds = true end
     if effects then object.effects = effects end
