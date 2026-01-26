@@ -101,7 +101,7 @@ end
 ---@param trans number[] array with three numeric values
 local function transform(trans)
   assert(trans and #trans == 3, tostring(trans))
-  return { tonumber(trans[1]), tonumber(trans[2]), tonumber(trans[3]) }
+  return { numberField(trans[1]), numberField(trans[2]), numberField(trans[3]) }
 end
 
 ---@param flags integer
