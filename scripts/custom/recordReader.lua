@@ -142,6 +142,7 @@ local NumMandatoryFields = {
   Apparatus = 7,
   Armor = 9,
   Birthsign = 4,
+  Bodypart = 4,
   Book = 7,
   Class = 6,
   Clothing = 7,
@@ -386,7 +387,7 @@ local RecordStores = {
   Apparatus = {},
   Armor = {},
   Birthsign = {},
-  Bodypart = tds.Hash(),
+  Bodypart = {},
   Book = {},
   -- Cell = tds.Hash { Interior = tds.Hash(), Exterior = tds.Hash(), },
   Class = {},
@@ -570,26 +571,35 @@ local TypeHandlers = {
   end,
 
   Bodypart = function(record, recordId)
-    local hash = tds.Hash()
-
-    hash.bodypartType = numberField(Enums.BodypartType[record.data.bodypart_type])
-    hash.id = MandatoryRecordId(recordId)
-
-    -- This one's a bool field so we can't just assert on the value itself
-    assert(record.data.vampire ~= nil and type(record.data.vampire) == 'boolean')
-    if record.data.vampire then hash.isVampire = true end
-
-    if hasFlag(record.data.flags, Enums.Flags.BodyPart.FEMALE) then hash.isFemale = true end
-    if hasFlag(record.data.flags, Enums.Flags.BodyPart.NOT_PLAYABLE) then hash.isUnplayable = true end
-
-    hash.model = path(record.mesh)
-    hash.part = numberField(Enums.BodypartId[record.data.part])
-
+    local isDeleted, isModified = objectFlags(record)
+    local isFemale = hasFlag(record.data.flags, Enums.Flags.BodyPart.FEMALE)
+    local isVampire = record.data.vampire == true
+    local isUnplayable = hasFlag(record.data.flags, Enums.Flags.BodyPart.NOT_PLAYABLE)
     local race = OptionalRecordId(record.race)
-    if race then hash.race = race end
 
-    objectFlags(record, hash)
-    return hash
+    local numFields = NumMandatoryFields.Bodypart
+        + (isDeleted and 1 or 0)
+        + (isFemale and 1 or 0)
+        + (isModified and 1 or 0)
+        + (isVampire and 1 or 0)
+        + (isUnplayable and 1 or 0)
+        + (race and 1 or 0)
+
+    local object = table.new(0, numFields)
+
+    object.bodypartType = numberField(Enums.BodypartType[record.data.bodypart_type])
+    object.id = MandatoryRecordId(recordId)
+    object.model = path(record.mesh)
+    object.part = numberField(Enums.BodypartId[record.data.part])
+
+    if isDeleted then object.isDeleted = true end
+    if isModified then object.isModified = true end
+    if isFemale then object.isFemale = true end
+    if isVampire then object.isVampire = true end
+    if isUnplayable then object.isUnplayable = true end
+    if race then object.race = race end
+
+    return object
   end,
 
   Book = function(record, recordId)
