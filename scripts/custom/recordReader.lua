@@ -722,7 +722,7 @@ local TypeHandlers = {
     -- objectFlags(record, cell)
     --
     local references = record.references
-    cell.references = cell.references or {}
+    cell.references = cell.references or table.new(0, #references)
 
     for _, referenceData in ipairs(references) do
       -- print(i, referenceData)
