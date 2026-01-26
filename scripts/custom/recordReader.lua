@@ -142,6 +142,7 @@ local NumMandatoryFields = {
   Apparatus = 7,
   Armor = 9,
   Birthsign = 4,
+  Book = 7,
   Class = 6,
   Clothing = 7,
   Container = 3,
@@ -386,7 +387,7 @@ local RecordStores = {
   Armor = {},
   Birthsign = {},
   Bodypart = tds.Hash(),
-  Book = tds.Hash(),
+  Book = {},
   -- Cell = tds.Hash { Interior = tds.Hash(), Exterior = tds.Hash(), },
   Class = {},
   Clothing = {},
@@ -592,34 +593,41 @@ local TypeHandlers = {
   end,
 
   Book = function(record, recordId)
-    local hash = tds.Hash()
-
-    if Enums.BookType[record.data.book_type] == Enums.BookType.Book then
-      hash.isBook = true
-    end
-
-    hash.enchantmentValue = numberField(record.data.enchantment)
-    hash.icon = path(record.icon)
-    hash.id = MandatoryRecordId(recordId)
-    hash.model = path(record.mesh)
-    hash.skill = numberField(Enums.SkillId[record.data.skill])
-    hash.value = numberField(record.data.value)
-    hash.weight = numberField(record.data.weight)
-
-    local name = RealString(record.name)
-    if name then hash.name = name end
-
     local enchantment = OptionalRecordId(record.enchanting)
-    if enchantment then hash.enchantment = enchantment end
-
+    local isDeleted, isModified = objectFlags(record)
+    local isScroll = Enums.BookType[record.data.book_type] == Enums.BookType.Book
+    local name = RealString(record.name)
     local script = OptionalRecordId(record.script)
-    if script then hash.script = script end
-
     local text = RealString(record.text)
-    if text then hash.text = text end
 
-    objectFlags(record, hash)
-    return hash
+    local numFields = NumMandatoryFields.Book
+        + (enchantment and 1 or 0)
+        + (isDeleted and 1 or 0)
+        + (isModified and 1 or 0)
+        + (isScroll and 1 or 0)
+        + (name and 1 or 0)
+        + (script and 1 or 0)
+        + (text and 1 or 0)
+
+    local object = table.new(0, numFields)
+
+    object.enchantmentValue = numberField(record.data.enchantment)
+    object.icon = path(record.icon)
+    object.id = recordId
+    object.model = path(record.mesh)
+    object.skill = numberField(Enums.SkillId[record.data.skill])
+    object.value = numberField(record.data.value)
+    object.weight = numberField(record.data.weight)
+
+    if enchantment then object.enchantment = enchantment end
+    if isDeleted then object.isDeleted = true end
+    if isModified then object.isModified = true end
+    if isScroll then object.isBook = true end
+    if name then object.name = name end
+    if script then object.script = script end
+    if text then object.text = text end
+
+    return object
   end,
 
   Cell = function(record, _, currentPluginName)
