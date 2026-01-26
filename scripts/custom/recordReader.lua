@@ -60,6 +60,8 @@ local function lowercase(value)
 end
 
 local function numberField(value)
+  if type(value) == 'number' then return value end
+
   return assert(tonumber(value))
 end
 
