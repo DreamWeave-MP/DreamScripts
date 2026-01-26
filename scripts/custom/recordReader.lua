@@ -101,9 +101,9 @@ end
 ---@return string? forSure
 local function RealString(value)
   if type(value) == 'string' then
-    if value ~= '' then
-      return value
-    end
+    if value == '' then return end
+
+    return value
   end
 
   local converted = tostring(value)
