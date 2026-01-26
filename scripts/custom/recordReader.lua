@@ -1,7 +1,6 @@
 local bit = require 'bit'
 local dUtil = require 'dUtil'
 local enumerations = require 'packages.networkEnums'
-local ffi = require 'ffi'
 local lfs = require 'lfs'
 
 local LogSkippedRecords = false
@@ -12,13 +11,12 @@ local PluginPathFormatter = tes3mp.GetDataPath() .. '/custom/recordParser/%s'
 ---@type DefaultInterfaces
 local I = require 'interfaces'
 
-local tds = assert(I.tds)
 local tes3 = assert(I.tes3)
 
 ---@class CellLoadConfig
 ---@field Exterior boolean
 ---@field Interior boolean
-local LoadCellTypes = tds.hash { Exterior = true, Interior = true, }
+local LoadCellTypes = { Exterior = false, Interior = true, }
 
 local Enums = require 'packages.MWEnums'
 
