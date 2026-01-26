@@ -136,6 +136,7 @@ end
 
 local NumMandatoryFields = {
   Activator = 2,
+  Door = 2,
   Enchanting = 4,
   LeveledCreature = 2,
   LeveledItem = 2,
@@ -381,7 +382,7 @@ local RecordStores = {
   Clothing = tds.Hash(),
   Container = tds.Hash(),
   Creature = tds.Hash(),
-  Door = tds.Hash(),
+  Door = {},
   Enchanting = {},
   Faction = tds.Hash(),
   GameSetting = {},
@@ -842,24 +843,33 @@ local TypeHandlers = {
   end,
 
   Door = function(record, recordId)
-    local hash = tds.Hash()
-
-    hash.id = recordId
-    hash.model = path(record.mesh)
-    objectFlags(record, hash)
-
+    local closeSound = OptionalRecordId(record.close_sound)
+    local isDeleted, isModified = objectFlags(record)
     local name = RealString(record.name)
-    if name then hash.name = name end
-
-    local openSound, closeSound = OptionalRecordId(record.open_sound), OptionalRecordId(record.close_sound)
-
-    if openSound then hash.openSound = openSound end
-    if closeSound then hash.closeSound = closeSound end
-
+    local openSound = OptionalRecordId(record.open_sound)
     local script = OptionalRecordId(record.script)
-    if script then hash.script = script end
 
-    return hash
+    local numFields = NumMandatoryFields
+        + (closeSound and 1 or 0)
+        + (isDeleted and 1 or 0)
+        + (isModified and 1 or 0)
+        + (name and 1 or 0)
+        + (openSound and 1 or 0)
+        + (script and 1 or 0)
+
+    local object = table.new(0, numFields)
+
+    object.id = recordId
+    object.model = path(record.mesh)
+
+    if closeSound then object.closeSound = closeSound end
+    if isDeleted then object.isDeleted = true end
+    if isModified then object.isModified = true end
+    if name then object.name = name end
+    if openSound then object.openSound = openSound end
+    if script then object.script = script end
+
+    return object
   end,
 
   Enchanting = function(record, recordId)
