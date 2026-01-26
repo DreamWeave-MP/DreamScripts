@@ -8,7 +8,7 @@ typedef struct Transform {
 } Transform;
 ]]
 
----@type ffi.ctype*(pos: Vector3, rot: Vector3, scale: numebr?): Transform
+---@type ffi.ctype*(pos: Vector3, rot: Vector3, scale: number?): Transform
 local constructor = ffi.typeof('Transform')
 
 ---@type TransformConstructor
