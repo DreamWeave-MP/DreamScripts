@@ -74,14 +74,14 @@ local function path(value)
   if type(value) == 'string' then
     if value == '' then return end
 
-    return ffi.string(value:normalize())
+    return value:normalize()
   end
 
   local stringForm = assert(tostring(value))
 
   if stringForm == '' then return end
 
-  return ffi.string(stringForm:normalize())
+  return stringForm:normalize()
 end
 
 ---@param value any
