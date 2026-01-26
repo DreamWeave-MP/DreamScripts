@@ -141,6 +141,7 @@ local NumMandatoryFields = {
   Alchemy = 5,
   Apparatus = 7,
   Armor = 9,
+  Birthsign = 4,
   Class = 6,
   Clothing = 7,
   Container = 3,
@@ -383,7 +384,7 @@ local RecordStores = {
   Alchemy = {},
   Apparatus = {},
   Armor = {},
-  Birthsign = tds.Hash(),
+  Birthsign = {},
   Bodypart = tds.Hash(),
   Book = tds.Hash(),
   -- Cell = tds.Hash { Interior = tds.Hash(), Exterior = tds.Hash(), },
@@ -545,18 +546,26 @@ local TypeHandlers = {
   end,
 
   Birthsign = function(record, recordId)
-    local hash = tds.Hash()
-
-    hash.description = assert(RealString(record.description))
-    hash.id = recordId
-    hash.name = assert(RealString(record.name))
-    hash.texture = path(record.texture)
-
+    local isDeleted, isModified = objectFlags(record)
     local spells = Handlers.Spells(record.spells)
-    if spells then hash.spells = spells end
 
-    objectFlags(record, hash)
-    return hash
+    local numFields = NumMandatoryFields.Birthsign
+        + (isDeleted and 1 or 0)
+        + (isModified and 1 or 0)
+        + (spells and 1 or 0)
+
+    local object = table.new(0, numFields)
+
+    object.description = assert(RealString(record.description))
+    object.id = recordId
+    object.name = assert(RealString(record.name))
+    object.texture = path(record.texture)
+
+    if isDeleted then object.isDeleted = true end
+    if isModified then object.isModified = true end
+    if spells then object.spells = spells end
+
+    return object
   end,
 
   Bodypart = function(record, recordId)
