@@ -680,28 +680,27 @@ local TypeHandlers = {
 
     if record.atmosphere_data then
       local atmo = record.atmosphere_data
-      cell.fogDensity = numberField(atmo.fog_density)
-
-      cell.ambientColor = {
-        numberField(tostring(atmo.ambient_color[1])),
-        numberField(tostring(atmo.ambient_color[2])),
-        numberField(tostring(atmo.ambient_color[3])),
-        numberField(tostring(atmo.ambient_color[4]))
-      }
-
-      cell.fogColor = {
-        numberField(tostring(atmo.fog_color[1])),
-        numberField(tostring(atmo.fog_color[2])),
-        numberField(tostring(atmo.fog_color[3])),
-        numberField(tostring(atmo.fog_color[4]))
-      }
-
-      cell.sunlightColor = {
-        numberField(tostring(atmo.sunlight_color[1])),
-        numberField(tostring(atmo.sunlight_color[2])),
-        numberField(tostring(atmo.sunlight_color[3])),
-        numberField(tostring(atmo.sunlight_color[4]))
-      }
+      cell.ambient = dUtil.cellAmbient(
+        dUtil.vector3(
+          numberField(tostring(atmo.ambient_color[1])),
+          numberField(tostring(atmo.ambient_color[2])),
+          numberField(tostring(atmo.ambient_color[3]))
+        -- numberField(tostring(atmo.ambient_color[4]))
+        ),
+        dUtil.vector3(
+          numberField(tostring(atmo.fog_color[1])),
+          numberField(tostring(atmo.fog_color[2])),
+          numberField(tostring(atmo.fog_color[3]))
+        -- numberField(tostring(atmo.fog_color[4]))
+        ),
+        dUtil.vector3(
+          numberField(tostring(atmo.sunlight_color[1])),
+          numberField(tostring(atmo.sunlight_color[2])),
+          numberField(tostring(atmo.sunlight_color[3]))
+        -- numberField(tostring(atmo.sunlight_color[4]))
+        ),
+        numberField(atmo.fog_density)
+      )
     end
 
     local maybeRegion = OptionalRecordId(record.region)
