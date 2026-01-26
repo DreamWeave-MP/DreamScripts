@@ -593,7 +593,7 @@ local TypeHandlers = {
     local object = table.new(0, numFields)
 
     object.bodypartType = numberField(Enums.BodypartType[record.data.bodypart_type])
-    object.id = MandatoryRecordId(recordId)
+    object.id = recordId
     object.model = path(record.mesh)
     object.part = numberField(Enums.BodypartId[record.data.part])
 
