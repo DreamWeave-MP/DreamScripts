@@ -136,6 +136,7 @@ end
 
 local NumMandatoryFields = {
   Activator = 2,
+  Enchanting = 4,
   LeveledCreature = 2,
   LeveledItem = 2,
   Light = 9,
@@ -862,18 +863,27 @@ local TypeHandlers = {
   end,
 
   Enchanting = function(record, recordId)
-    local object = {
-      cost = numberField(record.data.cost),
-      enchantType = numberField(Enums.EnchantType[record.data.enchant_type]),
-      id = assert(recordId),
-      maxCharge = numberField(record.data.max_charge),
-    }
+    local effects = Handlers.Effects(record.effects)
+    local isAutoCalc = hasFlag(record.data.flags, Enums.Flags.Enchant.AUTO_CALC)
+    local isDeleted, isModified = objectFlags(record)
+
+    local numFields = NumMandatoryFields.Enchanting
+        + (effects and 1 or 0)
+        + (isAutoCalc and 1 or 0)
+        + (isDeleted and 1 or 0)
+        + (isModified and 1 or 0)
+
+    local object = table.new(0, numFields)
+
+    object.cost = numberField(record.data.cost)
+    object.enchantType = numberField(Enums.EnchantType[record.data.enchant_type])
+    object.id = recordId
+    object.maxCharge = numberField(record.data.max_charge)
 
     --- Surely this has some implication for parsing the effect array?
-    if hasFlag(record.data.flags, Enums.Flags.Enchant.AUTO_CALC) then object.isAutoCalc = true end
-    objectFlags(record, object)
-
-    local effects = Handlers.Effects(record.effects)
+    if isAutoCalc then object.isAutoCalc = true end
+    if isDeleted then object.isDeleted = true end
+    if isModified then object.isModified = true end
     if effects then object.effects = effects end
 
     return object
