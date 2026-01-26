@@ -329,15 +329,10 @@ local Handlers = {
     local numItems = #originalItems
     if numItems <= 0 then return end
 
-    local list = tds.Vec()
-    list:resize(numItems)
+    local list = table.new(numItems, 0)
 
     for i, item in ipairs(originalItems) do
-      local listItem = tds.Hash()
-
-      listItem[MandatoryRecordId(item[1])] = item[2]
-
-      list[i] = listItem
+      list[i] = { [MandatoryRecordId(item[1])] = item[2] }
     end
 
     return list
