@@ -101,16 +101,10 @@ local function RealString(value)
   if converted ~= '' then return converted end
 end
 
----@param ... any
----@return any[]
-local function vector(...)
-  return tds.Vec(...)
-end
-
 ---@param trans number[] array with three numeric values
 local function transform(trans)
   assert(trans and #trans == 3, tostring(trans))
-  return vector(tonumber(trans[1]), tonumber(trans[2]), tonumber(trans[3]))
+  return { tonumber(trans[1]), tonumber(trans[2]), tonumber(trans[3]) }
 end
 
 ---@param flags integer
