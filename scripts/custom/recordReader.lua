@@ -929,7 +929,7 @@ local TypeHandlers = {
     object.endurance = numberField(record.data.endurance)
     object.fatigue = numberField(record.data.fatigue)
     object.health = numberField(record.data.health)
-    object.id = MandatoryRecordId(recordId)
+    object.id = recordId
     object.intelligence = numberField(record.data.intelligence)
     object.level = numberField(record.data.level)
     object.luck = numberField(record.data.luck)
@@ -1637,7 +1637,7 @@ local TypeHandlers = {
     local object = table.new(0, numFields)
 
     object.icon = path(record.icon)
-    object.id = MandatoryRecordId(recordId)
+    object.id = recordId
     object.model = path(record.mesh)
     object.uses = numberField(record.data.uses)
     object.value = numberField(record.data.value)
@@ -1662,7 +1662,7 @@ local TypeHandlers = {
     local object = table.new(0, numFields)
 
     object.id = recordId
-    object.text = MandatoryRecordId(record.text)
+    object.text = record.text
     if isDeleted then object.isDeleted = true end
     if isModified then object.isModified = true end
 
