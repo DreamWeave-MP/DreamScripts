@@ -199,16 +199,19 @@ local AIPackageHandlers = {
   AiFollowPackage = function(package)
     local cell = OptionalRecordId(package.cell)
 
-    local numFields = 5 + (cell and 1 or 0)
+    local location
+    if package.location then location = transform(package.location) end
+
+    local numFields = 5 + (cell and 1 or 0) + (location and 1 or 0)
     local object = table.new(0, numFields)
 
-    object.location = transform(package.location)
     object.duration = numberField(package.duration)
     object.reset = numberField(package.reset)
     object.target = assert(package.target)
     object.type = enumerations.ai.FOLLOW
 
     if cell then object.cell = cell end
+    if location then object.location = location end
 
     return object
   end,
