@@ -300,10 +300,8 @@ local Handlers = {
         attribute = numberField(Enums.AttributeId[effect.attribute]),
         duration = numberField(effect.duration),
         magicEffect = numberField(Enums.MagicEffectId[effect.magic_effect]),
-        magnitude = {
-          numberField(effect.max_magnitude),
-          numberField(effect.min_magnitude)
-        },
+        maxMagnitude = numberField(effect.max_magnitude),
+        minMagnitude = numberField(effect.min_magnitude),
         range = numberField(Enums.EffectRange[effect.range]),
         skill = numberField(Enums.SkillId[effect.skill]),
       }

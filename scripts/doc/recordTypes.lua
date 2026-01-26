@@ -623,7 +623,8 @@
 ---@field attribute AttributeId
 ---@field duration integer
 ---@field magicEffect MagicEffectId
----@field magnitude integer[] Always length 2. Min/max
+---@field minMagnitude number
+---@field maxMagnitude number
 ---@field range EffectRange
 ---@field skill SkillId
 
