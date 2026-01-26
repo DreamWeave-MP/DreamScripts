@@ -330,8 +330,7 @@ local Handlers = {
     local numSpells = #spells
     if numSpells <= 0 then return end
 
-    local newSpells = tds.Vec()
-    newSpells:resize(numSpells)
+    local newSpells = table.new(numSpells, 0)
 
     for i, spellId in ipairs(spells) do
       newSpells[i] = MandatoryRecordId(spellId)
