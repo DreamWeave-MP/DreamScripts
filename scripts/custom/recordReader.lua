@@ -139,6 +139,7 @@ end
 local NumMandatoryFields = {
   Activator = 2,
   Alchemy = 5,
+  Apparatus = 7,
   Class = 6,
   Clothing = 7,
   Container = 3,
@@ -379,7 +380,7 @@ local Handlers = {
 local RecordStores = {
   Activator = {},
   Alchemy = {},
-  Apparatus = tds.Hash(),
+  Apparatus = {},
   Armor = tds.Hash(),
   Birthsign = tds.Hash(),
   Bodypart = tds.Hash(),
@@ -477,23 +478,32 @@ local TypeHandlers = {
   end,
 
   Apparatus = function(record, recordId)
-    local hash = tds.Hash()
-    hash.id = recordId
-    hash.apparatusType = numberField(Enums.ApparatusType[record.data.apparatus_type])
-    hash.quality = numberField(record.data.quality)
-    hash.weight = numberField(record.data.weight)
-    hash.value = numberField(record.data.value)
-    hash.icon = path(record.icon)
-    hash.model = path(record.mesh)
-
+    local isDeleted, isModified = objectFlags(record)
     local name = RealString(record.name)
-    if name then hash.name = name end
-
     local script = OptionalRecordId(record.script)
-    if script then hash.script = script end
 
-    objectFlags(record, hash)
-    return hash
+    local numFields = NumMandatoryFields.Apparatus
+        + (isDeleted and 1 or 0)
+        + (isModified and 1 or 0)
+        + (name and 1 or 0)
+        + (script and 1 or 0)
+
+    local object = table.new(0, numFields)
+
+    object.id = recordId
+    object.apparatusType = numberField(Enums.ApparatusType[record.data.apparatus_type])
+    object.quality = numberField(record.data.quality)
+    object.weight = numberField(record.data.weight)
+    object.value = numberField(record.data.value)
+    object.icon = path(record.icon)
+    object.model = path(record.mesh)
+
+    if isDeleted then object.isDeleted = true end
+    if isModified then object.isModified = true end
+    if name then object.name = name end
+    if script then object.script = script end
+
+    return object
   end,
 
   Armor = function(record, recordId)
