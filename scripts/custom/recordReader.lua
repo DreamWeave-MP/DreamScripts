@@ -1108,12 +1108,12 @@ local TypeHandlers = {
     if record.value.type == 'String' then
       return assert(tostring(record.value))
     else
-      return numberField(tostring(record.value))
+      return numberField(tonumber(tostring(record.value)))
     end
   end,
 
   GlobalVariable = function(record, _)
-    return numberField(tostring(record.value))
+    return numberField(tonumber(tostring(record.value)))
   end,
 
   Header = function(record, _, currentPluginName)
