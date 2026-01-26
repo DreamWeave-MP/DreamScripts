@@ -1937,6 +1937,8 @@ local function idIsFree(recordId, object)
   return true
 end
 
+local PluginOptions = { lowercase_ids = true, ignored_types = { 'LAND', 'DIAL', 'INFO', }, }
+
 ---@return integer numRecords
 local function createRecordStores()
   LoadedRecords = 0
@@ -1961,7 +1963,7 @@ local function createRecordStores()
 
     local lowerPluginName = pluginName:lower()
 
-    for j, object in ipairs(tes3.load_plugin(pluginPath).objects) do
+    for j, object in ipairs(tes3.load_plugin(pluginPath, PluginOptions).objects) do
       local recordId
 
       if object.id then
