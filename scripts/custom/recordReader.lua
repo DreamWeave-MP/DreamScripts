@@ -1245,9 +1245,9 @@ local TypeHandlers = {
     local object = table.new(0, numFields)
 
     object.color = {
-      numberField(tostring(record.data.color[1])),
-      numberField(tostring(record.data.color[2])),
-      numberField(tostring(record.data.color[3]))
+      numberField(record.data.color[1]),
+      numberField(record.data.color[2]),
+      numberField(record.data.color[3])
     }
     object.icon = path(record.icon)
     object.id = recordId
