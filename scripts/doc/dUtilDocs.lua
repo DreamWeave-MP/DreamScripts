@@ -45,6 +45,7 @@
 ---@field getRequiredDataFiles fun(): DataFileRequirements Safer version of below function which doesn't modify global server state
 ---@field loadRequiredDataFiles fun(writeLog: boolean): DataFileRequirements Loads the required data files, whilst also initializing the server connection requirements. ONLY Call this once!
 ---@field misc DUtilMisc
+---@field transform TransformConstructor
 ---@field vector3 Vector3Constructor
 
 ---@class SaveSubscriptionData
@@ -74,6 +75,13 @@
 ---@field eventValidators table<string, function>? series of eventValidators for this script to run
 ---@field chatCommands table<string, TES3MPCommandRegistration>? chat commands registered by this script
 ---@field menus table<string, TES3MPMenu>? Menus defined to be consumed by menuHelper
+
+---@class Transform
+---@field rotation Vector3
+---@field position Vector3
+---@field scale number
+
+---@alias TransformConstructor fun(pos: Vector3, rot: Vector3, scale: number?): Transform Constructs a transform using FFI structs with Vector3 inputs. Used primarily for instance loading.
 
 ---@class Vector3: userdata
 ---@field x number
