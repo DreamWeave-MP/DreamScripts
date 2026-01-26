@@ -1,6 +1,7 @@
 local bit = require 'bit'
 local dUtil = require 'dUtil'
 local enumerations = require 'packages.networkEnums'
+local ffi = require 'ffi'
 local lfs = require 'lfs'
 
 local LogSkippedRecords = false
@@ -1962,8 +1963,11 @@ local function createRecordStores()
     local lowerPluginName = pluginName:lower()
 
     for j, object in ipairs(tes3.load_plugin(pluginPath).objects) do
-      local recordId = object.id
-      if recordId then recordId = recordId:lower() end
+      local recordId
+
+      if object.id then
+        recordId = ffi.string(recordId:lower(), #object.id)
+      end
 
       if idIsFree(recordId, object) then
         local recordStore, typeHandler = RecordStores[object.type], TypeHandlers[object.type]
