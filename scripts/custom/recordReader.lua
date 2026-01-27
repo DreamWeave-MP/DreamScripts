@@ -762,7 +762,9 @@ local TypeHandlers = {
     end
 
     -- print(cell)
-    RecordStores.Cell[cellType][cellId] = cell
+    if not existingCell then
+      RecordStores.Cell[cellType][cellId] = cell
+    end
   end,
 
   Class = function(record, recordId)
