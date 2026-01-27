@@ -36,7 +36,7 @@ for i, loadOrderData in ipairs(RequiredDataFiles) do
     :format(pluginName)
   )
 
-  loadOrder[i] = lowerPluginName
+  loadOrder[i] = pluginName
 
   foundPlugins[lowerPluginName] = true
 end
