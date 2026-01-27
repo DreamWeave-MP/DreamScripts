@@ -41,6 +41,9 @@ for i, loadOrderData in ipairs(RequiredDataFiles) do
   foundPlugins[lowerPluginName] = true
 end
 
+local LowerLoadOrder = table.new(#loadOrder, 0)
+for i, pluginName in ipairs(loadOrder) do LowerLoadOrder[i] = pluginName:lower() end
+
 ---@param value any
 ---@return string? lowercased
 local function lowercase(value)
@@ -734,7 +737,7 @@ local TypeHandlers = {
         local targetPluginName = RecordStores.Header[currentPluginName][masterIndex]
         local targetPluginIndex
 
-        for i, pluginName in ipairs(loadOrder) do
+        for i, pluginName in ipairs(LowerLoadOrder) do
           if pluginName == targetPluginName then
             targetPluginIndex = i
             break
