@@ -214,7 +214,7 @@ function DScriptLoader.loadAllScripts()
   end
 
   --- Reinitialize all interfaces when reloading all scripts
-  Interfaces = DScriptLoader.originalInterfaces()
+  DScriptLoader.originalInterfaces()
 
   --- When reloading all scripts, reinitialize the module cache
   ModuleCache = DScriptLoader.defaultModuleCache()
@@ -253,21 +253,18 @@ local ScriptLoaderInterface = dUtil.misc.makeReadOnly {
 
 ---@type TimedModule
 local TimedInterface = dUtil.misc.makeReadOnly(require 'dUtil.timed')
+local Interfaces = {}
 
----@return DefaultInterfaces
 function DScriptLoader.originalInterfaces()
-  local interfaces = {
-    scriptLoader = ScriptLoaderInterface,
-    timed = TimedInterface,
-  }
+  table.clear(Interfaces)
 
-  if hasTES3 then interfaces.tes3 = tes3 end
-  if RecordStores then interfaces.recordStores = RecordStores end
-
-  return interfaces
+  if RecordStores then Interfaces.recordStores = RecordStores end
+  Interfaces.scriptLoader = ScriptLoaderInterface
+  Interfaces.timed = TimedInterface
+  if hasTES3 then Interfaces.tes3 = tes3 end
 end
 
-local Interfaces
+DScriptLoader.originalInterfaces()
 
 ---@class ReadOnlyInterfaces: DefaultInterfaces The same as the default interfaces table, but, will throw and kill the server if you try to write to it. Uses a metatable to return a local reference to the current definition of Interfaces, so is never stale.
 DScriptLoader.Interfaces = setmetatable({},

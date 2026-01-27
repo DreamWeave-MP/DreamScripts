@@ -29,7 +29,7 @@
 ---@field speechHelper SpeechHelper
 ---@field dreamDice DiceInterface?
 ---@field customMerchantRestock RestockInterface?
----@field recordStores RecordInterface?
+---@field recordStores RecordStores
 ---@field tes3 table<string, function>?
 ---@field timed TimedModule
 
