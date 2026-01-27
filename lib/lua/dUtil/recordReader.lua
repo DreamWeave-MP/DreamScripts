@@ -9,10 +9,7 @@ local PluginLoadIndex = 0
 
 local PluginPathFormatter = config.dataPath .. '/custom/recordParser/%s'
 
----@type DefaultInterfaces
-local I = require 'interfaces'
-
-local tes3 = assert(I.tes3)
+local tes3 = require 'tes3_lua'
 
 ---@class CellLoadConfig
 ---@field Exterior boolean
