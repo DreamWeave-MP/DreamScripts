@@ -698,9 +698,9 @@ local TypeHandlers = {
     local maybeRegion = OptionalRecordId(record.region)
     if maybeRegion then cell.region = maybeRegion end
 
-    -- if record.water_height then
-    --   cell.waterHeight = numberField(tonumber(record.water_height))
-    -- end
+    if record.water_height then
+      cell.waterHeight = numberField(record.water_height)
+    end
 
     --- One plugin might change certain cell flags, so,
     --- unfortunately to account for this possibility some parameters
