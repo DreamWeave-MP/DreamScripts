@@ -103,7 +103,7 @@ local function RealString(value)
     return value
   end
 
-  if value then error('This is definitely now a string: ' .. tostring(value)) end
+  if value then error('This is definitely not a string: ' .. tostring(value)) end
 end
 
 ---@param trans number[] array with three numeric values
