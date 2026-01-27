@@ -33,6 +33,9 @@ config.customScripts = {
     --- transition between cells, to prevent their AI from breaking
     --- Originally developed by Rickoff
     'fixFollowAI',
+    --- Portable container bound to a hotkey
+    --- Originally developed by Rickoff
+    'bagScript/main',
     --- Prevent usage of trainers/traders
     --- And stacking magic effects
     -- 'balanceAdjustments',
