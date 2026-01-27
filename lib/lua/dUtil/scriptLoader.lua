@@ -22,7 +22,7 @@ local tableHelper = require 'packages.tableHelper'
 local yamlInterface = require 'packages.yamlInterface'
 
 ---@type RecordStores?
-local RecordStores
+local ESMRecordStores
 
 ---@type LFSFFIModule
 local lfs = require 'lfs'
@@ -217,7 +217,7 @@ function DScriptLoader.loadAllScripts()
   --- This allows us to respond to changes in the actual customScripts list,
   config = DScriptLoader.requireShim('config')
 
-  if not RecordStores and config.loadPluginData then RecordStores = recordStoreGenerator() end
+  if not ESMRecordStores and config.loadPluginData then ESMRecordStores = recordStoreGenerator() end
 
   --- Reinitialize all interfaces when reloading all scripts
   DScriptLoader.originalInterfaces()
@@ -260,7 +260,7 @@ local Interfaces = table.new(0, 256)
 function DScriptLoader.originalInterfaces()
   table.clear(Interfaces)
 
-  if RecordStores then Interfaces.recordStores = RecordStores end
+  if ESMRecordStores then Interfaces.recordStores = ESMRecordStores end
   Interfaces.scriptLoader = ScriptLoaderInterface
   Interfaces.timed = TimedInterface
   if hasTES3 then Interfaces.tes3 = tes3 end
