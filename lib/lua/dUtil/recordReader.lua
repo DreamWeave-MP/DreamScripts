@@ -1,6 +1,6 @@
 local bit = require 'bit'
 local config = require 'config'
-local dUtil = require 'dUtil'
+local dUtil = require 'dUtil.init'
 local enumerations = require 'packages.networkEnums'
 local lfs = require 'lfs'
 
