@@ -1105,15 +1105,15 @@ local TypeHandlers = {
   end,
 
   GameSetting = function(record, _)
-    if record.value.type == 'String' then
-      return assert(tostring(record.value))
-    else
-      return numberField(tonumber(tostring(record.value)))
-    end
+    local valueType = type(record.value)
+    assert(valueType == 'string' or valueType == 'number')
+    return record.value
   end,
 
   GlobalVariable = function(record, _)
-    return numberField(tonumber(tostring(record.value)))
+    local valueType = type(record.value)
+    assert(valueType == 'string' or valueType == 'number')
+    return record.value
   end,
 
   Header = function(record, _, currentPluginName)
