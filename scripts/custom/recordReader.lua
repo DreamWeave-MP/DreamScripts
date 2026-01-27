@@ -5,7 +5,7 @@ local enumerations = require 'packages.networkEnums'
 local lfs = require 'lfs'
 
 local LogSkippedRecords = false
-local LoadedRecords, PluginLoadIndex = 0, 0
+local PluginLoadIndex = 0
 
 local PluginPathFormatter = config.dataPath .. '/custom/recordParser/%s'
 
@@ -414,6 +414,46 @@ local RecordStores = {
   Weapon = {},
 }
 
+local NumLoadedRecords = {
+  Activator = 0,
+  Alchemy = 0,
+  Apparatus = 0,
+  Armor = 0,
+  Birthsign = 0,
+  Bodypart = 0,
+  Book = 0,
+  Cell = { Interior = 0, Exterior = 0, },
+  Class = 0,
+  Clothing = 0,
+  Container = 0,
+  Creature = 0,
+  Door = 0,
+  Enchanting = 0,
+  Faction = 0,
+  GameSetting = 0,
+  GlobalVariable = 0,
+  Header = 0,
+  Ingredient = 0,
+  LeveledCreature = 0,
+  LeveledItem = 0,
+  Light = 0,
+  Lockpick = 0,
+  MiscItem = 0,
+  Npc = 0,
+  Probe = 0,
+  Race = 0,
+  Region = 0,
+  RepairItem = 0,
+  Script = 0,
+  Skill = 0,
+  Sound = 0,
+  SoundGen = 0,
+  Spell = 0,
+  StartScript = 0,
+  Static = 0,
+  Weapon = 0,
+}
+
 local TypeHandlers = {
 
   Activator = function(record, recordId)
@@ -438,6 +478,7 @@ local TypeHandlers = {
     if name then object.name = name end
     if script then object.script = script end
 
+    NumLoadedRecords.Activator = NumLoadedRecords.Activator + 1
     return object
   end,
 
@@ -471,6 +512,7 @@ local TypeHandlers = {
     if name then object.name = name end
     if script then object.script = script end
 
+    NumLoadedRecords.Alchemy = NumLoadedRecords.Alchemy + 1
     return object
   end,
 
@@ -500,6 +542,7 @@ local TypeHandlers = {
     if name then object.name = name end
     if script then object.script = script end
 
+    NumLoadedRecords.Apparatus = NumLoadedRecords.Apparatus + 1
     return object
   end,
 
@@ -537,6 +580,7 @@ local TypeHandlers = {
     if name then object.name = name end
     if script then object.script = script end
 
+    NumLoadedRecords.Armor = NumLoadedRecords.Armor + 1
     return object
   end,
 
@@ -560,6 +604,7 @@ local TypeHandlers = {
     if isModified then object.isModified = true end
     if spells then object.spells = spells end
 
+    NumLoadedRecords.Birthsign = NumLoadedRecords.Birthsign + 1
     return object
   end,
 
@@ -592,6 +637,7 @@ local TypeHandlers = {
     if isUnplayable then object.isUnplayable = true end
     if race then object.race = race end
 
+    NumLoadedRecords.Bodypart = NumLoadedRecords.Bodypart + 1
     return object
   end,
 
@@ -630,6 +676,7 @@ local TypeHandlers = {
     if script then object.script = script end
     if text then object.text = text end
 
+    NumLoadedRecords.Book = NumLoadedRecords.Book + 1
     return object
   end,
 
@@ -651,7 +698,6 @@ local TypeHandlers = {
     end
 
     local existingCell = RecordStores.Cell[cellType][cellId]
-    if not existingCell then LoadedRecords = LoadedRecords + 1 end
 
     ---@class CellRecord
     local cell = existingCell or {}
@@ -764,6 +810,7 @@ local TypeHandlers = {
     -- print(cell)
     if not existingCell then
       RecordStores.Cell[cellType][cellId] = cell
+      NumLoadedRecords.Cell[cellType] = NumLoadedRecords.Cell[cellType] + 1
     end
   end,
 
@@ -807,6 +854,7 @@ local TypeHandlers = {
     if isModified then object.isModified = true end
     if isPlayable then object.isPlayable = true end
 
+    NumLoadedRecords.Class = NumLoadedRecords.Class + 1
     return object
   end,
 
@@ -842,6 +890,7 @@ local TypeHandlers = {
     if script then object.script = script end
     if name then object.name = name end
 
+    NumLoadedRecords.Clothing = NumLoadedRecords.Clothing + 1
     return object
   end,
 
@@ -876,6 +925,7 @@ local TypeHandlers = {
     if name then object.name = name end
     if script then object.script = script end
 
+    NumLoadedRecords.Container = NumLoadedRecords.Container + 1
     return object
   end,
 
@@ -968,6 +1018,7 @@ local TypeHandlers = {
     if spells then object.spells = spells end
     if usesWeapons then object.usesWeapons = true end
 
+    NumLoadedRecords.Creature = NumLoadedRecords.Creature + 1
     return object
   end,
 
@@ -998,6 +1049,7 @@ local TypeHandlers = {
     if openSound then object.openSound = openSound end
     if script then object.script = script end
 
+    NumLoadedRecords.Door = NumLoadedRecords.Door + 1
     return object
   end,
 
@@ -1025,6 +1077,7 @@ local TypeHandlers = {
     if isModified then object.isModified = true end
     if effects then object.effects = effects end
 
+    NumLoadedRecords.Enchanting = NumLoadedRecords.Enchanting + 1
     return object
   end,
 
@@ -1108,18 +1161,23 @@ local TypeHandlers = {
     if rankNames then object.rankNames = rankNames end
     if reactions then object.reactions = reactions end
 
+    NumLoadedRecords.Faction = NumLoadedRecords.Faction + 1
     return object
   end,
 
   GameSetting = function(record, _)
     local valueType = type(record.value)
     assert(valueType == 'string' or valueType == 'number')
+
+    NumLoadedRecords.GameSetting = NumLoadedRecords.GameSetting + 1
     return record.value
   end,
 
   GlobalVariable = function(record, _)
     local valueType = type(record.value)
     assert(valueType == 'string' or valueType == 'number')
+
+    NumLoadedRecords.GlobalVariable = NumLoadedRecords.GlobalVariable + 1
     return record.value
   end,
 
@@ -1134,6 +1192,7 @@ local TypeHandlers = {
       masterList[i] = assert(masterInfo[1])
     end
 
+    NumLoadedRecords.Header = NumLoadedRecords.Header + 1
     RecordStores.Header[currentPluginName] = masterList
   end,
 
@@ -1179,6 +1238,7 @@ local TypeHandlers = {
     if name then object.name = name end
     if script then object.script = script end
 
+    NumLoadedRecords.Ingredient = NumLoadedRecords.Ingredient + 1
     return object
   end,
 
@@ -1206,6 +1266,7 @@ local TypeHandlers = {
     if isDeleted then object.isDeleted = true end
     if isModified then object.isModified = true end
 
+    NumLoadedRecords.LeveledCreature = NumLoadedRecords.LeveledCreature + 1
     return object
   end,
 
@@ -1233,6 +1294,7 @@ local TypeHandlers = {
     if isModified then object.isModified = true end
     if items then object.items = items end
 
+    NumLoadedRecords.LeveledItem = NumLoadedRecords.LeveledItem + 1
     return object
   end,
 
@@ -1271,6 +1333,7 @@ local TypeHandlers = {
     if script then object.script = script end
     if sound then object.sound = sound end
 
+    NumLoadedRecords.Light = NumLoadedRecords.Light + 1
     return object
   end,
 
@@ -1299,6 +1362,7 @@ local TypeHandlers = {
     if name then object.name = name end
     if script then object.script = script end
 
+    NumLoadedRecords.Lockpick = NumLoadedRecords.Lockpick + 1
     return object
   end,
 
@@ -1329,6 +1393,7 @@ local TypeHandlers = {
     if name then object.name = name end
     if script then object.script = script end
 
+    NumLoadedRecords.MiscItem = NumLoadedRecords.MiscItem + 1
     return object
   end,
 
@@ -1448,6 +1513,7 @@ local TypeHandlers = {
     if spells then object.spells = spells end
     if stats then object.stats = stats end
 
+    NumLoadedRecords.Npc = NumLoadedRecords.Npc + 1
     return object
   end,
 
@@ -1476,6 +1542,7 @@ local TypeHandlers = {
     if script then object.script = script end
     if name then object.name = name end
 
+    NumLoadedRecords.Probe = NumLoadedRecords.Probe + 1
     return object
   end,
 
@@ -1575,6 +1642,7 @@ local TypeHandlers = {
     if name then object.name = name end
     if spells then object.spells = spells end
 
+    NumLoadedRecords.Race = NumLoadedRecords.Race + 1
     return object
   end,
 
@@ -1626,6 +1694,7 @@ local TypeHandlers = {
     if sleepCreature then object.sleepCreature = sleepCreature end
     if sounds then object.sounds = sounds end
 
+    NumLoadedRecords.Region = NumLoadedRecords.Region + 1
     return object
   end,
 
@@ -1655,6 +1724,7 @@ local TypeHandlers = {
     if isDeleted then object.isDeleted = true end
     if isModified then object.isModified = true end
 
+    NumLoadedRecords.RepairItem = NumLoadedRecords.RepairItem + 1
     return object
   end,
 
@@ -1672,6 +1742,7 @@ local TypeHandlers = {
     if isDeleted then object.isDeleted = true end
     if isModified then object.isModified = true end
 
+    NumLoadedRecords.Script = NumLoadedRecords.Script + 1
     return object
   end,
 
@@ -1702,6 +1773,7 @@ local TypeHandlers = {
     if isDeleted then object.isDeleted = true end
     if isModified then object.isModified = true end
 
+    NumLoadedRecords.Skill = NumLoadedRecords.Skill + 1
     return object
   end,
 
@@ -1722,6 +1794,7 @@ local TypeHandlers = {
     if isDeleted then object.isDeleted = true end
     if isModified then object.isModified = true end
 
+    NumLoadedRecords.Sound = NumLoadedRecords.Sound + 1
     return object
   end,
 
@@ -1746,6 +1819,7 @@ local TypeHandlers = {
     if isDeleted then object.isDeleted = true end
     if isModified then object.isModified = true end
 
+    NumLoadedRecords.SoundGen = NumLoadedRecords.SoundGen + 1
     return object
   end,
 
@@ -1779,6 +1853,7 @@ local TypeHandlers = {
     if isStartSpell then object.isStartSpell = true end
     if name then object.name = name end
 
+    NumLoadedRecords.Spell = NumLoadedRecords.Spell + 1
     return object
   end,
 
@@ -1796,6 +1871,7 @@ local TypeHandlers = {
     if isDeleted then object.isDeleted = true end
     if isModified then object.isModified = true end
 
+    NumLoadedRecords.StartScript = NumLoadedRecords.StartScript + 1
     return object
   end,
 
@@ -1813,6 +1889,7 @@ local TypeHandlers = {
     if isDeleted then object.isDeleted = true end
     if isModified then object.isModified = true end
 
+    NumLoadedRecords.Static = NumLoadedRecords.Static + 1
     return object
   end,
 
@@ -1857,6 +1934,7 @@ local TypeHandlers = {
     if script then object.script = script end
     if enchantment then object.enchantment = enchantment end
 
+    NumLoadedRecords.Weapon = NumLoadedRecords.Weapon + 1
     return object
   end,
 }
@@ -1930,7 +2008,6 @@ local function idIsFree(recordId, object)
   local recordOfSameTypeAndIdExists = RecordStores[recordType][recordId] ~= nil
 
   if not ReferenceableTypes[recordType] then
-    if not recordOfSameTypeAndIdExists then LoadedRecords = LoadedRecords + 1 end
     return not recordOfSameTypeAndIdExists
   end
 
@@ -1942,16 +2019,12 @@ local function idIsFree(recordId, object)
     if RecordStores[checkedRecordType][recordId] ~= nil then return false end
   end
 
-  LoadedRecords = LoadedRecords + 1
   return true
 end
 
 local PluginOptions = { lowercase_ids = true, ignored_types = { 'LAND', 'DIAL', 'INFO', }, }
 
----@return integer numRecords
 local function createRecordStores()
-  LoadedRecords = 0
-
   local _, numPlugins = nil, #loadOrder
   for i = numPlugins, 1, -1 do
     PluginLoadIndex = i
@@ -1994,8 +2067,6 @@ local function createRecordStores()
       end
     end
   end
-
-  return LoadedRecords
 end
 
 ---@type TES3MPScriptRegistration
@@ -2012,18 +2083,19 @@ return {
       local logStr = ('Successfully loaded %d records in %.3f seconds.\n')
           :format(createRecordStores(), os.clock() - startClock)
 
-      for k, v in pairs(I.recordStores.records) do
-        local length = 0
-        if k ~= 'Cell' then
-          length = #v
-        else
-          length = #v.Exterior + #v.Interior
-        end
+      local totalRecords = 0
+      for recordType, recordCount in pairs(NumLoadedRecords) do
+        local realCount = (recordType == 'Cell' and recordCount.Exterior + recordCount.Interior) or recordCount
 
-        logStr = logStr .. ('%s %s Records loaded.\n'):format(length, k)
+        totalRecords = totalRecords + realCount
+
+        tes3mp.LogAppend(
+          enumerations.log.INFO,
+          ('%s %s Records loaded.\n'):format(realCount, recordType)
+        )
       end
 
-      tes3mp.LogAppend(enumerations.log.INFO, logStr)
+      tes3mp.LogAppend(enumerations.log.INFO, ('%d records in total.'):format(totalRecords))
     end
   }
 }
