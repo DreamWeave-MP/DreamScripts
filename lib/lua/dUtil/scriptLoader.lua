@@ -302,7 +302,7 @@ function DScriptLoader.defaultModuleCache()
   table.clear(ModuleCache)
 
   ModuleCache.bit = bit
-  ModuleCache.cjson = hasCJSON and cjson or nil
+  if hasCJSON then ModuleCache.cjson = cjson end
   ModuleCache.dutil = dUtil
   ModuleCache['dutil.init'] = dUtil
   ModuleCache.ffi = ffi
