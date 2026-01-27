@@ -131,6 +131,15 @@ local function objectFlags(record)
   return hasFlag(record.flags, Enums.Flags.Record.DELETED), hasFlag(record.flags, Enums.Flags.Record.MODIFIED)
 end
 
+--- Given a united ref/plugin index, split it back apart for reuse
+---@param referenceKey number
+---@return number refIndex, number pluginIndex
+local function unpackReferenceKey(referenceKey)
+  local referenceIndex = bit.band(referenceKey, 0xFFFFFF) -- Bits 0-23
+  local LiveRefIndex = bit.rshift(referenceKey, 24)       -- Bits 24-31
+  return referenceIndex, LiveRefIndex
+end
+
 local NumMandatoryFields = {
   Activator = 2,
   Alchemy = 5,
