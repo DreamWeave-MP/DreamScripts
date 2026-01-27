@@ -8,6 +8,8 @@
 
 ---@alias Vector3Constructor fun(x: number, y: number, z: number): Vector3
 
+---@alias WeaponAttackConstructor fun(chopMin: integer, chopMax: integer, slashMin: integer, slashMax: integer, thrustMin: integer, thrustMax: integer): WeaponAttack
+
 ---@class tablelib
 ---@field isarray fun(inTable: table): boolean Returns true for pure lua array-like tables and false otherwise
 ---@field isempty fun(inTable: table): boolean Returns true when the given Lua table contains neither non-nil array elements nor non-nil key-value pairs, or false otherwise.
@@ -49,6 +51,7 @@
 ---@field misc DUtilMisc
 ---@field transform TransformConstructor
 ---@field vector3 Vector3Constructor
+---@field weaponAttack WeaponAttackConstructor
 
 ---@class SaveSubscriptionData
 ---@field filePath string Path of the file, relative to `server/data`, eg, `custom/myData.json`

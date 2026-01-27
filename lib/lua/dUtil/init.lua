@@ -122,6 +122,8 @@ local Module = {
   transform = require 'dUtil.ctypes.transform',
   ---@type CellAmbientConstructor
   cellAmbient = require 'dUtil.ctypes.cellAmbient',
+  ---@type WeaponAttackConstructor
+  weaponAttack = require 'dUtil.ctypes.weaponAttack',
 }
 
 return Module

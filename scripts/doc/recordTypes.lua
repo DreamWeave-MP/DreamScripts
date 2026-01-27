@@ -800,8 +800,16 @@
 ---@field position number[]
 ---@field rotation number[]
 
+---@class WeaponAttack
+---@field chopMin integer
+---@field chopMax integer
+---@field slashMin integer
+---@field slashMax integer
+---@field thrustMin integer
+---@field thrustMax integer
+
 ---@class WeaponRecord
----@field chop integer[] Length 2. Min/max
+---@field damage WeaponAttack
 ---@field durability integer
 ---@field enchantment RecordId?
 ---@field enchantmentValue integer
@@ -812,9 +820,7 @@
 ---@field name string?
 ---@field reach number
 ---@field script RecordId?
----@field slash integer[] Length 2. Min/max
 ---@field speed number
----@field thrust integer[] Length 2. Min/max
 ---@field value integer
 ---@field weaponType WeaponType
 ---@field weight number

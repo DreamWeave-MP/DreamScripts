@@ -1912,16 +1912,21 @@ local TypeHandlers = {
 
     local object = table.new(0, numFields)
 
-    object.chop = { numberField(record.data.chop_min), numberField(record.data.chop_max), }
+    object.damage = dUtil.weaponAttack(
+      record.data.chop_min,
+      record.data.chop_max,
+      record.data.slash_min,
+      record.data.slash_max,
+      record.data.thrust_min,
+      record.data.thrust_max
+    )
     object.durability = numberField(record.data.health)
     object.enchantmentValue = numberField(record.data.enchantment)
     object.icon = path(record.icon)
     object.id = recordId
     object.model = path(record.mesh)
     object.reach = numberField(record.data.reach)
-    object.slash = { numberField(record.data.slash_min), numberField(record.data.slash_max), }
     object.speed = numberField(record.data.speed)
-    object.thrust = { numberField(record.data.thrust_min), numberField(record.data.thrust_max), }
     object.value = numberField(record.data.value)
     object.weaponType = numberField(Enums.WeaponType[RealString(record.data.weapon_type)])
     object.weight = numberField(record.data.weight)
