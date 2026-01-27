@@ -76,7 +76,7 @@ end
 ---@param value any
 ---@return RecordId
 local function MandatoryRecordId(value)
-  if not value or type(value) ~= 'string' then error('Invalid recordId: ' .. tostring(value), 2) end
+  if not value or type(value) ~= 'string' or value == '' then error('Invalid recordId: ' .. tostring(value), 2) end
 
   return value
 end
