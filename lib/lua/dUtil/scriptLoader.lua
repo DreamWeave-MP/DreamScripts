@@ -144,9 +144,7 @@ function DScriptLoader.loadScript(scriptName, callerPid, scriptDir)
   --- If this function was called from chat, then, we don't
   --- Get the guarantee that loadAllScripts will have refreshed our module cache
   --- So, we reset it here, just before initializing the file
-  if callerPid then
-    ModuleCache = DScriptLoader.defaultModuleCache()
-  end
+  if callerPid then DScriptLoader.defaultModuleCache() end
 
   tes3mp.LogAppend(enumerations.log.INFO, ('Attempting to load %s script from path: %s'):format(subDir, scriptPath))
   local ok, result = pcall(function() return assert(loadfile(scriptPath)) end)
@@ -223,7 +221,7 @@ function DScriptLoader.loadAllScripts()
   DScriptLoader.originalInterfaces()
 
   --- When reloading all scripts, reinitialize the module cache
-  ModuleCache = DScriptLoader.defaultModuleCache()
+  DScriptLoader.defaultModuleCache()
 
   local startTime = os.clock()
 
@@ -243,7 +241,10 @@ function DScriptLoader.loadAllScripts()
   collectgarbage()
 end
 
-local hasTES3, tes3 = pcall(require, 'tes3_lua')
+local Interfaces, ModuleCache = table.new(0, 256), table.new(0, 256)
+
+---@type TimedModule
+local TimedInterface = dUtil.misc.makeReadOnly(require 'dUtil.timed')
 
 ---@class DScriptLoaderHidden
 ---@field loadScript function(scriptPath: string, callerPid: PlayerId?)
@@ -253,20 +254,9 @@ local ScriptLoaderInterface = dUtil.misc.makeReadOnly {
   loadAllScripts = DScriptLoader.loadAllScripts,
 }
 
----@type TimedModule
-local TimedInterface = dUtil.misc.makeReadOnly(require 'dUtil.timed')
-local Interfaces = table.new(0, 256)
-
-function DScriptLoader.originalInterfaces()
-  table.clear(Interfaces)
-
-  if ESMRecordStores then Interfaces.recordStores = ESMRecordStores end
-  Interfaces.scriptLoader = ScriptLoaderInterface
-  Interfaces.timed = TimedInterface
-  if hasTES3 then Interfaces.tes3 = tes3 end
-end
-
-DScriptLoader.originalInterfaces()
+local bit, ffi = require 'bit', require 'ffi'
+local hasCJSON, cjson = pcall(require, 'cjson')
+local hasTES3, tes3 = pcall(require, 'tes3_lua')
 
 ---@class ReadOnlyInterfaces: DefaultInterfaces The same as the default interfaces table, but, will throw and kill the server if you try to write to it. Uses a metatable to return a local reference to the current definition of Interfaces, so is never stale.
 DScriptLoader.Interfaces = setmetatable({},
@@ -299,24 +289,32 @@ DScriptLoader.Interfaces = setmetatable({},
   }
 )
 
-local bit, ffi = require 'bit', require 'ffi'
-local hasCJSON, cjson = pcall(require, 'cjson')
-function DScriptLoader.defaultModuleCache()
-  return {
-    bit = bit,
-    cjson = hasCJSON and cjson or nil,
-    ['dutil'] = dUtil,
-    ['dutil.init'] = dUtil,
-    ffi = ffi,
-    interfaces = DScriptLoader.Interfaces,
-    jsoninterface = jsonInterface,
-    lfs = lfs,
-    ['packages.jsoninterface'] = jsonInterface,
-    ['packages.yamlinterface'] = yamlInterface,
-  }
+function DScriptLoader.originalInterfaces()
+  table.clear(Interfaces)
+
+  if ESMRecordStores then Interfaces.recordStores = ESMRecordStores end
+  Interfaces.scriptLoader = ScriptLoaderInterface
+  Interfaces.timed = TimedInterface
+  if hasTES3 then Interfaces.tes3 = tes3 end
 end
 
-local ModuleCache = DScriptLoader.defaultModuleCache()
+function DScriptLoader.defaultModuleCache()
+  table.clear(ModuleCache)
+
+  ModuleCache.bit = bit
+  ModuleCache.cjson = hasCJSON and cjson or nil
+  ModuleCache.dutil = dUtil
+  ModuleCache['dutil.init'] = dUtil
+  ModuleCache.ffi = ffi
+  ModuleCache.interfaces = DScriptLoader.Interfaces
+  ModuleCache.jsoninterface = jsonInterface
+  ModuleCache.lfs = lfs
+  ModuleCache['packages.jsoninterface'] = jsonInterface
+  ModuleCache['packages.yamlinterface'] = yamlInterface
+end
+
+DScriptLoader.originalInterfaces()
+DScriptLoader.defaultModuleCache()
 
 --- Small shim for overriding require statements in curated script environment
 ---@param scriptName string
