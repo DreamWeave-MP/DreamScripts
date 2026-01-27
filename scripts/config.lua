@@ -22,9 +22,6 @@ config.customScripts = {
     --- Don't change scripts/custom/color.lua
     --- This is mostly a basic example interface to demonstrate how the concept works.
     'color',
-    --- Fancy special sauce using tes3_lua for hyper-optimized record loading
-    --- If it exists, this script must load before *all* other event validators!!!!!
-    'recordReader',
     --- Custom scripts may be added here
     'customMerchantRestock',
     'dreamDice/main',

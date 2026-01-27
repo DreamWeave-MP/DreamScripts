@@ -17,8 +17,12 @@ local dUtil = require 'dUtil.init'
 local enumerations = require 'packages.networkEnums'
 local jsonInterface = require 'packages.jsonInterface'
 local logicHandler = require 'packages.logicHandler'
+local recordStoreGenerator = require 'dUtil.recordReader'
 local tableHelper = require 'packages.tableHelper'
 local yamlInterface = require 'packages.yamlInterface'
+
+---@type RecordStores?
+local RecordStores
 
 ---@type LFSFFIModule
 local lfs = require 'lfs'
@@ -204,6 +208,8 @@ end
 --- Upon failure, for any reason, the server will be terminated.
 --- This function should only be called upon initializing the server, OR when attempting to reload all running lua scripts.
 function DScriptLoader.loadAllScripts()
+  if not RecordStores then RecordStores = recordStoreGenerator() end
+
   --- Reinitialize all interfaces when reloading all scripts
   Interfaces = DScriptLoader.originalInterfaces()
 
@@ -253,6 +259,7 @@ function DScriptLoader.originalInterfaces()
   }
 
   if hasTES3 then interfaces.tes3 = tes3 end
+  if RecordStores then interfaces.recordStores = RecordStores end
 
   return interfaces
 end
