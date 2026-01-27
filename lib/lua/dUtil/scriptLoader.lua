@@ -214,10 +214,7 @@ function DScriptLoader.loadAllScripts()
   --- This allows us to respond to changes in the actual customScripts list,
   config = DScriptLoader.requireShim('config')
 
-  if not RecordStores and config.loadPluginData then
-    RecordStores = recordStoreGenerator()
-    collectgarbage()
-  end
+  if not RecordStores and config.loadPluginData then RecordStores = recordStoreGenerator() end
 
   --- Reinitialize all interfaces when reloading all scripts
   DScriptLoader.originalInterfaces()
