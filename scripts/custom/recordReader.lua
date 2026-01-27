@@ -743,8 +743,8 @@ local TypeHandlers = {
 
         if not targetPluginIndex then
           error(
-            ('Attempted to modify a reference to a plugin which is not in the load order: %s')
-            :format(targetPluginName)
+            ('Attempted to modify a reference to a plugin which is not in the load order: %s, %d, %d')
+            :format(targetPluginName, masterIndex, referenceIndex)
           )
         end
 
