@@ -2080,8 +2080,9 @@ return {
     OnServerPostInit = function()
       local startClock = os.clock()
 
-      local logStr = ('Successfully loaded %d records in %.3f seconds.\n')
-          :format(createRecordStores(), os.clock() - startClock)
+      createRecordStores()
+
+      local loadTime = os.clock() - startClock()
 
       local totalRecords = 0
       for recordType, recordCount in pairs(NumLoadedRecords) do
@@ -2095,7 +2096,11 @@ return {
         )
       end
 
-      tes3mp.LogAppend(enumerations.log.INFO, ('%d records in total.'):format(totalRecords))
+      tes3mp.LogAppend(
+        enumerations.log.INFO,
+        ('Successfully loaded %d records in %.3f seconds.')
+        :format(totalRecords, loadTime)
+      )
     end
   }
 }
