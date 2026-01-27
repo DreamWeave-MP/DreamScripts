@@ -44,23 +44,6 @@ end
 local LowerLoadOrder = table.new(#loadOrder, 0)
 for i, pluginName in ipairs(loadOrder) do LowerLoadOrder[i] = pluginName:lower() end
 
----@param value any
----@return string? lowercased
-local function lowercase(value)
-  if not value then return end
-
-  if type(value) == 'string' then
-    if value == '' then return end
-
-    return value:lower()
-  end
-
-  local result = tostring(value)
-  if not result or result == '' then return end
-
-  return result:lower()
-end
-
 local function numberField(value)
   local valueType = type(value)
 
