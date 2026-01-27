@@ -9,7 +9,14 @@ local PluginLoadIndex = 0
 
 local PluginPathFormatter = config.dataPath .. '/custom/recordParser/%s'
 
-local tes3 = require 'tes3_lua'
+local hasTES3, tes3 = pcall(require, 'tes3_lua')
+
+if not hasTES3 then
+  error(
+    [[You do not have tes3_lua installed.
+  Either disable config.loadPluginData or download it from here: https://github.com/Greatness7/tes3_lua/releases]]
+  )
+end
 
 ---@class CellLoadConfig
 ---@field Exterior boolean
