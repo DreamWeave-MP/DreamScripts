@@ -2094,7 +2094,7 @@ return function()
 
     tes3mp.LogAppend(
       enumerations.log.INFO,
-      ('%s %s Records loaded.\n'):format(realCount, recordType)
+      ('%s %s Records loaded.'):format(realCount, recordType)
     )
   end
 
