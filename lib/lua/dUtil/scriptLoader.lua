@@ -232,7 +232,6 @@ function DScriptLoader.loadAllScripts()
   )
 end
 
-local hasTDS, tds = pcall(require, 'tds.init')
 local hasTES3, tes3 = pcall(require, 'tes3_lua')
 
 ---@class DScriptLoaderHidden
@@ -253,7 +252,6 @@ function DScriptLoader.originalInterfaces()
     timed = TimedInterface,
   }
 
-  if hasTDS then interfaces.tds = tds end
   if hasTES3 then interfaces.tes3 = tes3 end
 
   return interfaces
