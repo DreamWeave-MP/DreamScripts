@@ -719,20 +719,41 @@ local TypeHandlers = {
     cell.restingIsIllegal = hasFlag(record.data.flags, Enums.Flags.Cell.RESTING_IS_ILLEGAL)
 
     -- objectFlags(record, cell)
-    --
+
     local references = record.references
     cell.references = cell.references or table.new(0, #references)
 
     for _, referenceData in ipairs(references) do
-      -- print(i, referenceData)
       local masterIndex, referenceIndex =
           numberField(referenceData.mast_index), numberField(referenceData.refr_index)
 
-      local LiveRefIndex = PluginLoadIndex
+      local LiveRefIndex
+      if masterIndex == 0 then
+        LiveRefIndex = PluginLoadIndex
+      else
+        local targetPluginName = RecordStores.Header[currentPluginName][masterIndex]
+        local targetPluginIndex
+
+        for i, pluginName in ipairs(loadOrder) do
+          if pluginName == targetPluginName then
+            targetPluginIndex = i
+            break
+          end
+        end
+
+        if not targetPluginIndex then
+          error(
+            ('Attempted to modify a reference to a plugin which is not in the load order: %s')
+            :format(targetPluginName)
+          )
+        end
+
+        LiveRefIndex = targetPluginIndex
+      end
 
       local referenceKey = bit.bor(referenceIndex, bit.lshift(LiveRefIndex, 24))
 
-      if masterIndex == 0 then
+      if not cell.references[referenceKey] then
         cell.references[referenceKey] = {
           id = referenceKey,
           recordId = MandatoryRecordId(referenceData.id),
