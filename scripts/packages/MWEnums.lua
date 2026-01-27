@@ -490,6 +490,4 @@ local MWEnums = {
   },
 }
 
-if I.tds then MWEnums = I.tds.Hash(MWEnums) end
-
 return MWEnums
