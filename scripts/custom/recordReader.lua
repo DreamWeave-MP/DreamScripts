@@ -1137,22 +1137,22 @@ local TypeHandlers = {
     object.value = numberField(record.data.value)
     object.weight = numberField(record.data.weight)
     object.effects = {
-      numberField(Enums.MagicEffectId[RealString(record.data.effects[1])]),
-      numberField(Enums.MagicEffectId[RealString(record.data.effects[2])]),
-      numberField(Enums.MagicEffectId[RealString(record.data.effects[3])]),
-      numberField(Enums.MagicEffectId[RealString(record.data.effects[4])])
+      numberField(Enums.MagicEffectId[tostring(record.data.effects[1])]),
+      numberField(Enums.MagicEffectId[tostring(record.data.effects[2])]),
+      numberField(Enums.MagicEffectId[tostring(record.data.effects[3])]),
+      numberField(Enums.MagicEffectId[tostring(record.data.effects[4])])
     }
     object.skills = {
-      numberField(Enums.SkillId[RealString(record.data.skills[1])]),
-      numberField(Enums.SkillId[RealString(record.data.skills[2])]),
-      numberField(Enums.SkillId[RealString(record.data.skills[3])]),
-      numberField(Enums.SkillId[RealString(record.data.skills[4])])
+      numberField(Enums.SkillId[tostring(record.data.skills[1])]),
+      numberField(Enums.SkillId[tostring(record.data.skills[2])]),
+      numberField(Enums.SkillId[tostring(record.data.skills[3])]),
+      numberField(Enums.SkillId[tostring(record.data.skills[4])])
     }
     object.attributes = {
-      numberField(Enums.AttributeId[RealString(record.data.attributes[1])]),
-      numberField(Enums.AttributeId[RealString(record.data.attributes[2])]),
-      numberField(Enums.AttributeId[RealString(record.data.attributes[3])]),
-      numberField(Enums.AttributeId[RealString(record.data.attributes[4])])
+      numberField(Enums.AttributeId[tostring(record.data.attributes[1])]),
+      numberField(Enums.AttributeId[tostring(record.data.attributes[2])]),
+      numberField(Enums.AttributeId[tostring(record.data.attributes[3])]),
+      numberField(Enums.AttributeId[tostring(record.data.attributes[4])])
     }
 
     if isDeleted then object.isDeleted = true end
