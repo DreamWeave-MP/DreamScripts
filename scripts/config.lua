@@ -11,6 +11,10 @@ local config = {}
 --- Defaults to english if not defined or the preferred locale cannot be located.
 config.preferredLocale = 'en'
 
+--- If true, then, loads the plugins defined by requiredDataFiles.json (in that order)
+--- directly into the server, from the folder (config.dataPath)/custom/recordParser
+config.loadPluginData = true
+
 --- The path used by the server for its data folder
 config.dataPath = tes3mp.GetDataPath()
 

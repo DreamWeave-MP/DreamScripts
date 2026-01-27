@@ -208,7 +208,13 @@ end
 --- Upon failure, for any reason, the server will be terminated.
 --- This function should only be called upon initializing the server, OR when attempting to reload all running lua scripts.
 function DScriptLoader.loadAllScripts()
-  if not RecordStores then
+  --- In case the config file may have changed in some way,
+  --- Which descendent scripts will be aware of anyway,
+  --- recompile the configuration each time all scripts are reloaded.
+  --- This allows us to respond to changes in the actual customScripts list,
+  config = DScriptLoader.requireShim('config')
+
+  if not RecordStores and config.loadPluginData then
     RecordStores = recordStoreGenerator()
     collectgarbage()
   end
@@ -218,12 +224,6 @@ function DScriptLoader.loadAllScripts()
 
   --- When reloading all scripts, reinitialize the module cache
   ModuleCache = DScriptLoader.defaultModuleCache()
-
-  --- In case the config file may have changed in some way,
-  --- Which descendent scripts will be aware of anyway,
-  --- recompile the configuration each time all scripts are reloaded.
-  --- This allows us to respond to changes in the actual customScripts list,
-  config = DScriptLoader.requireShim('config')
 
   local startTime = os.clock()
 
