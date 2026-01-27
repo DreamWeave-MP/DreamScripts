@@ -208,7 +208,10 @@ end
 --- Upon failure, for any reason, the server will be terminated.
 --- This function should only be called upon initializing the server, OR when attempting to reload all running lua scripts.
 function DScriptLoader.loadAllScripts()
-  if not RecordStores then RecordStores = recordStoreGenerator() end
+  if not RecordStores then
+    RecordStores = recordStoreGenerator()
+    collectgarbage()
+  end
 
   --- Reinitialize all interfaces when reloading all scripts
   Interfaces = DScriptLoader.originalInterfaces()
