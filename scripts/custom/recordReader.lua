@@ -1044,17 +1044,17 @@ local TypeHandlers = {
 
     object.id = recordId
     object.favoredAttributes = {
-      numberField(Enums.AttributeId[MandatoryRecordId(record.data.favored_attributes[1]):titleCase()]),
-      numberField(Enums.AttributeId[MandatoryRecordId(record.data.favored_attributes[2]):titleCase()])
+      numberField(Enums.AttributeId[tostring(record.data.favored_attributes[1])]),
+      numberField(Enums.AttributeId[tostring(record.data.favored_attributes[2])])
     }
     object.favoredSkills = {
-      numberField(Enums.SkillId[MandatoryRecordId(record.data.favored_skills[1]):titleCase()]),
-      numberField(Enums.SkillId[MandatoryRecordId(record.data.favored_skills[2]):titleCase()]),
-      numberField(Enums.SkillId[MandatoryRecordId(record.data.favored_skills[3]):titleCase()]),
-      numberField(Enums.SkillId[MandatoryRecordId(record.data.favored_skills[4]):titleCase()]),
-      numberField(Enums.SkillId[MandatoryRecordId(record.data.favored_skills[5]):titleCase()]),
-      numberField(Enums.SkillId[MandatoryRecordId(record.data.favored_skills[6]):titleCase()]),
-      numberField(Enums.SkillId[MandatoryRecordId(record.data.favored_skills[7]):titleCase()])
+      numberField(Enums.SkillId[tostring(record.data.favored_skills[1])]),
+      numberField(Enums.SkillId[tostring(record.data.favored_skills[2])]),
+      numberField(Enums.SkillId[tostring(record.data.favored_skills[3])]),
+      numberField(Enums.SkillId[tostring(record.data.favored_skills[4])]),
+      numberField(Enums.SkillId[tostring(record.data.favored_skills[5])]),
+      numberField(Enums.SkillId[tostring(record.data.favored_skills[6])]),
+      numberField(Enums.SkillId[tostring(record.data.favored_skills[7])])
     }
 
     local numReqs = #record.data.requirements
