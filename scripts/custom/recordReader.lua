@@ -83,17 +83,15 @@ end
 ---@param value any
 ---@return RecordId?
 local function OptionalRecordId(value)
-  local id = lowercase(value)
-  if id then return id end
+  if type(value) == 'string' and value ~= '' then return value end
 end
 
 ---@param value any
 ---@return RecordId
 local function MandatoryRecordId(value)
-  local id = lowercase(value)
-  if not id then error('Invalid recordId: ' .. tostring(value), 2) end
+  if not value or type(value) ~= 'string' then error('Invalid recordId: ' .. tostring(value), 2) end
 
-  return id
+  return value
 end
 
 ---@param value any
@@ -105,8 +103,7 @@ local function RealString(value)
     return value
   end
 
-  local converted = tostring(value)
-  if converted ~= '' then return converted end
+  if value then error('This is definitely now a string: ' .. tostring(value)) end
 end
 
 ---@param trans number[] array with three numeric values
@@ -1115,7 +1112,7 @@ local TypeHandlers = {
     local masterList = table.new(masterLength, 0)
 
     for i, masterInfo in ipairs(masters) do
-      masterList[i] = assert(masterInfo[1]:lower())
+      masterList[i] = assert(masterInfo[1])
     end
 
     RecordStores.Header[currentPluginName] = masterList
