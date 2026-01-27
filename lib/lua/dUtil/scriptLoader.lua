@@ -255,7 +255,7 @@ local ScriptLoaderInterface = dUtil.misc.makeReadOnly {
 
 ---@type TimedModule
 local TimedInterface = dUtil.misc.makeReadOnly(require 'dUtil.timed')
-local Interfaces = {}
+local Interfaces = table.new(0, 256)
 
 function DScriptLoader.originalInterfaces()
   table.clear(Interfaces)
