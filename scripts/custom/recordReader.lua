@@ -1,4 +1,5 @@
 local bit = require 'bit'
+local config = require 'config'
 local dUtil = require 'dUtil'
 local enumerations = require 'packages.networkEnums'
 local lfs = require 'lfs'
@@ -6,7 +7,7 @@ local lfs = require 'lfs'
 local LogSkippedRecords = false
 local LoadedRecords, PluginLoadIndex = 0, 0
 
-local PluginPathFormatter = tes3mp.GetDataPath() .. '/custom/recordParser/%s'
+local PluginPathFormatter = config.dataPath .. '/custom/recordParser/%s'
 
 ---@type DefaultInterfaces
 local I = require 'interfaces'
