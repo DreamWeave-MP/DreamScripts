@@ -2082,7 +2082,7 @@ return {
 
       createRecordStores()
 
-      local loadTime = os.clock() - startClock()
+      local loadTime = os.clock() - startClock
 
       local totalRecords = 0
       for recordType, recordCount in pairs(NumLoadedRecords) do
