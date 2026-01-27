@@ -197,7 +197,7 @@ local AIPackageHandlers = {
     object.reset = numberField(package.reset)
     object.target = assert(package.target)
     object.type = enumerations.ai.ESCORT
-    object.location = vector(package.location)
+    -- object.location = vector(package.location)
 
     if cell then object.cell = cell end
 
@@ -210,7 +210,7 @@ local AIPackageHandlers = {
     local object = table.new(0, numFields)
 
     object.duration = numberField(package.duration)
-    object.location = vector(package.location)
+    -- object.location = vector(package.location)
     object.reset = numberField(package.reset)
     object.target = assert(package.target)
     object.type = enumerations.ai.FOLLOW
@@ -221,7 +221,7 @@ local AIPackageHandlers = {
   end,
   AiTravelPackage = function(package)
     return {
-      location = assert(vector(package.location)),
+      -- location = assert(vector(package.location)),
       reset = numberField(package.reset),
       type = enumerations.ai.TRAVEL,
     }
@@ -379,8 +379,8 @@ local Handlers = {
       local destination = table.new(0, numFields)
 
       if cell then destination.cell = cell end
-      if destPos then destination.position = vector(destPos) end
-      if destRot then destination.rotation = vector(destRot) end
+      -- if destPos then destination.position = vector(destPos) end
+      -- if destRot then destination.rotation = vector(destRot) end
 
       newDestinations[i] = destination
     end
