@@ -71,7 +71,12 @@ end
 ---@param value any
 ---@return NormalizedPath? lowercased
 local function path(value)
-  if type(value) == 'string' and value ~= '' then return value end
+  if type(value) == 'string' then
+    if value == '' then return end
+
+    return value
+  end
+
   error('Invalid path value: ' .. tostring(value))
 end
 
