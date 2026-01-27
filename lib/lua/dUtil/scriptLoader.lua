@@ -200,7 +200,10 @@ function DScriptLoader.loadScript(scriptName, callerPid, scriptDir)
     DScriptLoader[loader](scriptPath, result)
   end
 
-  collectgarbage()
+  if callerPid then
+    collectgarbage()
+  end
+
   return true
 end
 
@@ -236,6 +239,8 @@ function DScriptLoader.loadAllScripts()
     enumerations.log.INFO,
     ('Successfully completed script initialization in %.6f milliseconds.'):format((os.clock() - startTime) * 1000)
   )
+
+  collectgarbage()
 end
 
 local hasTES3, tes3 = pcall(require, 'tes3_lua')
