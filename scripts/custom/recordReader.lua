@@ -71,22 +71,8 @@ end
 ---@param value any
 ---@return NormalizedPath? lowercased
 local function path(value)
-  if not value then return end
-
-  if type(value) == 'string' then
-    if value == '' then return end
-
-    local str, _ = value:normalize()
-    return str
-  end
-
-  local stringForm = assert(tostring(value))
-
-  if stringForm == '' then return end
-
-  stringForm, _ = stringForm:normalize()
-
-  return stringForm
+  if type(value) == 'string' and value ~= '' then return value end
+  error('Invalid path value: ' .. tostring(value))
 end
 
 ---@param value any
