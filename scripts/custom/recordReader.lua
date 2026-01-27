@@ -171,7 +171,7 @@ local NumMandatoryFields = {
   RepairItem = 7,
   Script = 2,
   Skill = 5,
-  Sound = 4,
+  Sound = 5,
   SoundGen = 3,
   Spell = 2,
   StartScript = 2,
@@ -1730,10 +1730,8 @@ local TypeHandlers = {
 
     object.id = recordId
     object.path = path(record.sound_path)
-    object.range = {
-      numberField(record.data.range[1]),
-      numberField(record.data.range[2]),
-    }
+    object.rangeMin = numberField(record.data.range[1])
+    object.rangeMax = numberField(record.data.range[2])
     object.volume = numberField(record.data.volume)
     if isDeleted then object.isDeleted = true end
     if isModified then object.isModified = true end

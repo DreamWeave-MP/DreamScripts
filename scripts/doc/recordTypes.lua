@@ -772,7 +772,8 @@
 
 ---@class SoundRecord: BaseRecord
 ---@field path NormalizedPath
----@field range integer[] Length 2. Min/Max range.
+---@field rangeMin integer
+---@field rangeMax integer
 ---@field volume integer
 
 ---@class SoundGenRecord: BaseRecord
