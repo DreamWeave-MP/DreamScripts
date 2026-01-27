@@ -1,5 +1,3 @@
-local I = require 'interfaces'
-
 ---@class MWEnums
 local MWEnums = {
   ApparatusType = {
