@@ -2074,38 +2074,31 @@ local function createRecordStores()
   end
 end
 
----@type TES3MPScriptRegistration
-return {
-  interfaceName = 'recordStores',
-  ---@class RecordInterface
-  interface = {
-    records = RecordStores,
-  },
-  eventValidators = {
-    OnServerPostInit = function()
-      local startClock = os.clock()
+---@return RecordStores
+return function()
+  local startClock = os.clock()
 
-      createRecordStores()
+  createRecordStores()
 
-      local loadTime = os.clock() - startClock
+  local loadTime = os.clock() - startClock
 
-      local totalRecords = 0
-      for recordType, recordCount in pairs(NumLoadedRecords) do
-        local realCount = (recordType == 'Cell' and recordCount.Exterior + recordCount.Interior) or recordCount
+  local totalRecords = 0
+  for recordType, recordCount in pairs(NumLoadedRecords) do
+    local realCount = (recordType == 'Cell' and recordCount.Exterior + recordCount.Interior) or recordCount
 
-        totalRecords = totalRecords + realCount
+    totalRecords = totalRecords + realCount
 
-        tes3mp.LogAppend(
-          enumerations.log.INFO,
-          ('%s %s Records loaded.\n'):format(realCount, recordType)
-        )
-      end
+    tes3mp.LogAppend(
+      enumerations.log.INFO,
+      ('%s %s Records loaded.\n'):format(realCount, recordType)
+    )
+  end
 
-      tes3mp.LogAppend(
-        enumerations.log.INFO,
-        ('Successfully loaded %d records in %.3f seconds.')
-        :format(totalRecords, loadTime)
-      )
-    end
-  }
-}
+  tes3mp.LogAppend(
+    enumerations.log.INFO,
+    ('Successfully loaded %d records in %.3f seconds.')
+    :format(totalRecords, loadTime)
+  )
+
+  return RecordStores
+end
