@@ -1683,7 +1683,7 @@ local TypeHandlers = {
     object.actions = table.new(4, 0)
 
     for i = 1, 4 do
-      object.actions[i] = numberField(record.data.actions[i])
+      object.actions[i] = numberField(tonumber(tostring(record.data.actions[i])))
     end
 
     object.governingAttribute = numberField(record.data.governing_attribute)
