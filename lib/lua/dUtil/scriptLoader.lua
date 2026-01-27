@@ -267,7 +267,7 @@ function DScriptLoader.originalInterfaces()
   return interfaces
 end
 
-local Interfaces = DScriptLoader.originalInterfaces()
+local Interfaces
 
 ---@class ReadOnlyInterfaces: DefaultInterfaces The same as the default interfaces table, but, will throw and kill the server if you try to write to it. Uses a metatable to return a local reference to the current definition of Interfaces, so is never stale.
 DScriptLoader.Interfaces = setmetatable({},
