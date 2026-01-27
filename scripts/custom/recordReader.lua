@@ -1019,7 +1019,7 @@ local TypeHandlers = {
       rankNames = table.new(numRanks, 0)
 
       for i, rankName in ipairs(record.rank_names) do
-        rankNames[i] = assert(RealString(rankName))
+        rankNames[i] = RealString(rankName)
       end
     end
 
