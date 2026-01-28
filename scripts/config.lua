@@ -223,7 +223,7 @@ config.deadlyItems = {
 }
 
 --- Whether the instanced spawn should be used instead of the noninstanced one
-config.useInstancedSpawn = true
+config.useInstancedSpawn = false
 
 --- Where players will be spawned if an instanced spawn is desired, with a different clean copy of
 --- this cell existing for each player
@@ -239,30 +239,31 @@ config.instancedSpawn = {
 
 --- Where players will be spawned if an instanced spawn is not desired
 config.noninstancedSpawn = {
-    cellDescription = '-3, -2',
-    position = { -23894.0, -15079.0, 505 },
+    cellDescription = 'Tatooine, Sandriver',
+    position = { 4902, 6324, 12323, },
     rotation = { 0, 1.2 },
-    text = 'Multiplayer skips over the original character generation.' ..
-        '\n\nAs a result, you start out with Caius Cosades\' package.',
-    items = { { refId = 'bk_a1_1_caiuspackage', count = 1, charge = -1, enchantmentCharge = -1, soul = '' } }
+    text = 'Welcome to the Starwind Initiative! Get your bearings, and find a ship to survive.',
+    items = {
+        { refId = 'gold_001', count = 500, charge = -1, enchantmentCharge = -1, soul = '' },
+    },
 }
 
 --- The location that players respawn at, unless overridden below by other respawn options
 config.defaultRespawn = {
-    cellDescription = 'Balmora, Temple',
-    position = { 4700.5673828125, 3874.7416992188, 14758.990234375 },
-    rotation = { 0.25314688682556, 1.570611000061 }
+    cellDescription = 'Tatooine, Medical Bay',
+    position = { 3874, 3880, 15708, },
+    rotation = { 0.25314688682556, 0.6179702117835, }
 }
 
 --- Whether the default respawn location should be ignored in favor of respawning the
 --- player at the nearest Imperial shrine
-config.respawnAtImperialShrine = true
+config.respawnAtImperialShrine = false
 
 --- Whether the default respawn location should be ignored in favor of respawning the
 --- player at the nearest Tribunal temple
 --- Note: When both this and the Imperial shrine option are enabled, there is a 50%
 ---       chance of the player being respawned at either
-config.respawnAtTribunalTemple = true
+config.respawnAtTribunalTemple = false
 
 --- The cells that players are forbidden from entering, with any attempt to enter them
 --- transporting them to the last location in their previous cell
@@ -298,7 +299,7 @@ config.deathTime = 5
 config.deathPenaltyJailDays = 5
 
 --- Whether players' bounties are reset to 0 after dying
-config.bountyResetOnDeath = false
+config.bountyResetOnDeath = true
 
 --- Whether players spend time in jail proportional to their bounty after dying
 --- Note: If deathPenaltyJailDays is also enabled, that penalty will be added to
