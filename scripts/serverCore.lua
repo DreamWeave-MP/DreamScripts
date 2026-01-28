@@ -1468,7 +1468,7 @@ end
 function OnCellUnload(pid, cellDescription)
     logPlayerCellEvent('OnCellUnload', pid, cellDescription)
 
-    local isValid, targetPid = logicHandler.CheckPlayerValidity(pid, cellDescription)
+    local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
     if not isValid or not targetPid then return end
 
     local eventStatus = ScriptLoader.Interfaces.customEventHooks.triggerValidators(
