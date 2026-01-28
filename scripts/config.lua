@@ -43,7 +43,8 @@ config.customScripts = {
     'mwscriptConverter',
     'decorateHelp',
     --- Prevents dying in certain cells, if you can pay the resurrection fee.
-    'safeRespawn',
+    --- Also includes a m0rj3d version of kanarevive.
+    'r3vival/main',
 }
 
 --- The game mode displayed for this server in the server browser

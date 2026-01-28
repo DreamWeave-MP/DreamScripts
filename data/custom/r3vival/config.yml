@@ -1,3 +1,19 @@
+markerConfig:
+ markerModel: o/contain_corpse20.nif
+ markerRecordId: 's3_r3vivalmarker'
+ useMarkers: true
+
+reviveConfig:
+ allowWithPermaDeath: true
+ bleedOutTime: 30
+ useBleedOut: true
+
+ # Radii may be `server`, `loaded`, or `none`
+ # Also check the AnnounceRadius alias in scripts/custom/r3vival/main.lua
+ diedAnnounceRadius: server
+ downedAnnounceRadius: server
+ reviveAnnounceRadius: server
+
 SafeCells:
  Freighter, Combat Simulator:
   cell: The Outer Rim, Freighter

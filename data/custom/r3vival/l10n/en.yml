@@ -1,0 +1,18 @@
+awaitingReviveMessage: You are awaiting revival.
+awaitingReviveOtherMessage: {name} has been downed! Activate them to revive them.
+
+bleedoutOtherMessage: {name} has bled out.
+bleedingOutMessage: You have {seconds} seconds before you bleed out.
+bleedoutPlayerMessage: You have died.
+
+defaultKilledByPlayer: {name} was killed by player {killer}.
+defaultKilledByOther: {name} was killed by {killer}.
+defaultPermanentDeath: You have died permanently.
+defaultSuicide: {name} committed suicide.
+
+giveInPrompt: Type /die to give in.
+
+revivedOtherMessage: {receive} has been revived by {give}.
+reviveGivenMessage: You have revived {name}.
+reviveMarkerName: Player corpse - Use to revive!
+reviveReceivedMessage: You have been revived by {name}.
