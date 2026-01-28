@@ -264,11 +264,12 @@ return {
 		---@return EventStatusTable
 		OnContainer = function(eventStatus, pid, _, objects)
 			local ObjectIndex, ObjectRefId = next(objects)
-			Players[pid].data.customVariables.Bag = Players[pid].data.customVariables.Bag or {}
+			local bagVars = Players[pid].data.customVariables.Bag
 
-			if ObjectIndex
+			if bagVars
+					and ObjectIndex
 					and ObjectRefId
-					and ObjectIndex == Players[pid].data.customVariables.Bag.uniqueIndex
+					and ObjectIndex == bagVars.uniqueIndex
 					and tes3mp.GetObjectListContainerSubAction() == enumerations.containerSub.TAKE_ALL
 			then
 				deleteBag(pid)
