@@ -2,7 +2,7 @@ local enumerations = require 'packages.networkEnums'
 local logicHandler = require 'packages.logicHandler'
 local tableHelper = require 'packages.tableHelper'
 
-local QuickKeyUsed = 0
+local QuickKeyUsed = 9
 local BagName = 'Survival Pack'
 
 ---@class TES3MPNetworkObject
