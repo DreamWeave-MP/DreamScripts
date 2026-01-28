@@ -222,7 +222,7 @@ local function deleteBag(pid)
 	local cellDescription = bagVars.cellDescription
 	local uniqueIndex = bagVars.uniqueIndex
 
-	if cellDescription == '' or uniqueIndex == 0 then return end
+	if not cellDescription or not uniqueIndex or cellDescription == '' or uniqueIndex == 0 then return end
 
 	local loadTemporarily = false
 
