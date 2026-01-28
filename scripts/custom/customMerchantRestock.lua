@@ -34,6 +34,7 @@ local enumerations = require 'packages.networkEnums'
 local inventoryHelper = require 'packages.inventoryHelper'
 local jsonInterface = require 'packages.jsonInterface'
 local packetBuilder = require 'packages.packetBuilder'
+local tableHelper = require 'packages.tableHelper'
 
 local merchantRestockLog = true
 local merchantData = nil
