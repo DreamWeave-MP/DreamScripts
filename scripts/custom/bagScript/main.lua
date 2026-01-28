@@ -280,6 +280,31 @@ return {
 		---@param eventStatus EventStatusTable
 		---@param pid PlayerId
 		---@return EventStatusTable
+		OnPlayerAuthentified = function(eventStatus, pid)
+			if Players[pid].data.customVariables.Bag == nil then
+				Players[pid].data.customVariables.Bag = {
+					inventory = {},
+					cellDescription = '',
+					uniqueIndex = 0
+				}
+			end
+
+			if not tableHelper.containsValue(Players[pid].data.inventory, 'bag_book', true) then
+				addBag(pid)
+			end
+
+			Players[pid].data.quickKeys[QuickKeyUsed] = {
+				keyType = 0,
+				itemId = 'bag_book'
+			}
+
+			Players[pid]:LoadQuickKeys()
+
+			return eventStatus
+		end,
+		---@param eventStatus EventStatusTable
+		---@param pid PlayerId
+		---@return EventStatusTable
 		OnPlayerDisconnect = function(eventStatus, pid)
 			local isValid, targetPid = logicHandler.CheckPlayerValidity(nil, pid)
 
@@ -329,31 +354,6 @@ return {
 				eventStatus.validCustomHandlers = false
 				eventStatus.validDefaultHandler = false
 			end
-
-			return eventStatus
-		end,
-		---@param eventStatus EventStatusTable
-		---@param pid PlayerId
-		---@return EventStatusTable
-		OnPlayerAuthentified = function(eventStatus, pid)
-			if Players[pid].data.customVariables.Bag == nil then
-				Players[pid].data.customVariables.Bag = {
-					inventory = {},
-					cellDescription = '',
-					uniqueIndex = 0
-				}
-			end
-
-			if not tableHelper.containsValue(Players[pid].data.inventory, 'bag_book', true) then
-				addBag(pid)
-			end
-
-			Players[pid].data.quickKeys[QuickKeyUsed] = {
-				keyType = 0,
-				itemId = 'bag_book'
-			}
-
-			Players[pid]:LoadQuickKeys()
 
 			return eventStatus
 		end,
