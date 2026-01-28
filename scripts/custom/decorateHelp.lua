@@ -285,9 +285,11 @@ end
 ---@param eventStatus EventStatusTable
 ---@param pid PlayerId
 ---@param idGui GUIID
----@param data integer The selected option in the given menu
+---@param data integer? The selected option in the given menu
 function DecorateScript.OnGUIAction(eventStatus, pid, idGui, data)
-	data = assert(tonumber(data))
+	data = tonumber(data)
+
+	if not data then return end
 
 	local name = getNameAngry(pid)
 
