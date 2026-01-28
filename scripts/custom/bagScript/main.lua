@@ -264,6 +264,7 @@ return {
 		---@return EventStatusTable
 		OnContainer = function(eventStatus, pid, _, objects)
 			local ObjectIndex, ObjectRefId = next(objects)
+			Players[pid].data.customVariables.Bag = Players[pid].data.customVariables.Bag or {}
 
 			if ObjectIndex
 					and ObjectRefId
