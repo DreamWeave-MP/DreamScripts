@@ -21,7 +21,7 @@ function TimedModule.defer(callbackFunction, callbackDelay, ...)
 
   local numCallbacks = #Callbacks
 
-  Callbacks[#numCallbacks + 1] = {
+  Callbacks[numCallbacks + 1] = {
     callback = callbackFunction,
     triggerAt = os.time() + callbackDelay,
     arguments = { ... }
