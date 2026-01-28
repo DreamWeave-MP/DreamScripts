@@ -1590,7 +1590,7 @@ function OnActorDeath(pid, cellDescription)
                 debugMessage = ('- %s, deathReason: committed suicide'):format(uniqueIndex)
             end
 
-            tes3mp.LogAppend(enumerations.log.INFO, debugMessage .. deathReason)
+            tes3mp.LogAppend(enumerations.log.INFO, debugMessage)
         end
 
         cell:SaveActorsByPacketType('ActorDeath', actors)
