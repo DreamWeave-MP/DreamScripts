@@ -73,7 +73,7 @@ config.gameSettings = {
     { name = 'rebalance soul gem values',                     value = true, },
     { name = 'barter disposition change is permanent',        value = true, },
     { name = 'strength influences hand to hand',              value = 0, },
-    { name = 'use magic item animations',                     value = true, },
+    { name = 'use magic item animations',                     value = false, },
     { name = 'normalise race speed',                          value = false, },
     { name = 'uncapped damage fatigue',                       value = false, },
     { name = 'NPCs avoid collisions',                         value = true, },
