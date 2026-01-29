@@ -48,7 +48,7 @@ config.customScripts = {
 }
 
 --- The game mode displayed for this server in the server browser
-config.gameMode = 'Default'
+config.gameMode = 'Starwind. Join at: https://discord.gg/ZBTzBsQNgz'
 
 --- Time to login, in seconds
 config.loginTime = 60
@@ -68,18 +68,18 @@ config.difficulty = 0
 ---         changed from here
 config.gameSettings = {
     { name = 'best attack',                                   value = false },
-    { name = 'prevent merchant equipping',                    value = false },
-    { name = 'enchanted weapons are magical',                 value = true },
-    { name = 'rebalance soul gem values',                     value = false },
-    { name = 'barter disposition change is permanent',        value = false },
-    { name = 'strength influences hand to hand',              value = 0 },
-    { name = 'use magic item animations',                     value = false },
-    { name = 'normalise race speed',                          value = false },
-    { name = 'uncapped damage fatigue',                       value = false },
-    { name = 'NPCs avoid collisions',                         value = false },
-    { name = 'swim upward correction',                        value = false },
-    { name = 'trainers training skills based on base skill',  value = true },
-    { name = 'always allow stealing from knocked out actors', value = false }
+    { name = 'prevent merchant equipping',                    value = true, },
+    { name = 'enchanted weapons are magical',                 value = true, },
+    { name = 'rebalance soul gem values',                     value = true, },
+    { name = 'barter disposition change is permanent',        value = true, },
+    { name = 'strength influences hand to hand',              value = 0, },
+    { name = 'use magic item animations',                     value = true, },
+    { name = 'normalise race speed',                          value = false, },
+    { name = 'uncapped damage fatigue',                       value = false, },
+    { name = 'NPCs avoid collisions',                         value = true, },
+    { name = 'swim upward correction',                        value = false, },
+    { name = 'trainers training skills based on base skill',  value = true, },
+    { name = 'always allow stealing from knocked out actors', value = false, }
 }
 
 --- The VR settings to enforce for players
@@ -124,7 +124,7 @@ config.worldStartupScripts = { 'Startup', 'BMStartUpScript' }
 config.playerStartupScripts = { 'VampireCheck', 'WereCheckScript' }
 
 --- Whether the world time should continue passing when there are no players on the server
-config.passTimeWhenEmpty = false
+config.passTimeWhenEmpty = true
 
 --- The hours at which night is regarded as starting and ending, used to pass time using a
 --- different timescale when it's night
@@ -274,7 +274,7 @@ config.maxAttributeValue = 200
 
 --- The maximum value that Speed is allowed to have
 --- Note: Speed is given special treatment because of the Boots of Blinding Speed
-config.maxSpeedValue = 365
+config.maxSpeedValue = 600
 
 --- The maximum value that any skill except Acrobatics is allowed to have
 config.maxSkillValue = 200
@@ -284,7 +284,7 @@ config.maxSkillValue = 200
 config.maxAcrobaticsValue = 1200
 
 --- Allow modifier values to bypass allowed skill values
-config.ignoreModifierWithMaxSkill = false
+config.ignoreModifierWithMaxSkill = true
 
 --- The refIds of items that players are not allowed to equip for balancing reasons
 config.bannedEquipmentItems = { 'helseth\'s ring' }
@@ -293,10 +293,10 @@ config.bannedEquipmentItems = { 'helseth\'s ring' }
 config.playersRespawn = true
 
 --- Time to stay dead before being respawned, in seconds
-config.deathTime = 5
+config.deathTime = 15
 
 --- The number of days spent in jail as a penalty for dying, when respawning
-config.deathPenaltyJailDays = 5
+config.deathPenaltyJailDays = 0
 
 --- Whether players' bounties are reset to 0 after dying
 config.bountyResetOnDeath = true
