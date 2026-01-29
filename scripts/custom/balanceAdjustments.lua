@@ -69,28 +69,9 @@ local function disableDuplicateMagicEffects(eventStatus, pid, playerPacket)
     return dUtil.misc.makeEventStatus(false, false)
 end
 
----@type CommandHandler
-local function playerCoordsCommand(pid, _)
-    local posX, posY, posZ = tes3mp.GetPosX(pid), tes3mp.GetPosY(pid), tes3mp.GetPosZ(pid)
-    local player, positionVector = Players[pid], dUtil.vector3(posX, posY, posZ)
-
-    player:Message(
-        ('%s%s: %s%s%s\n')
-        :format(
-            I.Color.Aquamarine,
-            player.data.location.cell,
-            I.Color.Gold,
-            tostring(positionVector),
-            I.Color.White
-        )
-    )
-end
-
 ---@type TES3MPScriptRegistration
 return {
-    chatCommands = {
-        coords = { callback = playerCoordsCommand, },
-    },
+    chatCommands = {},
     eventValidators = {
         OnObjectDialogueChoice = disableTradersTrainers,
         OnPlayerSpellsActive = disableDuplicateMagicEffects,

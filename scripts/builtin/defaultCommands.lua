@@ -206,6 +206,23 @@ local function confiscate(pid, cmd)
     end
 end
 
+---@type CommandHandler
+local function coords(pid, _)
+    local posX, posY, posZ = tes3mp.GetPosX(pid), tes3mp.GetPosY(pid), tes3mp.GetPosZ(pid)
+    local player, positionVector = Players[pid], dUtil.vector3(posX, posY, posZ)
+
+    player:Message(
+        ('%s%s: %s%s%s\n')
+        :format(
+            I.Color.Aquamarine,
+            player.data.location.cell,
+            I.Color.Gold,
+            tostring(positionVector),
+            I.Color.White
+        )
+    )
+end
+
 --- Check 'scripts/menu/defaultCrafting.lua' if you want to change the example craft menu
 ---@type CommandHandler
 local function craft(pid, cmd)
@@ -1584,6 +1601,7 @@ return {
         banlist = { callback = banlist, },
         cells = { callback = cells, },
         confiscate = { callback = confiscate, rankRequirement = enumerations.staffRank.MODERATOR, },
+        coords = { callback = coords, },
         craft = { callback = craft, },
         createRecord = { callback = createRecord, rankRequirement = enumerations.staffRank.ADMIN, },
         disguise = { callback = disguise, enumerations.staffRank.ADMIN, },
