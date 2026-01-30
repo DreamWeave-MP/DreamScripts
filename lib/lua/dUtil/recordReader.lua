@@ -599,7 +599,8 @@ local TypeHandlers = {
 
     local object = table.new(0, numFields)
 
-    object.description = assert(RealString(record.description))
+    local description = RealString(record.description)
+    if description then object.description = description end
     object.id = recordId
     object.name = assert(RealString(record.name))
     object.texture = path(record.texture)
