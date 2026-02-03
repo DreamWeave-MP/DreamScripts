@@ -35,11 +35,11 @@ for i, loadOrderData in ipairs(RequiredDataFiles) do
   local pluginName = loadOrderData.name
   local lowerPluginName = pluginName:lower()
 
-  assert(
-    not foundPlugins[lowerPluginName],
-    ('%s was already loaded and cannot be loaded a second time.')
-    :format(pluginName)
-  )
+  if foundPlugins[lowerPluginName] then
+    error(
+      ('%s was already loaded and cannot be loaded a second time.'):format(pluginName)
+    )
+  end
 
   loadOrder[i] = pluginName
 
