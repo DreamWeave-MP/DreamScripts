@@ -208,6 +208,7 @@ end
 --- Load all scripts defined by config.customScripts
 --- Upon failure, for any reason, the server will be terminated.
 --- This function should only be called upon initializing the server, OR when attempting to reload all running lua scripts.
+---@return boolean loadedSuccessfully
 function DScriptLoader.loadAllScripts()
   --- In case the config file may have changed in some way,
   --- Which descendent scripts will be aware of anyway,
@@ -228,7 +229,8 @@ function DScriptLoader.loadAllScripts()
   for scriptType, scriptTable in ipairs { BuiltinScriptPaths, config.customScripts, } do
     for _, scriptName in ipairs(scriptTable) do
       if not DScriptLoader.loadScript(scriptName, nil, scriptType) then
-        error('Script loading has failed! Check your server log for more details.')
+        tes3mp.LogAppend(enumerations.log.FATAL, 'Script loading has failed!')
+        return false
       end
     end
   end
@@ -239,6 +241,8 @@ function DScriptLoader.loadAllScripts()
   )
 
   collectgarbage()
+
+  return true
 end
 
 local Interfaces, ModuleCache = table.new(0, 256), table.new(0, 256)
