@@ -116,10 +116,10 @@ function MiscUtil.safeCall(fn, ...)
 
   local success, result = xpcall(
     wrapped,
-    function(_)
+    function(err)
       tes3mp.LogAppend(
         enumerations.log.WARN,
-        ('%s'):format(debug.traceback('', 1))
+        ('%s\n%s'):format(err, debug.traceback('', 1))
       )
     end,
     ...
