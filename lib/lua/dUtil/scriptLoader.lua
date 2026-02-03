@@ -272,7 +272,7 @@ DScriptLoader.Interfaces = setmetatable({},
       error(debug.traceback(('The global interfaces table is not writable!'), 3))
     end,
     __tostring = function()
-      local interfaceNames, interfaceStr = table.new(table.nkeys(Interfaces), 0), ''
+      local interfaceNames = table.new(table.nkeys(Interfaces), 0)
 
       local interfaceCount = 0
       for interfaceName in pairs(Interfaces) do
@@ -282,15 +282,7 @@ DScriptLoader.Interfaces = setmetatable({},
 
       table.sort(interfaceNames)
 
-      for i, sortedName in ipairs(interfaceNames) do
-        interfaceStr = interfaceStr .. sortedName
-
-        if i < #interfaceNames then
-          interfaceStr = interfaceStr .. ', '
-        end
-      end
-
-      return ('Global Interfaces {\n  %s\n}'):format(interfaceStr)
+      return ('Global Interfaces {\n  %s\n}'):format(table.concat(interfaceNames, ', '))
     end,
   }
 )
