@@ -1192,7 +1192,16 @@ local TypeHandlers = {
     local masterList = table.new(masterLength, 0)
 
     for i, masterInfo in ipairs(masters) do
-      masterList[i] = assert(masterInfo[1])
+      local pluginName = masterInfo[1]
+
+      if not foundPlugins[pluginName] then
+        error(
+          ('%s depends upon %s, but it was not found or was loaded in the wrong order!')
+          :format(currentPluginName, pluginName)
+        )
+      end
+
+      masterList[i] = pluginName
     end
 
     NumLoadedRecords.Header = NumLoadedRecords.Header + 1
