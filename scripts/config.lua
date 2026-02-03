@@ -12,7 +12,7 @@ local config = {}
 config.preferredLocale = 'en'
 
 --- If true, then, loads the plugins defined by requiredDataFiles.json (in that order)
---- directly into the server, from the folder (config.dataPath)/custom/recordParser
+--- directly into the server, from the folder (config.dataPath)/plugins
 config.loadPluginData = true
 
 --- The path used by the server for its data folder
