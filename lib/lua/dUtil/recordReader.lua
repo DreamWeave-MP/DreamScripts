@@ -7,7 +7,7 @@ local lfs = require 'lfs'
 local LogSkippedRecords = false
 local PluginLoadIndex = 0
 
-local PluginPathFormatter = config.dataPath .. '/custom/recordParser/%s'
+local PluginPathFormatter = config.dataPath .. '/plugins/%s'
 
 local hasTES3, tes3 = pcall(require, 'tes3_lua')
 
