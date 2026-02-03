@@ -2042,7 +2042,7 @@ local function createRecordStores()
     if not lfs.attributes(pluginPath) then
       error(
         ('Requested to parse a plugin that doesn\'t actually exist: %s!\nThe server will now terminate. Remove %s from the list of plugins to load or place it at %s')
-        :format(pluginPath:gsub('./', config.dataPath), pluginName, pluginPath)
+        :format(config.dataPath .. pluginPath:sub(1), pluginName, pluginPath)
       )
     else
       tes3mp.LogAppend(
