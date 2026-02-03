@@ -37,7 +37,7 @@ addedSpells:
     stackingState: false
     effects:
     # Only literal names for effects are accepted.
-    # Check server/lib/lua/dUtil/enums.lua:MagicEffectId::246
+    # Check server/scripts/packages/MWEnums.lua:MagicEffectId::246
       - id: Poison
         magnitude: 30
         duration: 3
