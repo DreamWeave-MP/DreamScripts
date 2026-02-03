@@ -36,9 +36,7 @@ for i, loadOrderData in ipairs(RequiredDataFiles) do
   local lowerPluginName = pluginName:lower()
 
   if foundPlugins[lowerPluginName] then
-    error(
-      ('%s was already loaded and cannot be loaded a second time.'):format(pluginName)
-    )
+    error(('%s was already loaded and cannot be loaded a second time.'):format(pluginName))
   end
 
   loadOrder[i] = pluginName
