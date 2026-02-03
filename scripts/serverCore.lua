@@ -636,6 +636,8 @@ end
 function OnServerScriptCrash(errorMessage)
     tes3mp.LogMessage(enumerations.log.ERROR, 'Server crash from script error!')
 
+    if not ScriptLoader.Interfaces.customEventHooks then return end
+
     ScriptLoader.Interfaces.customEventHooks.triggerHandlers(
         'OnServerExit',
         dUtil.misc.makeEventStatus(),
