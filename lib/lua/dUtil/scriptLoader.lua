@@ -251,8 +251,8 @@ local Interfaces, ModuleCache = table.new(0, 256), table.new(0, 256)
 local TimedInterface = dUtil.misc.makeReadOnly(require 'dUtil.timed')
 
 ---@class DScriptLoaderHidden
----@field loadScript function(scriptPath: string, callerPid: PlayerId?)
----@field loadAllScripts function()
+---@field loadScript fun(scriptPath: string, callerPid: PlayerId?)
+---@field loadAllScripts fun()
 local ScriptLoaderInterface = dUtil.misc.makeReadOnly {
   loadScript = DScriptLoader.loadScript,
   loadAllScripts = DScriptLoader.loadAllScripts,
